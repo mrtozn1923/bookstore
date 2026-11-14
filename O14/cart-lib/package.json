@@ -1,0 +1,10 @@
+{
+  "name": "bookstore-cart",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/cart.d.ts",
+      "default": "./dist/cart.js"
+    }
+  }
+}

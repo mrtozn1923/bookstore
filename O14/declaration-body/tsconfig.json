@@ -1,0 +1,9 @@
+{
+  // The root tsconfig skips .d.ts checking (skipLibCheck). `npx tsc -p O14/declaration-body` prints the post's TS1183.
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "skipLibCheck": false
+  },
+  "exclude": [],
+  "include": ["cart.d.ts"]
+}

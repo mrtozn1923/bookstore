@@ -12,5 +12,7 @@
   },
   // O11 is its own small project (the post's recommended Node tsconfig): check it with `npx tsc -p O11`.
   // O13/erasable-syntax-only turns on erasableSyntaxOnly: `npx tsc -p O13/erasable-syntax-only`.
-  "exclude": ["node_modules", "O11", "O13/erasable-syntax-only"]
+  // O14/declaration-body checks a .d.ts (`npx tsc -p O14/declaration-body`); O14/cart-lib builds dist with
+  // declaration: true (`npx tsc -p O14/cart-lib`).
+  "exclude": ["node_modules", "O11", "O13/erasable-syntax-only", "O14/declaration-body", "O14/cart-lib"]
 }
