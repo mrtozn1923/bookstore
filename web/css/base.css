@@ -1,0 +1,16 @@
+:root {
+    --color-text: #1f2937;
+    --color-muted: #6b7280;
+    --color-surface: #ffffff;
+    --color-border: #e5e7eb;
+    --color-accent: #b91c1c;
+    --radius: 0.5rem;
+    --space: 1rem;
+    font-family: system-ui, sans-serif;
+    line-height: 1.5;
+    color: var(--color-text);
+}
+
+h1, h2, h3 {
+    line-height: 1.2;
+}

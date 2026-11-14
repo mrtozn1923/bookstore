@@ -1,0 +1,21 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
+img, svg {
+    display: block;
+    max-width: 100%;
+}
+
+input, button, select, textarea {
+    font: inherit;
+}
+
+/* hidden must always win, even against later layers */
+[hidden] {
+    display: none !important;
+}

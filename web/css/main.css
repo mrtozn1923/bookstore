@@ -1,0 +1,8 @@
+/* Layer order is declared once, before anything else: later layers win */
+@layer reset, vendor, base, components, utilities;
+
+@import url("reset.css") layer(reset);
+@import url("vendor/ui-kit.css") layer(vendor);
+@import url("base.css") layer(base);
+@import url("components/button.css") layer(components);
+@import url("utilities.css") layer(utilities);

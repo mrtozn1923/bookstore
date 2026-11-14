@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Lab 01: CSS-wide keywords</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        @layer components {
+            .buy-box {
+                color: #1f2937;
+                background-color: #fef3c7;
+            }
+            .kw-inherit { color: inherit; background-color: inherit; }
+            .kw-initial { color: initial; background-color: initial; }
+            .kw-unset { color: unset; background-color: unset; }
+            .kw-revert { color: revert; background-color: revert; }
+            .kw-revert-layer { color: revert-layer; background-color: revert-layer; }
+        }
+    </style>
+</head>
+<body>
+    <div class="buy-box">
+        <button class="btn btn-primary kw-inherit" type="button">inherit</button>
+        <button class="btn btn-primary kw-initial" type="button">initial</button>
+        <button class="btn btn-primary kw-unset" type="button">unset</button>
+        <button class="btn btn-primary kw-revert" type="button">revert</button>
+        <button class="btn btn-primary kw-revert-layer" type="button">revert-layer</button>
+    </div>
+</body>
+</html>

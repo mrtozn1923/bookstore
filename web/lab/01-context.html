@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Lab 01: shadow DOM context</title>
+    <style>
+        stock-badge {
+            color: #b91c1c;
+        }
+        stock-badge.strict {
+            color: #b91c1c !important;
+        }
+    </style>
+</head>
+<body>
+    <stock-badge>In stock</stock-badge>
+    <stock-badge class="strict">In stock</stock-badge>
+    <script>
+        customElements.define('stock-badge', class extends HTMLElement {
+            constructor() {
+                super();
+                const root = this.attachShadow({ mode: 'open' });
+                root.innerHTML = `<style>
+                    :host { color: #15803d; }
+                    :host(.strict) { color: #15803d !important; }
+                </style><slot></slot>`;
+            }
+        });
+    </script>
+</body>
+</html>

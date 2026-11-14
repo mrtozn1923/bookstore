@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Lab 01: importance and inline styles</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        @layer components {
+            .stock-note {
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main id="book-page">
+        <p class="stock-note" hidden>Only 2 left</p>
+        <button class="btn btn-primary add-to-cart" type="button" style="background-color: #15803d">Add to cart</button>
+    </main>
+</body>
+</html>

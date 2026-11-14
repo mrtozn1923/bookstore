@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Lab 01: unlayered vendor CSS</title>
+    <link rel="stylesheet" href="../css/vendor/ui-kit.css">
+    <style>
+        @layer components {
+            #book-page .add-to-cart {
+                background-color: #b91c1c;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main id="book-page">
+        <button class="btn btn-primary add-to-cart" type="button">Add to cart</button>
+    </main>
+</body>
+</html>
