@@ -1,6 +1,6 @@
 // Lab run: loads a page N times in fresh contexts with a throttling profile and reads the
 // web-vitals values from the app's own RUM beacons (POST /api/rum).
-// Usage: node measure.mjs <url> [--runs 5] [--profile mobile] [--type "war"] [--scroll 3] [--json]
+// Usage: node measure.mjs <url> [--runs 5] [--profile mobile] [--type "war"] [--scroll 3] [--until ".row"] [--json]
 import { parseArgs } from 'node:util';
 import { captureRum, finishVisit, launch, newThrottledPage } from './browser.mjs';
 
@@ -12,6 +12,7 @@ const { values, positionals } = parseArgs({
     type: { type: 'string' },
     clear: { type: 'boolean', default: false },
     scroll: { type: 'string', default: '0' },
+    until: { type: 'string' },
     json: { type: 'boolean', default: false },
   },
 });
@@ -22,6 +23,17 @@ const results = [];
 for (let run = 1; run <= Number(values.runs); run++) {
   const { context, page } = await newThrottledPage(browser, values.profile);
   const readRum = await captureRum(page);
+  if (values.until) {
+    // --until: time (ms since navigation start) when the first element matching the selector appears
+    await page.addInitScript((selector) => {
+      new MutationObserver((_, observer) => {
+        if (document.querySelector(selector)) {
+          window.__until = Math.round(performance.now());
+          observer.disconnect();
+        }
+      }).observe(document, { childList: true, subtree: true });
+    }, values.until);
+  }
   await page.goto(url, { waitUntil: 'networkidle', timeout: 120_000 });
   if (values.type) {
     await page.locator('input[type=search]').pressSequentially(values.type, { delay: 150 });
@@ -38,7 +50,9 @@ for (let run = 1; run <= Number(values.runs); run++) {
     await page.waitForTimeout(600);
   }
   await finishVisit(page);
-  results.push(Object.fromEntries((await readRum()).map((r) => [r.name, r])));
+  const entry = Object.fromEntries((await readRum()).map((r) => [r.name, r]));
+  if (values.until) entry.UNTIL = { value: await page.evaluate(() => window.__until) };
+  results.push(entry);
   await context.close();
 }
 await browser.close();
@@ -51,7 +65,7 @@ const median = (xs) => {
   const s = xs.filter((x) => x !== undefined).sort((a, b) => a - b);
   return s.length ? s[Math.floor((s.length - 1) / 2)] : '-';
 };
-const metrics = ['TTFB', 'FCP', 'LCP', 'CLS', ...(values.type ? ['INP'] : [])];
+const metrics = ['TTFB', 'FCP', 'LCP', 'CLS', ...(values.type ? ['INP'] : []), ...(values.until ? ['UNTIL'] : [])];
 console.log(`${url} profile=${values.profile} runs=${values.runs}`);
 console.log('run  ' + metrics.map((m) => m.padStart(7)).join(''));
 results.forEach((r, i) =>

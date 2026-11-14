@@ -13,8 +13,12 @@ export const profiles = {
   lowend: { device: 'Pixel 7', cpu: 6, latency: 300, downKbps: 700, upKbps: 400 },
 };
 
-export function launch() {
-  return chromium.launch({ args: chromiumArgs });
+// bfcache/prerender labs: Playwright starts Chromium with --disable-back-forward-cache, and its default
+// headless shell has no bfcache; 'full' uses Playwright's full Chromium build in new headless mode instead
+export function launch({ full = false } = {}) {
+  return full
+    ? chromium.launch({ channel: 'chromium', args: chromiumArgs, ignoreDefaultArgs: ['--disable-back-forward-cache'] })
+    : chromium.launch({ args: chromiumArgs });
 }
 
 export async function newThrottledPage(browser, profileName) {

@@ -2,16 +2,17 @@ import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideClientHydration } from '@angular/platform-browser';
 import { IMAGE_CONFIG, IMAGE_LOADER } from '@angular/common';
-import { provideRouter, withComponentInputBinding } from '@angular/router';
+import { provideRouter, withComponentInputBinding, withPreloading } from '@angular/router';
 import { routes } from './app.routes';
 import { apiOriginInterceptor } from './core/api-origin';
+import { FlaggedPreloading } from './core/flagged-preloading';
 import { COVER_WIDTHS, coverLoader } from './core/cover-loader';
 import { provideRum } from './core/rum';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes, withComponentInputBinding()),
+    provideRouter(routes, withComponentInputBinding(), withPreloading(FlaggedPreloading)),
     provideHttpClient(withInterceptors([apiOriginInterceptor])),
     provideClientHydration(),
     { provide: IMAGE_LOADER, useValue: coverLoader },

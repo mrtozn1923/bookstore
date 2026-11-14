@@ -8,11 +8,23 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <script>
     // Analytics after the load event: it no longer competes with main.js for bandwidth
-    addEventListener('load', () => {
+    const loadAnalytics = () => {
       const script = document.createElement('script');
       script.src = 'http://analytics.thirdparty.test:5302/analytics.js';
       document.head.append(script);
-    });
+    };
+    // A prerendered page also fires "load" before the user sees it: count the page view on activation
+    if (document.prerendering) {
+      document.addEventListener('prerenderingchange', () => loadAnalytics(), { once: true });
+    } else {
+      addEventListener('load', loadAnalytics);
+    }
+  </script>
+  <!-- Prerender a book page when the user hovers over a link to it (Chromium; ignored elsewhere) -->
+  <script type="speculationrules">
+    {
+      "prerender": [{ "where": { "href_matches": "/books/*" }, "eagerness": "moderate" }]
+    }
   </script>
 </head>
 <body>
