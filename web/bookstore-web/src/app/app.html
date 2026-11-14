@@ -1,0 +1,10 @@
+<header class="site-header">
+  <a routerLink="/" class="brand">Bookstore</a>
+  <nav>
+    <a routerLink="/">Catalog</a>
+    <a routerLink="/cart" data-testid="cart-link">Cart ({{ cartStore.itemCount() }})</a>
+  </nav>
+</header>
+<main>
+  <router-outlet />
+</main>
