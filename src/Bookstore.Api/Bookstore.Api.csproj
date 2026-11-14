@@ -5,6 +5,9 @@
     <!-- CalVer: CI overrides this with -p:Version=YYYY.M.BUILD -->
     <VersionPrefix>0.0.0</VersionPrefix>
     <VersionSuffix>dev</VersionSuffix>
+    <!-- Container image: dotnet publish -t:PublishContainer -->
+    <ContainerRepository>bookstore/api</ContainerRepository>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>

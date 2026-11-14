@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.1.1](https://github.com/example/bookstore/compare/contracts/v2.1.0...contracts/v2.1.1) (2026-11-14)
+
+### Bug Fixes
+
+* **contracts:** print currency code in upper case ([d41a79f](https://github.com/example/bookstore/commit/d41a79fb63df338c0abac8610a1a54c4c75528a9))
+
 ## [2.1.0](https://github.com/example/bookstore/compare/contracts/v2.0.0...contracts/v2.1.0) (2026-11-14)
 
 ### Features

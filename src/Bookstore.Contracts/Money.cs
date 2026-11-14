@@ -8,5 +8,5 @@ namespace Bookstore.Contracts;
 public sealed record Money(decimal Amount, string Currency)
 {
     /// <inheritdoc />
-    public override string ToString() => $"{Amount.ToString("0.00", CultureInfo.InvariantCulture)} {Currency}";
+    public override string ToString() => $"{Amount.ToString("0.00", CultureInfo.InvariantCulture)} {Currency.ToUpperInvariant()}";
 }
