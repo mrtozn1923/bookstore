@@ -15,7 +15,10 @@ switch (args.FirstOrDefault())
     case "ef-script":
         EfDefaults.PrintCreateScript(connectionString);
         break;
+    case "bestsellers":
+        await Bookstore.PgLab.Reporting.Bestsellers.RunAsync(connectionString, repeat: 20);
+        break;
     default:
-        Console.WriteLine("usage: dotnet run -- connections | pool | ef-script");
+        Console.WriteLine("usage: dotnet run -- connections | pool | ef-script | bestsellers");
         break;
 }
