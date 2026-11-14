@@ -36,7 +36,9 @@ IResourceBuilder<ProjectResource> catalogMigrator = builder
 
 builder.AddProject<Projects.Bookstore_Catalog_Api>("catalog")
     .WithReference(catalogDb)
+    .WithReference(redis)
     .WaitForCompletion(catalogMigrator)
+    .WaitFor(redis)
     .WithHttpHealthCheck("/health");
 
 builder.AddProject<Projects.Bookstore_Ordering_Api>("ordering")

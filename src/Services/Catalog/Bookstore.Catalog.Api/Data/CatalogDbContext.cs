@@ -16,8 +16,11 @@ public sealed class CatalogDbContext(DbContextOptions<CatalogDbContext> options)
             book.Property(b => b.Isbn).HasMaxLength(13).IsUnicode(false);
             book.HasIndex(b => b.Isbn).IsUnique();
             book.Property(b => b.Title).HasMaxLength(200);
+            book.HasIndex(b => b.Title);
             book.Property(b => b.Description).HasMaxLength(1000);
             book.Property(b => b.Price).HasPrecision(10, 2);
+            book.Property(b => b.Version).IsConcurrencyToken().HasDefaultValue(1);
+            book.Ignore(b => b.Events);
         });
         modelBuilder.Entity<Author>().Property(a => a.Name).HasMaxLength(200);
         modelBuilder.Entity<Category>(category =>
