@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Long task</title>
+</head>
+<body>
+  <p>Counter: <span id="counter">0</span></p>
+  <button id="block">Reprice catalog in one task</button>
+  <button id="chunked">Reprice catalog in chunks</button>
+  <script>
+    const counter = document.querySelector("#counter");
+    let ticks = 0;
+    setInterval(() => {
+      ticks += 1;
+      counter.textContent = ticks;
+    }, 100);
+
+    function busy(ms) {
+      const end = performance.now() + ms;
+      while (performance.now() < end) {}
+    }
+
+    document.querySelector("#block").addEventListener("click", () => {
+      busy(3000); // stands in for repricing 40,000 books
+    });
+
+    document.querySelector("#chunked").addEventListener("click", async () => {
+      for (let i = 0; i < 60; i++) {
+        busy(50);
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      }
+    });
+  </script>
+</body>
+</html>
