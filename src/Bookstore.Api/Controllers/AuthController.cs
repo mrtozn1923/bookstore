@@ -34,10 +34,13 @@ public class AuthController : ControllerBase
     }
 
     [HttpGet("me")]
-    [Authorize]
     public IActionResult Me()
     {
-        var claims = User.Claims.Select(c => new { c.Type, c.Value });
-        return Ok(claims);
+        return Ok(new
+        {
+            name = User.Identity?.Name,
+            isAdmin = User.IsInRole("Admin"),
+            isStaff = User.IsInRole("StoreStaff")
+        });
     }
 }

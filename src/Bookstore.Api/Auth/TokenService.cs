@@ -27,20 +27,25 @@ public class TokenService : ITokenService
         var expiresAt = DateTime.UtcNow.AddMinutes(_options.AccessTokenMinutes);
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SigningKey));
 
+        var claims = new List<Claim>
+        {
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new Claim("name", user.DisplayName)
+        };
+        // every role becomes a separate "role" claim
+        claims.AddRange(user.Roles.Select(role => new Claim("role", role)));
+        if (user.StaffSince is not null)
+        {
+            claims.Add(new Claim("staff_since", user.StaffSince.Value.ToString("yyyy-MM-dd")));
+        }
+
         var descriptor = new SecurityTokenDescriptor
         {
             Issuer = _options.Issuer,
             Audience = _options.Audience,
             Expires = expiresAt,
             SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256),
-            // the claims the token will carry
-            Subject = new ClaimsIdentity(new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("name", user.DisplayName),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            })
+            Subject = new ClaimsIdentity(claims)
         };
 
         var token = new JsonWebTokenHandler().CreateToken(descriptor);

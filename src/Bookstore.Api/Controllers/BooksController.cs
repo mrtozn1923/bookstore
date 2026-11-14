@@ -20,6 +20,7 @@ public class BooksController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     [ServiceFilter(typeof(ExecutionTimeFilter))]
     public async Task<ActionResult<PagedResult<BookDto>>> GetAll(
         [FromQuery] BookQueryParameters parameters, CancellationToken cancellationToken)
@@ -28,13 +29,14 @@ public class BooksController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [AllowAnonymous]
     public async Task<ActionResult<BookDto>> GetById(int id, CancellationToken cancellationToken)
     {
         return await _bookService.GetByIdAsync(id, cancellationToken);
     }
 
     [HttpPost]
-    [Authorize]
+    [Authorize(Policy = "CanManageBooks")]
     public async Task<ActionResult<BookDto>> Create(CreateBookRequest request, CancellationToken cancellationToken)
     {
         BookDto created = await _bookService.CreateAsync(request, cancellationToken);
@@ -49,11 +51,22 @@ public class BooksController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Admin")]
     [TypeFilter(typeof(BookExistsFilter))]
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Delete action is running for {Id}", id);
         await _bookService.DeleteAsync(id, cancellationToken);
         return NoContent();
+    }
+
+    [HttpPost("{id:int}/discount")]
+    [Authorize(Policy = "ExperiencedStaff")]
+    public async Task<ActionResult<BookDto>> Discount(int id, DiscountRequest request, CancellationToken cancellationToken)
+    {
+        BookDto book = await _bookService.GetByIdAsync(id, cancellationToken);
+        UpdateBookRequest update = new() { Title = book.Title, Price = book.Price - request.Amount };
+        await _bookService.UpdateAsync(id, update, cancellationToken);
+        return await _bookService.GetByIdAsync(id, cancellationToken);
     }
 }

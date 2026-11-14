@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Text;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -73,6 +74,7 @@ builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        options.MapInboundClaims = false;
         // the rules we validate an incoming token with
         options.TokenValidationParameters = new TokenValidationParameters
         {
@@ -83,11 +85,37 @@ builder.Services
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.SigningKey)),
             ValidateLifetime = true,
-            ClockSkew = TimeSpan.FromSeconds(30)
+            ClockSkew = TimeSpan.FromSeconds(30),
+            // User.Identity.Name and User.IsInRole look at these claims
+            NameClaimType = "name",
+            RoleClaimType = "role"
         };
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("CanManageBooks", policy =>
+        policy.RequireRole("Admin", "StoreStaff"));
+
+    // every requirement in a policy must be met
+    options.AddPolicy("ExperiencedStaff", policy =>
+        policy.RequireRole("StoreStaff")
+              .AddRequirements(new MinimumStaffTenureRequirement(30)));
+
+    options.AddPolicy("CanCancelOrders", policy =>
+        policy.RequireRole("Admin", "Customer"));
+
+    options.AddPolicy("OrderOwner", policy =>
+        policy.AddRequirements(new OrderOwnerRequirement()));
+
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+});
+
+builder.Services.AddSingleton<IAuthorizationHandler, MinimumStaffTenureHandler>();
+builder.Services.AddSingleton<IAuthorizationHandler, OrderOwnerHandler>();
+builder.Services.AddSingleton<OrderStore>();
 
 builder.Services.AddSingleton<UserStore>();
 builder.Services.AddSingleton<ITokenService, TokenService>();
