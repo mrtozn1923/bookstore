@@ -1,0 +1,26 @@
+<h3>{{ title }}</h3>
+<p>{{ author }} · {{ inCart }} in cart</p>
+<p>Status: {{ inStock ? 'In stock' : 'Out of stock' }}</p>
+<p>{{ title.toUpperCase() }}</p>
+
+<img [src]="coverUrl" [alt]="title">
+<button [disabled]="!inStock" (click)="addToCart()">Add to cart</button>
+
+<table>
+  <tr>
+    <td [attr.colspan]="2">Total</td>
+  </tr>
+</table>
+<button [attr.aria-label]="'Add to cart: ' + title">+</button>
+
+<span class="status" [class.in-stock]="inStock">●</span>
+<div class="rating" [style.width.%]="rating"></div>
+
+<input (input)="onGiftNoteInput($event)">
+
+<input #couponInput placeholder="Coupon code" (keyup.enter)="applyCoupon(couponInput.value)">
+<button (click)="applyCoupon(couponInput.value)">Apply</button>
+<p>Coupon: {{ coupon }}</p>
+
+<input [(ngModel)]="giftNote">
+<p>Gift note: {{ giftNote }}</p>

@@ -1,0 +1,3 @@
+.status { color: gray; }
+.status.in-stock { color: green; }
+.rating { height: 8px; background: gold; }
