@@ -1,0 +1,8 @@
+<header>
+  <strong>Bookstore</strong>
+  <span class="cart">Cart ({{ cart.count() }}): {{ cart.total() }} TRY</span>
+</header>
+<app-cart-toast />
+<main>
+  <router-outlet />
+</main>
