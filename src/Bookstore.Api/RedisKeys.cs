@@ -8,4 +8,12 @@ public static class RedisKeys
     private const string Prefix = "bookstore";
 
     public static RedisKey BookViews(int bookId) => $"{Prefix}:book:{bookId}:views";
+
+    public static RedisKey BookViewsDaily(int bookId, DateOnly day) => $"{Prefix}:book:{bookId}:views:{day:yyyyMMdd}";
+
+    public static RedisKey VerificationCode(int customerId) => $"{Prefix}:verify:{customerId}";
+
+    public static RedisKey Idempotency(string key) => $"{Prefix}:idem:{key}";
+
+    public static RedisKey OrderIdSequence => $"{Prefix}:order:id-seq";
 }

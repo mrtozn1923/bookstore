@@ -41,11 +41,20 @@ switch (command)
     case "key-names":
         await ClientDemo.KeyNameCostAsync(connectionString);
         break;
+    case "lost-update":
+        await StringDemo.LostUpdateAsync(connectionString);
+        break;
+    case "active-expire":
+        await StringDemo.ActiveExpireAsync(connectionString);
+        break;
+    case "ttl-reset":
+        await StringDemo.TtlResetAsync(connectionString);
+        break;
     case "sync-over-async":
         await SyncOverAsyncDemo.RunAsync(connectionString);
         break;
     default:
         Console.WriteLine("commands: seed-keys <n> | keys-vs-ping | incr | rtt | mux-per-request [--leak] | mux-singleton | " +
-                          "pipeline | pubsub-connection | scan-vs-ping | server-info | key-names | sync-over-async");
+                          "pipeline | pubsub-connection | scan-vs-ping | server-info | key-names | sync-over-async | lost-update | active-expire | ttl-reset");
         break;
 }

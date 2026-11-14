@@ -8,9 +8,12 @@ string redisConnection = builder.Configuration.GetConnectionString("Redis")
     ?? throw new InvalidOperationException("ConnectionStrings:Redis is missing.");
 IConnectionMultiplexer redis = await ConnectionMultiplexer.ConnectAsync(redisConnection);
 builder.Services.AddSingleton(redis);
+builder.Services.AddSingleton(TimeProvider.System);
 
 WebApplication app = builder.Build();
 
 app.MapBookViews();
+app.MapVerification();
+app.MapOrders();
 
 app.Run();
