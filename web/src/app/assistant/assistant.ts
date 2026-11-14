@@ -9,10 +9,12 @@ import { ChatStore } from './chat-store';
 export class Assistant {
   protected readonly store = inject(ChatStore);
   protected readonly draft = signal('');
+  protected readonly editing = signal(false);
   private readonly log = viewChild.required<ElementRef<HTMLElement>>('log');
   private stickToBottom = true;
 
   constructor() {
+    void this.store.restore();
     // DOM güncellendikten sonra çalışır: kullanıcı yukarı kaydırmadıysa en alta in
     afterRenderEffect(() => {
       this.store.messages();
@@ -28,14 +30,24 @@ export class Assistant {
     this.stickToBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 40;
   }
 
+  protected startEdit(text: string): void {
+    this.draft.set(text);
+    this.editing.set(true);
+  }
+
   protected submit(event: Event): void {
     event.preventDefault();
     const text = this.draft().trim();
-    if (text === '') {
+    if (text === '' || !this.store.canSend()) {
       return;
     }
     this.draft.set('');
     this.stickToBottom = true;
-    void this.store.send(text);
+    if (this.editing()) {
+      this.editing.set(false);
+      void this.store.editLast(text);
+    } else {
+      void this.store.send(text);
+    }
   }
 }

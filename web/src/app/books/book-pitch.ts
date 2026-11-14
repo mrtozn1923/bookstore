@@ -31,7 +31,7 @@ export class BookPitch {
       void (async () => {
         let text = '';
         try {
-          for await (const event of this.api.stream(prompt, abortSignal)) {
+          for await (const event of this.api.stream({ message: prompt, conversationId: null, replaceLastTurn: false }, abortSignal)) {
             if (event.type === 'delta') {
               text += event.text;
               result.set({ value: { text, done: false } });

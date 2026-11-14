@@ -1,14 +1,21 @@
+<div class="toolbar">
+  <button type="button" (click)="store.newConversation()" [disabled]="store.busy()">New chat</button>
+</div>
+
 <section class="log" #log (scroll)="onScroll()">
-  @for (message of store.messages(); track message.id) {
+  @for (message of store.messages(); track message.id; let last = $last) {
     <article class="bubble" [class.user]="message.role === 'user'">
-      @if (message.status === 'thinking') {
-        <p class="status">Thinking…</p>
+      @if (message.role === 'assistant' && message.text === '' && store.busy() && last) {
+        <p class="status">{{ store.status() === 'submitted' ? 'Sending…' : 'Thinking…' }}</p>
       }
       <p class="text">{{ message.text }}</p>
-      @if (message.status === 'stopped') {
+      @if (message.ending === 'stopped') {
         <p class="status">Stopped.</p>
-      } @else if (message.status === 'interrupted') {
-        <p class="status error">The answer was interrupted.</p>
+      } @else if (message.ending === 'interrupted' && message.text !== '') {
+        <p class="status error">The answer was cut off.</p>
+      }
+      @if (message.role === 'user' && $index === store.messages().length - 2 && store.canRegenerate()) {
+        <button type="button" class="link" (click)="startEdit(message.text)">Edit</button>
       }
     </article>
   } @empty {
@@ -16,12 +23,22 @@
   }
 </section>
 
+@if (store.error(); as error) {
+  <p class="banner" [class.warn]="error.kind === 'rate-limit'">
+    {{ error.message }}
+    @if (store.cooldown() > 0) {
+      You can send again in {{ store.cooldown() }} s.
+    }
+  </p>
+}
+
 <form (submit)="submit($event)">
   <input #input [value]="draft()" (input)="draft.set(input.value)" placeholder="Ask the Bookstore assistant" />
   @if (store.busy()) {
     <button type="button" (click)="store.stop()">Stop</button>
   } @else {
-    <button type="submit" [disabled]="draft().trim() === ''">Send</button>
+    <button type="submit" [disabled]="draft().trim() === '' || !store.canSend()">{{ editing() ? 'Resend' : 'Send' }}</button>
+    <button type="button" (click)="store.regenerate()" [disabled]="!store.canRegenerate()">Regenerate</button>
   }
 </form>
 

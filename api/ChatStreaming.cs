@@ -11,9 +11,11 @@ public static class ChatStreaming
     public static async IAsyncEnumerable<SseItem<object>> ToSseAsync(
         IAsyncEnumerable<ChatResponseUpdate> updates,
         ILogger logger,
+        Action<string>? onCompleted = null,
         [EnumeratorCancellation] CancellationToken ct = default)
     {
         int deltas = 0;
+        System.Text.StringBuilder answer = new();
         bool thinking = false;
         long? firstDeltaMs = null;
         Dictionary<string, string> toolNames = [];
@@ -58,6 +60,7 @@ public static class ChatStreaming
                         case TextContent { Text.Length: > 0 } text:
                             deltas++;
                             firstDeltaMs ??= sw.ElapsedMilliseconds;
+                            answer.Append(text.Text);
                             yield return new SseItem<object>(new DeltaEvent(text.Text), "delta");
                             break;
                         case FunctionCallContent call:
@@ -77,6 +80,8 @@ public static class ChatStreaming
                 }
             }
 
+            // Yalnız düzgün biten tur geçmişe yazılır; yarım cevap saklanmaz
+            onCompleted?.Invoke(answer.ToString());
             yield return new SseItem<object>(new { }, "done");
         }
         finally

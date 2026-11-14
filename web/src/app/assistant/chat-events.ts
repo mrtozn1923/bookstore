@@ -1,5 +1,6 @@
 // /chat/sse event sözlüğü: Bookstore.Assistant.Api'deki record'larla aynı alanlar
 export type ChatEvent =
+  | { type: 'conversation'; id: string }
   | { type: 'ping' }
   | { type: 'thinking' }
   | { type: 'delta'; text: string }
@@ -15,6 +16,7 @@ export function toChatEvent(event: string, data: string): ChatEvent | null {
     case 'thinking':
     case 'done':
       return { type: event };
+    case 'conversation':
     case 'delta':
     case 'tool':
     case 'usage':
