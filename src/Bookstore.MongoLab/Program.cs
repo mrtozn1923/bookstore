@@ -41,7 +41,7 @@ switch (command)
             });
         }
         break;
-    case "mapping" or "query" or "editions" or "legacy-guid" or "aggregate" or "bulk" or "transaction" or "read-your-writes":
+    case "mapping" or "query" or "editions" or "legacy-guid" or "aggregate" or "bulk" or "transaction" or "read-your-writes" or "failover":
         BookstoreMongo.RegisterSerialization();
         await using (ServiceProvider services = new ServiceCollection().AddBookstoreMongo(connectionString).BuildServiceProvider())
         {
@@ -54,11 +54,12 @@ switch (command)
                 "aggregate" => AdvancedLab.AggregateAsync(services),
                 "bulk" => AdvancedLab.BulkAsync(services),
                 "read-your-writes" => ConsistencyLab.ReadYourWritesAsync(services),
+                "failover" => ReplicaSetLab.WatchWritesAsync(services, TimeSpan.FromSeconds(45)),
                 _ => AdvancedLab.TransactionAsync(services)
             });
         }
         break;
     default:
-        Console.WriteLine("Usage: dotnet run --project src/Bookstore.MongoLab -- <bson|objectid|ping|stock-race|guid-no-setup|mapping|query|editions|legacy-guid|aggregate|bulk|transaction|watch|ef-save|ef-query|ef-concurrency|read-your-writes>");
+        Console.WriteLine("Usage: dotnet run --project src/Bookstore.MongoLab -- <bson|objectid|ping|stock-race|guid-no-setup|mapping|query|editions|legacy-guid|aggregate|bulk|transaction|watch|ef-save|ef-query|ef-concurrency|read-your-writes|failover>");
         break;
 }

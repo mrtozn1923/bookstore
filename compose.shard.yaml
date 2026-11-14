@@ -1,0 +1,15 @@
+# 13: a sharded cluster in ONE container (config server, two shards, mongos; small caches) - a lab, not production
+name: bookstore-mongo-shard
+
+services:
+  shard:
+    image: ${MONGO_IMAGE:-mongodb/mongodb-community-server:9.0-ubuntu2204}
+    environment:
+      MONGO_ROOT_USER: ${MONGO_ROOT_USER:?set MONGO_ROOT_USER in .env}
+      MONGO_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:?set MONGO_ROOT_PASSWORD in .env}
+    entrypoint: ["bash", "/lab/scripts/13-shard-start.sh"]
+    ports:
+      - "127.0.0.1:27030:27030"
+    volumes:
+      - ./data:/lab/data:ro
+      - ./scripts:/lab/scripts:ro
