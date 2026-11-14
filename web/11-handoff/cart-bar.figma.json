@@ -1,0 +1,56 @@
+{
+  "name": "CartBar",
+  "type": "FRAME",
+  "layoutMode": "HORIZONTAL",
+  "primaryAxisAlignItems": "SPACE_BETWEEN",
+  "counterAxisAlignItems": "CENTER",
+  "layoutSizingHorizontal": "FILL",
+  "layoutSizingVertical": "HUG",
+  "paddingTop": 12, "paddingBottom": 12, "paddingLeft": 16, "paddingRight": 16,
+  "itemSpacing": 16,
+  "boundVariables": {
+    "paddingTop": { "type": "VARIABLE_ALIAS", "id": "VariableID:1:23" },
+    "paddingBottom": { "type": "VARIABLE_ALIAS", "id": "VariableID:1:23" },
+    "paddingLeft": { "type": "VARIABLE_ALIAS", "id": "VariableID:1:24" },
+    "paddingRight": { "type": "VARIABLE_ALIAS", "id": "VariableID:1:24" },
+    "itemSpacing": { "type": "VARIABLE_ALIAS", "id": "VariableID:1:24" },
+    "fills": [{ "type": "VARIABLE_ALIAS", "id": "VariableID:2:5" }]
+  },
+  "children": [
+    {
+      "name": "Summary",
+      "type": "FRAME",
+      "layoutMode": "VERTICAL",
+      "layoutSizingHorizontal": "HUG",
+      "layoutSizingVertical": "HUG",
+      "itemSpacing": 0,
+      "children": [
+        { "name": "Count", "type": "TEXT", "characters": "2 books", "fontSize": 14, "fontWeight": 400,
+          "boundVariables": { "fills": [{ "type": "VARIABLE_ALIAS", "id": "VariableID:2:4" }] } },
+        { "name": "Total", "type": "TEXT", "characters": "₺619.90", "fontSize": 16, "fontWeight": 700,
+          "boundVariables": { "fills": [{ "type": "VARIABLE_ALIAS", "id": "VariableID:2:3" }] } }
+      ]
+    },
+    {
+      "name": "Checkout",
+      "type": "FRAME",
+      "layoutMode": "HORIZONTAL",
+      "primaryAxisAlignItems": "CENTER",
+      "counterAxisAlignItems": "CENTER",
+      "layoutSizingHorizontal": "HUG",
+      "layoutSizingVertical": "FIXED",
+      "height": 48,
+      "paddingLeft": 32, "paddingRight": 32,
+      "cornerRadius": 6,
+      "boundVariables": {
+        "paddingLeft": { "type": "VARIABLE_ALIAS", "id": "VariableID:1:25" },
+        "paddingRight": { "type": "VARIABLE_ALIAS", "id": "VariableID:1:25" },
+        "fills": [{ "type": "VARIABLE_ALIAS", "id": "VariableID:2:6" }]
+      },
+      "children": [
+        { "name": "Label", "type": "TEXT", "characters": "Checkout", "fontSize": 16, "fontWeight": 600,
+          "boundVariables": { "fills": [{ "type": "VARIABLE_ALIAS", "id": "VariableID:2:7" }] } }
+      ]
+    }
+  ]
+}
