@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Bookstore.OsLab;
 
 string command = args.Length > 0 ? args[0] : "help";
@@ -168,7 +169,66 @@ switch (command)
         break;
     }
 
+    case "paging":
+        foreach (string line in MemLab.DemandPaging(int.Parse(args[1])))
+        {
+            Console.WriteLine(line);
+        }
+        break;
+
+    case "mem-info":
+    {
+        using Process self = Process.GetCurrentProcess();
+        Console.WriteLine($"SystemPageSize      = {Environment.SystemPageSize}");
+        Console.WriteLine($"VirtualMemorySize64 = {self.VirtualMemorySize64 >> 20} MB");
+        Console.WriteLine($"WorkingSet64        = {self.WorkingSet64 >> 20} MB");
+        Console.WriteLine($"PrivateMemorySize64 = {self.PrivateMemorySize64 >> 20} MB");
+        Console.WriteLine($"GC.GetTotalMemory   = {GC.GetTotalMemory(false) >> 10} KB");
+        break;
+    }
+
+    case "overcommit":
+    {
+        long size = long.Parse(args[1]) << 30;
+        try
+        {
+            IntPtr block = Marshal.AllocHGlobal((nint)size);
+            Console.WriteLine($"{args[1]} GB reserved, nothing touched: {MemLab.Snapshot()}");
+            Marshal.FreeHGlobal(block);
+        }
+        catch (OutOfMemoryException)
+        {
+            Console.WriteLine($"{args[1]} GB: OutOfMemoryException (malloc returned NULL)");
+        }
+        break;
+    }
+
+    case "oom":
+    {
+        long size = long.Parse(args[1]) << 20;
+        IntPtr block = Marshal.AllocHGlobal((nint)size);
+        Console.WriteLine($"allocated {args[1]} MB: {MemLab.Snapshot()}");
+        long step = 64L << 20;
+        for (long done = 0; done < size; done += step)
+        {
+            MemLab.TouchPages(block + (nint)done, Math.Min(step, size - done));
+            Console.WriteLine($"touched {(done + step) >> 20,5} MB: {MemLab.Snapshot()}");
+        }
+        Marshal.FreeHGlobal(block);
+        break;
+    }
+
+    case "gc-config":
+        foreach (KeyValuePair<string, object> kv in GC.GetConfigurationVariables())
+        {
+            if (kv.Key is "GCRegionRange" or "GCHeapHardLimit")
+            {
+                Console.WriteLine($"{kv.Key} = {kv.Value}");
+            }
+        }
+        break;
+
     default:
-        Console.WriteLine("usage: read-catalog | log-naive N | log-buffered N | proc-info S | report-naive N | report N [--fail] | report-timeout | shell-demo TEXT | env-demo | threads S | thread-cost N [stackKB] | task-cost N | context | cpu-info | workers N S | spin S [PriorityClass] | pingpong N | nice");
+        Console.WriteLine("usage: read-catalog | log-naive N | log-buffered N | proc-info S | report-naive N | report N [--fail] | report-timeout | shell-demo TEXT | env-demo | threads S | thread-cost N [stackKB] | task-cost N | context | cpu-info | workers N S | spin S [PriorityClass] | pingpong N | nice | paging MB | mem-info | overcommit GB | oom MB | gc-config");
         break;
 }
