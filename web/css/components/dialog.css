@@ -1,0 +1,72 @@
+/* the cart dialog sits in the top layer; it fades in from display: none and fades out again */
+.cart-dialog {
+    inline-size: min(28rem, 100% - 2 * var(--space));
+    padding: var(--space);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    opacity: 0;
+    /* display and overlay are discrete: allow-discrete keeps the dialog shown and in the top layer until the fade ends */
+    transition:
+        opacity 200ms ease-out,
+        translate 200ms ease-out,
+        display 200ms allow-discrete,
+        overlay 200ms allow-discrete;
+
+    &[open] {
+        opacity: 1;
+
+        /* the values for the first frame after display: none, so there is something to transition from */
+        @starting-style {
+            opacity: 0;
+        }
+    }
+
+    &::backdrop {
+        background-color: rgb(0 0 0 / 0%);
+        transition:
+            background-color 200ms ease-out,
+            display 200ms allow-discrete,
+            overlay 200ms allow-discrete;
+    }
+
+    &[open]::backdrop {
+        background-color: rgb(0 0 0 / 50%);
+
+        @starting-style {
+            background-color: rgb(0 0 0 / 0%);
+        }
+    }
+}
+
+/* the slide is extra motion: only for users who did not ask for less; everyone keeps the fade */
+@media (prefers-reduced-motion: no-preference) {
+    .cart-dialog {
+        translate: 0 1rem;
+
+        &[open] {
+            translate: 0 0;
+
+            @starting-style {
+                translate: 0 1rem;
+            }
+        }
+    }
+}
+
+.cart-items {
+    padding: 0;
+    list-style: none;
+
+    & li {
+        display: flex;
+        justify-content: space-between;
+    }
+}
+
+.cart-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}

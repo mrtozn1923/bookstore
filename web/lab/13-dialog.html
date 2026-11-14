@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Lab 13: animating a dialog from display: none</title>
+    <style>
+        /* self-contained: this lab does not load main.css */
+        body { margin: 0; }
+
+        /* 1) only a transition: there is no "before" style to start from */
+        dialog { opacity: 0; transition: opacity 200ms linear; }
+        dialog[open] { opacity: 1; }
+
+        /* 2) + @starting-style: the opening fades in */
+        #starting[open] {
+            @starting-style { opacity: 0; }
+        }
+
+        /* 3) + allow-discrete on display and overlay: the closing fades out too */
+        #discrete { transition: opacity 200ms linear, display 200ms allow-discrete, overlay 200ms allow-discrete; }
+        #discrete[open] {
+            @starting-style { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <dialog id="plain">Your cart</dialog>
+    <dialog id="starting">Your cart</dialog>
+    <dialog id="discrete">Your cart</dialog>
+</body>
+</html>

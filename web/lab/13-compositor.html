@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Lab 13: what an animation costs</title>
+    <style>
+        /* self-contained: this lab does not load main.css */
+        body { margin: 0; }
+        .box { inline-size: 50px; block-size: 50px; background-color: rgb(185, 28, 28); }
+
+        /* the same movement, once with a layout property and once with transform */
+        @keyframes slide-margin { to { margin-inline-start: 300px; } }
+        @keyframes slide-transform { to { transform: translateX(300px); } }
+        body.margin .box { animation: slide-margin 1s linear infinite alternate; }
+        body.transform .box { animation: slide-transform 1s linear infinite alternate; }
+
+        /* will-change promotes every card to its own layer, even when nothing moves */
+        .card { inline-size: 100px; block-size: 20px; margin: 2px; background-color: rgb(229, 231, 235); }
+        body.promoted .card { will-change: transform; }
+    </style>
+</head>
+<body>
+    <div class="box"></div>
+    <div id="cards"></div>
+    <script>
+        for (let i = 0; i < 50; i++) document.getElementById('cards').append(Object.assign(document.createElement('div'), { className: 'card' }));
+    </script>
+</body>
+</html>

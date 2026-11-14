@@ -21,7 +21,7 @@
             <form class="site-search" role="search" action="catalog.html">
                 <input type="search" name="q" placeholder="Search books" aria-label="Search books">
             </form>
-            <a class="cart-link" href="cart.html">Cart <span class="cart-count"></span></a>
+            <button class="cart-link btn" type="button" commandfor="cart-dialog" command="show-modal">Cart <span class="cart-count">1</span></button>
         </header>
         <aside class="filters" aria-labelledby="filters-title">
             <h2 id="filters-title">Filters</h2>
@@ -89,6 +89,16 @@
                 </li>
             </ul>
         </main>
+        <dialog id="cart-dialog" class="cart-dialog" aria-labelledby="cart-title">
+            <h2 id="cart-title">Your cart</h2>
+            <ul class="cart-items">
+                <li>Dune <span class="price">349.00 TRY</span></li>
+            </ul>
+            <div class="cart-actions">
+                <button class="btn" type="button" commandfor="cart-dialog" command="close">Continue shopping</button>
+                <a class="btn btn-primary" href="checkout.html">Checkout</a>
+            </div>
+        </dialog>
         <footer class="site-footer">
             <p>Bookstore, an online bookstore</p>
             <button class="theme-toggle btn" type="button" aria-pressed="false">Dark theme</button>
