@@ -771,6 +771,50 @@ namespace Bookstore.Data.Migrations
                     b.ToTable("OrderItems", "ordering");
                 });
 
+            modelBuilder.Entity("Bookstore.Wishlists.Wishlist", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Wishlists", "wishlists");
+                });
+
+            modelBuilder.Entity("Bookstore.Wishlists.WishlistItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AddedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("BookId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("WishlistId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("WishlistId", "BookId")
+                        .IsUnique();
+
+                    b.ToTable("WishlistItems", "wishlists");
+                });
+
             modelBuilder.Entity("Bookstore.Catalog.Book", b =>
                 {
                     b.HasOne("Bookstore.Catalog.Author", "Author")
@@ -840,6 +884,21 @@ namespace Bookstore.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Bookstore.Wishlists.WishlistItem", b =>
+                {
+                    b.HasOne("Bookstore.Catalog.Book", null)
+                        .WithMany()
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Bookstore.Wishlists.Wishlist", null)
+                        .WithMany("Items")
+                        .HasForeignKey("WishlistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Bookstore.Catalog.Author", b =>
                 {
                     b.Navigation("Books");
@@ -851,6 +910,11 @@ namespace Bookstore.Data.Migrations
                 });
 
             modelBuilder.Entity("Bookstore.Ordering.Order", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("Bookstore.Wishlists.Wishlist", b =>
                 {
                     b.Navigation("Items");
                 });

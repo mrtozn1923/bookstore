@@ -3,6 +3,7 @@ using Bookstore.Catalog;
 using Bookstore.Data;
 using Bookstore.Inventory;
 using Bookstore.Ordering;
+using Bookstore.Wishlists;
 using Microsoft.EntityFrameworkCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -41,5 +42,6 @@ if (app.Environment.IsDevelopment())
 
 app.MapCatalogEndpoints();
 app.MapOrderingEndpoints();
+app.MapWishlistEndpoints();
 
 app.Run();
