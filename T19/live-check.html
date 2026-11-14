@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Live Check</title>
+  <style>
+    .valid { color: green; }
+    .invalid { color: firebrick; }
+  </style>
+</head>
+<body>
+  <p><input id="email" placeholder="Email"> <span id="email-status"></span></p>
+  <p><input id="phone" placeholder="Mobile phone"> <span id="phone-status"></span></p>
+  <p><input id="postalCode" placeholder="Postal code"> <span id="postalCode-status"></span></p>
+  <script>
+    const rules = {
+      email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+      phone: /^(\+90|0)?5\d{2}\s?\d{3}\s?\d{2}\s?\d{2}$/,
+      postalCode: /^\d{5}$/
+    };
+
+    for (const field of Object.keys(rules)) {
+      const box = document.getElementById(field);
+      const status = document.getElementById(field + "-status");
+
+      box.addEventListener("input", () => {
+        const value = box.value.trim();
+        if (value === "") {
+          status.textContent = "";
+          return;
+        }
+        const ok = rules[field].test(value);
+        status.textContent = ok ? "Looks good" : "Wrong format";
+        status.className = ok ? "valid" : "invalid";
+      });
+    }
+  </script>
+</body>
+</html>
