@@ -1,16 +1,17 @@
 import { Component, input } from '@angular/core';
 import { httpResource } from '@angular/common/http';
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe, NgOptimizedImage } from '@angular/common';
 import { Book } from './book';
 
 @Component({
   selector: 'app-book-page',
-  imports: [CurrencyPipe],
+  imports: [CurrencyPipe, NgOptimizedImage],
   template: `
     @if (book.value(); as b) {
       <article class="book">
         @if (b.coverUrl) {
-          <img [src]="b.coverUrl" [alt]="b.title" />
+          <img [ngSrc]="b.coverUrl" width="1200" height="1800" priority
+               sizes="(max-width: 640px) 100vw, 320px" [alt]="b.title" />
         }
         <div>
           <h1>{{ b.title }}</h1>

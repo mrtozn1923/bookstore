@@ -11,7 +11,8 @@ import { Book } from '../catalog/book';
     @if (featured.value(); as book) {
       <section class="hero">
         <!-- A real <img>: discoverable, prioritizable; priority = fetchpriority="high" + no lazy loading -->
-        <img class="hero-cover" [ngSrc]="book.coverUrl!" width="1200" height="1800" priority [alt]="book.title" />
+        <img class="hero-cover" [ngSrc]="book.coverUrl!" width="1200" height="1800" priority
+             sizes="(max-width: 640px) 100vw, 360px" [alt]="book.title" />
         <div>
           <p class="eyebrow">Book of the week</p>
           <h1>{{ book.title }}</h1>
@@ -26,7 +27,8 @@ import { Book } from '../catalog/book';
       @for (book of newArrivals.value() ?? []; track book.isbn) {
         <li>
           <a [routerLink]="['/books', book.isbn]">
-            <img [ngSrc]="book.coverUrl!" width="1200" height="1800" [alt]="book.title" />
+            <img [ngSrc]="book.coverUrl!" width="1200" height="1800"
+                 sizes="(max-width: 640px) 50vw, 180px" [alt]="book.title" />
             <span>{{ book.title }}</span>
           </a>
         </li>
