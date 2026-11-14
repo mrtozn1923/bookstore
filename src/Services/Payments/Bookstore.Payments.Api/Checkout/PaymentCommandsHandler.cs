@@ -9,7 +9,7 @@ public static class PaymentCommandsHandler
 {
     public static async Task<object?> Handle(
         AuthorizePayment command, PaymentsDbContext db, PaymentProviderClient provider, TimeProvider clock,
-        ILogger logger, CancellationToken ct)
+        PaymentMetrics metrics, ILogger logger, CancellationToken ct)
     {
         Payment? payment = await db.Payments.FirstOrDefaultAsync(p => p.OrderId == command.OrderId, ct);
         if (payment is { Status: not PaymentStatus.Pending })
@@ -31,9 +31,12 @@ public static class PaymentCommandsHandler
                 payment.MarkSubmitted(answered.ChargeId, clock);
                 return null;
             case ChargeOutcome.Answered answered:
-                return payment.Complete(answered.State == ChargeState.Succeeded, answered.ChargeId, answered.FailureReason, clock);
+                object? paymentEvent = payment.Complete(answered.State == ChargeState.Succeeded, answered.ChargeId, answered.FailureReason, clock);
+                metrics.Completed(paymentEvent, "answer");
+                return paymentEvent;
             case ChargeOutcome.Unknown unknown:
                 // Not a failure: the card may have been charged. Reconciliation finds out; the saga keeps waiting.
+                metrics.UnknownResult();
                 payment.MarkUnknown(unknown.Reason, clock);
                 return null;
             default:

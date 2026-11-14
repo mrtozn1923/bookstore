@@ -57,7 +57,11 @@ public static class Extensions
             {
                 metrics.AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
-                    .AddRuntimeInstrumentation();
+                    .AddRuntimeInstrumentation()
+                    // Wolverine's meter is named "Wolverine:<application name>", so it needs the wildcard
+                    .AddMeter("Wolverine*")
+                    // Business metrics: every service names its Meter "Bookstore.<Service>" (post 12)
+                    .AddMeter("Bookstore.*");
             })
             .WithTracing(tracing =>
             {
@@ -68,9 +72,12 @@ public static class Extensions
                             !context.Request.Path.StartsWithSegments(HealthEndpointPath)
                             && !context.Request.Path.StartsWithSegments(AlivenessEndpointPath)
                     )
-                    // Uncomment the following line to enable gRPC instrumentation (requires the OpenTelemetry.Instrumentation.GrpcNetClient package)
-                    //.AddGrpcClientInstrumentation()
-                    .AddHttpClientInstrumentation();
+                    // rpc.* attributes (service, method, status code) on the BFF's calls to Inventory
+                    .AddGrpcClientInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    // Wolverine's spans: sending a message, receiving it, running the handler. The trace context
+                    // travels in the message's headers, so a handler in another service continues the same trace.
+                    .AddSource("Wolverine");
             });
 
         builder.AddOpenTelemetryExporters();

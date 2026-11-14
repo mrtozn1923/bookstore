@@ -2,6 +2,9 @@ using Bookstore.Contracts.Inventory;
 using Bookstore.Contracts.Payments;
 using Bookstore.Ordering.Checkout;
 using Bookstore.Ordering.Domain;
+using System.Diagnostics.Metrics;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.Metrics.Testing;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Time.Testing;
 using OrderCancelled = Bookstore.Contracts.Ordering.OrderCancelled;
@@ -13,6 +16,8 @@ namespace Bookstore.Ordering.Tests;
 public sealed class CheckoutSagaTests
 {
     private static readonly FakeTimeProvider Clock = new(new DateTimeOffset(2026, 11, 14, 10, 0, 0, TimeSpan.Zero));
+    private static readonly IMeterFactory MeterFactory = new ServiceCollection().AddMetrics().BuildServiceProvider().GetRequiredService<IMeterFactory>();
+    private static readonly CheckoutMetrics Metrics = new(MeterFactory);
     private static readonly IOptions<CheckoutOptions> Options = Microsoft.Extensions.Options.Options.Create(new CheckoutOptions());
     private readonly InMemoryOrders orders = new();
     private readonly Order order;
@@ -53,7 +58,7 @@ public sealed class CheckoutSagaTests
         Assert.Equal(OrderId, commit.OrderId);
         Assert.Equal(OrderStatus.Paid, order.Status);
 
-        OrderConfirmed confirmed = await saga.Handle(new StockCommitted(OrderId), orders, Clock, Ct);
+        OrderConfirmed confirmed = await saga.Handle(new StockCommitted(OrderId), orders, Clock, Metrics, Ct);
         Assert.Equal(OrderId, confirmed.OrderId);
         Assert.Equal(OrderStatus.Confirmed, order.Status);
         Assert.True(saga.IsCompleted());
@@ -64,7 +69,7 @@ public sealed class CheckoutSagaTests
     {
         await saga.Handle(new StockReserved(OrderId, Guid.CreateVersion7(), Clock.GetUtcNow().AddMinutes(20)), orders, Options, Ct);
 
-        (ReleaseStock release, OrderCancelled cancelled) = await saga.Handle(new PaymentFailed(OrderId, "card-declined"), orders, Clock, Ct);
+        (ReleaseStock release, OrderCancelled cancelled) = await saga.Handle(new PaymentFailed(OrderId, "card-declined"), orders, Clock, Metrics, Ct);
 
         Assert.Equal("payment-failed", release.Reason);
         Assert.Equal("Payment failed: card-declined", cancelled.Reason);
@@ -75,7 +80,7 @@ public sealed class CheckoutSagaTests
     [Fact]
     public async Task No_stock_cancels_without_compensation()
     {
-        OrderCancelled cancelled = await saga.Handle(new StockReservationFailed(OrderId, ["9780141439587"]), orders, Clock, Ct);
+        OrderCancelled cancelled = await saga.Handle(new StockReservationFailed(OrderId, ["9780141439587"]), orders, Clock, Metrics, Ct);
 
         Assert.Equal("Out of stock: 9780141439587", cancelled.Reason);
         Assert.True(saga.IsCompleted());
@@ -86,7 +91,7 @@ public sealed class CheckoutSagaTests
     {
         await saga.Handle(new StockReserved(OrderId, Guid.CreateVersion7(), Clock.GetUtcNow().AddMinutes(20)), orders, Options, Ct);
 
-        object[] messages = await saga.Handle(new CheckoutTimedOut(OrderId, TimeSpan.FromMinutes(15)), orders, Clock, Ct);
+        object[] messages = await saga.Handle(new CheckoutTimedOut(OrderId, TimeSpan.FromMinutes(15)), orders, Clock, Metrics, Ct);
 
         Assert.IsType<ReleaseStock>(messages[0]);
         Assert.IsType<OrderCancelled>(messages[1]);
@@ -99,7 +104,7 @@ public sealed class CheckoutSagaTests
         await saga.Handle(new StockReserved(OrderId, Guid.CreateVersion7(), Clock.GetUtcNow().AddMinutes(20)), orders, Options, Ct);
         await saga.Handle(new PaymentSucceeded(OrderId, "pay_1"), orders, Ct);
 
-        object[] messages = await saga.Handle(new CheckoutTimedOut(OrderId, TimeSpan.FromMinutes(15)), orders, Clock, Ct);
+        object[] messages = await saga.Handle(new CheckoutTimedOut(OrderId, TimeSpan.FromMinutes(15)), orders, Clock, Metrics, Ct);
 
         Assert.Empty(messages);
         Assert.Equal(OrderStatus.Paid, order.Status);
@@ -124,5 +129,21 @@ public sealed class CheckoutSagaTests
         public void Add(Order order) => items[order.Id.Value] = order;
 
         public Task<Order> GetAsync(Guid orderId, CancellationToken ct) => Task.FromResult(items[orderId]);
+    }
+
+    [Fact]
+    public async Task A_declined_payment_records_how_long_checkout_took_and_why_it_ended()
+    {
+        using MetricCollector<double> durations = new(MeterFactory, CheckoutMetrics.MeterName, "bookstore.checkout.duration");
+        await saga.Handle(new StockReserved(OrderId, Guid.CreateVersion7(), Clock.GetUtcNow().AddMinutes(20)), orders, Options, Ct);
+        Clock.Advance(TimeSpan.FromSeconds(3));
+
+        await saga.Handle(new PaymentFailed(OrderId, "card-declined"), orders, Clock, Metrics, Ct);
+
+        CollectedMeasurement<double> measurement = Assert.Single(durations.GetMeasurementSnapshot());
+        Assert.Equal(3, measurement.Value);
+        Assert.True(measurement.MatchesTags(
+            new KeyValuePair<string, object?>("bookstore.checkout.outcome", "cancelled"),
+            new KeyValuePair<string, object?>("bookstore.checkout.reason", "payment-failed")));
     }
 }

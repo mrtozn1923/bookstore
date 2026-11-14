@@ -1,3 +1,4 @@
+using Bookstore.Payments.Checkout;
 using Bookstore.Contracts;
 using Bookstore.Contracts.Payments;
 using Bookstore.Payments.Data;
@@ -43,6 +44,7 @@ builder.UseWolverine(opts =>
 });
 
 builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton<PaymentMetrics>();
 builder.Services.AddSingleton<WebhookSignature>();
 builder.Services.Configure<ReconciliationOptions>(builder.Configuration.GetSection("Reconciliation"));
 builder.Services.AddHostedService<PaymentReconciliationJob>();

@@ -17,7 +17,7 @@ public abstract record PlaceOrderOutcome
 }
 
 // The write side: load what the aggregate needs, let it decide, save, and hand the rest to the checkout saga.
-public sealed class PlaceOrderHandler(IDbContextOutbox<OrderingDbContext> outbox, TimeProvider clock)
+public sealed class PlaceOrderHandler(IDbContextOutbox<OrderingDbContext> outbox, TimeProvider clock, CheckoutMetrics metrics)
 {
     private readonly OrderingDbContext db = outbox.DbContext;
 
@@ -75,6 +75,7 @@ public sealed class PlaceOrderHandler(IDbContextOutbox<OrderingDbContext> outbox
 
         // INSERT Orders/OrderItems and both outbox rows in one transaction, then the messages leave.
         await outbox.SaveChangesAndFlushMessagesAsync(ct);
+        metrics.OrderPlaced(order.Total.Currency);
 
         return new PlaceOrderOutcome.Placed(order);
     }

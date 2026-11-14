@@ -55,10 +55,10 @@ public sealed class CheckoutSaga : Saga
 
     public async Task<OrderCancelled> Handle(
         [SagaIdentityFrom(nameof(StockReservationFailed.OrderId))] StockReservationFailed message,
-        IOrderRepository orders, TimeProvider clock, CancellationToken ct)
+        IOrderRepository orders, TimeProvider clock, CheckoutMetrics metrics, CancellationToken ct)
     {
         // Nothing was reserved, so there is nothing to compensate: only the order is cancelled.
-        return await CancelAsync(orders, $"Out of stock: {string.Join(", ", message.UnavailableIsbns)}", clock, ct);
+        return await CancelAsync(orders, $"Out of stock: {string.Join(", ", message.UnavailableIsbns)}", "out-of-stock", clock, metrics, ct);
     }
 
     public async Task<CommitStock> Handle(
@@ -72,32 +72,34 @@ public sealed class CheckoutSaga : Saga
 
     public async Task<OrderConfirmed> Handle(
         [SagaIdentityFrom(nameof(StockCommitted.OrderId))] StockCommitted message, IOrderRepository orders,
-        TimeProvider clock, CancellationToken ct)
+        TimeProvider clock, CheckoutMetrics metrics, CancellationToken ct)
     {
         Order order = await orders.GetAsync(Id, ct);
         order.Confirm();
         MarkCompleted();
+        metrics.CheckoutEnded("confirmed", "none", clock.GetUtcNow().UtcDateTime - order.PlacedAtUtc);
         return new OrderConfirmed(Id, CustomerId, CustomerEmail, clock.GetUtcNow());
     }
 
     public async Task<(ReleaseStock, OrderCancelled)> Handle(
         [SagaIdentityFrom(nameof(PaymentFailed.OrderId))] PaymentFailed message, IOrderRepository orders,
-        TimeProvider clock, CancellationToken ct)
+        TimeProvider clock, CheckoutMetrics metrics, CancellationToken ct)
     {
         // Compensation: the stock reserved in an earlier step goes back on sale.
-        return (new ReleaseStock(Id, "payment-failed"), await CancelAsync(orders, $"Payment failed: {message.Reason}", clock, ct));
+        return (new ReleaseStock(Id, "payment-failed"),
+            await CancelAsync(orders, $"Payment failed: {message.Reason}", "payment-failed", clock, metrics, ct));
     }
 
     public async Task<object[]> Handle(
         [SagaIdentityFrom(nameof(CheckoutTimedOut.OrderId))] CheckoutTimedOut message, IOrderRepository orders,
-        TimeProvider clock, CancellationToken ct)
+        TimeProvider clock, CheckoutMetrics metrics, CancellationToken ct)
     {
         // The payment arrived in time and the saga moved on: the timeout has nothing to do.
         if (Step != CheckoutStep.AwaitingPayment)
         {
             return [];
         }
-        return [new ReleaseStock(Id, "payment-timeout"), await CancelAsync(orders, "Payment did not arrive in time", clock, ct)];
+        return [new ReleaseStock(Id, "payment-timeout"), await CancelAsync(orders, "Payment did not arrive in time", "payment-timeout", clock, metrics, ct)];
     }
 
     // The saga is gone (completed or timed out). A payment that succeeds now belongs to a cancelled order:
@@ -109,11 +111,13 @@ public sealed class CheckoutSaga : Saga
         return order.Status == OrderStatus.Cancelled ? new RefundPayment(message.OrderId, "order-cancelled") : null;
     }
 
-    private async Task<OrderCancelled> CancelAsync(IOrderRepository orders, string reason, TimeProvider clock, CancellationToken ct)
+    private async Task<OrderCancelled> CancelAsync(
+        IOrderRepository orders, string reason, string reasonCategory, TimeProvider clock, CheckoutMetrics metrics, CancellationToken ct)
     {
         Order order = await orders.GetAsync(Id, ct);
         order.Cancel(reason, clock);
         MarkCompleted();
+        metrics.CheckoutEnded("cancelled", reasonCategory, clock.GetUtcNow().UtcDateTime - order.PlacedAtUtc);
         return new OrderCancelled(Id, CustomerId, CustomerEmail, reason, clock.GetUtcNow());
     }
 }

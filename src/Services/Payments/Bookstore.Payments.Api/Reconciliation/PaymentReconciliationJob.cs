@@ -1,3 +1,4 @@
+using Bookstore.Payments.Checkout;
 using Bookstore.Payments.Data;
 using Bookstore.Payments.Provider;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,7 @@ public sealed class ReconciliationOptions
 // Settles payments whose result we do not know: a timed-out charge, or a webhook that never came.
 public sealed class PaymentReconciliationJob(
     IServiceScopeFactory scopes, TimeProvider clock, Microsoft.Extensions.Options.IOptions<ReconciliationOptions> options,
-    ILogger<PaymentReconciliationJob> logger) : BackgroundService
+    PaymentMetrics metrics, ILogger<PaymentReconciliationJob> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -69,6 +70,7 @@ public sealed class PaymentReconciliationJob(
                 case ChargeOutcome.Answered final when payment.Complete(
                     final.State == ChargeState.Succeeded, final.ChargeId, final.FailureReason, clock) is { } paymentEvent:
                     await outbox.PublishAsync(paymentEvent);
+                    metrics.Completed(paymentEvent, "reconciliation");
                     break;
             }
             await outbox.SaveChangesAndFlushMessagesAsync(ct);

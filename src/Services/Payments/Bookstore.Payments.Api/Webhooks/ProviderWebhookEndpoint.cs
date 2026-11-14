@@ -1,3 +1,4 @@
+using Bookstore.Payments.Checkout;
 using System.Text.Json;
 using Bookstore.Payments.Data;
 using Bookstore.Payments.Provider;
@@ -17,7 +18,7 @@ public static class ProviderWebhookEndpoint
 
     private static async Task<IResult> HandleAsync(
         HttpRequest request, WebhookSignature signature, IDbContextOutbox<PaymentsDbContext> outbox,
-        TimeProvider clock, ILogger<WebhookSignature> logger, CancellationToken ct)
+        TimeProvider clock, PaymentMetrics metrics, ILogger<WebhookSignature> logger, CancellationToken ct)
     {
         // The signature covers the exact bytes: read the raw body before any JSON parsing.
         string body = await new StreamReader(request.Body).ReadToEndAsync(ct);
@@ -48,6 +49,7 @@ public static class ProviderWebhookEndpoint
         if (payment.Complete(result.State == ChargeState.Succeeded, result.ChargeId, result.FailureReason, clock) is { } paymentEvent)
         {
             await outbox.PublishAsync(paymentEvent);
+            metrics.Completed(paymentEvent, "webhook");
         }
 
         try

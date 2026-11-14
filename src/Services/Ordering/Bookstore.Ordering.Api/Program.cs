@@ -103,6 +103,7 @@ builder.Services.AddAuthorizationBuilder()
 
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<PlaceOrderHandler>();
+builder.Services.AddSingleton<CheckoutMetrics>();
 builder.Services.AddScoped<IOrderRepository, EfOrderRepository>();
 builder.Services.Configure<CheckoutOptions>(builder.Configuration.GetSection("Checkout"));
 builder.Services.AddScoped<OrderQueries>();
