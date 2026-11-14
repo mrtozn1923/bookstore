@@ -20,3 +20,16 @@ export interface CartItem {
   price: number;
   quantity: number;
 }
+
+export interface Category {
+  slug: string;
+  name: string;
+}
+
+export interface Review {
+  id: number;
+  isbn: string;
+  author: string;
+  rating: number;
+  text: string;
+}

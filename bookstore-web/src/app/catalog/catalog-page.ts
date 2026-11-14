@@ -1,9 +1,11 @@
 import { httpResource } from '@angular/common/http';
-import { Component, computed, inject, input, linkedSignal } from '@angular/core';
+import { Component, computed, effect, inject, input, linkedSignal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { extendResource, withPreviousValueOnLoading } from '@ngrx/signals/resource';
 import { apiUrl } from '../api';
 import { CartStore } from '../cart/cart-store';
 import type { Book, BookPage } from '../models';
+import { Categories } from './categories';
 
 @Component({
   selector: 'app-catalog-page',
@@ -12,17 +14,21 @@ import type { Book, BookPage } from '../models';
     <h1>Catalog</h1>
     <nav class="categories">
       <a routerLink="/">All</a>
-      @for (c of categories; track c.slug) {
+      @for (c of categories.list.value(); track c.slug) {
         <a routerLink="/" [queryParams]="{ category: c.slug }">{{ c.name }}</a>
       }
     </nav>
     @if (books.hasValue()) {
       <p class="summary">{{ summary() }}</p>
+      @if (books.isLoading()) {
+        <p class="updating">Updating...</p>
+      }
       <ul class="books">
         @for (book of books.value().items; track book.isbn) {
           <li>
             <button class="cover" (click)="coverOf.set(book)">{{ book.title }}</button>
             {{ book.author }} - {{ book.price }} TRY - {{ book.stock }} in stock
+            <a class="details" [routerLink]="['/books', book.isbn]">Details</a>
             <button class="add" (click)="cart.add(book)">Add to cart</button>
           </li>
         }
@@ -51,13 +57,17 @@ export class CatalogPage {
   // Local state that starts again from 1 whenever the category changes
   protected readonly page = linkedSignal({ source: this.category, computation: () => 1 });
 
-  // Server state: a copy of the API's data, fetched again when the category or page changes
-  protected readonly books = httpResource<BookPage>(() => {
-    const params: Record<string, string | number> = { page: this.page() };
-    const category = this.category();
-    if (category) params['category'] = category;
-    return { url: `${apiUrl}/books`, params };
-  });
+  // Server state: a copy of the API's data, fetched again when the category or page changes;
+  // the previous page stays on screen while the next one loads (NgRx resource extension)
+  protected readonly books = extendResource(
+    httpResource<BookPage>(() => {
+      const params: Record<string, string | number> = { page: this.page() };
+      const category = this.category();
+      if (category) params['category'] = category;
+      return { url: `${apiUrl}/books`, params };
+    }),
+    withPreviousValueOnLoading(),
+  );
 
   // Global client state: shared with the header and the cart page
   protected readonly cart = inject(CartStore);
@@ -70,20 +80,24 @@ export class CatalogPage {
 
   // Derived state: computed from other state, never stored
   protected readonly summary = computed(() => {
-    if (!this.books.hasValue()) return '';
+    // status() is read first on purpose: while loading, the extended value() is not tracked
+    if (this.books.status() === 'error' || !this.books.hasValue()) return '';
     const { total, page, pageSize } = this.books.value();
     return `${total} books, page ${page} of ${Math.ceil(total / pageSize)}`;
   });
 
   protected readonly hasNextPage = computed(() => {
-    if (!this.books.hasValue()) return false;
+    if (this.books.status() === 'error' || !this.books.hasValue()) return false;
     const { total, page, pageSize } = this.books.value();
     return page * pageSize < total;
   });
 
-  protected readonly categories = [
-    { slug: 'science-fiction', name: 'Science Fiction' },
-    { slug: 'classics', name: 'Classics' },
-    { slug: 'fantasy', name: 'Fantasy' },
-  ];
+  protected readonly categories = inject(Categories);
+
+  constructor() {
+    effect(() => {
+      const items = this.books.hasValue() ? this.books.value().items.map((b) => b.title) : '-';
+      console.log(`[books] ${this.books.status()}: ${items}`);
+    });
+  }
 }
