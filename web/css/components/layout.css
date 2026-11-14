@@ -1,0 +1,43 @@
+/* page skeleton: one column on phones, filters next to the results from 48rem */
+.page {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr auto;
+    grid-template-areas:
+        "header"
+        "filters"
+        "main"
+        "footer";
+    min-block-size: 100svh;
+}
+
+@media (width >= 48rem) {
+    .page {
+        grid-template-columns: 14rem minmax(0, 1fr);
+        grid-template-rows: auto 1fr auto;
+        grid-template-areas:
+            "header  header"
+            "filters main"
+            "footer  footer";
+    }
+}
+
+.site-header {
+    grid-area: header;
+}
+
+.filters {
+    grid-area: filters;
+    padding-inline: var(--space);
+}
+
+.catalog {
+    grid-area: main;
+}
+
+.site-footer {
+    grid-area: footer;
+    padding-inline: var(--space);
+    border-block-start: 1px solid var(--color-border);
+    color: var(--color-muted);
+}

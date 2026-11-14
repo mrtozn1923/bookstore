@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Lab 06: implicit grid, dense and named lines</title>
+    <style>
+        /* self-contained: this lab does not load main.css */
+        body { margin: 0; }
+        ul { list-style: none; margin: 0; padding: 0; }
+        .shelf {
+            display: grid;
+            grid-template-columns: [full-start] repeat(4, 100px) [full-end];
+            grid-auto-rows: 80px;
+            gap: 10px;
+            inline-size: 430px;
+        }
+        .shelf.dense { grid-auto-flow: dense; }
+        .featured { grid-column: span 3; }
+        .promo { grid-column: full-start / full-end; }
+    </style>
+</head>
+<body>
+    <ul class="shelf" id="sparse">
+        <li>Dune</li><li>Ulysses</li><li class="featured">Emma</li><li>Middlemarch</li><li class="promo">Summer sale</li>
+    </ul>
+    <ul class="shelf dense" id="dense">
+        <li>Dune</li><li>Ulysses</li><li class="featured">Emma</li><li>Middlemarch</li><li class="promo">Summer sale</li>
+    </ul>
+</body>
+</html>

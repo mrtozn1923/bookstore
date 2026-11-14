@@ -4,6 +4,7 @@
 @import url("reset.css") layer(reset);
 @import url("vendor/ui-kit.css") layer(vendor);
 @import url("base.css") layer(base);
+@import url("components/layout.css") layer(components);
 @import url("components/button.css") layer(components);
 @import url("components/header.css") layer(components);
 @import url("components/catalog.css") layer(components);

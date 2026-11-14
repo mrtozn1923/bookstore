@@ -7,48 +7,61 @@
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-    <header class="site-header">
-        <a class="logo" href="catalog.html">Bookstore</a>
-        <form class="site-search" role="search" action="catalog.html">
-            <input type="search" name="q" placeholder="Search books" aria-label="Search books">
-        </form>
-        <a class="cart-link" href="cart.html">Cart <span class="cart-count"></span></a>
-    </header>
-    <main class="catalog">
-        <h1>Catalog</h1>
-        <div class="catalog-toolbar">
-            <label>Sort by
-                <select name="sort">
-                    <option>Title</option>
-                    <option>Price</option>
-                </select>
-            </label>
-        </div>
-        <ul class="book-list">
-            <li class="book-card in-stock" data-format="hardcover ebook">
-                <img src="img/dune.svg" alt="Cover of Dune" width="120" height="180">
-                <h2 class="book-title">Dune</h2>
-                <span class="badge">Bestseller</span>
-                <p class="book-author">Frank Herbert</p>
-                <p class="price">349.00 TRY</p>
-            </li>
-            <li class="book-card" data-stock="0" data-format="paperback">
-                <h2 class="book-title">Middlemarch</h2>
-                <p class="book-author">George Eliot</p>
-                <p class="price">289.00 TRY</p>
-            </li>
-            <li class="book-card in-stock" data-format="paperback ebook">
-                <img src="img/emma.svg" alt="Cover of Emma" width="120" height="180">
-                <h2 class="book-title">Emma</h2>
-                <p class="book-author">Jane Austen</p>
-                <p class="price">219.00 TRY</p>
-            </li>
-            <li class="book-card in-stock" data-format="hardcover">
-                <h2 class="book-title">The Hobbit</h2>
-                <p class="book-author">J. R. R. Tolkien</p>
-                <p class="price">259.00 TRY</p>
-            </li>
-        </ul>
-    </main>
+    <div class="page">
+        <header class="site-header">
+            <a class="logo" href="catalog.html">Bookstore</a>
+            <form class="site-search" role="search" action="catalog.html">
+                <input type="search" name="q" placeholder="Search books" aria-label="Search books">
+            </form>
+            <a class="cart-link" href="cart.html">Cart <span class="cart-count"></span></a>
+        </header>
+        <aside class="filters" aria-labelledby="filters-title">
+            <h2 id="filters-title">Filters</h2>
+            <ul>
+                <li><a href="catalog.html?category=science-fiction">Science Fiction</a></li>
+                <li><a href="catalog.html?category=classics">Classics</a></li>
+                <li><a href="catalog.html?category=children">Children</a></li>
+            </ul>
+        </aside>
+        <main class="catalog">
+            <h1>Catalog</h1>
+            <div class="catalog-toolbar">
+                <label>Sort by
+                    <select name="sort">
+                        <option>Title</option>
+                        <option>Price</option>
+                    </select>
+                </label>
+            </div>
+            <ul class="book-list">
+                <li class="book-card in-stock" data-format="hardcover ebook">
+                    <img src="img/dune.svg" alt="Cover of Dune" width="120" height="180">
+                    <h2 class="book-title">Dune</h2>
+                    <span class="badge">Bestseller</span>
+                    <p class="book-author">Frank Herbert</p>
+                    <p class="price">349.00 TRY</p>
+                </li>
+                <li class="book-card" data-stock="0" data-format="paperback">
+                    <h2 class="book-title">Middlemarch</h2>
+                    <p class="book-author">George Eliot</p>
+                    <p class="price">289.00 TRY</p>
+                </li>
+                <li class="book-card in-stock" data-format="paperback ebook">
+                    <img src="img/emma.svg" alt="Cover of Emma" width="120" height="180">
+                    <h2 class="book-title">Emma</h2>
+                    <p class="book-author">Jane Austen</p>
+                    <p class="price">219.00 TRY</p>
+                </li>
+                <li class="book-card in-stock" data-format="hardcover">
+                    <h2 class="book-title">The Hobbit</h2>
+                    <p class="book-author">J. R. R. Tolkien</p>
+                    <p class="price">259.00 TRY</p>
+                </li>
+            </ul>
+        </main>
+        <footer class="site-footer">
+            <p>Bookstore, an online bookstore</p>
+        </footer>
+    </div>
 </body>
 </html>

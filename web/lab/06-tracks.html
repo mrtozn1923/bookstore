@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Lab 06: tracks, fr, auto-fill and auto-fit</title>
+    <style>
+        /* self-contained: this lab does not load main.css */
+        body { margin: 0; }
+        ul { list-style: none; margin: 0; padding: 0; }
+        .fr-demo { display: grid; grid-template-columns: 200px 1fr 2fr; inline-size: 800px; }
+        .results { display: grid; gap: 16px; inline-size: 992px; }
+        .results.fill { grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); }
+        .results.fit { grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); }
+        .downloads { display: grid; gap: 16px; inline-size: 600px; }
+        .downloads.fr { grid-template-columns: 1fr 1fr; }
+        .downloads.zero { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+        .fr-demo p, .downloads p { margin: 0; }
+    </style>
+</head>
+<body>
+    <div class="fr-demo" id="fr"><p>filters</p><p>results</p><p>details</p></div>
+
+    <ul class="results fill" id="fill"><li>Dune</li><li>Emma</li></ul>
+    <ul class="results fit" id="fit"><li>Dune</li><li>Emma</li></ul>
+
+    <div class="downloads fr" id="downloads-fr">
+        <p>https://downloads.bookstore.example/ebooks/9780441013593-dune-deluxe-edition.epub</p>
+        <p>Emma, EPUB</p>
+    </div>
+    <div class="downloads zero" id="downloads-zero">
+        <p>https://downloads.bookstore.example/ebooks/9780441013593-dune-deluxe-edition.epub</p>
+        <p>Emma, EPUB</p>
+    </div>
+</body>
+</html>
