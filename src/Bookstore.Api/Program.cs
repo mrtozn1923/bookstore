@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text;
+using Asp.Versioning;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -50,6 +51,35 @@ builder.Services.AddControllers(options =>
             Title = "Service Unavailable",
             Link = "https://tools.ietf.org/html/rfc7231#section-6.6.4"
         };
+    });
+
+builder.Services
+    .AddApiVersioning(options =>
+    {
+        // if no version is given, assume 1.0
+        options.DefaultApiVersion = new ApiVersion(1, 0);
+        options.AssumeDefaultVersionWhenUnspecified = true;
+        // report supported and deprecated versions in response headers
+        options.ReportApiVersions = true;
+        // the version can be read from the URL, the query string or a header
+        options.ApiVersionReader = ApiVersionReader.Combine(
+            new UrlSegmentApiVersionReader(),
+            new QueryStringApiVersionReader("api-version"),
+            new HeaderApiVersionReader("X-Api-Version"));
+
+        // only for version 1.0 of the Books API
+        options.Policies.Sunset("Books", 1.0)
+            .Effective(new DateTimeOffset(2027, 6, 1, 0, 0, 0, TimeSpan.Zero))
+            .Link("https://example.com/api/versioning-policy")
+                .Title("API versioning policy")
+                .Type("text/html");
+    })
+    .AddMvc()
+    .AddApiExplorer(options =>
+    {
+        // group names such as "v1", "v2" in Swagger
+        options.GroupNameFormat = "'v'VVV";
+        options.SubstituteApiVersionInUrl = true;
     });
 builder.Services.AddValidatorsFromAssemblyContaining<CreateOrderRequestValidator>();
 ValidatorOptions.Global.LanguageManager.Culture = new CultureInfo("en");

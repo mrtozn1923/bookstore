@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Bookstore.Api.Dtos;
@@ -7,7 +8,9 @@ using Bookstore.Api.Services;
 namespace Bookstore.Api.Controllers;
 
 [ApiController]
+[ApiVersion("1.0", Deprecated = true)]
 [Route("api/[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public class BooksController : ControllerBase
 {
     private readonly IBookService _bookService;
