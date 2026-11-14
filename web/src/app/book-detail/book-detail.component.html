@@ -11,7 +11,7 @@
 <p>Status: {{ inStock ? 'In stock' : 'Out of stock' }}</p>
 <p>{{ title.toUpperCase() }}</p>
 
-<img [src]="coverUrl" [alt]="title">
+<img [ngSrc]="coverUrl" [alt]="title" width="120" height="180">
 <button [disabled]="!inStock" (click)="addToCart()">Add to cart</button>
 
 <table>

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
 import { NewsletterComponent } from '../newsletter/newsletter.component';
 
 @Component({
@@ -6,7 +7,7 @@ import { NewsletterComponent } from '../newsletter/newsletter.component';
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.css'],
     standalone: true,
-    imports: [NewsletterComponent]
+    imports: [NgOptimizedImage, NewsletterComponent]
 })
 export class HomeComponent implements OnInit {
 

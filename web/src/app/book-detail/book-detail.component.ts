@@ -3,14 +3,14 @@ import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@ang
 import { Book } from '../book';
 import { QuantityPickerComponent } from '../quantity-picker/quantity-picker.component';
 import { FormsModule } from '@angular/forms';
-import { NgIf } from '@angular/common';
+import { NgIf, NgOptimizedImage } from '@angular/common';
 
 @Component({
     selector: 'app-book-detail',
     templateUrl: './book-detail.component.html',
     styleUrls: ['./book-detail.component.css'],
     standalone: true,
-    imports: [NgIf, RouterLink, RouterLinkActive, RouterOutlet, FormsModule, QuantityPickerComponent]
+    imports: [NgIf, NgOptimizedImage, RouterLink, RouterLinkActive, RouterOutlet, FormsModule, QuantityPickerComponent]
 })
 export class BookDetailComponent implements OnInit {
   @ViewChild(QuantityPickerComponent) picker!: QuantityPickerComponent;

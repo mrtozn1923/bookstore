@@ -11,8 +11,9 @@ export class LoginComponent {
 
   constructor(private route: ActivatedRoute, private router: Router) { }
 
-  signIn(): void {
+  signIn(role = 'Customer'): void {
     localStorage.setItem('token', 'demo-token');
+    localStorage.setItem('role', role);
     const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/home';
     this.router.navigateByUrl(returnUrl);
   }

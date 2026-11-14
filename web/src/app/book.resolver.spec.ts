@@ -1,16 +1,18 @@
 import { TestBed } from '@angular/core/testing';
+import { ResolveFn } from '@angular/router';
 
-import { BookResolver } from './book.resolver';
+import { bookResolver } from './book.resolver';
+import { Book } from './book';
 
-describe('BookResolver', () => {
-  let resolver: BookResolver;
+describe('bookResolver', () => {
+  const executeResolver: ResolveFn<Book | undefined> = (...resolverParameters) => 
+      TestBed.runInInjectionContext(() => bookResolver(...resolverParameters));
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    resolver = TestBed.inject(BookResolver);
   });
 
   it('should be created', () => {
-    expect(resolver).toBeTruthy();
+    expect(executeResolver).toBeTruthy();
   });
 });

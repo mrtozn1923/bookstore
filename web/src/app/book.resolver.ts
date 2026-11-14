@@ -1,16 +1,7 @@
-import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Resolve } from '@angular/router';
-import { Observable } from 'rxjs';
+import { inject } from '@angular/core';
+import { ResolveFn } from '@angular/router';
 import { Book } from './book';
 import { BookService } from './book.service';
 
-@Injectable({ providedIn: 'root' })
-export class BookResolver implements Resolve<Book | undefined> {
-
-  constructor(private bookService: BookService) { }
-
-  resolve(route: ActivatedRouteSnapshot): Observable<Book | undefined> {
-    const isbn = route.paramMap.get('isbn') ?? '';
-    return this.bookService.getBook(isbn);
-  }
-}
+export const bookResolver: ResolveFn<Book | undefined> = (route) =>
+  inject(BookService).getBook(route.paramMap.get('isbn') ?? '');

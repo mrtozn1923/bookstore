@@ -1,23 +1,18 @@
-import { Injectable } from '@angular/core';
-import {
-  ActivatedRouteSnapshot, CanActivate, CanLoad, Route, Router,
-  RouterStateSnapshot, UrlSegment, UrlTree
-} from '@angular/router';
+import { inject } from '@angular/core';
+import { CanActivateFn, CanMatchFn, Router } from '@angular/router';
 import { AuthService } from './auth.service';
 
-@Injectable({ providedIn: 'root' })
-export class AuthGuard implements CanActivate, CanLoad {
+export const authGuard: CanActivateFn = (route, state) => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+  return auth.isLoggedIn()
+    ? true
+    : router.createUrlTree(['/login'], { queryParams: { returnUrl: state.url } });
+};
 
-  constructor(private authService: AuthService, private router: Router) { }
+export const authMatchGuard: CanMatchFn = () =>
+  inject(AuthService).isLoggedIn() || inject(Router).createUrlTree(['/login']);
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | UrlTree {
-    if (this.authService.isLoggedIn()) {
-      return true;
-    }
-    return this.router.createUrlTree(['/login'], { queryParams: { returnUrl: state.url } });
-  }
-
-  canLoad(route: Route, segments: UrlSegment[]): boolean | UrlTree {
-    return this.authService.isLoggedIn() || this.router.createUrlTree(['/login']);
-  }
+export function roleGuard(role: string): CanActivateFn {
+  return () => inject(AuthService).hasRole(role);
 }

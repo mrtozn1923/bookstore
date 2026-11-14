@@ -8,9 +8,9 @@ import { NotFoundComponent } from './not-found/not-found.component';
 import { OrderListComponent } from './order-list/order-list.component';
 import { LoginComponent } from './login/login.component';
 import { AddressEditComponent } from './address-edit/address-edit.component';
-import { AuthGuard } from './auth.guard';
-import { UnsavedChangesGuard } from './unsaved-changes.guard';
-import { BookResolver } from './book.resolver';
+import { authGuard, authMatchGuard, roleGuard } from './auth.guard';
+import { unsavedChangesGuard } from './unsaved-changes.guard';
+import { bookResolver } from './book.resolver';
 import { CheckoutComponent } from './checkout/checkout.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
 
@@ -21,7 +21,7 @@ export const routes: Routes = [
   {
     path: 'books/:isbn',
     component: BookDetailComponent,
-    resolve: { book: BookResolver },
+    resolve: { book: bookResolver },
     children: [
       { path: '', redirectTo: 'summary', pathMatch: 'full' },
       { path: 'summary', component: BookSummaryComponent },
@@ -36,13 +36,13 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'checkout', component: CheckoutComponent, title: 'Checkout' },
   { path: 'sign-up', component: SignUpComponent, title: 'Sign up' },
-  { path: 'orders', component: OrderListComponent, canActivate: [AuthGuard], title: 'My orders' },
-  { path: 'account/address', component: AddressEditComponent, canDeactivate: [UnsavedChangesGuard] },
+  { path: 'orders', component: OrderListComponent, canActivate: [authGuard], title: 'My orders' },
+  { path: 'account/address', component: AddressEditComponent, canDeactivate: [unsavedChangesGuard] },
   {
     path: 'admin',
     loadChildren: () => import('./admin/admin.routes').then(m => m.ADMIN_ROUTES),
-    canLoad: [AuthGuard],
-    canActivate: [AuthGuard]
+    canMatch: [authMatchGuard],
+    canActivate: [roleGuard('Admin')]
   },
   { path: '**', component: NotFoundComponent }
 ];

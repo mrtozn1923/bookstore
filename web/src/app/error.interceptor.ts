@@ -1,24 +1,21 @@
-import { Injectable } from '@angular/core';
-import {
-  HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest
-} from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { inject } from '@angular/core';
+import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-@Injectable()
-export class ErrorInterceptor implements HttpInterceptor {
+export const errorInterceptor: HttpInterceptorFn = (req, next) => {
+  const router = inject(Router);
 
-  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    return next.handle(request).pipe(
-      catchError((error: HttpErrorResponse) => {
-        if (error.status === 401) {
-          localStorage.removeItem('token');
-          console.warn('Session expired, the user needs to sign in again.');
-        } else if (error.status >= 500) {
-          console.error('Something is wrong on the server.');
-        }
-        return throwError(error);
-      })
-    );
-  }
-}
+  return next(req).pipe(
+    catchError((error: HttpErrorResponse) => {
+      if (error.status === 401) {
+        localStorage.removeItem('token');
+        router.navigate(['/login']);
+      } else if (error.status >= 500) {
+        console.error('Something is wrong on the server.');
+      }
+      return throwError(error);
+    })
+  );
+};
