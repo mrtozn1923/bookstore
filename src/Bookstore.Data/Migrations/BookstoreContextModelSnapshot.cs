@@ -196,6 +196,11 @@ namespace Bookstore.Data.Migrations
                         .HasColumnType("int")
                         .HasDefaultValueSql("NEXT VALUE FOR ordering.OrderNumbers");
 
+                    b.Property<Guid>("RequestId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
                     b.Property<decimal>("ShippingFee")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)")
@@ -216,6 +221,9 @@ namespace Bookstore.Data.Migrations
                     b.HasIndex("CustomerId");
 
                     b.HasIndex("OrderNumber")
+                        .IsUnique();
+
+                    b.HasIndex("RequestId")
                         .IsUnique();
 
                     b.ToTable("Orders");

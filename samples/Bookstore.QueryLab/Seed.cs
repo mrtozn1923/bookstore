@@ -32,6 +32,7 @@ static class Seed
         Order NewOrder(Customer c, int daysAgo, params (Book Book, int Qty)[] lines) => new()
         {
             Customer = c,
+            RequestId = Guid.NewGuid(),
             CreatedAt = now.AddDays(-daysAgo),
             Subtotal = lines.Sum(l => l.Book.Price * l.Qty),
             Items = lines.Select(l => new OrderItem { Book = l.Book, Quantity = l.Qty, UnitPrice = l.Book.Price }).ToList()

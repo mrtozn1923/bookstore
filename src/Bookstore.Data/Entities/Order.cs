@@ -3,6 +3,7 @@ namespace Bookstore.Data.Entities;
 public class Order
 {
     public int Id { get; set; }
+    public Guid RequestId { get; set; }
     public int OrderNumber { get; set; }
     public DateTime CreatedAt { get; set; }
     public decimal Subtotal { get; set; }

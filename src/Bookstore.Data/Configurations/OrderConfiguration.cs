@@ -12,6 +12,9 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
             .HasDefaultValueSql("NEXT VALUE FOR ordering.OrderNumbers");
         b.HasIndex(x => x.OrderNumber).IsUnique();
 
+        b.Property(x => x.RequestId).HasDefaultValueSql("NEWID()");
+        b.HasIndex(x => x.RequestId).IsUnique();
+
         b.Property(x => x.CreatedAt).HasDefaultValueSql("SYSUTCDATETIME()");
         b.Property(x => x.ShippingFee)
             .HasDefaultValue(4.99m)
