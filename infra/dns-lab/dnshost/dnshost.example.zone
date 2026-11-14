@@ -1,0 +1,4 @@
+$TTL 3600
+@       IN SOA  ns1.dnshost.example. hostmaster.dnshost.example. 2026111401 7200 3600 1209600 300
+@       IN NS   ns1.dnshost.example.
+ns1     IN A    192.0.2.20

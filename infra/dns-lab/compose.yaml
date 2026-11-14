@@ -1,0 +1,27 @@
+# compose.yaml
+name: dnsseries
+services:
+  registry:
+    image: internetsystemsconsortium/bind9:9.20
+    container_name: dnsseries-registry
+    command: ["-g", "-c", "/etc/bind/named.conf"]
+    volumes:
+      - ./registry:/etc/bind
+      - ./scripts:/scripts:ro
+    networks:
+      dnslab:
+        ipv4_address: 192.0.2.10
+  dnshost:
+    image: internetsystemsconsortium/bind9:9.20
+    container_name: dnsseries-dnshost
+    command: ["-g", "-c", "/etc/bind/named.conf"]
+    volumes:
+      - ./dnshost:/etc/bind
+    networks:
+      dnslab:
+        ipv4_address: 192.0.2.20
+networks:
+  dnslab:
+    ipam:
+      config:
+        - subnet: 192.0.2.0/24
