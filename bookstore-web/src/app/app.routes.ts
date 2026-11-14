@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   { path: '', loadComponent: () => import('./catalog/catalog-page').then((m) => m.CatalogPage) },
+  { path: 'books/:isbn', loadComponent: () => import('./books/book-page').then((m) => m.BookPage) },
   {
     path: 'reports/orders',
     loadComponent: () => import('./reports/order-report-page').then((m) => m.OrderReportPage),

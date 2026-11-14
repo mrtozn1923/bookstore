@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
+import { BookstoreDatabase } from './core/bookstore-database';
 
 @Component({
   selector: 'app-root',
@@ -14,6 +15,9 @@ import { RouterLink, RouterOutlet } from '@angular/router';
         <a routerLink="/settings">Settings</a>
       </nav>
     </header>
+    @if (database.outdated()) {
+      <p class="banner">Bookstore was updated in another tab. Reload this page to continue.</p>
+    }
     <main>
       <router-outlet />
     </main>
@@ -30,4 +34,6 @@ import { RouterLink, RouterOutlet } from '@angular/router';
     }
   `,
 })
-export class App {}
+export class App {
+  protected readonly database = inject(BookstoreDatabase);
+}

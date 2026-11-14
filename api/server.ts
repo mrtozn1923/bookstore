@@ -11,6 +11,9 @@ import { books, customers } from "../data/books.ts";
 const port = Number(process.env.PORT ?? 5281);
 const webRoot = new URL("../web/", import.meta.url).pathname;
 let requestNo = 0;
+// 03: reviews and the responses already given per Idempotency-Key
+let nextReviewId = 501;
+const idempotent = new Map<string, { status: number; body: unknown }>();
 
 const types: Record<string, string> = {
   ".html": "text/html; charset=utf-8",
@@ -73,6 +76,29 @@ async function ordersCsv(res: ServerResponse, no: number, rows: number) {
   log(no, `200 csv ${rows} rows`);
 }
 
+// 03: POST /api/books/:isbn/reviews needs an Idempotency-Key; a repeated key gets the first response again
+async function addReview(req: IncomingMessage, res: ServerResponse, no: number, isbn: string) {
+  const key = req.headers["idempotency-key"];
+  const { text } = await readBody(req);
+  if (typeof key !== "string") {
+    res.writeHead(400, { "Content-Type": "application/json" }).end(JSON.stringify({ title: "Idempotency-Key header is required" }));
+    log(no, "400 no Idempotency-Key");
+    return;
+  }
+  const previous = idempotent.get(key);
+  if (previous) {
+    res.writeHead(previous.status, { "Content-Type": "application/json", "Idempotency-Replayed": "true" });
+    res.end(JSON.stringify(previous.body));
+    log(no, `${previous.status} replayed for key ${key.slice(0, 8)}`);
+    return;
+  }
+  const { rating, comment } = JSON.parse(text);
+  const review = { id: nextReviewId++, isbn, rating, comment };
+  idempotent.set(key, { status: 201, body: review });
+  res.writeHead(201, { "Content-Type": "application/json" }).end(JSON.stringify(review));
+  log(no, `201 review ${review.id} for ${isbn} (key ${key.slice(0, 8)})`);
+}
+
 async function serveStatic(res: ServerResponse, no: number, pathname: string) {
   const file = normalize(join(webRoot, pathname.endsWith("/") ? `${pathname}index.html` : pathname));
   if (!file.startsWith(webRoot)) {
@@ -106,6 +132,15 @@ async function handle(req: IncomingMessage, res: ServerResponse) {
 
   if (req.method === "GET" && url.pathname === "/api/books") {
     sendJson(req, res, no, books, "max-age=60");
+  } else if (req.method === "GET" && /^\/api\/books\/\d{13}$/.test(url.pathname)) {
+    const book = books.find((b) => b.isbn === url.pathname.split("/")[3]);
+    if (book) sendJson(req, res, no, book, "no-cache");
+    else {
+      res.writeHead(404).end();
+      log(no, "404");
+    }
+  } else if (req.method === "POST" && /^\/api\/books\/\d{13}\/reviews$/.test(url.pathname)) {
+    await addReview(req, res, no, url.pathname.split("/")[3]);
   } else if (req.method === "GET" && url.pathname === "/api/reports/orders.csv") {
     await ordersCsv(res, no, Number(url.searchParams.get("rows") ?? 20000));
   } else if (req.method === "POST" && url.pathname.startsWith("/api/covers/")) {
