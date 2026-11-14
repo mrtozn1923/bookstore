@@ -12,7 +12,7 @@ resource "docker_network" "bookstore" {
   }
 }
 
-resource "docker_volume" "data" {
+resource "docker_volume" "api_data" {
   for_each = var.volume_names
   name     = "${local.name_prefix}-${each.key}"
 
@@ -44,7 +44,7 @@ resource "docker_container" "api" {
   }
 
   dynamic "volumes" {
-    for_each = docker_volume.data
+    for_each = docker_volume.api_data
     content {
       volume_name    = volumes.value.name
       container_path = "/data/${volumes.key}"
