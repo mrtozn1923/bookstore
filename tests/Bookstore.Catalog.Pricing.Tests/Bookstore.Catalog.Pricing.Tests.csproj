@@ -1,0 +1,11 @@
+<Project Sdk="MSTest.Sdk/4.5.3">
+
+  <PropertyGroup>
+    <MSTestAnalysisMode>Recommended</MSTestAnalysisMode>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Bookstore.Catalog\Bookstore.Catalog.csproj" />
+  </ItemGroup>
+
+</Project>
