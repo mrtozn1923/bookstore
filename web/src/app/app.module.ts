@@ -42,6 +42,7 @@ import { CheckoutComponent } from './checkout/checkout.component';
 import { NewsletterComponent } from './newsletter/newsletter.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
 import { ScrollTopComponent } from './scroll-top/scroll-top.component';
+import { NoticeComponent } from './notice/notice.component';
 
 registerLocaleData(localeTr);
 
@@ -76,7 +77,8 @@ registerLocaleData(localeTr);
     CheckoutComponent,
     NewsletterComponent,
     SignUpComponent,
-    ScrollTopComponent
+    ScrollTopComponent,
+    NoticeComponent
   ],
   imports: [
     BrowserModule,
