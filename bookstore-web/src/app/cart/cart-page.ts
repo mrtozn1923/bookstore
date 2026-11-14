@@ -1,17 +1,28 @@
 import { Component, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { CartStore } from './cart-store';
 
 @Component({
   selector: 'app-cart-page',
+  imports: [RouterLink],
   template: `
     <h1>Cart</h1>
     <ul class="cart-items">
       @for (item of cart.items(); track item.isbn) {
-        <li>{{ item.title }} x {{ item.quantity }}</li>
+        <li>
+          {{ item.title }} x {{ item.quantity }} = {{ item.price * item.quantity }} TRY
+          <button (click)="cart.setQuantity(item.isbn, item.quantity - 1)">-</button>
+          <button (click)="cart.setQuantity(item.isbn, item.quantity + 1)">+</button>
+          <button (click)="cart.remove(item.isbn)">Remove</button>
+        </li>
       } @empty {
         <li>Your cart is empty.</li>
       }
     </ul>
+    <p class="total">Total: {{ cart.totalPrice() }} TRY</p>
+    @if (cart.count() > 0) {
+      <a class="checkout-link" routerLink="/checkout">Checkout</a>
+    }
   `,
 })
 export class CartPage {
