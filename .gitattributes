@@ -1,0 +1,4 @@
+# Shell scripts run inside Linux containers: always LF
+*.sh text eol=lf
+# Deliberately broken example for post 14 (Windows line endings)
+labs/14-exec-format/job-crlf.sh -text
