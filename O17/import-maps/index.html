@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Import maps</title>
+</head>
+<body>
+  <script type="importmap">
+  {
+    "imports": {
+      "utils": "./lib/utils.js",
+      "ui/": "./lib/ui/"
+    }
+  }
+  </script>
+  <script type="module">
+    import { debounce } from "utils";
+    import { showToast } from "ui/toast.js";
+  </script>
+</body>
+</html>
