@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Top-level await</title>
+</head>
+<body>
+  <p id="out">Waiting...</p>
+
+  <script type="module">
+    const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    await wait(1500);
+    document.querySelector("#out").textContent = "Ready after 1.5 seconds";
+  </script>
+</body>
+</html>
