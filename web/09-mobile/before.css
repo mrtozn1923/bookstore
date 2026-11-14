@@ -1,0 +1,30 @@
+body { background: var(--color-bg); color: var(--color-text); font-family: var(--font-sans); }
+.top { display: flex; justify-content: space-between; align-items: center; padding: var(--space-3) var(--space-4); }
+.logo { font-weight: var(--weight-bold); }
+.cart-link { font-size: 12px; color: var(--color-link); }
+.promo { height: 320px; display: grid; place-items: center; padding: var(--space-6); background: var(--amber-100); font-size: var(--text-2xl); font-weight: var(--weight-bold); text-align: center; }
+.filters { display: flex; gap: 4px; padding: var(--space-2) var(--space-4); font-size: 12px; }
+.filters a { color: var(--color-link); }
+main { padding: 0 var(--space-4); }
+.grid { display: grid; grid-template-columns: repeat(3, 300px); gap: var(--space-6); }
+.card { position: relative; padding: var(--space-3); background: var(--color-bg); border-radius: var(--radius-md); box-shadow: 0 2px 8px rgb(0 0 0 / 0.15); }
+.card img { width: 100%; height: auto; }
+.title { font-size: var(--text-base); margin: var(--space-2) 0 0; }
+.author, .price { margin: var(--space-1) 0 0; font-size: 14px; }
+/* "Add to cart" appears on hover */
+.add { position: absolute; left: var(--space-3); right: var(--space-3); bottom: var(--space-3); padding: var(--space-2); border: 0; border-radius: 6px; background: var(--color-action); color: var(--color-on-action); font: inherit; opacity: 0; }
+.card:hover .add { opacity: 1; }
+
+/* device breakpoints: iPad, then iPhone */
+@media (max-width: 768px) {
+  .grid { grid-template-columns: repeat(2, 180px); gap: var(--space-4); }
+}
+@media (max-width: 375px) {
+  .grid { grid-template-columns: 340px; }
+  .author, .price { display: none; }
+}
+
+/* dark mode: invert the whole page */
+@media (prefers-color-scheme: dark) {
+  html { filter: invert(1) hue-rotate(180deg); }
+}

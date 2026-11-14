@@ -154,3 +154,15 @@
     --duration-base: 0ms;
   }
 }
+
+/* 09: elevation: shadow in the light theme, a lighter tone in the dark theme */
+:root {
+  --color-surface-raised: #ffffff;
+  --shadow-raised: 0 1px 2px rgb(0 0 0 / 0.08), 0 4px 12px rgb(0 0 0 / 0.08);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-surface-raised: var(--gray-800);
+    --shadow-raised: none;
+  }
+}
