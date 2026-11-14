@@ -1,0 +1,786 @@
+[
+  {
+    "isbn": "9781000000016",
+    "title": "İnce Memed",
+    "authors": [
+      {
+        "name": "Yaşar Kemal",
+        "role": "author"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Classics"
+    ],
+    "language": "tr",
+    "price": 385.0,
+    "currency": "TRY",
+    "stockQuantity": 42,
+    "publishedOn": "2021-03-15",
+    "averageRating": 4.7,
+    "description": "Memed'in Çukurova'da ağalara karşı başkaldırısını ve dağa çıkışını anlatan roman."
+  },
+  {
+    "isbn": "9781000000023",
+    "title": "İnce Memed 2",
+    "authors": [
+      {
+        "name": "Yaşar Kemal",
+        "role": "author"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Classics"
+    ],
+    "language": "tr",
+    "price": 395.0,
+    "currency": "TRY",
+    "stockQuantity": 18,
+    "publishedOn": "2021-03-15",
+    "averageRating": 4.6,
+    "description": "Memed'in köylülerle ve eşkıyalarla ilişkisinin sürdüğü ikinci cilt."
+  },
+  {
+    "isbn": "9781000000030",
+    "title": "Kürk Mantolu Madonna",
+    "authors": [
+      {
+        "name": "Sabahattin Ali",
+        "role": "author"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Classics"
+    ],
+    "language": "tr",
+    "price": 165.0,
+    "currency": "TRY",
+    "stockQuantity": 120,
+    "publishedOn": "2019-06-01",
+    "averageRating": 4.8,
+    "description": "Raif Efendi'nin Berlin'de bir sergide gördüğü portre ve Maria Puder ile yaşadığı aşkın romanı."
+  },
+  {
+    "isbn": "9781000000047",
+    "title": "Kuyucaklı Yusuf",
+    "authors": [
+      {
+        "name": "Sabahattin Ali",
+        "role": "author"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Classics"
+    ],
+    "language": "tr",
+    "price": 210.0,
+    "currency": "TRY",
+    "stockQuantity": 35,
+    "publishedOn": "2020-01-20",
+    "averageRating": 4.5,
+    "description": "Ege kasabasında büyüyen Yusuf'un Muazzez'e olan sevgisi ve kasabanın ileri gelenleriyle çatışması."
+  },
+  {
+    "isbn": "9781000000054",
+    "title": "İçimizdeki Şeytan",
+    "authors": [
+      {
+        "name": "Sabahattin Ali",
+        "role": "author"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Classics"
+    ],
+    "language": "tr",
+    "price": 190.0,
+    "currency": "TRY",
+    "stockQuantity": 27,
+    "publishedOn": "2020-01-20",
+    "averageRating": 4.3,
+    "description": "Ömer ile Macide'nin İstanbul'da geçen hikâyesi; insanın kendi zaaflarını bir şeytana yüklemesi üzerine bir roman."
+  },
+  {
+    "isbn": "9781000000061",
+    "title": "Çalıkuşu",
+    "authors": [
+      {
+        "name": "Reşat Nuri Güntekin",
+        "role": "author"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Classics"
+    ],
+    "language": "tr",
+    "price": 240.0,
+    "currency": "TRY",
+    "stockQuantity": 64,
+    "publishedOn": "2018-09-10",
+    "averageRating": 4.6,
+    "description": "Feride'nin İstanbul'dan Anadolu kasabalarına öğretmen olarak gidişi ve yıllar süren yolculuğu."
+  },
+  {
+    "isbn": "9781000000078",
+    "title": "Yaprak Dökümü",
+    "authors": [
+      {
+        "name": "Reşat Nuri Güntekin",
+        "role": "author"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Classics"
+    ],
+    "language": "tr",
+    "price": 175.0,
+    "currency": "TRY",
+    "stockQuantity": 22,
+    "publishedOn": "2018-09-10",
+    "averageRating": 4.2,
+    "description": "Ali Rıza Bey'in ailesinin değişen değerler karşısında dağılışını anlatan roman."
+  },
+  {
+    "isbn": "9781000000085",
+    "title": "Saatleri Ayarlama Enstitüsü",
+    "authors": [
+      {
+        "name": "Ahmet Hamdi Tanpınar",
+        "role": "author"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Classics"
+    ],
+    "language": "tr",
+    "price": 260.0,
+    "currency": "TRY",
+    "stockQuantity": 31,
+    "publishedOn": "2022-02-01",
+    "averageRating": 4.6,
+    "description": "Hayri İrdal'ın gözünden saat ayarlamak için kurulan absürt bir kurumun ve bürokrasinin hicvi."
+  },
+  {
+    "isbn": "9781000000092",
+    "title": "Huzur",
+    "authors": [
+      {
+        "name": "Ahmet Hamdi Tanpınar",
+        "role": "author"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Classics"
+    ],
+    "language": "tr",
+    "price": 280.0,
+    "currency": "TRY",
+    "stockQuantity": 12,
+    "publishedOn": "2022-02-01",
+    "averageRating": 4.4,
+    "description": "Mümtaz ile Nuran'ın İstanbul'da, Boğaz kıyısında geçen aşkı ve savaş öncesi huzursuzluk."
+  },
+  {
+    "isbn": "9781000000108",
+    "title": "Tutunamayanlar",
+    "authors": [
+      {
+        "name": "Oğuz Atay",
+        "role": "author"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Classics"
+    ],
+    "language": "tr",
+    "price": 450.0,
+    "currency": "TRY",
+    "stockQuantity": 25,
+    "publishedOn": "2023-05-05",
+    "averageRating": 4.7,
+    "description": "Selim Işık'ın intiharının ardından arkadaşı Turgut'un onun izini sürmesi; modern Türk edebiyatının öncü romanı."
+  },
+  {
+    "isbn": "9781000000115",
+    "title": "Aylak Adam",
+    "authors": [
+      {
+        "name": "Yusuf Atılgan",
+        "role": "author"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Classics"
+    ],
+    "language": "tr",
+    "price": 150.0,
+    "currency": "TRY",
+    "stockQuantity": 40,
+    "publishedOn": "2017-11-11",
+    "averageRating": 4.3,
+    "description": "C.'nin İstanbul sokaklarında aradığı kadın ve kalabalık içindeki yalnızlığı."
+  },
+  {
+    "isbn": "9781000000122",
+    "title": "Sinekli Bakkal",
+    "authors": [
+      {
+        "name": "Halide Edib Adıvar",
+        "role": "author"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Classics"
+    ],
+    "language": "tr",
+    "price": 230.0,
+    "currency": "TRY",
+    "stockQuantity": 15,
+    "publishedOn": "2016-04-23",
+    "averageRating": 4.2,
+    "description": "Rabia'nın İstanbul'un bir mahallesinde, bakkal dükkânının çevresinde geçen hayatı."
+  },
+  {
+    "isbn": "9781000000139",
+    "title": "Yaban",
+    "authors": [
+      {
+        "name": "Yakup Kadri Karaosmanoğlu",
+        "role": "author"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Classics"
+    ],
+    "language": "tr",
+    "price": 155.0,
+    "currency": "TRY",
+    "stockQuantity": 9,
+    "publishedOn": "2016-04-23",
+    "averageRating": 4.1,
+    "description": "Savaştan dönen Ahmet Celal'in bir Anadolu köyünde yabancı kalışını anlatan roman."
+  },
+  {
+    "isbn": "9781000000146",
+    "title": "Benim Adım Kırmızı",
+    "authors": [
+      {
+        "name": "Orhan Pamuk",
+        "role": "author"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Historical Fiction"
+    ],
+    "language": "tr",
+    "price": 320.0,
+    "currency": "TRY",
+    "stockQuantity": 55,
+    "publishedOn": "2021-10-01",
+    "averageRating": 4.4,
+    "description": "Osmanlı nakkaşları arasında işlenen bir cinayet ve resim sanatı üzerine polisiye bir roman."
+  },
+  {
+    "isbn": "9781000000153",
+    "title": "Puslu Kıtalar Atlası",
+    "authors": [
+      {
+        "name": "İhsan Oktay Anar",
+        "role": "author"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Fantasy"
+    ],
+    "language": "tr",
+    "price": 210.0,
+    "currency": "TRY",
+    "stockQuantity": 48,
+    "publishedOn": "2020-07-07",
+    "averageRating": 4.6,
+    "description": "Uzun İhsan Efendi'nin dünyanın bir rüya olduğu düşüncesiyle kurduğu atlas ve İstanbul'da geçen macera."
+  },
+  {
+    "isbn": "9781000000160",
+    "title": "Dokuzuncu Hariciye Koğuşu",
+    "authors": [
+      {
+        "name": "Peyami Safa",
+        "role": "author"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Classics"
+    ],
+    "language": "tr",
+    "price": 120.0,
+    "currency": "TRY",
+    "stockQuantity": 70,
+    "publishedOn": "2015-03-03",
+    "averageRating": 4.3,
+    "description": "Bacağındaki hastalıkla hastanede yatan bir gencin acı ve umut dolu günleri."
+  },
+  {
+    "isbn": "9781000000177",
+    "title": "Suç ve Ceza",
+    "authors": [
+      {
+        "name": "Fyodor Dostoyevski",
+        "role": "author"
+      },
+      {
+        "name": "Ada Demir",
+        "role": "translator"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Classics"
+    ],
+    "language": "tr",
+    "price": 340.0,
+    "currency": "TRY",
+    "stockQuantity": 38,
+    "publishedOn": "2022-08-15",
+    "averageRating": 4.8,
+    "description": "Raskolnikov'un işlediği cinayetin ardından vicdanıyla hesaplaşmasını anlatan roman; Rusçadan çeviri."
+  },
+  {
+    "isbn": "9781000000184",
+    "title": "Savaş ve Barış",
+    "authors": [
+      {
+        "name": "Lev Tolstoy",
+        "role": "author"
+      },
+      {
+        "name": "Alan Kaya",
+        "role": "translator"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Classics",
+      "Historical Fiction"
+    ],
+    "language": "tr",
+    "price": 590.0,
+    "currency": "TRY",
+    "stockQuantity": 11,
+    "publishedOn": "2022-08-15",
+    "averageRating": 4.7,
+    "description": "Napolyon savaşları sırasında Rus aristokrat ailelerinin hayatları; Rusçadan çeviri."
+  },
+  {
+    "isbn": "9781000000191",
+    "title": "Dune",
+    "authors": [
+      {
+        "name": "Frank Herbert",
+        "role": "author"
+      },
+      {
+        "name": "Grace Aydın",
+        "role": "translator"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Science Fiction"
+    ],
+    "language": "tr",
+    "price": 420.0,
+    "currency": "TRY",
+    "stockQuantity": 75,
+    "publishedOn": "2024-01-10",
+    "averageRating": 4.7,
+    "description": "Çöl gezegeni Arrakis'te baharat için verilen mücadele ve Paul Atreides'in yükselişi; İngilizceden çeviri."
+  },
+  {
+    "isbn": "9781000000207",
+    "title": "Hobbit",
+    "authors": [
+      {
+        "name": "J. R. R. Tolkien",
+        "role": "author"
+      },
+      {
+        "name": "Ada Demir",
+        "role": "translator"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Fantasy"
+    ],
+    "language": "tr",
+    "price": 280.0,
+    "currency": "TRY",
+    "stockQuantity": 90,
+    "publishedOn": "2023-03-01",
+    "averageRating": 4.8,
+    "description": "Bilbo Baggins'in cücelerle birlikte ejderhanın hazinesine yaptığı yolculuk; İngilizceden çeviri."
+  },
+  {
+    "isbn": "9781000000214",
+    "title": "Bin Dokuz Yüz Seksen Dört",
+    "authors": [
+      {
+        "name": "George Orwell",
+        "role": "author"
+      },
+      {
+        "name": "Alan Kaya",
+        "role": "translator"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Science Fiction",
+      "Classics"
+    ],
+    "language": "tr",
+    "price": 195.0,
+    "currency": "TRY",
+    "stockQuantity": 110,
+    "publishedOn": "2021-06-06",
+    "averageRating": 4.6,
+    "description": "Büyük Birader'in her şeyi izlediği bir totaliter devlette Winston Smith'in başkaldırısı; distopya romanı."
+  },
+  {
+    "isbn": "9781000000221",
+    "title": "Dune",
+    "authors": [
+      {
+        "name": "Frank Herbert",
+        "role": "author"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Science Fiction"
+    ],
+    "language": "en",
+    "price": 520.0,
+    "currency": "TRY",
+    "stockQuantity": 30,
+    "publishedOn": "2019-08-01",
+    "averageRating": 4.7,
+    "description": "A desert planet, a spice everyone wants and a young heir who must survive among the Fremen."
+  },
+  {
+    "isbn": "9781000000238",
+    "title": "Emma",
+    "authors": [
+      {
+        "name": "Jane Austen",
+        "role": "author"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Classics"
+    ],
+    "language": "en",
+    "price": 180.0,
+    "currency": "TRY",
+    "stockQuantity": 25,
+    "publishedOn": "2018-02-14",
+    "averageRating": 4.2,
+    "description": "A wealthy young woman in an English village keeps arranging other people's marriages, with mixed results."
+  },
+  {
+    "isbn": "9781000000245",
+    "title": "Pride and Prejudice",
+    "authors": [
+      {
+        "name": "Jane Austen",
+        "role": "author"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Classics"
+    ],
+    "language": "en",
+    "price": 190.0,
+    "currency": "TRY",
+    "stockQuantity": 60,
+    "publishedOn": "2018-02-14",
+    "averageRating": 4.6,
+    "description": "Elizabeth Bennet and Mr Darcy misjudge each other before they learn to see past first impressions."
+  },
+  {
+    "isbn": "9781000000252",
+    "title": "The Hobbit",
+    "authors": [
+      {
+        "name": "J. R. R. Tolkien",
+        "role": "author"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Fantasy"
+    ],
+    "language": "en",
+    "price": 310.0,
+    "currency": "TRY",
+    "stockQuantity": 44,
+    "publishedOn": "2020-09-21",
+    "averageRating": 4.8,
+    "description": "Bilbo Baggins leaves his comfortable home to help a company of dwarves reclaim a treasure guarded by a dragon."
+  },
+  {
+    "isbn": "9781000000269",
+    "title": "Middlemarch",
+    "authors": [
+      {
+        "name": "George Eliot",
+        "role": "author"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Classics"
+    ],
+    "language": "en",
+    "price": 260.0,
+    "currency": "TRY",
+    "stockQuantity": 14,
+    "publishedOn": "2017-05-05",
+    "averageRating": 4.3,
+    "description": "Life in a provincial English town seen through Dorothea Brooke, a doctor with big plans and their marriages."
+  },
+  {
+    "isbn": "9781000000276",
+    "title": "Nineteen Eighty-Four",
+    "authors": [
+      {
+        "name": "George Orwell",
+        "role": "author"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Science Fiction",
+      "Classics"
+    ],
+    "language": "en",
+    "price": 210.0,
+    "currency": "TRY",
+    "stockQuantity": 80,
+    "publishedOn": "2021-06-06",
+    "averageRating": 4.6,
+    "description": "Winston Smith works for a regime that rewrites history and watches every citizen; a dystopian novel."
+  },
+  {
+    "isbn": "9781000000283",
+    "title": "Brave New World",
+    "authors": [
+      {
+        "name": "Aldous Huxley",
+        "role": "author"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Science Fiction",
+      "Classics"
+    ],
+    "language": "en",
+    "price": 205.0,
+    "currency": "TRY",
+    "stockQuantity": 33,
+    "publishedOn": "2020-11-11",
+    "averageRating": 4.3,
+    "description": "A future society keeps everyone content through conditioning and pleasure, until an outsider arrives."
+  },
+  {
+    "isbn": "9781000000290",
+    "title": "Frankenstein",
+    "authors": [
+      {
+        "name": "Mary Shelley",
+        "role": "author"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Classics"
+    ],
+    "language": "en",
+    "price": 150.0,
+    "currency": "TRY",
+    "stockQuantity": 47,
+    "publishedOn": "2019-10-31",
+    "averageRating": 4.4,
+    "description": "A young scientist creates a living being and then abandons it, with tragic consequences for both."
+  },
+  {
+    "isbn": "9781000000306",
+    "title": "Crime and Punishment",
+    "authors": [
+      {
+        "name": "Fyodor Dostoevsky",
+        "role": "author"
+      },
+      {
+        "name": "Alan Kaya",
+        "role": "translator"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Classics"
+    ],
+    "language": "en",
+    "price": 300.0,
+    "currency": "TRY",
+    "stockQuantity": 21,
+    "publishedOn": "2019-01-15",
+    "averageRating": 4.7,
+    "description": "A poor student in St Petersburg commits a murder and struggles with guilt; translated from Russian."
+  },
+  {
+    "isbn": "9781000000313",
+    "title": "Jane Eyre",
+    "authors": [
+      {
+        "name": "Charlotte Brontë",
+        "role": "author"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Classics"
+    ],
+    "language": "en",
+    "price": 220.0,
+    "currency": "TRY",
+    "stockQuantity": 26,
+    "publishedOn": "2018-07-07",
+    "averageRating": 4.5,
+    "description": "An orphaned governess finds work at Thornfield Hall and discovers the secret of its master."
+  },
+  {
+    "isbn": "9781000000320",
+    "title": "Wuthering Heights",
+    "authors": [
+      {
+        "name": "Emily Brontë",
+        "role": "author"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Classics"
+    ],
+    "language": "en",
+    "price": 200.0,
+    "currency": "TRY",
+    "stockQuantity": 19,
+    "publishedOn": "2018-07-07",
+    "averageRating": 4.1,
+    "description": "A destructive love between Catherine and Heathcliff on the Yorkshire moors spans two generations."
+  },
+  {
+    "isbn": "9781000000337",
+    "title": "Moby-Dick",
+    "authors": [
+      {
+        "name": "Herman Melville",
+        "role": "author"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Classics"
+    ],
+    "language": "en",
+    "price": 270.0,
+    "currency": "TRY",
+    "stockQuantity": 8,
+    "publishedOn": "2016-10-18",
+    "averageRating": 4.0,
+    "description": "Captain Ahab hunts the white whale that took his leg, and drags his crew along."
+  },
+  {
+    "isbn": "9781000000344",
+    "title": "The Lord of the Rings",
+    "authors": [
+      {
+        "name": "J. R. R. Tolkien",
+        "role": "author"
+      }
+    ],
+    "categories": [
+      "Fiction",
+      "Fantasy"
+    ],
+    "language": "en",
+    "price": 650.0,
+    "currency": "TRY",
+    "stockQuantity": 17,
+    "publishedOn": "2021-07-29",
+    "averageRating": 4.9,
+    "description": "Frodo carries a dangerous ring across Middle-earth to destroy it before its maker can reclaim it."
+  },
+  {
+    "isbn": "9781000000351",
+    "title": "Clean Code",
+    "authors": [
+      {
+        "name": "Robert C. Martin",
+        "role": "author"
+      }
+    ],
+    "categories": [
+      "Software",
+      "Programming"
+    ],
+    "language": "en",
+    "price": 890.0,
+    "currency": "TRY",
+    "stockQuantity": 23,
+    "publishedOn": "2019-12-01",
+    "averageRating": 4.4,
+    "description": "Practical advice on naming, functions, comments and tests for writing code that other developers can read."
+  },
+  {
+    "isbn": "9781000000368",
+    "title": "Domain-Driven Design",
+    "authors": [
+      {
+        "name": "Eric Evans",
+        "role": "author"
+      }
+    ],
+    "categories": [
+      "Software",
+      "Architecture"
+    ],
+    "language": "en",
+    "price": 1150.0,
+    "currency": "TRY",
+    "stockQuantity": 7,
+    "publishedOn": "2018-03-20",
+    "averageRating": 4.5,
+    "description": "How to model complex business domains with a shared language between developers and domain experts."
+  }
+]

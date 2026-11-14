@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Bookstore.Search/Bookstore.Search.csproj" />
+    <Project Path="src/Bookstore.SearchLab/Bookstore.SearchLab.csproj" />
+  </Folder>
+</Solution>
