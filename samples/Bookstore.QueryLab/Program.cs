@@ -1,6 +1,8 @@
 using System.Globalization;
 using Bookstore.Data;
+using Bookstore.Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__Bookstore")
     ?? "Server=localhost;Database=BookstoreDb;Trusted_Connection=True;TrustServerCertificate=True";
@@ -135,6 +137,48 @@ switch (section)
         Show(db.BestSellers(from)
             .Join(db.Books, s => s.BookId, b => b.Id, (s, b) => new { b.Title, s.Units })
             .OrderByDescending(x => x.Units));
+        break;
+
+    case "fluent":
+        await using (var logDb = new BookstoreContext(new DbContextOptionsBuilder<BookstoreContext>()
+            .UseSqlServer(connectionString)
+            .LogTo(Console.WriteLine, [RelationalEventId.CommandExecuted])
+            .Options))
+        {
+            logDb.Authors.Add(new Author { Name = "Ursula K. Le Guin" });
+            await logDb.SaveChangesAsync();
+
+            var customer = await logDb.Customers.FirstAsync();
+            var order = new Order { Customer = customer, Subtotal = 40m, ShippingFee = 0m };
+            logDb.Orders.Add(order);
+            await logDb.SaveChangesAsync();
+            Console.WriteLine($"OrderNumber={order.OrderNumber} ShippingFee={order.ShippingFee} TotalAmount={order.TotalAmount}");
+        }
+        break;
+
+    case "collation31":
+        Show(db.Books.Where(b => b.Title.StartsWith("ince")).Select(b => b.Title));
+        Show(db.BookSalesSummaries.Where(s => s.Units > 2).OrderByDescending(s => s.Units).Select(s => new { s.Title, s.Units }));
+        break;
+
+    case "constraints":
+        foreach (var book in new[]
+        {
+            new Book { Title = "Dune Messiah", Slug = "dune", Isbn = "9780593098233", Price = 17m, AuthorId = 1 },
+            new Book { Title = "Children of Dune", Isbn = "9780593098240", Price = -1m, AuthorId = 1 }
+        })
+        {
+            db.ChangeTracker.Clear();
+            db.Books.Add(book);
+            try
+            {
+                await db.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                Console.WriteLine(ex.InnerException?.Message);
+            }
+        }
         break;
 
     case "untranslatable":

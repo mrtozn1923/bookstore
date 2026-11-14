@@ -7,7 +7,7 @@ static class Seed
     public static async Task ResetAsync(BookstoreContext db)
     {
         await db.Database.EnsureDeletedAsync();
-        await db.Database.EnsureCreatedAsync();
+        await db.Database.MigrateAsync();
 
         var sql = await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "functions.sql"));
         foreach (var batch in sql.Split("\nGO", StringSplitOptions.RemoveEmptyEntries))
@@ -21,7 +21,7 @@ static class Seed
         var eliot = new Author { Name = "George Eliot" };
         var kemal = new Author { Name = "Yaşar Kemal" };
 
-        var dune = new Book { Title = "Dune", Isbn = "9780441172719", Price = 18.50m, PublishedOn = new(1965, 8, 1), Author = herbert, Tags = ["sci-fi", "classic"] };
+        var dune = new Book { Title = "Dune", Slug = "dune", Isbn = "9780441172719", Price = 18.50m, PublishedOn = new(1965, 8, 1), Author = herbert, Tags = ["sci-fi", "classic"] };
         var emma = new Book { Title = "Emma", Isbn = "9780141439587", Price = 9.90m, PublishedOn = new(1815, 12, 23), Author = austen, Tags = ["classic"] };
         var pride = new Book { Title = "Pride and Prejudice", Isbn = "9780141439518", Price = 8.75m, PublishedOn = new(1813, 1, 28), Author = austen, Tags = ["classic", "romance"] };
         var hobbit = new Book { Title = "The Hobbit", Isbn = "9780547928227", Price = 14.00m, PublishedOn = new(1937, 9, 21), Author = tolkien, Tags = ["fantasy"] };
@@ -39,6 +39,7 @@ static class Seed
         {
             Customer = c,
             CreatedAt = now.AddDays(-daysAgo),
+            Subtotal = lines.Sum(l => l.Book.Price * l.Qty),
             Items = lines.Select(l => new OrderItem { Book = l.Book, Quantity = l.Qty, UnitPrice = l.Book.Price }).ToList()
         };
         db.Orders.AddRange(
