@@ -32,7 +32,7 @@ builder.Services
     .AddCatalogModule()
     .AddInventoryModule()
     .AddOrderingModule()
-    .AddPaymentsModule();
+    .AddPaymentsModule(builder.Environment);
 
 WebApplication app = builder.Build();
 // From here on a broken switches.json is not ignored any more: running instances keep their last values.

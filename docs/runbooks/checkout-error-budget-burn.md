@@ -2,7 +2,7 @@
 
 Alert rule: `deploy/prometheus/rules/slo-alerts.yaml` · SLO: `docs/slo/checkout.md` · Owner: Bookstore.Api team
 Last tried: 2026-11-14 in the lab, with the fake payment provider failing 30 % of charges, and again in the
-"payment provider timeouts" tabletop (levers).
+"payment provider timeouts" tabletop (levers) and the 2026-11-14 game day (step 3, resilience events).
 
 ## What it means
 Checkout (`POST /api/orders`) fails often enough to spend 2 % of the 30-day error budget in an hour
@@ -21,6 +21,12 @@ cancelled order and its stock is released.
    ```
    503, or `error_type="System.Threading.Tasks.TaskCanceledException"` (timeout; such series have no status code)
    from the provider's host: go to "Payment provider".
+   No failing outgoing calls, but checkouts fail? Our own resilience pipeline may be answering before the request
+   leaves the process (a chaos experiment left on, a retry giving up, later a circuit breaker). Polly's events:
+   ```promql
+   sum by (event_name, pipeline_name) (rate(resilience_polly_strategy_events_total{job="bookstore-api"}[5m]))
+   ```
+   `Chaos.*` events outside a game day: set `Chaos:Enabled` to false in switches.json, then go on.
 4. Was there a deploy? Versions that sent metrics in the last hour:
    ```promql
    count by (service_version) (count_over_time(target_info{job="bookstore-api"}[1h]))

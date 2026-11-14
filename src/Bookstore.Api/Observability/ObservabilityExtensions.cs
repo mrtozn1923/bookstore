@@ -24,6 +24,8 @@ public static class ObservabilityExtensions
                 .AddAspNetCoreInstrumentation()
                 .AddHttpClientInstrumentation()
                 .AddMeter(SwitchesFile.MeterName)
+                // Polly's resilience events (retries, injected chaos) as resilience_polly_strategy_events_total.
+                .AddMeter("Polly")
                 // ASP.NET Core's default boundaries plus 0.8: the checkout latency SLO counts requests under 800 ms,
                 // and a histogram can only count exactly up to one of its bucket boundaries.
                 .AddView("http.server.request.duration", new ExplicitBucketHistogramConfiguration
