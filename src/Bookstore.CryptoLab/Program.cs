@@ -29,6 +29,9 @@ switch (command)
     case "chain": PkiCommands.Chain(); break;
     case "pfx-export": PkiCommands.ExportPfx(); break;
     case "mtls-call": await PkiCommands.CallAsync(args); break;
+    case "tls-handshake": await TlsCommands.HandshakeAsync(); break;
+    case "tls-keylog": await TlsCommands.KeyLogAsync(); break;
+    case "tls-server": await TlsCommands.ServeAsync(args); break;
     default: Console.Error.WriteLine($"Unknown command: {command}"); return 1;
 }
 return 0;
