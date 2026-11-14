@@ -1,0 +1,5 @@
+.invoice { max-inline-size: 48rem; }
+.invoice-meta { display: grid; grid-template-columns: max-content 1fr; gap: 0.25rem 1rem; }
+.invoice-meta dd { margin: 0; }
+.col-qty { inline-size: 4rem; }
+.print-button { padding: 0.5rem 1rem; border: 1px solid var(--color-border); border-radius: 999px; background: var(--color-surface); cursor: pointer; }

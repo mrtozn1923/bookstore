@@ -1,0 +1,21 @@
+/* print: paper size and margins for every printed page */
+@page {
+    size: A4;
+    margin: 15mm;
+}
+@media print {
+    /* navigation and buttons mean nothing on paper */
+    .site-header,
+    .print-button { display: none; }
+    body { background: none; color: #000000; font-size: 11pt; }
+    /* links: print the address after the text */
+    a[href^="http"]::after { content: " (" attr(href) ")"; }
+    /* the scroll box would cut the table on paper */
+    .table-scroll { max-block-size: none; overflow: visible; border: 0; }
+    .data-table thead th { position: static; }
+    /* a row is never split between two pages; headings stay with what follows */
+    .data-table tr { break-inside: avoid; }
+    h1, h2 { break-after: avoid; }
+    /* status colors carry meaning: print them even when "Background graphics" is off */
+    .status { print-color-adjust: exact; }
+}

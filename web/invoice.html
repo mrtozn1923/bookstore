@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Invoice BK-1040 - Bookstore</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <header class="site-header">
+        <a class="logo" href="catalog.html">Bookstore</a>
+        <a href="orders.html">My orders</a>
+    </header>
+    <main class="invoice">
+        <h1>Invoice BK-1040</h1>
+        <button type="button" class="print-button" onclick="window.print()">Print</button>
+        <dl class="invoice-meta">
+            <dt>Date</dt><dd>2026-11-02</dd>
+            <dt>Customer</dt><dd>Ada Lovelace, ada@example.com</dd>
+            <dt>Payment</dt><dd><span class="status status-paid">Paid</span></dd>
+        </dl>
+        <table class="data-table invoice-items">
+            <caption>Prices include VAT.</caption>
+            <colgroup>
+                <col>
+                <col class="col-qty">
+                <col class="col-total">
+                <col class="col-total">
+            </colgroup>
+            <thead>
+                <tr><th scope="col">Book</th><th scope="col" class="num">Qty</th><th scope="col" class="num">Price</th><th scope="col" class="num">Total</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>The Hobbit</td><td class="num">1</td><td class="num">₺310.00</td><td class="num">₺310.00</td></tr>
+                <tr><td>Dune</td><td class="num">1</td><td class="num">₺420.00</td><td class="num">₺420.00</td></tr>
+                <tr><td>Middlemarch</td><td class="num">1</td><td class="num">₺385.50</td><td class="num">₺385.50</td></tr>
+            </tbody>
+            <tfoot>
+                <tr><th scope="row" colspan="3">Subtotal</th><td class="num">₺1,115.50</td></tr>
+                <tr><th scope="row" colspan="3">Shipping</th><td class="num">₺49.90</td></tr>
+                <tr><th scope="row" colspan="3">Total</th><td class="num">₺1,165.40</td></tr>
+            </tfoot>
+        </table>
+        <p class="invoice-note">Returns within 14 days, see <a href="https://bookstore.test/help/returns">our returns page</a>.</p>
+    </main>
+</body>
+</html>

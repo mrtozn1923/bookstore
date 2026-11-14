@@ -4,6 +4,7 @@
   "type": "module",
   "devDependencies": {
     "@mdn/browser-compat-data": "8.1.9",
+    "pdfjs-dist": "6.5.438",
     "playwright": "1.65.0",
     "web-features": "3.46.0"
   }

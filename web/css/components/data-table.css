@@ -1,0 +1,59 @@
+/* data tables: shared borders, columns set by col elements, numbers on the right */
+.data-table {
+    inline-size: 100%;
+    border-collapse: collapse;
+    /* column widths come from the col elements and the first row, not from the longest content */
+    table-layout: fixed;
+    background: var(--color-surface);
+}
+.data-table caption {
+    caption-side: bottom;
+    padding-block: 0.5rem;
+    color: var(--color-muted);
+    text-align: start;
+}
+.data-table th,
+.data-table td {
+    padding: 0.5rem 0.75rem;
+    border-block-end: 1px solid var(--color-border);
+    text-align: start;
+    vertical-align: top;
+    overflow-wrap: break-word;
+}
+.data-table tbody tr:nth-child(even) { background: #f3f4f6; }
+/* money: right aligned, every digit the same width, so the digits line up in columns */
+.data-table .num {
+    text-align: end;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+.data-table tfoot { font-weight: 700; }
+.col-order { inline-size: 6.5rem; }
+.col-date { inline-size: 7.5rem; }
+.col-status { inline-size: 7.5rem; }
+.col-total { inline-size: 7.5rem; }
+
+/* the table scrolls inside its own box (both axes), so the sticky header has something to stick to */
+.table-scroll {
+    max-block-size: 70vh;
+    overflow: auto;
+    border: 1px solid var(--color-border);
+}
+.data-table thead th {
+    position: sticky;
+    inset-block-start: 0;
+    background: var(--color-surface);
+    /* a collapsed border stays behind when the header sticks; a shadow moves with it */
+    border-block-end: 0;
+    box-shadow: inset 0 -2px 0 var(--color-border);
+}
+
+.status {
+    display: inline-block;
+    padding-inline: 0.5rem;
+    border-radius: 999px;
+    font-size: 0.875rem;
+}
+.status-delivered, .status-paid { background: #dcfce7; color: #166534; }
+.status-shipped { background: #dbeafe; color: #1e40af; }
+.status-cancelled, .status-returned { background: #f3f4f6; color: #4b5563; }
