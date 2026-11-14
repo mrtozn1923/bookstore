@@ -1,0 +1,17 @@
+groups:
+  - name: bookstore-checkout
+    rules:
+      # Orders per second, by order type
+      - record: bookstore:orders_placed:rate5m
+        expr: sum by (bookstore_order_type) (rate(bookstore_orders_placed_total{job="bookstore-api"}[5m]))
+
+      # 95th percentile of the checkout duration over 5 minutes
+      - record: bookstore:checkout_duration_seconds:p95_5m
+        expr: histogram_quantile(0.95, sum by (le) (rate(bookstore_checkout_duration_seconds_bucket{job="bookstore-api"}[5m])))
+
+      # Share of POST /api/orders requests that ended with 5xx
+      - record: bookstore:orders_http_errors:ratio_rate5m
+        expr: |
+          sum(rate(http_server_request_duration_seconds_count{job="bookstore-api", http_route="/api/orders/", http_response_status_code=~"5.."}[5m]))
+            /
+          sum(rate(http_server_request_duration_seconds_count{job="bookstore-api", http_route="/api/orders/"}[5m]))

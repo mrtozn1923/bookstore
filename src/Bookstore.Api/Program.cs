@@ -60,5 +60,7 @@ if (app.Environment.IsDevelopment())
 app.MapCatalogEndpoints();
 app.MapOrderingEndpoints();
 app.MapInventoryEndpoints();
+// Prometheus scrapes this; in production keep it on an internal port or behind authorization.
+app.MapPrometheusScrapingEndpoint();
 
 app.Run();

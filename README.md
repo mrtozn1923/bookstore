@@ -113,6 +113,13 @@ Bu branch, mertozen.com'daki Observability serisinin kodudur. Bu tag'e kadar ekl
   docker compose -f deploy/observability/compose.yaml up -d
   # Grafana: http://localhost:3000, API: OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
   ```
+- `GET /metrics` (OpenTelemetry.Exporter.Prometheus.AspNetCore, beta) ve `deploy/observability/prometheus.yaml` + `rules.yaml` (recording rule'lar, native histogram'lar):
+
+  ```powershell
+  docker run -d --name bookstore-prometheus -p 9090:9090 -v ${PWD}/deploy/observability/prometheus.yaml:/etc/prometheus/prometheus.yml:ro -v ${PWD}/deploy/observability/rules.yaml:/etc/prometheus/rules.yaml:ro prom/prometheus:v3.16.0 --config.file=/etc/prometheus/prometheus.yml --web.enable-otlp-receiver
+  ```
+
+  LGTM stack'i de 9090 portunu kullanır; ikisini aynı anda çalıştırma.
 
 ---
 
@@ -225,3 +232,10 @@ This branch holds the code of the Observability series on mertozen.com. Added up
   docker compose -f deploy/observability/compose.yaml up -d
   # Grafana: http://localhost:3000, API: OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
   ```
+- `GET /metrics` (OpenTelemetry.Exporter.Prometheus.AspNetCore, beta) and `deploy/observability/prometheus.yaml` + `rules.yaml` (recording rules, native histograms):
+
+  ```powershell
+  docker run -d --name bookstore-prometheus -p 9090:9090 -v ${PWD}/deploy/observability/prometheus.yaml:/etc/prometheus/prometheus.yml:ro -v ${PWD}/deploy/observability/rules.yaml:/etc/prometheus/rules.yaml:ro prom/prometheus:v3.16.0 --config.file=/etc/prometheus/prometheus.yml --web.enable-otlp-receiver
+  ```
+
+  The LGTM stack also uses port 9090; don't run both at the same time.

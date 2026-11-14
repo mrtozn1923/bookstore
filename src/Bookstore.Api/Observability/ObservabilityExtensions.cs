@@ -31,7 +31,9 @@ public static class ObservabilityExtensions
                 .AddMeter("Bookstore.*", "Polly")
                 .AddAspNetCoreInstrumentation()
                 .AddHttpClientInstrumentation()
-                .AddRuntimeInstrumentation())
+                .AddRuntimeInstrumentation()
+                // GET /metrics for a Prometheus that scrapes (pull); OTLP below still pushes the same metrics.
+                .AddPrometheusExporter())
             .WithLogging()
             // One OTLP exporter for all three signals; the endpoint comes from OTEL_EXPORTER_OTLP_ENDPOINT.
             .UseOtlpExporter();

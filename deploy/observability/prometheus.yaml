@@ -1,0 +1,28 @@
+# Prometheus for Bookstore (local). Two ways in:
+#   pull: scrapes GET /metrics of Bookstore.Api every 15 s
+#   push: OTLP on /api/v1/otlp (needs --web.enable-otlp-receiver)
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  # Native histograms (stable since Prometheus 3.8, still opt-in). The .NET exporter only has classic
+  # buckets, so they are stored as one native histogram with custom buckets (NHCB) per series.
+  scrape_native_histograms: true
+  convert_classic_histograms_to_nhcb: true
+  # During the move keep the classic _bucket/_sum/_count series too, so existing queries keep working.
+  always_scrape_classic_histograms: true
+
+rule_files:
+  - /etc/prometheus/rules.yaml
+
+scrape_configs:
+  - job_name: bookstore-api
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["host.docker.internal:5080"]
+
+otlp:
+  # Resource attributes that become labels on every series (the rest stay in target_info).
+  promote_resource_attributes:
+    - service.name
+    - service.version
+    - deployment.environment.name

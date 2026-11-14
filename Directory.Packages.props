@@ -16,6 +16,8 @@
     <PackageVersion Include="OpenTelemetry.Instrumentation.SqlClient" Version="1.21.0" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.21.0" />
     <PackageVersion Include="OpenTelemetry.Exporter.InMemory" Version="1.21.0" />
+    <!-- Still prerelease: depends on the experimental Prometheus/OpenMetrics compatibility spec. -->
+    <PackageVersion Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="1.21.0-beta.1" />
     <PackageVersion Include="xunit.v3" Version="4.0.3" />
   </ItemGroup>
 </Project>
