@@ -1,0 +1,26 @@
+# Checkout SLOs (docs/slo/checkout.md): availability 99.5 %, latency 99 % under 800 ms, rolling 30 days.
+# Remaining error budget: 1 = untouched, 0 = used up, below 0 = SLO missed.
+groups:
+  - name: bookstore-slo
+    interval: 1m
+    rules:
+      - record: slo:checkout_valid:increase30d
+        expr: |
+          sum(increase(http_server_request_duration_seconds_count{job="bookstore-api", http_route="/api/orders/",
+            http_request_method="POST", http_response_status_code=~"[235]..|429"}[30d]))
+
+      - record: slo:checkout_availability:ratio30d
+        expr: |
+          sum(increase(http_server_request_duration_seconds_count{job="bookstore-api", http_route="/api/orders/",
+            http_request_method="POST", http_response_status_code=~"[23].."}[30d]))
+          / slo:checkout_valid:increase30d
+      - record: slo:checkout_availability:budget_remaining
+        expr: 1 - (1 - slo:checkout_availability:ratio30d) / (1 - 0.995)
+
+      - record: slo:checkout_latency:ratio30d
+        expr: |
+          sum(increase(http_server_request_duration_seconds_bucket{job="bookstore-api", http_route="/api/orders/",
+            http_request_method="POST", http_response_status_code=~"[235]..|429", le="0.8"}[30d]))
+          / slo:checkout_valid:increase30d
+      - record: slo:checkout_latency:budget_remaining
+        expr: 1 - (1 - slo:checkout_latency:ratio30d) / (1 - 0.99)

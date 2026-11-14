@@ -1,0 +1,32 @@
+# The checkout availability SLO in OpenSLO format (vendor-neutral; validate with: oslo validate -f <file>).
+apiVersion: openslo/v1
+kind: SLO
+metadata:
+  name: checkout-availability
+  displayName: Checkout availability
+spec:
+  description: Valid checkout requests (POST /api/orders, 4xx except 429 excluded) that did not fail on our side.
+  service: bookstore-api
+  indicator:
+    metadata:
+      name: checkout-availability-sli
+    spec:
+      ratioMetric:
+        counter: true
+        good:
+          metricSource:
+            type: Prometheus
+            spec:
+              query: sum(http_server_request_duration_seconds_count{job="bookstore-api", http_route="/api/orders/", http_request_method="POST", http_response_status_code=~"[23].."})
+        total:
+          metricSource:
+            type: Prometheus
+            spec:
+              query: sum(http_server_request_duration_seconds_count{job="bookstore-api", http_route="/api/orders/", http_request_method="POST", http_response_status_code=~"[235]..|429"})
+  timeWindow:
+    - duration: 30d
+      isRolling: true
+  budgetingMethod: Occurrences
+  objectives:
+    - displayName: 99.5 percent of checkouts succeed
+      target: 0.995

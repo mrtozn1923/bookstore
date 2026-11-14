@@ -200,3 +200,4 @@ dotnet run --project tools/Bookstore.Traffic -- 4 10
 | Post | Adds |
 |---|---|
 | 02 | OpenTelemetry metrics (OTLP), `/health`, Payments module, `tools/Bookstore.FakePaymentProvider`, `tools/Bookstore.Traffic`, `deploy/prometheus/` with SLI recording rules |
+| 03 | 0.8 s bucket (View) for the latency SLI, `deploy/prometheus/rules/slo.yaml` (30-day error budget), `docs/slo/` (SLO document, error budget policy), `deploy/slo/checkout.openslo.yaml`, `tools/slo-math/slo-math.cs` (`dotnet run tools/slo-math/slo-math.cs -- 30 1290 99.5`) |

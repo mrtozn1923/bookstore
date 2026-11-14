@@ -21,7 +21,13 @@ public static class ObservabilityExtensions
                 .AddEnvironmentVariableDetector())
             .WithMetrics(metrics => metrics
                 .AddAspNetCoreInstrumentation()
-                .AddHttpClientInstrumentation())
+                .AddHttpClientInstrumentation()
+                // ASP.NET Core's default boundaries plus 0.8: the checkout latency SLO counts requests under 800 ms,
+                // and a histogram can only count exactly up to one of its bucket boundaries.
+                .AddView("http.server.request.duration", new ExplicitBucketHistogramConfiguration
+                {
+                    Boundaries = [0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 0.8, 1, 2.5, 5, 7.5, 10]
+                }))
             // OTEL_EXPORTER_OTLP_ENDPOINT / _PROTOCOL decide where the metrics go (here: Prometheus' OTLP receiver).
             .UseOtlpExporter();
 

@@ -17,10 +17,11 @@ groups:
       - record: sli:checkout_availability:ratio_rate5m
         expr: sli:checkout_available:rate5m / sli:checkout_valid:rate5m
 
-      # Latency: valid requests that finished within 1 s (le must be one of the histogram's bucket boundaries).
+      # Latency: valid requests that finished within 800 ms. le must be one of the histogram's bucket boundaries;
+      # 0.8 is added by a View in ObservabilityExtensions.
       - record: sli:checkout_fast:rate5m
         expr: |
           sum(rate(http_server_request_duration_seconds_bucket{job="bookstore-api", http_route="/api/orders/",
-            http_request_method="POST", http_response_status_code=~"[235]..|429", le="1"}[5m]))
+            http_request_method="POST", http_response_status_code=~"[235]..|429", le="0.8"}[5m]))
       - record: sli:checkout_latency:ratio_rate5m
         expr: sli:checkout_fast:rate5m / sli:checkout_valid:rate5m
