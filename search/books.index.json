@@ -8,7 +8,8 @@
         "tr_stop": { "type": "stop", "stopwords": "_turkish_" },
         "tr_keywords": { "type": "keyword_marker", "keywords": ["ince", "kasaba", "öğretmen"] },
         "tr_stemmer": { "type": "stemmer", "language": "turkish" },
-        "bookstore_synonyms": { "type": "synonym_graph", "synonyms_set": "bookstore-synonyms", "updateable": true }
+        "bookstore_synonyms": { "type": "synonym_graph", "synonyms_set": "bookstore-synonyms", "updateable": true },
+        "autocomplete_edge": { "type": "edge_ngram", "min_gram": 1, "max_gram": 15 }
       },
       "analyzer": {
         "tr_text": {
@@ -25,6 +26,11 @@
           "type": "custom",
           "tokenizer": "standard",
           "filter": ["lowercase", "bookstore_synonyms"]
+        },
+        "tr_autocomplete": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": ["apostrophe", "tr_lowercase", "asciifolding", "autocomplete_edge"]
         }
       }
     }
@@ -40,7 +46,10 @@
           "tr": { "type": "text", "analyzer": "tr_text" },
           "en": { "type": "text", "analyzer": "english" },
           "folded": { "type": "text", "analyzer": "tr_folded" },
-          "sort": { "type": "icu_collation_keyword", "language": "tr" }
+          "sort": { "type": "icu_collation_keyword", "language": "tr" },
+          "autocomplete": { "type": "text", "analyzer": "tr_autocomplete", "search_analyzer": "tr_folded" },
+          "sayt": { "type": "search_as_you_type", "analyzer": "tr_folded" },
+          "complete": { "type": "completion", "analyzer": "tr_folded" }
         }
       },
       "authors": {
