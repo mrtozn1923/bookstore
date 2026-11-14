@@ -20,6 +20,7 @@ return args switch
     ["rw-readonly-fn", .. var rest] => await ReadRoutingCommands.ReadOnlyFunctionAsync(LabOptions.Parse(rest)),
     ["sql-intent", .. var rest] => await ReadRoutingCommands.SqlIntentAsync(LabOptions.Parse(rest)),
     ["partition-maintain", .. var rest] => await PartitionCommands.MaintainAsync(LabOptions.Parse(rest)),
+    ["sql-elimination", .. var rest] => await SqlPartitionCommands.EliminationAsync(LabOptions.Parse(rest)),
     _ => Usage()
 };
 
