@@ -1,0 +1,31 @@
+rule_files:
+  - ../rules/deploy-alerts.yaml
+
+evaluation_interval: 1m
+
+tests:
+  # Three instances; one of them is not updated by the deploy at minute 10.
+  - interval: 1m
+    input_series:
+      - series: 'target_info{job="bookstore-api", instance="a", service_version="1.4.0"}'
+        values: '1x9'
+      - series: 'target_info{job="bookstore-api", instance="b", service_version="1.4.0"}'
+        values: '1x9'
+      - series: 'target_info{job="bookstore-api", instance="c", service_version="1.4.0"}'
+        values: '1x60'
+      - series: 'target_info{job="bookstore-api", instance="d", service_version="1.5.0"}'
+        values: '_x10 1x50'
+      - series: 'target_info{job="bookstore-api", instance="e", service_version="1.5.0"}'
+        values: '_x10 1x50'
+    alert_rule_test:
+      - eval_time: 30m
+        alertname: MixedVersionsAfterDeploy
+        exp_alerts: []
+      - eval_time: 45m
+        alertname: MixedVersionsAfterDeploy
+        exp_alerts:
+          - exp_labels:
+              severity: ticket
+            exp_annotations:
+              summary: "2 different Bookstore.Api versions have been running for 30 minutes"
+              description: "Versions: 1.4.0 (1 instances) 1.5.0 (2 instances) "

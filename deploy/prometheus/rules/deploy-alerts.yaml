@@ -1,0 +1,13 @@
+# After a deploy every instance must run the same build. Two versions for longer than a rollout takes means an
+# instance was missed (or a rollout is stuck): the Knight Capital lesson in docs/drills/README.md.
+groups:
+  - name: bookstore-deploy
+    rules:
+      - alert: MixedVersionsAfterDeploy
+        expr: count(count by (service_version) (target_info{job="bookstore-api"})) > 1
+        for: 30m
+        labels:
+          severity: ticket
+        annotations:
+          summary: "{{ $value }} different Bookstore.Api versions have been running for 30 minutes"
+          description: "Versions: {{ range query \"count by (service_version) (target_info{job='bookstore-api'})\" }}{{ .Labels.service_version }} ({{ .Value }} instances) {{ end }}"
