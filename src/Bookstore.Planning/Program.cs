@@ -10,5 +10,6 @@ switch (args.FirstOrDefault())
     case "pert": Pert.Run(); break;
     case "release": ReleasePlan.Run(); break;
     case "risk": RiskRegister.Run(); break;
-    default: Console.WriteLine("Usage: dotnet run --project src/Bookstore.Planning -- cone|count|pert|release|risk"); break;
+    case "update": ReleaseUpdate.Run(); break;
+    default: Console.WriteLine("Usage: dotnet run --project src/Bookstore.Planning -- cone|count|pert|release|risk|update"); break;
 }
