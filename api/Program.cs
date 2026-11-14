@@ -1,5 +1,6 @@
 using System.Net.ServerSentEvents;
 using System.Threading.RateLimiting;
+using AGUI.Abstractions;
 using Bookstore.Assistant.Api;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.AI;
@@ -25,6 +26,8 @@ builder.Services.AddSingleton<AssistantTools>();
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<PendingApprovals>();
 builder.Services.AddProblemDetails();
+// AG-UI tiplerinin (RunAgentInput, BaseEvent ve alt tipleri) JSON sözleşmesi
+builder.Services.ConfigureHttpJsonOptions(o => o.SerializerOptions.TypeInfoResolverChain.Insert(0, AGUIJsonUtilities.DefaultTypeInfoResolver));
 builder.Services.AddRateLimiter(options =>
 {
     // Demo: istemci IP'si başına dakikada 10 istek; production'da kullanıcı kimliğine göre bölümle
@@ -102,6 +105,9 @@ app.MapPost("/chat/approvals/{approvalId}", IResult (string approvalId, Approval
         StreamTurn(item.ConversationId, item.History, item.UserMessage, item.Messages, chat, tools, pending, logger, ct);
     return TypedResults.ServerSentEvents(events.WithHeartbeatAsync(TimeSpan.FromSeconds(5), ct));
 }).RequireRateLimiting("chat");
+
+app.MapAgUi(SystemPrompt);
+app.MapUiMessageStream(SystemPrompt);
 
 app.MapGet("/chat/conversations/{id:guid}/messages", IResult (Guid id, ConversationStore conversations) =>
 {
