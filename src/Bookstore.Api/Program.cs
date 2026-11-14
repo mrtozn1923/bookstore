@@ -1,0 +1,67 @@
+using Bookstore.Api;
+
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
+
+var originRequests = 0;
+app.Use(async (context, next) =>
+{
+    // which responses really reached the origin
+    context.Response.Headers["X-Origin-Request"] = Interlocked.Increment(ref originRequests).ToString();
+    await next();
+});
+
+app.UseDefaultFiles();
+app.UseStaticFiles(new StaticFileOptions { OnPrepareResponse = CacheHeaders.ForStaticFile });
+
+Book[] catalog =
+[
+    new("9780441172719", "Dune", 450.00m),
+    new("9780141439587", "Emma", 190.00m),
+    new("9780547928227", "The Hobbit", 320.00m),
+    new("9780141439549", "Middlemarch", 280.00m),
+];
+
+var api = app.MapGroup("/api");
+
+api.MapGet("/books", (HttpContext http, int page = 1) =>
+{
+    CacheHeaders.ForCatalog(http.Response);
+    return catalog.Skip((page - 1) * 2).Take(2);
+});
+
+api.MapGet("/books/featured", (HttpContext http) =>
+{
+    // browsers revalidate every time, the CDN keeps it for 5 minutes (RFC 9213)
+    http.Response.Headers.CacheControl = "no-cache";
+    http.Response.Headers["CDN-Cache-Control"] = "max-age=300";
+    return catalog[0];
+});
+
+api.MapGet("/cart", (HttpContext http) =>
+{
+    http.Response.Headers.CacheControl = "private, no-store";
+    http.Response.Cookies.Append("cart-id", "c-1042", new CookieOptions { HttpOnly = true, Secure = true });
+    return new Cart(2, 640.00m);
+});
+
+api.MapGet("/orders/mine", (HttpContext http) =>
+{
+    // lab only: the bearer token is just the customer name
+    var customer = http.Request.Headers.Authorization.ToString().Replace("Bearer ", "");
+    if (customer.Length == 0)
+    {
+        return Results.Unauthorized();
+    }
+
+    http.Response.Headers.CacheControl = CacheHeaders.PerUser;
+    return Results.Ok(new OrderSummary(customer, customer == "ada" ? ["BK-1042"] : ["BK-2001", "BK-2002"]));
+});
+
+app.MapFallbackToFile("index.html", new StaticFileOptions { OnPrepareResponse = CacheHeaders.ForStaticFile });
+
+app.Run();
+
+record Book(string Isbn, string Title, decimal Price);
+record Cart(int Items, decimal Total);
+record OrderSummary(string Customer, string[] Orders);
