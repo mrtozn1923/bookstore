@@ -1,0 +1,31 @@
+<h2>Checkout</h2>
+<form #f="ngForm" (ngSubmit)="onSubmit(f)">
+  <label>Full name</label>
+  <input name="fullName" ngModel required minlength="3" #fullName="ngModel">
+  <p *ngIf="fullName.hasError('minlength')">
+    Please enter at least {{ fullName.getError('minlength').requiredLength }} characters.
+  </p>
+
+  <label>Email</label>
+  <input name="email" ngModel required email #email="ngModel">
+  <div *ngIf="email.invalid && (email.dirty || email.touched || f.submitted)" class="error">
+    <p *ngIf="email.hasError('required')">Email is required.</p>
+    <p *ngIf="email.hasError('email')">Please enter a valid email address.</p>
+  </div>
+
+  <label>Phone</label>
+  <input name="phone" ngModel pattern="5[0-9]{9}">
+
+  <label>Quantity</label>
+  <input name="quantity" type="number" ngModel min="1" max="5">
+
+  <div ngModelGroup="address" #address="ngModelGroup">
+    <input name="city" ngModel required placeholder="City">
+    <input name="zip" ngModel pattern="[0-9]{5}" placeholder="Postal code">
+  </div>
+  <p *ngIf="address.invalid && address.touched">Please check your address details.</p>
+
+  <button type="submit" [disabled]="f.invalid">Place order</button>
+</form>
+
+<pre>{{ f.value | json }}</pre>

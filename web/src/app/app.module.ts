@@ -38,6 +38,7 @@ import { BookSummaryComponent } from './book-summary/book-summary.component';
 import { BookReviewsComponent } from './book-reviews/book-reviews.component';
 import { LoginComponent } from './login/login.component';
 import { AddressEditComponent } from './address-edit/address-edit.component';
+import { CheckoutComponent } from './checkout/checkout.component';
 
 registerLocaleData(localeTr);
 
@@ -68,7 +69,8 @@ registerLocaleData(localeTr);
     BookSummaryComponent,
     BookReviewsComponent,
     LoginComponent,
-    AddressEditComponent
+    AddressEditComponent,
+    CheckoutComponent
   ],
   imports: [
     BrowserModule,
