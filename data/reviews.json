@@ -1,0 +1,181 @@
+{"_id":{"$oid":"679644670000000000000001"},"bookId":20,"customer":{"customerId":3,"name":"Grace Hopper"},"rating":4,"reviewedAt":{"$date":"2025-01-26T14:19:19Z"}}
+{"_id":{"$oid":"67ace2c80000000000000002"},"bookId":26,"customer":{"customerId":3,"name":"Grace Hopper"},"rating":3,"body":"Arrived quickly, great condition.","reviewedAt":{"$date":"2025-02-12T18:04:56Z"}}
+{"_id":{"$oid":"67af8ad40000000000000003"},"bookId":20,"customer":{"customerId":10,"name":"Ken Thompson"},"rating":5,"reviewedAt":{"$date":"2025-02-14T18:26:28Z"}}
+{"_id":{"$oid":"67b3acbc0000000000000004"},"bookId":50,"customer":{"customerId":21,"name":"Annie Easley"},"rating":5,"reviewedAt":{"$date":"2025-02-17T21:40:12Z"}}
+{"_id":{"$oid":"67b495de0000000000000005"},"bookId":45,"customer":{"customerId":24,"name":"Evelyn Boyd"},"rating":3,"reviewedAt":{"$date":"2025-02-18T14:14:54Z"}}
+{"_id":{"$oid":"67b575940000000000000006"},"bookId":35,"customer":{"customerId":29,"name":"Adele Goldberg"},"rating":4,"reviewedAt":{"$date":"2025-02-19T06:09:24Z"}}
+{"_id":{"$oid":"67be19640000000000000007"},"bookId":15,"customer":{"customerId":10,"name":"Ken Thompson"},"rating":5,"body":"Not my cup of tea.","reviewedAt":{"$date":"2025-02-25T19:26:28Z"}}
+{"_id":{"$oid":"67c12f7b0000000000000008"},"bookId":8,"customer":{"customerId":30,"name":"Jean Bartik"},"rating":5,"reviewedAt":{"$date":"2025-02-28T03:37:31Z"}}
+{"_id":{"$oid":"67c9dd5b0000000000000009"},"bookId":11,"customer":{"customerId":30,"name":"Jean Bartik"},"rating":5,"reviewedAt":{"$date":"2025-03-06T17:37:31Z"}}
+{"_id":{"$oid":"67cc7b83000000000000000a"},"bookId":51,"customer":{"customerId":1,"name":"Ada Lovelace"},"rating":4,"body":"Re-read it after ten years, still great.","reviewedAt":{"$date":"2025-03-08T17:16:51Z"}}
+{"_id":{"$oid":"67d15453000000000000000b"},"bookId":11,"customer":{"customerId":2,"name":"Alan Turing"},"rating":5,"reviewedAt":{"$date":"2025-03-12T09:30:59Z"}}
+{"_id":{"$oid":"67d2caff000000000000000c"},"bookId":39,"customer":{"customerId":32,"name":"Ivan Sutherland"},"rating":5,"body":"Slow start, strong finish.","reviewedAt":{"$date":"2025-03-13T12:09:35Z"}}
+{"_id":{"$oid":"67d4776b000000000000000d"},"bookId":2,"customer":{"customerId":30,"name":"Jean Bartik"},"rating":3,"reviewedAt":{"$date":"2025-03-14T18:37:31Z"}}
+{"_id":{"$oid":"67d4e007000000000000000e"},"bookId":39,"customer":{"customerId":12,"name":"Tim Berners-Lee"},"rating":4,"body":"Slow start, strong finish.","reviewedAt":{"$date":"2025-03-15T02:03:51Z"}}
+{"_id":{"$oid":"67e21657000000000000000f"},"bookId":40,"customer":{"customerId":32,"name":"Ivan Sutherland"},"rating":4,"body":"Beautiful translation.","reviewedAt":{"$date":"2025-03-25T02:35:03Z"}}
+{"_id":{"$oid":"67e300830000000000000010"},"bookId":21,"customer":{"customerId":9,"name":"Frances Allen"},"rating":5,"reviewedAt":{"$date":"2025-03-25T19:14:11Z"}}
+{"_id":{"$oid":"67e636f90000000000000011"},"bookId":20,"customer":{"customerId":32,"name":"Ivan Sutherland"},"rating":5,"body":"Arrived quickly, great condition.","reviewedAt":{"$date":"2025-03-28T05:43:21Z"}}
+{"_id":{"$oid":"67e9222a0000000000000012"},"bookId":12,"customer":{"customerId":4,"name":"Linus Torvalds"},"rating":5,"body":"Beautiful translation.","reviewedAt":{"$date":"2025-03-30T10:51:22Z"}}
+{"_id":{"$oid":"67ec84d00000000000000013"},"bookId":24,"customer":{"customerId":1,"name":"Ada Lovelace"},"rating":4,"reviewedAt":{"$date":"2025-04-02T00:29:04Z"}}
+{"_id":{"$oid":"67f34af80000000000000014"},"bookId":42,"customer":{"customerId":5,"name":"Margaret Hamilton"},"rating":5,"reviewedAt":{"$date":"2025-04-07T03:48:08Z"}}
+{"_id":{"$oid":"67f477750000000000000015"},"bookId":46,"customer":{"customerId":13,"name":"Katherine Johnson"},"rating":5,"body":"Every developer should read this.","reviewedAt":{"$date":"2025-04-08T01:10:13Z"}}
+{"_id":{"$oid":"67f4b6e50000000000000016"},"bookId":33,"customer":{"customerId":29,"name":"Adele Goldberg"},"rating":3,"reviewedAt":{"$date":"2025-04-08T05:40:53Z"}}
+{"_id":{"$oid":"67f8bb980000000000000017"},"bookId":42,"customer":{"customerId":13,"name":"Katherine Johnson"},"rating":4,"body":"Perfect gift.","reviewedAt":{"$date":"2025-04-11T06:50:00Z"}}
+{"_id":{"$oid":"67f97cf70000000000000018"},"bookId":31,"customer":{"customerId":32,"name":"Ivan Sutherland"},"rating":4,"body":"Perfect gift.","reviewedAt":{"$date":"2025-04-11T20:35:03Z"}}
+{"_id":{"$oid":"67fa20910000000000000019"},"bookId":42,"customer":{"customerId":2,"name":"Alan Turing"},"rating":5,"reviewedAt":{"$date":"2025-04-12T08:13:05Z"}}
+{"_id":{"$oid":"6800ef49000000000000001a"},"bookId":8,"customer":{"customerId":1,"name":"Ada Lovelace"},"rating":4,"reviewedAt":{"$date":"2025-04-17T12:08:41Z"}}
+{"_id":{"$oid":"680622ad000000000000001b"},"bookId":6,"customer":{"customerId":30,"name":"Jean Bartik"},"rating":4,"reviewedAt":{"$date":"2025-04-21T10:49:17Z"}}
+{"_id":{"$oid":"680741da000000000000001c"},"bookId":41,"customer":{"customerId":1,"name":"Ada Lovelace"},"rating":5,"reviewedAt":{"$date":"2025-04-22T07:14:34Z"}}
+{"_id":{"$oid":"68085558000000000000001d"},"bookId":1,"customer":{"customerId":13,"name":"Katherine Johnson"},"rating":5,"body":"A classic for a reason.","reviewedAt":{"$date":"2025-04-23T02:50:00Z"}}
+{"_id":{"$oid":"680c28d0000000000000001e"},"bookId":26,"customer":{"customerId":1,"name":"Ada Lovelace"},"rating":5,"body":"Not my cup of tea.","reviewedAt":{"$date":"2025-04-26T00:29:04Z"}}
+{"_id":{"$oid":"680f4438000000000000001f"},"bookId":6,"customer":{"customerId":32,"name":"Ivan Sutherland"},"rating":4,"reviewedAt":{"$date":"2025-04-28T09:02:48Z"}}
+{"_id":{"$oid":"6819e8e80000000000000020"},"bookId":15,"customer":{"customerId":5,"name":"Margaret Hamilton"},"rating":4,"body":"Slow start, strong finish.","reviewedAt":{"$date":"2025-05-06T10:48:08Z"}}
+{"_id":{"$oid":"681ae2130000000000000021"},"bookId":23,"customer":{"customerId":2,"name":"Alan Turing"},"rating":5,"body":"Arrived quickly, great condition.","reviewedAt":{"$date":"2025-05-07T04:31:15Z"}}
+{"_id":{"$oid":"6820102d0000000000000022"},"bookId":35,"customer":{"customerId":30,"name":"Jean Bartik"},"rating":3,"reviewedAt":{"$date":"2025-05-11T02:49:17Z"}}
+{"_id":{"$oid":"68230ab80000000000000023"},"bookId":26,"customer":{"customerId":32,"name":"Ivan Sutherland"},"rating":4,"body":"Beautiful translation.","reviewedAt":{"$date":"2025-05-13T09:02:48Z"}}
+{"_id":{"$oid":"6826f6d50000000000000024"},"bookId":14,"customer":{"customerId":19,"name":"Niklaus Wirth"},"rating":1,"body":"The ending surprised me.","reviewedAt":{"$date":"2025-05-16T08:27:01Z"}}
+{"_id":{"$oid":"682a3e380000000000000025"},"bookId":28,"customer":{"customerId":22,"name":"Joan Clarke"},"rating":3,"body":"Could not put it down.","reviewedAt":{"$date":"2025-05-18T20:08:24Z"}}
+{"_id":{"$oid":"682addca0000000000000026"},"bookId":56,"customer":{"customerId":33,"name":"Lynn Conway"},"rating":4,"reviewedAt":{"$date":"2025-05-19T07:29:14Z"}}
+{"_id":{"$oid":"682b3b580000000000000027"},"bookId":35,"customer":{"customerId":22,"name":"Joan Clarke"},"rating":4,"body":"Perfect gift.","reviewedAt":{"$date":"2025-05-19T14:08:24Z"}}
+{"_id":{"$oid":"682bf6850000000000000028"},"bookId":43,"customer":{"customerId":19,"name":"Niklaus Wirth"},"rating":4,"body":"Every developer should read this.","reviewedAt":{"$date":"2025-05-20T03:27:01Z"}}
+{"_id":{"$oid":"6833e38e0000000000000029"},"bookId":40,"customer":{"customerId":16,"name":"Anita Borg"},"rating":4,"reviewedAt":{"$date":"2025-05-26T03:44:14Z"}}
+{"_id":{"$oid":"6839e2c5000000000000002a"},"bookId":39,"customer":{"customerId":22,"name":"Joan Clarke"},"rating":5,"body":"Slow start, strong finish.","reviewedAt":{"$date":"2025-05-30T16:54:29Z"}}
+{"_id":{"$oid":"683cbdd1000000000000002b"},"bookId":4,"customer":{"customerId":13,"name":"Katherine Johnson"},"rating":4,"body":"Arrived quickly, great condition.","reviewedAt":{"$date":"2025-06-01T20:53:37Z"}}
+{"_id":{"$oid":"6844caee000000000000002c"},"bookId":36,"customer":{"customerId":32,"name":"Ivan Sutherland"},"rating":5,"body":"Beautiful translation.","reviewedAt":{"$date":"2025-06-07T23:27:42Z"}}
+{"_id":{"$oid":"6845c326000000000000002d"},"bookId":34,"customer":{"customerId":32,"name":"Ivan Sutherland"},"rating":5,"reviewedAt":{"$date":"2025-06-08T17:06:46Z"}}
+{"_id":{"$oid":"6850e215000000000000002e"},"bookId":40,"customer":{"customerId":23,"name":"Mary Keller"},"rating":4,"body":"Perfect gift.","reviewedAt":{"$date":"2025-06-17T03:33:41Z"}}
+{"_id":{"$oid":"68521775000000000000002f"},"bookId":3,"customer":{"customerId":23,"name":"Mary Keller"},"rating":5,"body":"The ending surprised me.","reviewedAt":{"$date":"2025-06-18T01:33:41Z"}}
+{"_id":{"$oid":"6852d33a0000000000000030"},"bookId":23,"customer":{"customerId":25,"name":"Claude Shannon"},"rating":3,"body":"Perfect gift.","reviewedAt":{"$date":"2025-06-18T14:54:50Z"}}
+{"_id":{"$oid":"685714840000000000000031"},"bookId":47,"customer":{"customerId":22,"name":"Joan Clarke"},"rating":2,"body":"Slow start, strong finish.","reviewedAt":{"$date":"2025-06-21T20:22:28Z"}}
+{"_id":{"$oid":"686033a70000000000000032"},"bookId":56,"customer":{"customerId":22,"name":"Joan Clarke"},"rating":5,"reviewedAt":{"$date":"2025-06-28T18:25:43Z"}}
+{"_id":{"$oid":"68633a260000000000000033"},"bookId":51,"customer":{"customerId":35,"name":"Pat O'Neil"},"rating":5,"reviewedAt":{"$date":"2025-07-01T01:30:14Z"}}
+{"_id":{"$oid":"6868320a0000000000000034"},"bookId":29,"customer":{"customerId":30,"name":"Jean Bartik"},"rating":4,"body":"Not my cup of tea.","reviewedAt":{"$date":"2025-07-04T19:56:58Z"}}
+{"_id":{"$oid":"68697c6f0000000000000035"},"bookId":9,"customer":{"customerId":32,"name":"Ivan Sutherland"},"rating":5,"body":"Beautiful translation.","reviewedAt":{"$date":"2025-07-05T19:26:39Z"}}
+{"_id":{"$oid":"686e66060000000000000036"},"bookId":28,"customer":{"customerId":14,"name":"John McCarthy"},"rating":5,"reviewedAt":{"$date":"2025-07-09T12:52:22Z"}}
+{"_id":{"$oid":"6870a2270000000000000037"},"bookId":49,"customer":{"customerId":12,"name":"Tim Berners-Lee"},"rating":3,"reviewedAt":{"$date":"2025-07-11T05:33:27Z"}}
+{"_id":{"$oid":"6870fae80000000000000038"},"bookId":39,"customer":{"customerId":14,"name":"John McCarthy"},"rating":5,"body":"Re-read it after ten years, still great.","reviewedAt":{"$date":"2025-07-11T11:52:08Z"}}
+{"_id":{"$oid":"68723c3b0000000000000039"},"bookId":27,"customer":{"customerId":2,"name":"Alan Turing"},"rating":5,"body":"Too long for my taste.","reviewedAt":{"$date":"2025-07-12T10:43:07Z"}}
+{"_id":{"$oid":"6878a9f8000000000000003a"},"bookId":44,"customer":{"customerId":22,"name":"Joan Clarke"},"rating":5,"body":"Beautiful translation.","reviewedAt":{"$date":"2025-07-17T07:44:56Z"}}
+{"_id":{"$oid":"6879598b000000000000003b"},"bookId":41,"customer":{"customerId":32,"name":"Ivan Sutherland"},"rating":4,"body":"Dense but rewarding.","reviewedAt":{"$date":"2025-07-17T20:14:03Z"}}
+{"_id":{"$oid":"687aca1f000000000000003c"},"bookId":29,"customer":{"customerId":32,"name":"Ivan Sutherland"},"rating":4,"body":"The ending surprised me.","reviewedAt":{"$date":"2025-07-18T22:26:39Z"}}
+{"_id":{"$oid":"687d03aa000000000000003d"},"bookId":20,"customer":{"customerId":14,"name":"John McCarthy"},"rating":5,"body":"Beautiful translation.","reviewedAt":{"$date":"2025-07-20T14:56:42Z"}}
+{"_id":{"$oid":"68843b30000000000000003e"},"bookId":1,"customer":{"customerId":1,"name":"Ada Lovelace"},"rating":5,"reviewedAt":{"$date":"2025-07-26T02:19:28Z"}}
+{"_id":{"$oid":"688b9a16000000000000003f"},"bookId":39,"customer":{"customerId":35,"name":"Pat O'Neil"},"rating":4,"body":"Every developer should read this.","reviewedAt":{"$date":"2025-07-31T16:30:14Z"}}
+{"_id":{"$oid":"688ffd4c0000000000000040"},"bookId":51,"customer":{"customerId":28,"name":"Tony Hoare"},"rating":5,"body":"Re-read it after ten years, still great.","reviewedAt":{"$date":"2025-08-04T00:22:36Z"}}
+{"_id":{"$oid":"6891d6e50000000000000041"},"bookId":23,"customer":{"customerId":21,"name":"Annie Easley"},"rating":5,"body":"A classic for a reason.","reviewedAt":{"$date":"2025-08-05T10:03:17Z"}}
+{"_id":{"$oid":"6895bab80000000000000042"},"bookId":43,"customer":{"customerId":14,"name":"John McCarthy"},"rating":5,"body":"Dense but rewarding.","reviewedAt":{"$date":"2025-08-08T08:52:08Z"}}
+{"_id":{"$oid":"6895d9750000000000000043"},"bookId":35,"customer":{"customerId":21,"name":"Annie Easley"},"rating":5,"body":"Not my cup of tea.","reviewedAt":{"$date":"2025-08-08T11:03:17Z"}}
+{"_id":{"$oid":"689686bc0000000000000044"},"bookId":15,"customer":{"customerId":28,"name":"Tony Hoare"},"rating":5,"body":"Slow start, strong finish.","reviewedAt":{"$date":"2025-08-08T23:22:36Z"}}
+{"_id":{"$oid":"6898679a0000000000000045"},"bookId":35,"customer":{"customerId":3,"name":"Grace Hopper"},"rating":3,"reviewedAt":{"$date":"2025-08-10T09:34:18Z"}}
+{"_id":{"$oid":"68a227d10000000000000046"},"bookId":41,"customer":{"customerId":36,"name":"Elif Yilmaz"},"rating":5,"reviewedAt":{"$date":"2025-08-17T19:04:49Z"}}
+{"_id":{"$oid":"68a241eb0000000000000047"},"bookId":21,"customer":{"customerId":11,"name":"Radia Perlman"},"rating":4,"reviewedAt":{"$date":"2025-08-17T20:56:11Z"}}
+{"_id":{"$oid":"68a4de960000000000000048"},"bookId":27,"customer":{"customerId":33,"name":"Lynn Conway"},"rating":4,"reviewedAt":{"$date":"2025-08-19T20:29:10Z"}}
+{"_id":{"$oid":"68b019fe0000000000000049"},"bookId":23,"customer":{"customerId":23,"name":"Mary Keller"},"rating":5,"body":"Not my cup of tea.","reviewedAt":{"$date":"2025-08-28T08:57:34Z"}}
+{"_id":{"$oid":"68b1a1f3000000000000004a"},"bookId":24,"customer":{"customerId":13,"name":"Katherine Johnson"},"rating":4,"body":"Every developer should read this.","reviewedAt":{"$date":"2025-08-29T12:49:55Z"}}
+{"_id":{"$oid":"68b302cb000000000000004b"},"bookId":19,"customer":{"customerId":3,"name":"Grace Hopper"},"rating":4,"body":"Too long for my taste.","reviewedAt":{"$date":"2025-08-30T13:55:23Z"}}
+{"_id":{"$oid":"68be9a7e000000000000004c"},"bookId":33,"customer":{"customerId":23,"name":"Mary Keller"},"rating":3,"body":"A classic for a reason.","reviewedAt":{"$date":"2025-09-08T08:57:34Z"}}
+{"_id":{"$oid":"68c236ee000000000000004d"},"bookId":21,"customer":{"customerId":19,"name":"Niklaus Wirth"},"rating":3,"body":"Could not put it down.","reviewedAt":{"$date":"2025-09-11T02:41:50Z"}}
+{"_id":{"$oid":"68c3e0c3000000000000004e"},"bookId":45,"customer":{"customerId":28,"name":"Tony Hoare"},"rating":5,"body":"Dense but rewarding.","reviewedAt":{"$date":"2025-09-12T08:58:43Z"}}
+{"_id":{"$oid":"68c4e5b2000000000000004f"},"bookId":28,"customer":{"customerId":34,"name":"Fran Bilas"},"rating":5,"body":"Perfect gift.","reviewedAt":{"$date":"2025-09-13T03:32:02Z"}}
+{"_id":{"$oid":"68c552360000000000000050"},"bookId":58,"customer":{"customerId":8,"name":"Edsger Dijkstra"},"rating":3,"reviewedAt":{"$date":"2025-09-13T11:15:02Z"}}
+{"_id":{"$oid":"68c5d0000000000000000051"},"bookId":23,"customer":{"customerId":1,"name":"Ada Lovelace"},"rating":5,"reviewedAt":{"$date":"2025-09-13T20:11:44Z"}}
+{"_id":{"$oid":"68c65c910000000000000052"},"bookId":48,"customer":{"customerId":3,"name":"Grace Hopper"},"rating":5,"body":"Beautiful translation.","reviewedAt":{"$date":"2025-09-14T06:11:29Z"}}
+{"_id":{"$oid":"68cc412a0000000000000053"},"bookId":19,"customer":{"customerId":32,"name":"Ivan Sutherland"},"rating":4,"body":"Beautiful translation.","reviewedAt":{"$date":"2025-09-18T17:28:10Z"}}
+{"_id":{"$oid":"68d312480000000000000054"},"bookId":47,"customer":{"customerId":24,"name":"Evelyn Boyd"},"rating":4,"reviewedAt":{"$date":"2025-09-23T21:34:00Z"}}
+{"_id":{"$oid":"68d97b820000000000000055"},"bookId":36,"customer":{"customerId":24,"name":"Evelyn Boyd"},"rating":5,"body":"A classic for a reason.","reviewedAt":{"$date":"2025-09-28T18:16:34Z"}}
+{"_id":{"$oid":"68dff8e80000000000000056"},"bookId":22,"customer":{"customerId":25,"name":"Claude Shannon"},"rating":4,"body":"A classic for a reason.","reviewedAt":{"$date":"2025-10-03T16:25:12Z"}}
+{"_id":{"$oid":"68e01eac0000000000000057"},"bookId":10,"customer":{"customerId":30,"name":"Jean Bartik"},"rating":1,"reviewedAt":{"$date":"2025-10-03T19:06:20Z"}}
+{"_id":{"$oid":"68e1b0d80000000000000058"},"bookId":60,"customer":{"customerId":8,"name":"Edsger Dijkstra"},"rating":2,"reviewedAt":{"$date":"2025-10-04T23:42:16Z"}}
+{"_id":{"$oid":"68e67a2d0000000000000059"},"bookId":4,"customer":{"customerId":22,"name":"Joan Clarke"},"rating":5,"body":"The ending surprised me.","reviewedAt":{"$date":"2025-10-08T14:50:21Z"}}
+{"_id":{"$oid":"68e6d64d000000000000005a"},"bookId":59,"customer":{"customerId":7,"name":"Barbara Liskov"},"rating":3,"reviewedAt":{"$date":"2025-10-08T21:23:25Z"}}
+{"_id":{"$oid":"68ea7aa3000000000000005b"},"bookId":1,"customer":{"customerId":21,"name":"Annie Easley"},"rating":4,"reviewedAt":{"$date":"2025-10-11T15:41:23Z"}}
+{"_id":{"$oid":"68eb04f2000000000000005c"},"bookId":43,"customer":{"customerId":21,"name":"Annie Easley"},"rating":5,"reviewedAt":{"$date":"2025-10-12T01:31:30Z"}}
+{"_id":{"$oid":"68f0d40d000000000000005d"},"bookId":14,"customer":{"customerId":7,"name":"Barbara Liskov"},"rating":4,"reviewedAt":{"$date":"2025-10-16T11:16:29Z"}}
+{"_id":{"$oid":"68f2356a000000000000005e"},"bookId":51,"customer":{"customerId":19,"name":"Niklaus Wirth"},"rating":4,"body":"The ending surprised me.","reviewedAt":{"$date":"2025-10-17T12:24:10Z"}}
+{"_id":{"$oid":"68f3c5ef000000000000005f"},"bookId":42,"customer":{"customerId":25,"name":"Claude Shannon"},"rating":5,"reviewedAt":{"$date":"2025-10-18T16:53:03Z"}}
+{"_id":{"$oid":"68f678510000000000000060"},"bookId":5,"customer":{"customerId":17,"name":"Bjarne Stroustrup"},"rating":3,"body":"Perfect gift.","reviewedAt":{"$date":"2025-10-20T17:58:41Z"}}
+{"_id":{"$oid":"68f911a90000000000000061"},"bookId":47,"customer":{"customerId":32,"name":"Ivan Sutherland"},"rating":5,"body":"Could not put it down.","reviewedAt":{"$date":"2025-10-22T17:17:29Z"}}
+{"_id":{"$oid":"68f9536b0000000000000062"},"bookId":43,"customer":{"customerId":29,"name":"Adele Goldberg"},"rating":3,"reviewedAt":{"$date":"2025-10-22T21:58:03Z"}}
+{"_id":{"$oid":"68fbf7fc0000000000000063"},"bookId":42,"customer":{"customerId":21,"name":"Annie Easley"},"rating":4,"reviewedAt":{"$date":"2025-10-24T22:04:44Z"}}
+{"_id":{"$oid":"68fc4b8d0000000000000064"},"bookId":1,"customer":{"customerId":14,"name":"John McCarthy"},"rating":5,"reviewedAt":{"$date":"2025-10-25T04:01:17Z"}}
+{"_id":{"$oid":"68fdd65a0000000000000065"},"bookId":19,"customer":{"customerId":6,"name":"Donald Knuth"},"rating":4,"reviewedAt":{"$date":"2025-10-26T08:05:46Z"}}
+{"_id":{"$oid":"6900a36f0000000000000066"},"bookId":23,"customer":{"customerId":7,"name":"Barbara Liskov"},"rating":1,"reviewedAt":{"$date":"2025-10-28T11:05:19Z"}}
+{"_id":{"$oid":"690316a30000000000000067"},"bookId":4,"customer":{"customerId":21,"name":"Annie Easley"},"rating":4,"body":"Re-read it after ten years, still great.","reviewedAt":{"$date":"2025-10-30T07:41:23Z"}}
+{"_id":{"$oid":"690543d20000000000000068"},"bookId":58,"customer":{"customerId":35,"name":"Pat O'Neil"},"rating":4,"body":"Dense but rewarding.","reviewedAt":{"$date":"2025-10-31T23:18:42Z"}}
+{"_id":{"$oid":"6907c78f0000000000000069"},"bookId":51,"customer":{"customerId":7,"name":"Barbara Liskov"},"rating":5,"body":"Dense but rewarding.","reviewedAt":{"$date":"2025-11-02T21:05:19Z"}}
+{"_id":{"$oid":"6907e45c000000000000006a"},"bookId":21,"customer":{"customerId":30,"name":"Jean Bartik"},"rating":5,"reviewedAt":{"$date":"2025-11-02T23:08:12Z"}}
+{"_id":{"$oid":"690b7d31000000000000006b"},"bookId":39,"customer":{"customerId":31,"name":"Carol Shaw"},"rating":3,"body":"Every developer should read this.","reviewedAt":{"$date":"2025-11-05T16:37:05Z"}}
+{"_id":{"$oid":"690d43af000000000000006c"},"bookId":48,"customer":{"customerId":32,"name":"Ivan Sutherland"},"rating":4,"reviewedAt":{"$date":"2025-11-07T00:56:15Z"}}
+{"_id":{"$oid":"690d7c5b000000000000006d"},"bookId":47,"customer":{"customerId":29,"name":"Adele Goldberg"},"rating":4,"body":"Every developer should read this.","reviewedAt":{"$date":"2025-11-07T04:58:03Z"}}
+{"_id":{"$oid":"690e384c000000000000006e"},"bookId":43,"customer":{"customerId":4,"name":"Linus Torvalds"},"rating":5,"body":"Arrived quickly, great condition.","reviewedAt":{"$date":"2025-11-07T18:19:56Z"}}
+{"_id":{"$oid":"690fed78000000000000006f"},"bookId":43,"customer":{"customerId":32,"name":"Ivan Sutherland"},"rating":4,"body":"Could not put it down.","reviewedAt":{"$date":"2025-11-09T01:25:12Z"}}
+{"_id":{"$oid":"6914b4700000000000000070"},"bookId":2,"customer":{"customerId":2,"name":"Alan Turing"},"rating":4,"body":"Dense but rewarding.","reviewedAt":{"$date":"2025-11-12T16:23:12Z"}}
+{"_id":{"$oid":"6920110f0000000000000071"},"bookId":39,"customer":{"customerId":21,"name":"Annie Easley"},"rating":4,"body":"Re-read it after ten years, still great.","reviewedAt":{"$date":"2025-11-21T07:13:19Z"}}
+{"_id":{"$oid":"692509820000000000000072"},"bookId":41,"customer":{"customerId":33,"name":"Lynn Conway"},"rating":4,"reviewedAt":{"$date":"2025-11-25T01:42:26Z"}}
+{"_id":{"$oid":"692855420000000000000073"},"bookId":21,"customer":{"customerId":33,"name":"Lynn Conway"},"rating":5,"reviewedAt":{"$date":"2025-11-27T13:42:26Z"}}
+{"_id":{"$oid":"692be1db0000000000000074"},"bookId":16,"customer":{"customerId":29,"name":"Adele Goldberg"},"rating":4,"reviewedAt":{"$date":"2025-11-30T06:19:07Z"}}
+{"_id":{"$oid":"692cdc960000000000000075"},"bookId":51,"customer":{"customerId":3,"name":"Grace Hopper"},"rating":4,"reviewedAt":{"$date":"2025-12-01T00:08:54Z"}}
+{"_id":{"$oid":"693818320000000000000076"},"bookId":61,"customer":{"customerId":20,"name":"Sophie Wilson"},"rating":5,"body":"Too long for my taste.","reviewedAt":{"$date":"2025-12-09T12:38:10Z"}}
+{"_id":{"$oid":"6939815e0000000000000077"},"bookId":8,"customer":{"customerId":3,"name":"Grace Hopper"},"rating":4,"reviewedAt":{"$date":"2025-12-10T14:19:10Z"}}
+{"_id":{"$oid":"693a702d0000000000000078"},"bookId":35,"customer":{"customerId":32,"name":"Ivan Sutherland"},"rating":3,"reviewedAt":{"$date":"2025-12-11T07:18:05Z"}}
+{"_id":{"$oid":"693d15290000000000000079"},"bookId":61,"customer":{"customerId":3,"name":"Grace Hopper"},"rating":5,"body":"The ending surprised me.","reviewedAt":{"$date":"2025-12-13T07:26:33Z"}}
+{"_id":{"$oid":"693f9a4e000000000000007a"},"bookId":29,"customer":{"customerId":3,"name":"Grace Hopper"},"rating":4,"body":"A classic for a reason.","reviewedAt":{"$date":"2025-12-15T05:19:10Z"}}
+{"_id":{"$oid":"6943f16c000000000000007b"},"bookId":59,"customer":{"customerId":1,"name":"Ada Lovelace"},"rating":4,"body":"A classic for a reason.","reviewedAt":{"$date":"2025-12-18T12:19:56Z"}}
+{"_id":{"$oid":"6945c605000000000000007c"},"bookId":43,"customer":{"customerId":6,"name":"Donald Knuth"},"rating":4,"reviewedAt":{"$date":"2025-12-19T21:39:17Z"}}
+{"_id":{"$oid":"694f43a8000000000000007d"},"bookId":33,"customer":{"customerId":3,"name":"Grace Hopper"},"rating":3,"body":"Every developer should read this.","reviewedAt":{"$date":"2025-12-27T02:25:44Z"}}
+{"_id":{"$oid":"694feb12000000000000007e"},"bookId":4,"customer":{"customerId":2,"name":"Alan Turing"},"rating":4,"body":"Too long for my taste.","reviewedAt":{"$date":"2025-12-27T14:20:02Z"}}
+{"_id":{"$oid":"695005dc000000000000007f"},"bookId":60,"customer":{"customerId":30,"name":"Jean Bartik"},"rating":5,"body":"Re-read it after ten years, still great.","reviewedAt":{"$date":"2025-12-27T16:14:20Z"}}
+{"_id":{"$oid":"6950f29a0000000000000080"},"bookId":15,"customer":{"customerId":1,"name":"Ada Lovelace"},"rating":5,"body":"A classic for a reason.","reviewedAt":{"$date":"2025-12-28T09:04:26Z"}}
+{"_id":{"$oid":"695159c00000000000000081"},"bookId":47,"customer":{"customerId":21,"name":"Annie Easley"},"rating":5,"body":"A classic for a reason.","reviewedAt":{"$date":"2025-12-28T16:24:32Z"}}
+{"_id":{"$oid":"6952522a0000000000000082"},"bookId":47,"customer":{"customerId":1,"name":"Ada Lovelace"},"rating":4,"reviewedAt":{"$date":"2025-12-29T10:04:26Z"}}
+{"_id":{"$oid":"69529cba0000000000000083"},"bookId":21,"customer":{"customerId":12,"name":"Tim Berners-Lee"},"rating":5,"body":"Perfect gift.","reviewedAt":{"$date":"2025-12-29T15:22:34Z"}}
+{"_id":{"$oid":"69533ed30000000000000084"},"bookId":37,"customer":{"customerId":3,"name":"Grace Hopper"},"rating":4,"reviewedAt":{"$date":"2025-12-30T02:54:11Z"}}
+{"_id":{"$oid":"6958db2e0000000000000085"},"bookId":57,"customer":{"customerId":29,"name":"Adele Goldberg"},"rating":5,"body":"Too long for my taste.","reviewedAt":{"$date":"2026-01-03T09:02:38Z"}}
+{"_id":{"$oid":"696276bb0000000000000086"},"bookId":30,"customer":{"customerId":30,"name":"Jean Bartik"},"rating":5,"body":"Could not put it down.","reviewedAt":{"$date":"2026-01-10T15:56:43Z"}}
+{"_id":{"$oid":"6964eb750000000000000087"},"bookId":2,"customer":{"customerId":6,"name":"Donald Knuth"},"rating":4,"body":"Slow start, strong finish.","reviewedAt":{"$date":"2026-01-12T12:39:17Z"}}
+{"_id":{"$oid":"696797cb0000000000000088"},"bookId":10,"customer":{"customerId":22,"name":"Joan Clarke"},"rating":4,"reviewedAt":{"$date":"2026-01-14T13:19:07Z"}}
+{"_id":{"$oid":"69699cc50000000000000089"},"bookId":43,"customer":{"customerId":1,"name":"Ada Lovelace"},"rating":4,"body":"Could not put it down.","reviewedAt":{"$date":"2026-01-16T02:04:53Z"}}
+{"_id":{"$oid":"696c61cc000000000000008a"},"bookId":19,"customer":{"customerId":28,"name":"Tony Hoare"},"rating":4,"body":"Dense but rewarding.","reviewedAt":{"$date":"2026-01-18T04:30:04Z"}}
+{"_id":{"$oid":"696f5ade000000000000008b"},"bookId":58,"customer":{"customerId":3,"name":"Grace Hopper"},"rating":4,"body":"Not my cup of tea.","reviewedAt":{"$date":"2026-01-20T10:37:18Z"}}
+{"_id":{"$oid":"6970aabe000000000000008c"},"bookId":26,"customer":{"customerId":9,"name":"Frances Allen"},"rating":5,"body":"Re-read it after ten years, still great.","reviewedAt":{"$date":"2026-01-21T10:30:22Z"}}
+{"_id":{"$oid":"6972ad5b000000000000008d"},"bookId":47,"customer":{"customerId":10,"name":"Ken Thompson"},"rating":3,"body":"Perfect gift.","reviewedAt":{"$date":"2026-01-22T23:06:03Z"}}
+{"_id":{"$oid":"697341c4000000000000008e"},"bookId":57,"customer":{"customerId":3,"name":"Grace Hopper"},"rating":3,"body":"Could not put it down.","reviewedAt":{"$date":"2026-01-23T09:39:16Z"}}
+{"_id":{"$oid":"69745e6b000000000000008f"},"bookId":58,"customer":{"customerId":13,"name":"Katherine Johnson"},"rating":5,"body":"Dense but rewarding.","reviewedAt":{"$date":"2026-01-24T05:53:47Z"}}
+{"_id":{"$oid":"697a24710000000000000090"},"bookId":5,"customer":{"customerId":2,"name":"Alan Turing"},"rating":3,"body":"The ending surprised me.","reviewedAt":{"$date":"2026-01-28T15:00:01Z"}}
+{"_id":{"$oid":"6980476c0000000000000091"},"bookId":2,"customer":{"customerId":7,"name":"Barbara Liskov"},"rating":2,"reviewedAt":{"$date":"2026-02-02T06:42:52Z"}}
+{"_id":{"$oid":"6982e91e0000000000000092"},"bookId":59,"customer":{"customerId":3,"name":"Grace Hopper"},"rating":5,"body":"Dense but rewarding.","reviewedAt":{"$date":"2026-02-04T06:37:18Z"}}
+{"_id":{"$oid":"69857d270000000000000093"},"bookId":57,"customer":{"customerId":36,"name":"Elif Yilmaz"},"rating":2,"reviewedAt":{"$date":"2026-02-06T05:33:27Z"}}
+{"_id":{"$oid":"6986038c0000000000000094"},"bookId":52,"customer":{"customerId":16,"name":"Anita Borg"},"rating":4,"body":"The ending surprised me.","reviewedAt":{"$date":"2026-02-06T15:06:52Z"}}
+{"_id":{"$oid":"698686e50000000000000095"},"bookId":37,"customer":{"customerId":2,"name":"Alan Turing"},"rating":3,"body":"Not my cup of tea.","reviewedAt":{"$date":"2026-02-07T00:27:17Z"}}
+{"_id":{"$oid":"698f70a90000000000000096"},"bookId":33,"customer":{"customerId":12,"name":"Tim Berners-Lee"},"rating":5,"reviewedAt":{"$date":"2026-02-13T18:42:49Z"}}
+{"_id":{"$oid":"699792720000000000000097"},"bookId":53,"customer":{"customerId":32,"name":"Ivan Sutherland"},"rating":4,"reviewedAt":{"$date":"2026-02-19T22:45:06Z"}}
+{"_id":{"$oid":"6997d7bc0000000000000098"},"bookId":17,"customer":{"customerId":22,"name":"Joan Clarke"},"rating":4,"body":"Perfect gift.","reviewedAt":{"$date":"2026-02-20T03:40:44Z"}}
+{"_id":{"$oid":"699b0f7b0000000000000099"},"bookId":65,"customer":{"customerId":30,"name":"Jean Bartik"},"rating":5,"body":"Re-read it after ten years, still great.","reviewedAt":{"$date":"2026-02-22T14:15:23Z"}}
+{"_id":{"$oid":"69a0d25a000000000000009a"},"bookId":39,"customer":{"customerId":18,"name":"Guido van Rossum"},"rating":4,"body":"Slow start, strong finish.","reviewedAt":{"$date":"2026-02-26T23:08:10Z"}}
+{"_id":{"$oid":"69a39a2e000000000000009b"},"bookId":39,"customer":{"customerId":16,"name":"Anita Borg"},"rating":2,"body":"Perfect gift.","reviewedAt":{"$date":"2026-03-01T01:45:18Z"}}
+{"_id":{"$oid":"69ac9df7000000000000009c"},"bookId":4,"customer":{"customerId":14,"name":"John McCarthy"},"rating":4,"reviewedAt":{"$date":"2026-03-07T21:51:51Z"}}
+{"_id":{"$oid":"69b0a2b4000000000000009d"},"bookId":30,"customer":{"customerId":14,"name":"John McCarthy"},"rating":5,"body":"A classic for a reason.","reviewedAt":{"$date":"2026-03-10T23:01:08Z"}}
+{"_id":{"$oid":"69b41fd7000000000000009e"},"bookId":68,"customer":{"customerId":16,"name":"Anita Borg"},"rating":4,"body":"Too long for my taste.","reviewedAt":{"$date":"2026-03-13T14:31:51Z"}}
+{"_id":{"$oid":"69c065f4000000000000009f"},"bookId":28,"customer":{"customerId":3,"name":"Grace Hopper"},"rating":5,"reviewedAt":{"$date":"2026-03-22T21:58:12Z"}}
+{"_id":{"$oid":"69c2088500000000000000a0"},"bookId":18,"customer":{"customerId":2,"name":"Alan Turing"},"rating":4,"body":"Slow start, strong finish.","reviewedAt":{"$date":"2026-03-24T03:44:05Z"}}
+{"_id":{"$oid":"69cfe10400000000000000a1"},"bookId":36,"customer":{"customerId":2,"name":"Alan Turing"},"rating":4,"body":"Arrived quickly, great condition.","reviewedAt":{"$date":"2026-04-03T15:47:16Z"}}
+{"_id":{"$oid":"69d3b55a00000000000000a2"},"bookId":9,"customer":{"customerId":3,"name":"Grace Hopper"},"rating":4,"body":"Not my cup of tea.","reviewedAt":{"$date":"2026-04-06T13:30:02Z"}}
+{"_id":{"$oid":"69d8e22c00000000000000a3"},"bookId":33,"customer":{"customerId":18,"name":"Guido van Rossum"},"rating":5,"body":"Not my cup of tea.","reviewedAt":{"$date":"2026-04-10T11:42:36Z"}}
+{"_id":{"$oid":"69dacac200000000000000a4"},"bookId":1,"customer":{"customerId":18,"name":"Guido van Rossum"},"rating":2,"reviewedAt":{"$date":"2026-04-11T22:27:14Z"}}
+{"_id":{"$oid":"69dc041500000000000000a5"},"bookId":43,"customer":{"customerId":2,"name":"Alan Turing"},"rating":4,"body":"Arrived quickly, great condition.","reviewedAt":{"$date":"2026-04-12T20:44:05Z"}}
+{"_id":{"$oid":"69e0e86400000000000000a6"},"bookId":65,"customer":{"customerId":2,"name":"Alan Turing"},"rating":3,"reviewedAt":{"$date":"2026-04-16T13:47:16Z"}}
+{"_id":{"$oid":"69e305db00000000000000a7"},"bookId":1,"customer":{"customerId":30,"name":"Jean Bartik"},"rating":4,"body":"Could not put it down.","reviewedAt":{"$date":"2026-04-18T04:17:31Z"}}
+{"_id":{"$oid":"69ee78f000000000000000a8"},"bookId":56,"customer":{"customerId":3,"name":"Grace Hopper"},"rating":5,"body":"Dense but rewarding.","reviewedAt":{"$date":"2026-04-26T20:43:28Z"}}
+{"_id":{"$oid":"69f7fb1b00000000000000a9"},"bookId":26,"customer":{"customerId":29,"name":"Adele Goldberg"},"rating":5,"body":"Could not put it down.","reviewedAt":{"$date":"2026-05-04T01:49:15Z"}}
+{"_id":{"$oid":"69f9c78900000000000000aa"},"bookId":70,"customer":{"customerId":3,"name":"Grace Hopper"},"rating":2,"reviewedAt":{"$date":"2026-05-05T10:33:45Z"}}
+{"_id":{"$oid":"69fd704000000000000000ab"},"bookId":60,"customer":{"customerId":2,"name":"Alan Turing"},"rating":3,"reviewedAt":{"$date":"2026-05-08T05:10:24Z"}}
+{"_id":{"$oid":"69fe588200000000000000ac"},"bookId":27,"customer":{"customerId":30,"name":"Jean Bartik"},"rating":4,"reviewedAt":{"$date":"2026-05-08T21:41:22Z"}}
+{"_id":{"$oid":"6a120d9b00000000000000ad"},"bookId":33,"customer":{"customerId":14,"name":"John McCarthy"},"rating":3,"reviewedAt":{"$date":"2026-05-23T20:27:07Z"}}
+{"_id":{"$oid":"6a22f18a00000000000000ae"},"bookId":14,"customer":{"customerId":2,"name":"Alan Turing"},"rating":2,"body":"The ending surprised me.","reviewedAt":{"$date":"2026-06-05T15:55:54Z"}}
+{"_id":{"$oid":"6a26608900000000000000af"},"bookId":57,"customer":{"customerId":21,"name":"Annie Easley"},"rating":5,"reviewedAt":{"$date":"2026-06-08T06:26:17Z"}}
+{"_id":{"$oid":"6a268da700000000000000b0"},"bookId":27,"customer":{"customerId":34,"name":"Fran Bilas"},"rating":4,"body":"Too long for my taste.","reviewedAt":{"$date":"2026-06-08T09:38:47Z"}}
+{"_id":{"$oid":"6a2a3fab00000000000000b1"},"bookId":73,"customer":{"customerId":20,"name":"Sophie Wilson"},"rating":5,"body":"Slow start, strong finish.","reviewedAt":{"$date":"2026-06-11T04:55:07Z"}}
+{"_id":{"$oid":"6a35ef6600000000000000b2"},"bookId":53,"customer":{"customerId":21,"name":"Annie Easley"},"rating":1,"body":"Not my cup of tea.","reviewedAt":{"$date":"2026-06-20T01:39:50Z"}}
+{"_id":{"$oid":"6a38083e00000000000000b3"},"bookId":29,"customer":{"customerId":1,"name":"Ada Lovelace"},"rating":5,"body":"Dense but rewarding.","reviewedAt":{"$date":"2026-06-21T15:50:22Z"}}
+{"_id":{"$oid":"6a39d5c200000000000000b4"},"bookId":21,"customer":{"customerId":2,"name":"Alan Turing"},"rating":5,"body":"A classic for a reason.","reviewedAt":{"$date":"2026-06-23T00:39:30Z"}}
+{"_id":{"$oid":"6a414e4200000000000000b5"},"bookId":29,"customer":{"customerId":2,"name":"Alan Turing"},"rating":5,"body":"Perfect gift.","reviewedAt":{"$date":"2026-06-28T16:39:30Z"}}

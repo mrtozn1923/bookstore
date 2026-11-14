@@ -1,0 +1,69 @@
+{"_id":1,"firstName":"Jane","lastName":"Austen","birthYear":1775}
+{"_id":2,"firstName":"George","lastName":"Eliot","birthYear":1819}
+{"_id":3,"firstName":"Charlotte","lastName":"Bronte","birthYear":1816}
+{"_id":4,"firstName":"Emily","lastName":"Bronte","birthYear":1818}
+{"_id":5,"firstName":"Charles","lastName":"Dickens","birthYear":1812}
+{"_id":6,"firstName":"Herman","lastName":"Melville","birthYear":1819}
+{"_id":7,"firstName":"Leo","lastName":"Tolstoy","birthYear":1828}
+{"_id":8,"firstName":"Fyodor","lastName":"Dostoevsky","birthYear":1821}
+{"_id":9,"firstName":"Gustave","lastName":"Flaubert","birthYear":1821}
+{"_id":10,"firstName":"Miguel","lastName":"de Cervantes","birthYear":1547}
+{"_id":11,"firstName":"F. Scott","lastName":"Fitzgerald","birthYear":1896}
+{"_id":12,"firstName":"James","lastName":"Joyce","birthYear":1882}
+{"_id":13,"firstName":"Virginia","lastName":"Woolf","birthYear":1882}
+{"_id":14,"firstName":"Mary","lastName":"Shelley","birthYear":1797}
+{"_id":15,"firstName":"Bram","lastName":"Stoker","birthYear":1847}
+{"_id":16,"firstName":"Oscar","lastName":"Wilde","birthYear":1854}
+{"_id":17,"firstName":"Victor","lastName":"Hugo","birthYear":1802}
+{"_id":18,"firstName":"Frank","lastName":"Herbert","birthYear":1920}
+{"_id":19,"firstName":"Isaac","lastName":"Asimov","birthYear":1920}
+{"_id":20,"firstName":"Ursula K.","lastName":"Le Guin","birthYear":1929}
+{"_id":21,"firstName":"H. G.","lastName":"Wells","birthYear":1866}
+{"_id":22,"firstName":"William","lastName":"Gibson","birthYear":1948}
+{"_id":23,"firstName":"Dan","lastName":"Simmons","birthYear":1948}
+{"_id":24,"firstName":"George","lastName":"Orwell","birthYear":1903}
+{"_id":25,"firstName":"Aldous","lastName":"Huxley","birthYear":1894}
+{"_id":26,"firstName":"Ray","lastName":"Bradbury","birthYear":1920}
+{"_id":27,"firstName":"Margaret","lastName":"Atwood","birthYear":1939}
+{"_id":28,"firstName":"J. R. R.","lastName":"Tolkien","birthYear":1892}
+{"_id":29,"firstName":"Terry","lastName":"Pratchett","birthYear":1948}
+{"_id":30,"firstName":"Neil","lastName":"Gaiman","birthYear":1960}
+{"_id":31,"firstName":"Arthur Conan","lastName":"Doyle","birthYear":1859}
+{"_id":32,"firstName":"Agatha","lastName":"Christie","birthYear":1890}
+{"_id":33,"firstName":"Dashiell","lastName":"Hammett","birthYear":1894}
+{"_id":34,"firstName":"Raymond","lastName":"Chandler","birthYear":1888}
+{"_id":35,"firstName":"Stephen","lastName":"Hawking","birthYear":1942}
+{"_id":36,"firstName":"Richard","lastName":"Dawkins","birthYear":1941}
+{"_id":37,"firstName":"Carl","lastName":"Sagan","birthYear":1934}
+{"_id":38,"firstName":"Charles","lastName":"Darwin","birthYear":1809}
+{"_id":39,"firstName":"Thomas S.","lastName":"Kuhn","birthYear":1922}
+{"_id":40,"firstName":"Brian W.","lastName":"Kernighan","birthYear":1942}
+{"_id":41,"firstName":"Dennis M.","lastName":"Ritchie","birthYear":1941}
+{"_id":42,"firstName":"Andrew","lastName":"Hunt"}
+{"_id":43,"firstName":"David","lastName":"Thomas"}
+{"_id":44,"firstName":"Robert C.","lastName":"Martin","birthYear":1952}
+{"_id":45,"firstName":"Martin","lastName":"Fowler","birthYear":1963}
+{"_id":46,"firstName":"Erich","lastName":"Gamma","birthYear":1961}
+{"_id":47,"firstName":"Richard","lastName":"Helm"}
+{"_id":48,"firstName":"Ralph","lastName":"Johnson"}
+{"_id":49,"firstName":"John","lastName":"Vlissides","birthYear":1961}
+{"_id":50,"firstName":"Steve","lastName":"McConnell"}
+{"_id":51,"firstName":"Frederick P.","lastName":"Brooks","birthYear":1931}
+{"_id":52,"firstName":"Eric","lastName":"Evans"}
+{"_id":53,"firstName":"Harold","lastName":"Abelson","birthYear":1947}
+{"_id":54,"firstName":"Gerald Jay","lastName":"Sussman","birthYear":1947}
+{"_id":55,"firstName":"Donald E.","lastName":"Knuth","birthYear":1938}
+{"_id":56,"firstName":"Steven S.","lastName":"Skiena"}
+{"_id":57,"firstName":"Antoine","lastName":"de Saint-Exupery","birthYear":1900}
+{"_id":58,"firstName":"Lewis","lastName":"Carroll","birthYear":1832}
+{"_id":59,"firstName":"J. M.","lastName":"Barrie","birthYear":1860}
+{"_id":60,"firstName":"E. B.","lastName":"White","birthYear":1899}
+{"_id":61,"firstName":"Roald","lastName":"Dahl","birthYear":1916}
+{"_id":62,"firstName":"William","lastName":"Strunk","birthYear":1869}
+{"_id":63,"firstName":"Marcus","lastName":"Aurelius","birthYear":121}
+{"_id":64,"firstName":"Sabahattin","lastName":"Ali","birthYear":1907}
+{"_id":65,"firstName":"Yaşar","lastName":"Kemal","birthYear":1923}
+{"_id":66,"firstName":"Oğuz","lastName":"Atay","birthYear":1934}
+{"_id":67,"firstName":"Ahmet Hamdi","lastName":"Tanpınar","birthYear":1901}
+{"_id":68,"firstName":"Octavia E.","lastName":"Butler","birthYear":1947}
+{"_id":69,"firstName":"Toni","lastName":"Morrison","birthYear":1931}

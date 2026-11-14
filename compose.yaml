@@ -1,0 +1,31 @@
+name: bookstore-mongo
+
+services:
+  mongo:
+    image: mongodb/mongodb-community-server:9.0-ubuntu2204
+    environment:
+      MONGODB_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:?set MONGO_ROOT_USER in .env}
+      MONGODB_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:?set MONGO_ROOT_PASSWORD in .env}
+    # The keyfile is created inside the container, so file permissions do not depend on the host OS
+    entrypoint:
+      - bash
+      - -c
+      - |
+        if [ ! -f /data/configdb/keyfile ]; then
+          openssl rand -base64 756 > /data/configdb/keyfile
+          chmod 400 /data/configdb/keyfile
+        fi
+        exec python3 /usr/local/bin/docker-entrypoint.py "$$@"
+      - mongo-entrypoint
+    command: ["mongod", "--replSet", "rs0", "--keyFile", "/data/configdb/keyfile"]
+    ports:
+      - "127.0.0.1:27017:27017"
+    volumes:
+      - mongo-data:/data/db
+      - mongo-config:/data/configdb
+      - ./data:/lab/data:ro
+      - ./scripts:/lab/scripts:ro
+
+volumes:
+  mongo-data:
+  mongo-config:
