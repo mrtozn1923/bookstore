@@ -75,3 +75,9 @@
 @media (prefers-reduced-motion: reduce) {
     .book-card .cover img { transition: none; }
 }
+
+/* sold out: the cover fades, the badge keeps its color */
+.book-card.is-sold-out .cover img {
+    filter: grayscale(1);
+    opacity: 0.6;
+}

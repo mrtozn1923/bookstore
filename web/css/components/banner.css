@@ -10,12 +10,17 @@
     /* first layer is on top: the overlay keeps the text readable */
     background-image:
         linear-gradient(to top, rgb(15 23 42 / 0.9), rgb(15 23 42 / 0.3) 70%),
+        linear-gradient(#1e3a8a, #1e3a8a),
+        linear-gradient(#fde68a, #fde68a),
         image-set(
             url("../../img/banner-1x.avif") 1x type("image/avif"),
             url("../../img/banner-2x.avif") 2x type("image/avif"),
             url("../../img/banner-1x.webp") 1x type("image/webp"),
             url("../../img/banner-2x.webp") 2x type("image/webp")
         );
+    /* duotone: the photo turns gray (luminosity), light parts → pale amber (multiply),
+       dark parts → navy (lighten); the overlay is painted normally */
+    background-blend-mode: normal, lighten, multiply, luminosity;
     background-size: cover;
     background-position: center;
 }

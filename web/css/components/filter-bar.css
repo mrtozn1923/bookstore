@@ -1,0 +1,25 @@
+.filter-bar {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 5;
+    display: flex;
+    gap: 0.5rem;
+    padding-block: 0.5rem;
+    /* readable on its own: this is what browsers without backdrop-filter show */
+    background: rgb(249 250 251 / 0.95);
+}
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+    .filter-bar {
+        background: rgb(249 250 251 / 0.7);
+        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px);
+    }
+}
+.filter-bar button {
+    padding: 0.25rem 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: var(--color-surface);
+    font: inherit;
+}
+.filter-bar button[aria-pressed="true"] { border-color: var(--color-link); color: var(--color-link); }

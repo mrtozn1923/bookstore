@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>07 filters and blend modes</title>
+    <style>
+        body { margin: 0; padding: 20px; font: 16px/1.4 system-ui, sans-serif; background: #ffffff; }
+        section { margin-block-end: 30px; }
+        .square { display: block; inline-size: 100px; block-size: 100px; }
+
+        /* 1) filter functions run from left to right */
+        #gray-sepia { filter: grayscale(1) sepia(1); }
+        #sepia-gray { filter: sepia(1) grayscale(1); }
+
+        /* 2) box-shadow follows the box, drop-shadow follows the pixels */
+        .tilted { display: block; inline-size: 180px; block-size: 180px; margin-block-end: 20px; }
+        #box-shadow { box-shadow: 10px 10px 0 #b91c1c; }
+        #drop-shadow { filter: drop-shadow(10px 10px 0 #b91c1c); }
+
+        /* 3) filter on the card also turns its badge gray */
+        .lab-card { display: inline-block; padding: 8px; background: #ffffff; }
+        .lab-card .badge { display: block; padding: 4px 8px; background: #b91c1c; color: #ffffff; }
+        #card-filter .lab-card { filter: grayscale(1); }
+        #img-filter .lab-card img { filter: grayscale(1); }
+
+        /* 4) frosted bar over 4px stripes */
+        .stripes { position: relative; inline-size: 200px; block-size: 100px;
+            background: repeating-linear-gradient(90deg, #000000 0 4px, #ffffff 4px 8px); }
+        .bar { position: absolute; inset: 30px 0 auto; block-size: 40px; background: rgb(255 255 255 / 0.5); }
+        #frosted .bar { backdrop-filter: blur(8px); }
+
+        /* 5) duotone with background layers: dark → navy, light → pale amber */
+        #duotone { inline-size: 200px; block-size: 40px; background-color: #ffffff;
+            background-image: linear-gradient(#1e3a8a, #1e3a8a), linear-gradient(#fde68a, #fde68a),
+                linear-gradient(to right, #000000, #ffffff);
+            background-blend-mode: lighten, multiply, luminosity; }
+
+        /* 6) mix-blend-mode blends with everything behind it, isolation limits that */
+        .page { padding: 20px; background: #f59e0b; }
+        .chip { inline-size: 60px; block-size: 30px; background: #1d4ed8; mix-blend-mode: screen; }
+        #isolated .group { isolation: isolate; }
+    </style>
+</head>
+<body>
+    <section>
+        <img class="square" id="original" src="../img/square.png" alt="" width="300" height="300">
+        <img class="square" id="gray-sepia" src="../img/square.png" alt="" width="300" height="300">
+        <img class="square" id="sepia-gray" src="../img/square.png" alt="" width="300" height="300">
+    </section>
+    <section>
+        <img class="tilted" id="box-shadow" src="../img/book-tilted.png" alt="" width="360" height="360">
+        <img class="tilted" id="drop-shadow" src="../img/book-tilted.png" alt="" width="360" height="360">
+    </section>
+    <section id="card-filter"><div class="lab-card"><span class="badge">Sold out</span><img class="square" src="../img/square.png" alt="" width="300" height="300"></div></section>
+    <section id="img-filter"><div class="lab-card"><span class="badge">Sold out</span><img class="square" src="../img/square.png" alt="" width="300" height="300"></div></section>
+    <section><div class="stripes" id="plain"><div class="bar"></div></div></section>
+    <section><div class="stripes" id="frosted"><div class="bar"></div></div></section>
+    <section><div id="duotone"></div></section>
+    <section class="page" id="blended"><div class="group"><div class="chip"></div></div></section>
+    <section class="page" id="isolated"><div class="group"><div class="chip"></div></div></section>
+</body>
+</html>

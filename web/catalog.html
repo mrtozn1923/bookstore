@@ -16,6 +16,11 @@
     </header>
     <main class="catalog">
         <h1>Classics</h1>
+        <nav class="filter-bar" aria-label="Filters">
+            <button type="button" aria-pressed="true">All</button>
+            <button type="button" aria-pressed="false">In stock</button>
+            <button type="button" aria-pressed="false">Under ₺300</button>
+        </nav>
         <ul class="book-list">
             <li class="book-card featured">
                 <span class="badge">New</span>
@@ -36,7 +41,8 @@
                 <p class="author">Jane Austen</p>
                 <p class="price"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h8l10 10-8 8L3 11z"/></svg> ₺240.00</p>
             </li>
-            <li class="book-card">
+            <li class="book-card is-sold-out">
+                <span class="badge">Sold out</span>
                 <div class="cover"><img src="img/cover-hobbit.webp" alt="" width="240" height="360"></div>
                 <h2><a href="book.html">The Hobbit</a></h2>
                 <p class="author">J. R. R. Tolkien</p>
