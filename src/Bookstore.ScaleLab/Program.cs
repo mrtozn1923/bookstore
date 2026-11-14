@@ -1,5 +1,6 @@
 using System.Globalization;
 using Bookstore.ScaleLab;
+using Bookstore.ScaleLab.ReadRouting;
 
 CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
 CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
@@ -13,6 +14,10 @@ return args switch
     ["failover", .. var rest] => await FailoverCommand.RunAsync(LabOptions.Parse(rest)),
     ["reconnect", .. var rest] => await ResiliencyCommands.ReconnectAsync(LabOptions.Parse(rest)),
     ["user-tx", .. var rest] => await ResiliencyCommands.UserTransactionAsync(LabOptions.Parse(rest)),
+    ["rw-routing", .. var rest] => await ReadRoutingCommands.RoutingAsync(LabOptions.Parse(rest)),
+    ["rw-ryw", .. var rest] => await ReadRoutingCommands.ReadYourWritesAsync(LabOptions.Parse(rest)),
+    ["rw-readonly-fn", .. var rest] => await ReadRoutingCommands.ReadOnlyFunctionAsync(LabOptions.Parse(rest)),
+    ["sql-intent", .. var rest] => await ReadRoutingCommands.SqlIntentAsync(LabOptions.Parse(rest)),
     _ => Usage()
 };
 
