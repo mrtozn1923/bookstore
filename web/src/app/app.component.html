@@ -1,5 +1,6 @@
 <header>
   <h1>Bookstore</h1>
+  <app-sale-countdown></app-sale-countdown>
   <nav>
     <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
     <a routerLink="/books" routerLinkActive="active">Books</a>
@@ -9,4 +10,7 @@
 
 <router-outlet></router-outlet>
 
-<footer>Free shipping on orders over 500 TRY.</footer>
+<footer>
+  Free shipping on orders over 500 TRY.
+  <app-scroll-top></app-scroll-top>
+</footer>

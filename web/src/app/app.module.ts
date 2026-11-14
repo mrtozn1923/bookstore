@@ -41,6 +41,7 @@ import { AddressEditComponent } from './address-edit/address-edit.component';
 import { CheckoutComponent } from './checkout/checkout.component';
 import { NewsletterComponent } from './newsletter/newsletter.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
+import { ScrollTopComponent } from './scroll-top/scroll-top.component';
 
 registerLocaleData(localeTr);
 
@@ -74,7 +75,8 @@ registerLocaleData(localeTr);
     AddressEditComponent,
     CheckoutComponent,
     NewsletterComponent,
-    SignUpComponent
+    SignUpComponent,
+    ScrollTopComponent
   ],
   imports: [
     BrowserModule,
