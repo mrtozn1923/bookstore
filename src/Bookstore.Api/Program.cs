@@ -1,6 +1,8 @@
 using System.Globalization;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Bookstore.Api.Data;
 using Bookstore.Api.Options;
 using Bookstore.Api.Services;
 using Bookstore.Api.Validation;
@@ -25,7 +27,8 @@ builder.Services.AddControllers()
     });
 builder.Services.AddValidatorsFromAssemblyContaining<CreateOrderRequestValidator>();
 ValidatorOptions.Global.LanguageManager.Culture = new CultureInfo("en");
-builder.Services.AddSingleton<IBookCatalog, InMemoryBookCatalog>();
+builder.Services.AddDbContext<BookstoreContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("Bookstore")));
 builder.Services.AddSingleton<SingletonOperation>();
 builder.Services.AddScoped<ScopedOperation>();
 builder.Services.AddTransient<TransientOperation>();

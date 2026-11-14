@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using Bookstore.Api.Logging;
+using Microsoft.EntityFrameworkCore;
+using Bookstore.Api.Data;
 using Bookstore.Api.Models;
-using Bookstore.Api.Services;
 
 namespace Bookstore.Api.Controllers;
 
@@ -9,46 +9,68 @@ namespace Bookstore.Api.Controllers;
 [Route("api/[controller]")]
 public class BooksController : ControllerBase
 {
-    private readonly IBookCatalog _catalog;
-    private readonly ILogger<BooksController> _logger;
+    private readonly BookstoreContext _db;
 
-    public BooksController(IBookCatalog catalog, ILogger<BooksController> logger)
+    public BooksController(BookstoreContext db)
     {
-        _catalog = catalog;
-        _logger = logger;
+        _db = db;
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<Book>> GetAll()
+    public async Task<ActionResult<IEnumerable<Book>>> GetAll()
     {
-        return Ok(_catalog.GetAll());
+        // We only read, so we spare the change tracker the work
+        List<Book> books = await _db.Books.AsNoTracking().ToListAsync();
+        return books;
     }
 
     [HttpGet("{id:int}")]
-    public ActionResult<Book> GetById(int id)
+    public async Task<ActionResult<Book>> GetById(int id)
     {
-        _logger.LogInformation("Getting book {BookId}", id);
-
-        Book? book = _catalog.GetById(id);
+        Book? book = await _db.Books.FindAsync(id);
         if (book is null)
         {
-            LogMessages.BookNotFound(_logger, id);
             return NotFound();
         }
 
-        _logger.LogDebug("Book {BookId} found: {BookTitle}", id, book.Title);
         return book;
     }
 
     [HttpPost]
-    public ActionResult<Book> Create(Book book)
+    public async Task<ActionResult<Book>> Create(Book book)
     {
-        using (_logger.BeginScope("Creating book {BookTitle}", book.Title))
+        _db.Books.Add(book);
+        await _db.SaveChangesAsync();
+        return CreatedAtAction(nameof(GetById), new { id = book.Id }, book);
+    }
+
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Update(int id, Book input)
+    {
+        Book? book = await _db.Books.FindAsync(id);
+        if (book is null)
         {
-            _logger.LogInformation("Validating price {Price}", book.Price);
-            Book created = _catalog.Add(book);
-            _logger.LogInformation("Book saved with id {BookId}", created.Id);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+            return NotFound();
         }
+
+        book.Title = input.Title;
+        book.Price = input.Price;
+        book.CategoryId = input.CategoryId;
+        await _db.SaveChangesAsync();
+        return NoContent();
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        Book? book = await _db.Books.FindAsync(id);
+        if (book is null)
+        {
+            return NotFound();
+        }
+
+        _db.Books.Remove(book);
+        await _db.SaveChangesAsync();
+        return NoContent();
     }
 }
