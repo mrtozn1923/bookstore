@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Layout thrashing</title>
+  <style>
+    #box-container { display: flex; flex-wrap: wrap; gap: 2px; }
+    .box { width: 40px; height: 20px; background: steelblue; }
+  </style>
+</head>
+<body>
+  <button id="bad">Mixed reads and writes</button>
+  <button id="good">Read first, then write</button>
+  <p id="result"></p>
+  <div id="box-container"></div>
+
+  <script>
+    const container = document.querySelector("#box-container");
+    for (let i = 0; i < 1500; i++) {
+      const box = document.createElement("div");
+      box.className = "box";
+      container.append(box);
+    }
+    const boxes = [...container.children];
+
+    function bad() {
+      for (const box of boxes) {
+        const width = box.offsetWidth;
+        box.style.width = `${(width % 60) + 1}px`;
+      }
+    }
+
+    function good() {
+      const widths = boxes.map((b) => b.offsetWidth);
+      boxes.forEach((b, i) => {
+        b.style.width = `${(widths[i] % 60) + 1}px`;
+      });
+    }
+
+    function measure(fn) {
+      const t0 = performance.now();
+      fn();
+      document.body.offsetHeight; // include the final layout in the measurement
+      document.querySelector("#result").textContent =
+        `${fn.name}: ${(performance.now() - t0).toFixed(1)} ms`;
+    }
+
+    document.querySelector("#bad").addEventListener("click", () => measure(bad));
+    document.querySelector("#good").addEventListener("click", () => measure(good));
+  </script>
+</body>
+</html>

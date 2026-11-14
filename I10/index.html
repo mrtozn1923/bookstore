@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Load when needed</title>
+</head>
+<body>
+  <button id="reviews">Show reviews</button>
+  <script type="module">
+    document.querySelector("#reviews").addEventListener("click", async () => {
+      const { showReviews } = await import("./reviews.js");
+      showReviews(document.body);
+    });
+  </script>
+</body>
+</html>
