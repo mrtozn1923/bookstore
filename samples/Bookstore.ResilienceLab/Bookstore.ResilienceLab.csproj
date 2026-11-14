@@ -13,6 +13,9 @@
     <PackageReference Include="Polly.Extensions" />
     <PackageReference Include="Polly.RateLimiting" />
     <PackageReference Include="Refit.HttpClientFactory" />
+    <!-- Post 09: the old registration style, to compare with Http.Resilience -->
+    <PackageReference Include="Microsoft.Extensions.Http.Polly" />
+    <PackageReference Include="Polly" />
     <PackageReference Include="Microsoft.Kiota.Bundle" />
   </ItemGroup>
 

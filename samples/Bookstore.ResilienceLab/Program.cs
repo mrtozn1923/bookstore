@@ -29,7 +29,10 @@ var demos = new Dictionary<string, Func<Task>>
     ["retry-after"] = PollyDemos.RetryAfterAsync,
     ["circuit-breaker"] = PollyDemos.CircuitBreakerAsync,
     ["context"] = PollyDemos.ContextAsync,
-    ["bulkhead"] = PollyDemos.BulkheadAsync
+    ["bulkhead"] = PollyDemos.BulkheadAsync,
+    ["migration-v7"] = MigrationDemos.PollyV7Async,
+    ["migration-v8"] = MigrationDemos.PollyV8Async,
+    ["migration-bridge"] = MigrationDemos.BridgeAsync
 };
 
 if (args.Length == 0 || !demos.TryGetValue(args[0], out var demo))
