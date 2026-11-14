@@ -1,0 +1,13 @@
+{
+  "name": "bookstore-typescript-orta",
+  "private": true,
+  "description": "Code from the TypeScript Orta series on mertozen.com (Bookstore examples)",
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "7.0.2"
+  }
+}
