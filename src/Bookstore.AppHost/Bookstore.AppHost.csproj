@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Services\Bff\Bookstore.Bff\Bookstore.Bff.csproj" />
     <ProjectReference Include="..\Services\Catalog\Bookstore.Catalog.Api\Bookstore.Catalog.Api.csproj" />
     <ProjectReference Include="..\Services\Inventory\Bookstore.Inventory.Grpc\Bookstore.Inventory.Grpc.csproj" />
     <ProjectReference Include="..\Services\Notifications\Bookstore.Notifications.Api\Bookstore.Notifications.Api.csproj" />

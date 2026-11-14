@@ -83,7 +83,7 @@ IResourceBuilder<ProjectResource> orderingMigrator = builder
     .WaitFor(catalog);
 
 // Since post 07 Ordering talks to Inventory and Payments only through RabbitMQ.
-builder.AddProject<Projects.Bookstore_Ordering_Api>("ordering")
+IResourceBuilder<ProjectResource> ordering = builder.AddProject<Projects.Bookstore_Ordering_Api>("ordering")
     .WithReference(orderingDb)
     .WithReference(rabbitmq)
     .WaitForCompletion(orderingMigrator)
@@ -124,6 +124,15 @@ builder.AddProject<Projects.Bookstore_Notifications_Api>("notifications")
     .WithReference(rabbitmq)
     .WaitFor(redis)
     .WaitFor(rabbitmq)
+    .WithHttpHealthCheck("/health");
+
+// The only entry point for the browser. The services behind it keep their ports for local debugging;
+// in production (post 14) only the BFF is exposed.
+builder.AddProject<Projects.Bookstore_Bff>("bff")
+    .WithReference(catalog)
+    .WithReference(ordering)
+    .WithReference(inventory)
+    .WithExternalHttpEndpoints()
     .WithHttpHealthCheck("/health");
 
 builder.Build().Run();
