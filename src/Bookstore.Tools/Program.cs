@@ -7,6 +7,7 @@ builder.Logging.AddSimpleConsole(options =>
     options.TimestampFormat = "HH:mm:ss ";
 });
 builder.Services.Configure<HostOptions>(options => options.ShutdownTimeout = TimeSpan.FromSeconds(8));
+builder.Services.Configure<ImportOptions>(builder.Configuration.GetSection(ImportOptions.SectionName));
 builder.Services.AddHostedService<ImportWorker>();
 
 using IHost host = builder.Build();
