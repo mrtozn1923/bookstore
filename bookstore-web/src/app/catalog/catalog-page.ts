@@ -2,6 +2,7 @@ import { AsyncPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { catchError, of } from 'rxjs';
 import { apiUrl } from '../api';
 import { CartStore } from '../cart/cart-store';
 import type { Book } from './book';
@@ -39,8 +40,12 @@ import { CategoryService } from './category-service';
 })
 export class CatalogPage {
   protected readonly cart = inject(CartStore);
-  protected readonly books = toSignal(inject(HttpClient).get<Book[]>(`${apiUrl}/books`), {
-    initialValue: [],
-  });
+  protected readonly books = toSignal(
+    inject(HttpClient)
+      .get<Book[]>(`${apiUrl}/books`)
+      // the interceptor already retried and showed the banner; here the page just stays usable
+      .pipe(catchError(() => of<Book[]>([]))),
+    { initialValue: [] },
+  );
   protected readonly categories$ = inject(CategoryService).categories$;
 }

@@ -2,6 +2,9 @@
   <strong>Bookstore</strong>
   <a class="cart" routerLink="/cart">Cart ({{ cart.count() }}): {{ cart.total() }} TRY</a>
 </header>
+@if (serverStatus.unavailable()) {
+  <p class="banner" role="alert">The Bookstore service is not responding. Please try again later.</p>
+}
 <app-cart-toast />
 <main>
   <router-outlet />
