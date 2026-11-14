@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>First worker</title>
+</head>
+<body>
+  <script>
+    const worker = new Worker("worker.js");
+
+    worker.onmessage = (e) => console.log("Total:", e.data);
+    worker.onerror = (e) => console.error("Worker error:", e.message);
+
+    worker.postMessage({ start: 1, end: 1_000_000 });
+  </script>
+</body>
+</html>

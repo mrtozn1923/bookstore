@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>A worker in a single file</title>
+</head>
+<body>
+  <p>Frame counter: <span id="frame">0</span></p>
+  <button id="main">Calculate on the main thread</button>
+  <button id="background">Calculate in a worker</button>
+  <p id="result"></p>
+
+  <script>
+    function countPrimes(limit) {
+      let count = 0;
+      for (let n = 2; n <= limit; n++) {
+        let prime = true;
+        for (let d = 2; d * d <= n; d++) {
+          if (n % d === 0) { prime = false; break; }
+        }
+        if (prime) count++;
+      }
+      return count;
+    }
+
+    const code = `
+      ${countPrimes.toString()}
+      self.onmessage = (e) => self.postMessage(countPrimes(e.data));
+    `;
+    const url = URL.createObjectURL(new Blob([code], { type: "text/javascript" }));
+    const worker = new Worker(url);
+    const result = document.querySelector("#result");
+    const LIMIT = 10_000_000;
+
+    let frame = 0;
+    (function loop() {
+      document.querySelector("#frame").textContent = ++frame;
+      requestAnimationFrame(loop);
+    })();
+
+    document.querySelector("#main").addEventListener("click", () => {
+      result.textContent = "Calculating...";
+      setTimeout(() => {
+        const t0 = performance.now();
+        const count = countPrimes(LIMIT);
+        result.textContent = `Main thread: ${count} primes, ${(performance.now() - t0).toFixed(0)} ms`;
+      }, 50);
+    });
+
+    document.querySelector("#background").addEventListener("click", () => {
+      result.textContent = "Calculating...";
+      const t0 = performance.now();
+      worker.onmessage = (e) => {
+        result.textContent = `Worker: ${e.data} primes, ${(performance.now() - t0).toFixed(0)} ms`;
+      };
+      worker.postMessage(LIMIT);
+    });
+  </script>
+</body>
+</html>

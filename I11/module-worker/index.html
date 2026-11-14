@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Module worker</title>
+</head>
+<body>
+  <script>
+    const worker = new Worker("worker.js", { type: "module" });
+    worker.onmessage = (e) => console.log("Average:", e.data);
+    worker.postMessage([450, 320, 390]);
+  </script>
+</body>
+</html>
