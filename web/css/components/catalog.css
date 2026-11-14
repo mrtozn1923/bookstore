@@ -11,3 +11,24 @@
     padding-block: 0.5rem;
     background-color: var(--color-surface);
 }
+
+/* slots for a single card: the card inside adapts to the slot's width, not to the viewport */
+.featured,
+.recently-viewed {
+    container: book-card / inline-size;
+    margin-block-end: var(--space);
+}
+
+/* a dark band: components inside read --surface with a style query */
+.featured {
+    --surface: dark;
+    padding: var(--space);
+    border-radius: var(--radius);
+    background-color: #1f2937;
+    color: #f9fafb;
+}
+
+/* only a name, no size containment: cards can ask "am I in the sidebar?" */
+.filters {
+    container-name: sidebar;
+}

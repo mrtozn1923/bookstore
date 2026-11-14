@@ -79,3 +79,42 @@
     color: #ffffff;
     font-size: 0.75rem;
 }
+
+/* wide slot: cover on the left, text on the right */
+@container book-card (width >= 32rem) {
+    .book-card {
+        grid-template-columns: auto minmax(0, 1fr);
+        grid-template-rows: auto auto 1fr;
+        grid-template-areas:
+            "cover title"
+            "cover author"
+            "cover price";
+        column-gap: var(--space);
+    }
+
+    /* 1cqi = 1% of the slot's inline size */
+    .book-card .book-title {
+        font-size: clamp(1.25rem, 1rem + 1.5cqi, 2rem);
+    }
+}
+
+/* name-only query: any card in the sidebar gets a smaller cover */
+@container sidebar {
+    .book-card > img {
+        inline-size: 4rem;
+        block-size: auto;
+    }
+}
+
+/* style query: the slot says it is dark, the card follows */
+@container style(--surface: dark) {
+    .book-card {
+        border-color: #4b5563;
+        background-color: #111827;
+        color: #f9fafb;
+    }
+
+    .book-card .book-author {
+        color: #d1d5db;
+    }
+}

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Lab 09: container query pitfalls</title>
+    <style>
+        /* self-contained: this lab does not load main.css */
+        body { margin: 0; font: 16px/1.5 system-ui, sans-serif; }
+        p, h2 { margin: 0; }
+        h2 { font-size: 1.125rem; line-height: 1.2; }
+
+        /* 1) subgrid cards; the second one is also a size container */
+        .shelf { display: grid; grid-template-columns: repeat(3, 180px); gap: 16px; }
+        .card { display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: 4px; }
+        .card.measured { container-type: inline-size; }
+
+        /* 2) a container cannot style itself with its own query */
+        .panel { container-type: inline-size; inline-size: 400px; }
+        @container (width >= 300px) {
+            .panel { outline: 2px solid; }
+            .panel p { font-weight: 700; }
+        }
+
+        /* 3) size containment in both axes: the height no longer comes from the content */
+        .both { container-type: size; }
+    </style>
+</head>
+<body>
+    <div class="shelf" id="shelf">
+        <div class="card"><h2>Middlemarch: A Study of Provincial Life</h2><p class="author">George Eliot</p><p>289.00 TRY</p></div>
+        <div class="card measured"><h2>Dune</h2><p class="author">Frank Herbert</p><p>349.00 TRY</p></div>
+        <div class="card"><h2>Emma</h2><p class="author">Jane Austen</p><p>219.00 TRY</p></div>
+    </div>
+    <div class="panel" id="panel"><p>Free shipping on orders over 500 TRY.</p></div>
+    <div class="both" id="both"><p>Free shipping on orders over 500 TRY.</p></div>
+</body>
+</html>
