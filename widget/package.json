@@ -15,7 +15,7 @@
     "build:esbuild": "node esbuild.config.mjs",
     "dev:esbuild": "node esbuild.config.mjs --serve",
     "bench": "node bench/bench.mjs",
-    "build:server": "vite build --mode server",
+    "build:server": "vite build --mode server && node scripts/collect-source-maps.mjs",
     "analyze": "vite build --mode analyze",
     "analyze:webpack": "webpack --mode production --json=stats/webpack.json && webpack-bundle-analyzer stats/webpack.json dist-webpack --mode static --report stats/webpack.html --no-open"
   },

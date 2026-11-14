@@ -66,6 +66,9 @@ export default defineConfig(({ mode }) => ({
             outDir: "../server/Bookstore.Web/wwwroot/dist",
             emptyOutDir: true,
             modulePreload: { polyfill: false },
+            // .map files without a sourceMappingURL comment; the JS and the map share a debugId
+            sourcemap: "hidden",
+            rolldownOptions: { output: { sourcemapDebugIds: true } },
         },
     }),
 }));
