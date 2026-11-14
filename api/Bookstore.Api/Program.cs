@@ -12,9 +12,12 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(new WebApplicationO
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<BookCatalog>();
 builder.Services.AddSingleton<RumStore>();
+// Compress text responses (HTML, JS, CSS, JSON); the Brotli/zstd details are in the navigation post
+builder.Services.AddResponseCompression();
 
 WebApplication app = builder.Build();
 
+app.UseResponseCompression();
 app.UseStaticFiles();
 app.UseStaticFiles(new StaticFileOptions
 {

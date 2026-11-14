@@ -6,8 +6,14 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link rel="stylesheet" href="http://fonts.thirdparty.test:5302/css2?family=Inter:wght@400;700">
-  <script src="http://analytics.thirdparty.test:5302/analytics.js"></script>
+  <script>
+    // Analytics after the load event: it no longer competes with main.js for bandwidth
+    addEventListener('load', () => {
+      const script = document.createElement('script');
+      script.src = 'http://analytics.thirdparty.test:5302/analytics.js';
+      document.head.append(script);
+    });
+  </script>
 </head>
 <body>
   <app-root></app-root>
