@@ -11,4 +11,5 @@ export class AppComponent {
   showSale = false;
   count = 0;
   visible = true;
+  reservations = ['Dune', 'Emma'];
 }

@@ -4,6 +4,7 @@ import { BookListComponent } from './book-list.component';
 import { BookItemComponent } from '../book-item/book-item.component';
 import { InStockPipe } from '../in-stock.pipe';
 import { TruncatePipe } from '../truncate.pipe';
+import { APP_CONFIG } from '../../app-config';
 
 describe('BookListComponent', () => {
   let component: BookListComponent;
@@ -11,7 +12,8 @@ describe('BookListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ BookListComponent, BookItemComponent, InStockPipe, TruncatePipe ]
+      declarations: [ BookListComponent, BookItemComponent, InStockPipe, TruncatePipe ],
+      providers: [{ provide: APP_CONFIG, useValue: { appName: 'Bookstore', pageSize: 20 } }]
     })
     .compileComponents();
   });

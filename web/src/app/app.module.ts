@@ -19,6 +19,11 @@ import { SaleCountdownComponent } from './sale-countdown/sale-countdown.componen
 import { LifecycleDemoComponent } from './lifecycle-demo/lifecycle-demo.component';
 import { CustomerCardComponent } from './customer-card/customer-card.component';
 import { OrderSummaryComponent } from './order-summary/order-summary.component';
+import { environment } from '../environments/environment';
+import { APP_CONFIG } from './app-config';
+import { LoggerService, SilentLoggerService } from './logger.service';
+import { CartBadgeComponent } from './cart-badge/cart-badge.component';
+import { ReservationTimerComponent } from './reservation-timer/reservation-timer.component';
 
 registerLocaleData(localeTr);
 
@@ -37,14 +42,23 @@ registerLocaleData(localeTr);
     SaleCountdownComponent,
     LifecycleDemoComponent,
     CustomerCardComponent,
-    OrderSummaryComponent
+    OrderSummaryComponent,
+    CartBadgeComponent,
+    ReservationTimerComponent
   ],
   imports: [
     BrowserModule,
     CatalogModule,
     FormsModule
   ],
-  providers: [{ provide: LOCALE_ID, useValue: 'tr' }],
+  providers: [
+    { provide: LOCALE_ID, useValue: 'tr' },
+    {
+      provide: LoggerService,
+      useFactory: () => environment.production ? new SilentLoggerService() : new LoggerService()
+    },
+    { provide: APP_CONFIG, useValue: { appName: 'Bookstore', pageSize: 20 } }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

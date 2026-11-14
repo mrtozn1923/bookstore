@@ -1,5 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
+import { AppConfig, APP_CONFIG } from '../../app-config';
 import { Book } from '../../book';
+import { CartService } from '../../cart.service';
+import { LoggerService } from '../../logger.service';
 
 @Component({
   selector: 'app-book-list',
@@ -21,10 +24,15 @@ export class BookListComponent {
       description: 'A young scientist gives life to a creature and then runs from it.'
     }
   ];
-  cart: Book[] = [];
 
-  onAddToCart(book: Book): void {
-    this.cart.push(book);
+  constructor(
+    private cartService: CartService,
+    private logger: LoggerService,
+    @Inject(APP_CONFIG) private config: AppConfig) { }
+
+  addToCart(book: Book): void {
+    this.cartService.add(book);
+    this.logger.log(`${this.config.appName}: ${book.title} added to the cart`);
   }
 
   addBook(): void {
