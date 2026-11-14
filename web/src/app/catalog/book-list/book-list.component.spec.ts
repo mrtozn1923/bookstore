@@ -2,6 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BookListComponent } from './book-list.component';
 import { BookItemComponent } from '../book-item/book-item.component';
+import { InStockPipe } from '../in-stock.pipe';
+import { TruncatePipe } from '../truncate.pipe';
 
 describe('BookListComponent', () => {
   let component: BookListComponent;
@@ -9,7 +11,7 @@ describe('BookListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ BookListComponent, BookItemComponent ]
+      declarations: [ BookListComponent, BookItemComponent, InStockPipe, TruncatePipe ]
     })
     .compileComponents();
   });

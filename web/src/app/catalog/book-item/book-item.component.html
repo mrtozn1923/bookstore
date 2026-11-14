@@ -1,5 +1,7 @@
 <div class="book">
   <h4>{{ book.title }}</h4>
   <p>{{ book.price }} TRY</p>
+  <p>{{ book.description | truncate:40 }}</p>
+  <p>{{ book.description | truncate:40:' →' }}</p>
   <button (click)="onAdd()">Add to cart</button>
 </div>

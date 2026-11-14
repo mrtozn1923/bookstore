@@ -1,6 +1,7 @@
 <p>{{ cart.length }} books in the cart.</p>
 <app-book-item
-  *ngFor="let b of books"
+  *ngFor="let b of books | inStock"
   [book]="b"
   (addToCart)="onAddToCart($event)">
 </app-book-item>
+<button (click)="addBook()">Add a new book</button>
