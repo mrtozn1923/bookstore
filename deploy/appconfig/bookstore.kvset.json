@@ -1,0 +1,9 @@
+{
+  "items": [
+    { "key": "Bookstore:Shipping:FreeShippingThreshold", "value": "500", "label": null, "content_type": null, "tags": {} },
+    { "key": "Bookstore:Shipping:StandardFee", "value": "49.90", "label": null, "content_type": null, "tags": {} },
+    { "key": "Bookstore:Shipping:FreeShippingThreshold", "value": "800", "label": "Staging", "content_type": null, "tags": {} },
+    { "key": "Bookstore:Sentinel", "value": "1", "label": "Staging", "content_type": null, "tags": {} },
+    { "key": "Bookstore:Sentinel", "value": "1", "label": "Production", "content_type": null, "tags": {} }
+  ]
+}

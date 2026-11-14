@@ -1,5 +1,7 @@
 using Azure.Security.KeyVault.Secrets;
 using Bookstore.Api;
+using Bookstore.Api.AppConfiguration;
+using Bookstore.Api.Cloud;
 using Bookstore.Api.KeyVault;
 using Bookstore.Api.Options;
 using Microsoft.Extensions.Options;
@@ -9,10 +11,19 @@ var builder = WebApplication.CreateBuilder(args);
 // Yalnız BOOKSTORE_ ile başlayan değişkenler, önek atılarak
 builder.Configuration.AddEnvironmentVariables(prefix: "BOOKSTORE_");
 
+var credential = AzureCredentials.Create(builder.Environment, builder.Configuration);
+
+// Gizli olmayan, merkezde yönetilen ayarlar: App Configuration
+var useAppConfiguration = AppConfigurationExtensions.IsEnabled(builder.Configuration);
+if (useAppConfiguration)
+{
+    builder.Configuration.AddBookstoreAppConfiguration(builder.Configuration, builder.Environment, credential);
+    builder.Services.AddAzureAppConfiguration();
+}
+
 // Vault adresi environment'tan gelir: her environment'ın kendi vault'u var
 if (builder.Configuration["KeyVault:Uri"] is { Length: > 0 } vaultUri)
 {
-    var credential = KeyVaultConfigurationExtensions.CreateCredential(builder.Environment, builder.Configuration);
     var clientOptions = new SecretClientOptions
     {
         // Yalnız yerel emulator için; Production'da bu kontrol asla kapatılmaz
@@ -28,6 +39,12 @@ UnresolvedReferenceCheck.ThrowIfAny(builder.Configuration);
 builder.Services.AddBookstoreOptions();
 
 var app = builder.Build();
+
+if (useAppConfiguration)
+{
+    // Refresh'i request'ler tetikler; middleware pipeline'ın başında olmalı
+    app.UseAzureAppConfiguration();
+}
 
 if (app.Environment.IsDevelopment())
 {
