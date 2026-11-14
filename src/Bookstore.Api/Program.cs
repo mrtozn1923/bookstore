@@ -7,7 +7,13 @@ using Bookstore.Shipping;
 using Bookstore.Shipping.LegacyCarrier;
 using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Options;
+using System.Net;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
 using Polly;
+using Polly.Simmy;
+using Polly.Simmy.Latency;
+using Polly.Simmy.Outcomes;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -74,7 +80,28 @@ carrier.AddResilienceHandler("carrier", (pipeline, context) =>
             StateProvider = circuit.StateProvider
         })
         .AddTimeout(TimeSpan.FromSeconds(2));
+
+    // Chaos strategies go last (innermost). Never active in Production, whatever the config says.
+    var chaos = context.ServiceProvider.GetRequiredService<IOptionsMonitor<ChaosOptions>>();
+    var environment = context.ServiceProvider.GetRequiredService<IHostEnvironment>();
+    ValueTask<bool> ChaosEnabled() =>
+        ValueTask.FromResult(!environment.IsProduction() && chaos.Get(LegacyCarrierClient.ClientName).Enabled);
+    pipeline
+        .AddChaosLatency(new ChaosLatencyStrategyOptions
+        {
+            EnabledGenerator = _ => ChaosEnabled(),
+            InjectionRateGenerator = _ => ValueTask.FromResult(chaos.Get(LegacyCarrierClient.ClientName).LatencyRate),
+            LatencyGenerator = _ => ValueTask.FromResult(chaos.Get(LegacyCarrierClient.ClientName).Latency)
+        })
+        .AddChaosOutcome(new ChaosOutcomeStrategyOptions<HttpResponseMessage>
+        {
+            EnabledGenerator = _ => ChaosEnabled(),
+            InjectionRateGenerator = _ => ValueTask.FromResult(chaos.Get(LegacyCarrierClient.ClientName).FaultRate),
+            OutcomeGenerator = _ => ValueTask.FromResult<Outcome<HttpResponseMessage>?>(
+                Outcome.FromResult(new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)))
+        });
 });
+builder.Services.Configure<ChaosOptions>(LegacyCarrierClient.ClientName, builder.Configuration.GetSection("Chaos:LegacyCarrier"));
 // Added after (inside) the resilience handler: every retry asks for the current token.
 carrier.AddHttpMessageHandler<CarrierAuthHandler>();
 builder.Services.AddKeyedScoped<IShippingCarrier, LegacyCarrierClient>(ResilientShippingCarrier.InnerKey);
@@ -85,6 +112,18 @@ builder.Services.AddResiliencePipeline<string, ShippingQuote>(ResilientShippingC
 builder.Services.AddHealthChecks().AddCheck<CarrierCircuitHealthCheck>("legacy-carrier");
 
 builder.Services.AddNotifications(builder.Configuration);
+
+// Polly and HttpClient publish metrics and spans; here they go to the console, in production to an OTLP collector.
+if (builder.Configuration.GetValue<bool>("Telemetry:ConsoleExporter"))
+{
+    builder.Services.AddOpenTelemetry()
+        .WithMetrics(metrics => metrics
+            .AddMeter("Polly", "System.Net.Http")
+            .AddConsoleExporter((_, reader) => reader.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 10_000))
+        .WithTracing(tracing => tracing
+            .AddSource("Microsoft.AspNetCore", "System.Net.Http")
+            .AddConsoleExporter());
+}
 
 // Exchange rates: read-only GET served from two regions, so hedging instead of plain retries.
 var rateEndpoints = builder.Configuration.GetSection("ExchangeRates:Endpoints").Get<string[]>()!;
