@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <SassSource Include="Styles/**/*.scss" />
+    <!-- source maps are for Debug only: never published -->
+    <Content Remove="wwwroot/css/**/*.map" Condition="'$(Configuration)' != 'Debug'" />
   </ItemGroup>
 
   <!-- npm packages are installed once, before the first Sass compile -->
@@ -15,11 +17,21 @@
     <Exec Command="npm ci" />
   </Target>
 
-  <!-- runs only when an .scss file is newer than site.css -->
-  <Target Name="CompileSass" BeforeTargets="BeforeBuild" Inputs="@(SassSource)" Outputs="wwwroot/css/site.css">
-    <Exec Command="npm run css:build" />
+  <!-- one stamp per configuration; the last configuration to compile owns site.css,
+       so switching between Debug and Release always recompiles -->
+  <Target Name="CompileSass" BeforeTargets="BeforeBuild" Inputs="@(SassSource);package.json" Outputs="$(IntermediateOutputPath)sass.stamp">
+    <Exec Command="npm run css:dev" Condition="'$(Configuration)' == 'Debug'" />
+    <Exec Command="npm run css:build" Condition="'$(Configuration)' != 'Debug'" />
+    <Delete Files="wwwroot/css/site.css.map" Condition="'$(Configuration)' != 'Debug'" />
+    <ItemGroup>
+      <_SassStamp Include="$(BaseIntermediateOutputPath)**/sass.stamp" />
+    </ItemGroup>
+    <Delete Files="@(_SassStamp)" />
+    <MakeDir Directories="$(IntermediateOutputPath)" />
+    <Touch Files="$(IntermediateOutputPath)sass.stamp" AlwaysCreate="true" />
     <ItemGroup>
       <Content Include="wwwroot/css/site.css" Exclude="@(Content)" />
+      <Content Include="wwwroot/css/site.css.map" Exclude="@(Content)" Condition="'$(Configuration)' == 'Debug'" />
     </ItemGroup>
   </Target>
 

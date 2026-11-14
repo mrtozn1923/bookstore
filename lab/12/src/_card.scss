@@ -1,0 +1,9 @@
+@use "@bookstore/styles" as bs;
+
+.book-card {
+    padding: bs.space(3);
+
+    &__title {
+        font-size: bs.rem(18px);
+    }
+}

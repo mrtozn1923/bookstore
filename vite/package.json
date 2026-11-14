@@ -1,0 +1,14 @@
+{
+  "name": "bookstore-vite",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "@bookstore/styles": "file:../packages/styles",
+    "sass-embedded": "1.108.2",
+    "vite": "8.3.8"
+  }
+}

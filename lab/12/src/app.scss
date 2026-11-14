@@ -1,0 +1,11 @@
+// pkg: resolves through node_modules and the package's "sass" export
+@use "pkg:@bookstore/styles" as bs;
+
+.book-list {
+    display: grid;
+    gap: bs.space(3);
+
+    @include bs.up("md") {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

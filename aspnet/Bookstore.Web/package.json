@@ -2,8 +2,9 @@
   "name": "bookstore-web-styles",
   "private": true,
   "scripts": {
+    "css:dev": "sass Styles/site.scss wwwroot/css/site.css --embed-sources",
     "css:build": "sass Styles/site.scss wwwroot/css/site.css --style=compressed --no-source-map",
-    "css:watch": "sass Styles/site.scss wwwroot/css/site.css --watch"
+    "css:watch": "sass Styles/site.scss wwwroot/css/site.css --embed-sources --watch"
   },
   "devDependencies": {
     "sass": "1.108.2"

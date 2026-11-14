@@ -1,0 +1,10 @@
+@use "theme";
+
+.book-list {
+    display: grid;
+    gap: bs.space(3);
+
+    @include bs.up("md") {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

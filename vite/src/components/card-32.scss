@@ -1,0 +1,12 @@
+.card-32 {
+    padding: bs.space(3);
+
+    @include bs.up("md") {
+        padding: bs.space(4);
+    }
+
+    &__title {
+        font-size: bs.rem(18px);
+        color: bs.tone(#b45309, -2%);
+    }
+}
