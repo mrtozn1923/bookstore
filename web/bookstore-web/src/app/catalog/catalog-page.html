@@ -1,0 +1,33 @@
+<section class="toolbar">
+  <form (submit)="applySearch($event, searchBox.value)">
+    <input #searchBox type="search" placeholder="Search by title, author or ISBN" aria-label="Search books" />
+    <button type="submit">Search</button>
+  </form>
+  <select aria-label="Category" (change)="category.set($any($event.target).value)">
+    <option value="">All categories</option>
+    @for (c of categories.value(); track c.slug) {
+      <option [value]="c.slug">{{ c.name }}</option>
+    }
+  </select>
+</section>
+
+@if (books.isLoading()) {
+  <p class="muted">Loading books…</p>
+} @else if (books.error()) {
+  <p class="error">The catalog could not be loaded. Is Bookstore.Api running?</p>
+} @else if (books.value(); as result) {
+  <p class="muted" data-testid="book-count">{{ result.total }} {{ result.total === 1 ? 'book' : 'books' }}</p>
+  <ul class="book-grid">
+    @for (book of result.items; track book.isbn) {
+      <li class="book-card">
+        <a [routerLink]="['/books', book.isbn]">{{ book.title }}</a>
+        <span class="muted">{{ book.author }} · {{ book.publishedYear }}</span>
+        <span class="muted">{{ book.category }}</span>
+        <strong>{{ book.price | currency: 'TRY' : 'symbol-narrow' }}</strong>
+        <button type="button" (click)="cartStore.add(book.isbn)">Add to cart</button>
+      </li>
+    } @empty {
+      <li class="muted">No books match your search.</li>
+    }
+  </ul>
+}
