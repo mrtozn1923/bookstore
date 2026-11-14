@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "devDependencies": {
-    "playwright": "1.65.0"
+    "playwright": "1.65.0",
+    "web-features": "3.46.0"
   }
 }

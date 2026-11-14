@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Lab 16: feature detection with @supports</title>
+    <style>
+        /* self-contained: this lab does not load main.css */
+        body { margin: 0; }
+        p { color: rgb(107, 114, 128); }
+
+        /* 1) property and value: is this declaration understood? */
+        @supports (position-area: block-end) {
+            #declaration { color: rgb(22, 163, 74); }
+        }
+
+        /* 2) selector(): is this selector understood? */
+        @supports selector(:has(> img)) {
+            #selector { color: rgb(22, 163, 74); }
+        }
+
+        /* 3) not, and, or: the fallback branch written explicitly */
+        @supports not (animation-timeline: scroll()) {
+            #negation { color: rgb(185, 28, 28); }
+        }
+        @supports (display: grid-lanes) or (grid-template-rows: masonry) {
+            #either { color: rgb(22, 163, 74); }
+        }
+
+        /* 4) at-rule(): is this at-rule understood? (not Baseline itself) */
+        @supports at-rule(@scope) {
+            #at-rule { color: rgb(22, 163, 74); }
+        }
+    </style>
+</head>
+<body>
+    <p id="declaration">position-area</p>
+    <p id="selector">:has()</p>
+    <p id="negation">no scroll-driven animations</p>
+    <p id="either">grid-lanes or masonry</p>
+    <p id="at-rule">at-rule(@scope)</p>
+</body>
+</html>

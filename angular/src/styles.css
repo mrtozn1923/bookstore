@@ -7,3 +7,13 @@
     animation-duration: 0s;
   }
 }
+
+/* the app header, written with native nesting: the build target decides whether it stays nested */
+app-root > header {
+  padding: 1rem;
+  border-block-end: 1px solid #e5e7eb;
+
+  & a {
+    font-weight: 700;
+  }
+}
