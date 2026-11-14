@@ -9,7 +9,8 @@ bool handled = BasicsCommands.Run(command, args)
     || DeadlockCommands.Run(command, args)
     || HardwareCommands.Run(command, args)
     || MemoryModelCommands.Run(command, args)
-    || LockFreeCommands.Run(command, args);
+    || LockFreeCommands.Run(command, args)
+    || await ModelCommands.RunAsync(command, args);
 
 if (!handled)
     Console.WriteLine("usage: dotnet run -c Release -- <command> [arguments]; see the post for the commands");
