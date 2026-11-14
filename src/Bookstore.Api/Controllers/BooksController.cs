@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Bookstore.Api.Dtos;
 using Bookstore.Api.Filters;
@@ -33,6 +34,7 @@ public class BooksController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<ActionResult<BookDto>> Create(CreateBookRequest request, CancellationToken cancellationToken)
     {
         BookDto created = await _bookService.CreateAsync(request, cancellationToken);
