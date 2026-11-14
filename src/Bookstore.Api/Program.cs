@@ -1,4 +1,6 @@
+using Azure.Security.KeyVault.Secrets;
 using Bookstore.Api;
+using Bookstore.Api.KeyVault;
 using Bookstore.Api.Options;
 using Microsoft.Extensions.Options;
 
@@ -6,6 +8,22 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Yalnız BOOKSTORE_ ile başlayan değişkenler, önek atılarak
 builder.Configuration.AddEnvironmentVariables(prefix: "BOOKSTORE_");
+
+// Vault adresi environment'tan gelir: her environment'ın kendi vault'u var
+if (builder.Configuration["KeyVault:Uri"] is { Length: > 0 } vaultUri)
+{
+    var credential = KeyVaultConfigurationExtensions.CreateCredential(builder.Environment, builder.Configuration);
+    var clientOptions = new SecretClientOptions
+    {
+        // Yalnız yerel emulator için; Production'da bu kontrol asla kapatılmaz
+        DisableChallengeResourceVerification = !builder.Environment.IsProduction()
+            && builder.Configuration.GetValue<bool>("KeyVault:DisableChallengeResourceVerification")
+    };
+    var reloadInterval = builder.Configuration.GetValue("KeyVault:ReloadInterval", TimeSpan.FromMinutes(30));
+    builder.Configuration.AddBookstoreKeyVault(new Uri(vaultUri), credential, reloadInterval, clientOptions);
+}
+
+UnresolvedReferenceCheck.ThrowIfAny(builder.Configuration);
 
 builder.Services.AddBookstoreOptions();
 
@@ -19,10 +37,16 @@ if (app.Environment.IsDevelopment())
 }
 
 // Reports which settings are present, never their values.
-app.MapGet("/api/info", (IHostEnvironment env, IConfiguration config, IOptionsMonitor<ShippingOptions> shipping) => new
+app.MapGet("/api/info", (
+    IHostEnvironment env,
+    IConfiguration config,
+    IOptionsMonitor<ShippingOptions> shipping,
+    IOptionsMonitor<JwtOptions> jwt) => new
 {
     Environment = env.EnvironmentName,
     shipping.CurrentValue.FreeShippingThreshold,
+    // Key'in kendisi değil, SHA-256 özetinin ilk 8 karakteri
+    JwtKeyFingerprint = KeyFingerprint.Of(jwt.CurrentValue.SigningKey),
     Secrets = new Dictionary<string, bool>
     {
         ["ConnectionStrings:Bookstore"] = !string.IsNullOrEmpty(config.GetConnectionString("Bookstore")),
