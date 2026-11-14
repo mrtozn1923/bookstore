@@ -1,0 +1,12 @@
+# Grafana loads every JSON file in the folder at startup and re-reads it every 30 s.
+# The files in Git are the source of truth: changes made in the UI cannot be saved back.
+apiVersion: 1
+
+providers:
+  - name: bookstore
+    folder: Bookstore
+    type: file
+    allowUiUpdates: false
+    updateIntervalSeconds: 30
+    options:
+      path: /otel-lgtm/bookstore-dashboards

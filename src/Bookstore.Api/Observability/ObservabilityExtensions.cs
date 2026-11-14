@@ -32,6 +32,9 @@ public static class ObservabilityExtensions
                 .AddAspNetCoreInstrumentation()
                 .AddHttpClientInstrumentation()
                 .AddRuntimeInstrumentation()
+                // Exemplars are off by default in .NET: keep one sampled measurement with its trace_id per bucket,
+                // so a p99 spike on a dashboard leads to the trace of a slow request.
+                .SetExemplarFilter(ExemplarFilterType.TraceBased)
                 // GET /metrics for a Prometheus that scrapes (pull); OTLP below still pushes the same metrics.
                 .AddPrometheusExporter())
             .WithLogging()

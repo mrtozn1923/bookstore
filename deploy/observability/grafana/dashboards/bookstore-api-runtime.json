@@ -1,0 +1,312 @@
+{
+  "uid": "bookstore-api-runtime",
+  "title": "Bookstore API runtime (USE)",
+  "description": "Utilization, saturation and errors of the .NET runtime behind Bookstore.Api.",
+  "tags": [
+    "bookstore",
+    "use"
+  ],
+  "schemaVersion": 41,
+  "version": 1,
+  "editable": false,
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "refresh": "30s",
+  "timezone": "utc",
+  "graphTooltip": 1,
+  "templating": {
+    "list": [
+      {
+        "name": "env",
+        "label": "Environment",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "query": {
+          "query": "label_values(target_info{job=~\"bookstore.*\"}, deployment_environment_name)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery",
+          "qryType": 1
+        },
+        "definition": "label_values(target_info{job=~\"bookstore.*\"}, deployment_environment_name)",
+        "refresh": 2,
+        "sort": 1,
+        "multi": false,
+        "includeAll": false
+      },
+      {
+        "name": "service",
+        "label": "Service",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "query": {
+          "query": "label_values(target_info{deployment_environment_name=\"$env\"}, job)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery",
+          "qryType": 1
+        },
+        "definition": "label_values(target_info{deployment_environment_name=\"$env\"}, job)",
+        "refresh": 2,
+        "sort": 1,
+        "multi": false,
+        "includeAll": false
+      },
+      {
+        "name": "instance",
+        "label": "Instance",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "query": {
+          "query": "label_values(target_info{job=\"$service\", deployment_environment_name=\"$env\"}, instance)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery",
+          "qryType": 1
+        },
+        "definition": "label_values(target_info{job=\"$service\", deployment_environment_name=\"$env\"}, instance)",
+        "refresh": 2,
+        "sort": 1,
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        }
+      }
+    ]
+  },
+  "annotations": {
+    "list": []
+  },
+  "links": [],
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "CPU (cores used)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by (instance) (rate(dotnet_process_cpu_time_seconds_total{job=\"$service\", deployment_environment_name=\"$env\", instance=~\"$instance\"}[$__rate_interval]))",
+          "legendFormat": "{{instance}}",
+          "refId": "A",
+          "exemplar": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "interval": "15s"
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Working set",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by (instance) (dotnet_process_memory_working_set_bytes{job=\"$service\", deployment_environment_name=\"$env\", instance=~\"$instance\"})",
+          "legendFormat": "{{instance}}",
+          "refId": "A",
+          "exemplar": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "interval": "15s"
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "GC heap size after last collection",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by (instance) (dotnet_gc_last_collection_heap_size_bytes{job=\"$service\", deployment_environment_name=\"$env\", instance=~\"$instance\"})",
+          "legendFormat": "{{instance}}",
+          "refId": "A",
+          "exemplar": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "interval": "15s"
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "GC collections by generation",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by (gc_heap_generation) (rate(dotnet_gc_collections_total{job=\"$service\", deployment_environment_name=\"$env\", instance=~\"$instance\"}[$__rate_interval]))",
+          "legendFormat": "{{gc_heap_generation}}",
+          "refId": "A",
+          "exemplar": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "interval": "15s"
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Thread pool: threads and queue",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 16,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum(dotnet_thread_pool_thread_count{job=\"$service\", deployment_environment_name=\"$env\", instance=~\"$instance\"})",
+          "legendFormat": "threads",
+          "refId": "A",
+          "exemplar": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum(dotnet_thread_pool_queue_length{job=\"$service\", deployment_environment_name=\"$env\", instance=~\"$instance\"})",
+          "legendFormat": "queued work items",
+          "refId": "B",
+          "exemplar": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "description": "Saturation: a queue that does not drain means the pool cannot keep up.",
+      "interval": "15s"
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Lock contentions / s",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 16,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum(rate(dotnet_monitor_lock_contentions_total{job=\"$service\", deployment_environment_name=\"$env\", instance=~\"$instance\"}[$__rate_interval]))",
+          "legendFormat": "contentions",
+          "refId": "A",
+          "exemplar": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "interval": "15s"
+    }
+  ]
+}

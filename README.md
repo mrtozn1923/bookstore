@@ -120,6 +120,7 @@ Bu branch, mertozen.com'daki Observability serisinin kodudur. Bu tag'e kadar ekl
   ```
 
   LGTM stack'i de 9090 portunu kullanır; ikisini aynı anda çalıştırma.
+- `deploy/observability/grafana`: dashboard as code. `bookstore-api-red.json` (RED) ve `bookstore-api-runtime.json` (USE) dosyadan provisioning ile yüklenir (Grafana'da "Bookstore" klasörü); exemplar'lar açık (`SetExemplarFilter(ExemplarFilterType.TraceBased)`).
 
 ---
 
@@ -239,3 +240,4 @@ This branch holds the code of the Observability series on mertozen.com. Added up
   ```
 
   The LGTM stack also uses port 9090; don't run both at the same time.
+- `deploy/observability/grafana`: dashboards as code. `bookstore-api-red.json` (RED) and `bookstore-api-runtime.json` (USE) are provisioned from files (the "Bookstore" folder in Grafana); exemplars are on (`SetExemplarFilter(ExemplarFilterType.TraceBased)`).
