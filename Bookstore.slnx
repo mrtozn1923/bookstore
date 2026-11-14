@@ -1,0 +1,25 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/BuildingBlocks/">
+    <Project Path="src/BuildingBlocks/Bookstore.Contracts/Bookstore.Contracts.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/" />
+  <Folder Name="/src/Services/Catalog/">
+    <Project Path="src/Services/Catalog/Bookstore.Catalog.Api/Bookstore.Catalog.Api.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/Inventory/">
+    <Project Path="src/Services/Inventory/Bookstore.Inventory.Grpc/Bookstore.Inventory.Grpc.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/Notifications/">
+    <Project Path="src/Services/Notifications/Bookstore.Notifications.Api/Bookstore.Notifications.Api.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/Ordering/">
+    <Project Path="src/Services/Ordering/Bookstore.Ordering.Api/Bookstore.Ordering.Api.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/Payments/">
+    <Project Path="src/Services/Payments/Bookstore.Payments.Api/Bookstore.Payments.Api.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Bookstore.ArchitectureTests/Bookstore.ArchitectureTests.csproj" />
+  </Folder>
+</Solution>
