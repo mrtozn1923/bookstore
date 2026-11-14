@@ -1,0 +1,15 @@
+<main>
+  <h1>Bookstore</h1>
+  <p class="environment">Environment: {{ environment }}</p>
+  @if (error(); as message) {
+    <p class="error">{{ message }}</p>
+  }
+  <ul>
+    @for (book of books(); track book.isbn) {
+      <li>
+        <span class="title">{{ book.title }}</span>
+        <span class="price">{{ book.priceTry | currency: 'TRY' }}</span>
+      </li>
+    }
+  </ul>
+</main>

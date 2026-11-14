@@ -1,0 +1,10 @@
+**/bin/
+**/obj/
+out/
+.git/
+.vs/
+.vscode/
+*.md
+backup/
+secrets/
+scan/

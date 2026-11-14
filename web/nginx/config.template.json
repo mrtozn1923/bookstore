@@ -1,0 +1,4 @@
+{
+  "apiBaseUrl": "${API_BASE_URL}",
+  "environment": "${APP_ENVIRONMENT}"
+}

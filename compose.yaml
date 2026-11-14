@@ -1,0 +1,36 @@
+# Bookstore with one command: SQL Server, Bookstore.Api and bookstore-web
+name: composeseries
+
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2025-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+    volumes:
+      - db-data:/var/opt/mssql
+      - ./db:/scripts:ro
+    ports:
+      - "127.0.0.1:1433:1433"
+
+  api:
+    build:
+      context: .
+      dockerfile: src/Bookstore.Api/Dockerfile
+    environment:
+      ConnectionStrings__Default: "Server=db;Database=BookstoreDb;User Id=bookstore_app;Password=${BOOKSTORE_DB_PASSWORD};TrustServerCertificate=True"
+    networks:
+      default:
+        aliases:
+          - bookstore-api
+
+  web:
+    build: ./web
+    environment:
+      API_BASE_URL: /api
+      APP_ENVIRONMENT: compose
+    ports:
+      - "8080:8080"
+
+volumes:
+  db-data:

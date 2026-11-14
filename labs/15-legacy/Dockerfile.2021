@@ -1,0 +1,13 @@
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
+MAINTAINER Bookstore Team <team@bookstore.example.com>
+WORKDIR /src
+COPY . .
+RUN dotnet restore
+RUN dotnet publish -c Release -o /app
+
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
+WORKDIR /app
+COPY --from=build /app .
+ENV ASPNETCORE_URLS http://+:80
+EXPOSE 80
+ENTRYPOINT dotnet Bookstore.Api.dll
