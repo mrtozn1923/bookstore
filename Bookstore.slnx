@@ -24,5 +24,6 @@
     <Project Path="samples/Cd19.Idempotency/Cd19.Idempotency.csproj" />
     <Project Path="samples/Cd20.OptimisticConcurrency/Cd20.OptimisticConcurrency.csproj" />
     <Project Path="samples/Cd21.KeysetPagination/Cd21.KeysetPagination.csproj" />
+    <Project Path="samples/Cd22.BulkImport/Cd22.BulkImport.csproj" />
   </Folder>
 </Solution>
