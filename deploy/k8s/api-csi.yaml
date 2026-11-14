@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: bookstore-api
+  namespace: bookstore
+---
+apiVersion: secrets-store.csi.x-k8s.io/v1
+kind: SecretProviderClass
+metadata:
+  name: bookstore-api-vault
+  namespace: bookstore
+spec:
+  provider: vault
+  parameters:
+    vaultAddress: http://vault.vault.svc:8200
+    # Pod'un kendi service account'u ile Vault'a giriş
+    roleName: bookstore-api
+    objects: |
+      - objectName: "Jwt__SigningKey"
+        secretPath: "secret/data/bookstore/api"
+        secretKey: "jwt_signing_key"
+      - objectName: "Email__ApiKey"
+        secretPath: "secret/data/bookstore/api"
+        secretKey: "email_api_key"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-csi
+  namespace: bookstore
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: api-csi }
+  template:
+    metadata:
+      labels: { app: api-csi }
+    spec:
+      serviceAccountName: bookstore-api
+      containers:
+        - name: api
+          image: secretseries-api:06
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Staging
+            - name: Secrets__Directory
+              value: /app/secrets
+          volumeMounts:
+            - name: secrets
+              mountPath: /app/secrets
+              readOnly: true
+      volumes:
+        - name: secrets
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: bookstore-api-vault

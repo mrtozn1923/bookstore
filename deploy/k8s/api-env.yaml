@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-env
+  namespace: bookstore
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: api-env }
+  template:
+    metadata:
+      labels: { app: api-env }
+    spec:
+      containers:
+        - name: api
+          image: secretseries-api:06
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Staging
+          # Secret'ın bütün key'leri environment variable olarak
+          envFrom:
+            - secretRef:
+                name: bookstore-api-secrets
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-env
+  namespace: bookstore
+spec:
+  type: NodePort
+  selector: { app: api-env }
+  ports:
+    - port: 8080
+      nodePort: 30080

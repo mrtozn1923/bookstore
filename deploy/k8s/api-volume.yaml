@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-volume
+  namespace: bookstore
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: api-volume }
+  template:
+    metadata:
+      labels: { app: api-volume }
+    spec:
+      containers:
+        - name: api
+          image: secretseries-api:06
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Staging
+            - name: Secrets__Directory
+              value: /app/secrets
+            # Kubernetes symlink'le güncellediği dosyaları güvenilir görmek için
+            - name: DOTNET_USE_POLLING_FILE_WATCHER
+              value: "true"
+          volumeMounts:
+            - name: secrets
+              mountPath: /app/secrets
+              readOnly: true
+      volumes:
+        - name: secrets
+          secret:
+            secretName: bookstore-api-secrets
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-volume
+  namespace: bookstore
+spec:
+  type: NodePort
+  selector: { app: api-volume }
+  ports:
+    - port: 8080
+      nodePort: 30081

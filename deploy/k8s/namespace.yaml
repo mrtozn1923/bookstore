@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bookstore
+---
+# ESO bu kimlikle Vault'a giriş yapar; uygulamanın kendisi Vault'u hiç görmez
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: bookstore-eso
+  namespace: bookstore

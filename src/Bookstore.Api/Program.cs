@@ -12,6 +12,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Yalnız BOOKSTORE_ ile başlayan değişkenler, önek atılarak
 builder.Configuration.AddEnvironmentVariables(prefix: "BOOKSTORE_");
 
+// Docker/Kubernetes'te dosya olarak mount edilen secret'lar: dosya adı key, içerik value
+if (builder.Configuration["Secrets:Directory"] is { Length: > 0 } secretsDirectory)
+{
+    builder.Configuration.AddKeyPerFile(secretsDirectory, optional: true, reloadOnChange: true);
+}
+
 // Vault Agent'ın yazdığı secret dosyası (yoksa atlanır); agent yeniledikçe yeniden yüklenir
 if (builder.Configuration["Vault:SecretsFile"] is { Length: > 0 } vaultSecretsFile)
 {

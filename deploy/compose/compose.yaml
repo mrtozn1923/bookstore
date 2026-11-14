@@ -1,0 +1,23 @@
+name: secretseries
+
+services:
+  api:
+    image: secretseries-api:06
+    init: true
+    ports:
+      - "18086:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Staging
+      # Secret değil, secret'ların bulunduğu klasör
+      Secrets__Directory: /run/secrets
+    secrets:
+      - source: jwt_signing_key
+        target: Jwt__SigningKey
+      - source: email_api_key
+        target: Email__ApiKey
+
+secrets:
+  jwt_signing_key:
+    file: ./secrets/jwt_signing_key.txt
+  email_api_key:
+    file: ./secrets/email_api_key.txt

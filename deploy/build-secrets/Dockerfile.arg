@@ -1,0 +1,5 @@
+FROM alpine:3
+ARG NUGET_TOKEN
+# Token yalnız bu adımda kullanılıyor ve dosya hemen siliniyor... ama
+RUN printf 'feed=https://pkgs.example.com/bookstore\ntoken=%s\n' "$NUGET_TOKEN" > /tmp/feed.conf \
+ && echo "restoring with $(wc -c < /tmp/feed.conf) bytes of config" && rm /tmp/feed.conf
