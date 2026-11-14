@@ -11,12 +11,14 @@ export class OrderBadge {
   private readonly http = inject(HttpClient);
   readonly unread = signal(0);
 
-  async refresh() {
+  // returns the new count, or null when offline (the last count stays)
+  async refresh(): Promise<number | null> {
     try {
       const { unread } = await firstValueFrom(this.http.get<OrderUpdates>('/api/me/order-updates'));
       await this.show(unread);
+      return unread;
     } catch {
-      // offline: keep the last count
+      return null;
     }
   }
 
@@ -25,7 +27,7 @@ export class OrderBadge {
     await this.show(0);
   }
 
-  private async show(count: number) {
+  async show(count: number) {
     this.unread.set(count);
     if (!('setAppBadge' in navigator)) return; // Firefox, and Safari outside an installed web app
     try {

@@ -4,6 +4,8 @@ import { AppUpdates } from './core/app-updates';
 import { BookstoreDatabase } from './core/bookstore-database';
 import { InstallPrompt } from './core/install-prompt';
 import { OrderBadge } from './core/order-badge';
+import { OrderUpdatesPoller } from './core/order-updates-poller';
+import { Session } from './core/session';
 import { PushNotifications } from './core/push-notifications';
 
 @Component({
@@ -27,6 +29,13 @@ import { PushNotifications } from './core/push-notifications';
         </a>
         <a routerLink="/settings">Settings</a>
       </nav>
+      @if (session.customer(); as customer) {
+        <span class="session"
+          >{{ customer }} <button (click)="session.signOut()">Sign out</button></span
+        >
+      } @else {
+        <button class="sign-in" (click)="session.signIn('ada')">Sign in</button>
+      }
       @if (installer.offer()) {
         <span class="install-offer">
           <button (click)="install()">Install app</button>
@@ -34,6 +43,9 @@ import { PushNotifications } from './core/push-notifications';
         </span>
       }
     </header>
+    @if (session.signedOutElsewhere()) {
+      <p class="banner signed-out">You signed out in another tab.</p>
+    }
     @if (database.outdated()) {
       <p class="banner">Bookstore was updated in another tab. Reload this page to continue.</p>
     }
@@ -78,9 +90,10 @@ export class App {
   protected readonly updates = inject(AppUpdates);
   protected readonly installer = inject(InstallPrompt);
   protected readonly badge = inject(OrderBadge);
+  protected readonly session = inject(Session);
 
   constructor() {
-    void this.badge.refresh();
+    inject(OrderUpdatesPoller); // the leader tab polls, every tab shows the count (09)
     inject(PushNotifications); // listens for push messages and notification clicks on every page
   }
 

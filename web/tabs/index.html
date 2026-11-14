@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Tabs lab</title>
+  <script type="module">
+    import * as lab from "./lab.js";
+    // expose the examples so they can be called from the DevTools console (and Playwright)
+    window.lab = lab;
+  </script>
+</head>
+<body>
+  <h1>Tabs lab</h1>
+  <nav>
+    <a href="/tabs/?page=catalog">Catalog</a>
+    <a href="/tabs/?page=orders">My orders</a>
+    <a href="/fetch/">Fetch lab (another page)</a>
+  </nav>
+  <p id="view">Open DevTools and run e.g. <code>lab.listen()</code> in two tabs.</p>
+</body>
+</html>

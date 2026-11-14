@@ -4,7 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { SwPush } from '@angular/service-worker';
 import { firstValueFrom, map } from 'rxjs';
-import { OrderBadge } from './order-badge';
+import { OrderUpdatesPoller } from './order-updates-poller';
 
 @Service()
 export class PushNotifications {
@@ -22,12 +22,12 @@ export class PushNotifications {
 
   constructor() {
     if (!this.swPush.isEnabled) return;
-    const badge = inject(OrderBadge);
+    const orderUpdates = inject(OrderUpdatesPoller);
     const router = inject(Router);
-    // a push arrived while a tab is open: the number in the header and on the icon changes
+    // a push arrived while a tab is open: every tab gets it, only the leader asks the server (09)
     this.swPush.messages.subscribe((message) => {
       console.log(`push message: ${JSON.stringify(message)}`);
-      void badge.refresh();
+      orderUpdates.refreshNow();
     });
     // the service worker already focused or opened a window; the app decides what to show
     this.swPush.notificationClicks.subscribe(({ action, notification }) => {

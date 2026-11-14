@@ -7,7 +7,6 @@ import { BookstoreDatabase, PendingReview } from '../core/bookstore-database';
 export class ReviewOutbox {
   private readonly database = inject(BookstoreDatabase);
   private readonly http = inject(HttpClient);
-  private flushing = false;
   readonly pending = signal(0);
 
   constructor() {
@@ -28,9 +27,8 @@ export class ReviewOutbox {
   }
 
   async flush() {
-    if (this.flushing) return;
-    this.flushing = true;
-    try {
+    // one sender across all tabs: the others wait for the lock, then find the outbox empty
+    await navigator.locks.request('review-outbox', async () => {
       const db = await this.database.connection();
       // read first, send afterwards: a transaction must not stay open while waiting for the network
       const items = await db.getAllFromIndex('outbox', 'byCreatedAt');
@@ -41,9 +39,7 @@ export class ReviewOutbox {
         await db.delete('outbox', item.idempotencyKey);
         this.pending.update((n) => n - 1);
       }
-    } finally {
-      this.flushing = false;
-    }
+    });
   }
 
   // true when the item can leave the outbox
