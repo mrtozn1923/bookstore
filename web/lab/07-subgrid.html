@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Lab 07: card rows with and without subgrid</title>
+    <style>
+        /* self-contained: this lab does not load main.css */
+        body { margin: 0; font: 16px/1.5 system-ui, sans-serif; }
+        .shelf {
+            display: grid;
+            grid-template-columns: repeat(3, 180px);
+            gap: 16px;
+            list-style: none;
+            margin: 0 0 32px;
+            padding: 0;
+        }
+        .card { padding: 12px; border: 1px solid #e5e7eb; }
+        .card > * { margin: 0; }
+        .card h2 { font-size: 1.125rem; line-height: 1.2; }
+
+        /* every card is its own flex column: rows know nothing about the neighbours */
+        #without .card { display: flex; flex-direction: column; gap: 4px; }
+        #without .price { margin-block-start: auto; }
+
+        /* every card borrows four rows from the shelf */
+        #with .card {
+            display: grid;
+            grid-row: span 4;
+            grid-template-rows: subgrid;
+            row-gap: 4px;
+        }
+    </style>
+</head>
+<body>
+    <ul class="shelf" id="without">
+        <li class="card"><h2>Dune</h2><p class="author">Frank Herbert</p><p class="blurb">Desert planet, spice and politics.</p><p class="price">349.00 TRY</p></li>
+        <li class="card"><h2>Middlemarch: A Study of Provincial Life</h2><p class="author">George Eliot</p><p class="blurb">A town, a marriage and a reform bill.</p><p class="price">289.00 TRY</p></li>
+        <li class="card"><h2>The Hobbit</h2><p class="author">J. R. R. Tolkien</p><p class="blurb">A hobbit, a dragon and a long way home, with dwarves.</p><p class="price">259.00 TRY</p></li>
+    </ul>
+    <ul class="shelf" id="with">
+        <li class="card"><h2>Dune</h2><p class="author">Frank Herbert</p><p class="blurb">Desert planet, spice and politics.</p><p class="price">349.00 TRY</p></li>
+        <li class="card"><h2>Middlemarch: A Study of Provincial Life</h2><p class="author">George Eliot</p><p class="blurb">A town, a marriage and a reform bill.</p><p class="price">289.00 TRY</p></li>
+        <li class="card"><h2>The Hobbit</h2><p class="author">J. R. R. Tolkien</p><p class="blurb">A hobbit, a dragon and a long way home, with dwarves.</p><p class="price">259.00 TRY</p></li>
+    </ul>
+</body>
+</html>

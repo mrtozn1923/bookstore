@@ -10,10 +10,13 @@
     isolation: isolate;
 }
 
+/* every card borrows four rows from the list, so titles, authors and prices line up across a row */
 .book-card {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
+    display: grid;
+    grid-row: span 4;
+    grid-template-rows: subgrid;
+    grid-template-areas: "cover" "title" "author" "price";
+    row-gap: 0.25rem;
     position: relative;
     padding: var(--space);
     border: 1px solid var(--color-border);
@@ -26,12 +29,22 @@
 }
 
 .book-card > img {
-    align-self: center;
+    grid-area: cover;
+    justify-self: center;
 }
 
-/* the price sits at the bottom, however long the title is */
+.book-card .book-title {
+    grid-area: title;
+}
+
+.book-card .book-author {
+    grid-area: author;
+}
+
+/* the price row is shared, so the price sits at its bottom edge */
 .book-card .price {
-    margin-block-start: auto;
+    grid-area: price;
+    align-self: end;
 }
 
 /* a card without a cover image gets a tinted background instead */

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Lab 07: alignment, Grid or Flexbox, grid-lanes</title>
+    <style>
+        /* self-contained: this lab does not load main.css */
+        body { margin: 0; font: 16px/1.5 system-ui, sans-serif; }
+        p { margin: 0; }
+        ol, ul { list-style: none; margin: 0; padding: 0; }
+
+        /* tracks are smaller than the container: there is free space to distribute */
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(3, 120px);
+            grid-template-rows: 60px;
+            inline-size: 600px;
+            block-size: 120px;
+            justify-content: space-between;  /* moves the tracks inside the container */
+            align-content: center;
+            justify-items: center;           /* moves each item inside its own cell */
+        }
+        .steps .current { place-self: end start; }
+
+        /* align-content on a plain block container: no flex, no grid */
+        .empty-cart { display: block; block-size: 200px; align-content: center; }
+
+        .chips { inline-size: 420px; gap: 8px; }
+        .chips li { padding-inline: 12px; border: 1px solid #e5e7eb; }
+        .chips.flex { display: flex; flex-wrap: wrap; }
+        .chips.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+
+        /* masonry: only where grid-lanes exists, a normal grid everywhere else */
+        .covers { display: grid; grid-template-columns: repeat(3, 100px); gap: 10px; inline-size: 320px; }
+        @supports (display: grid-lanes) {
+            .covers { display: grid-lanes; }
+        }
+        .covers div { background: #e5e7eb; }
+    </style>
+</head>
+<body>
+    <ol class="steps" id="steps"><li>Cart</li><li class="current">Address</li><li>Payment</li></ol>
+    <div class="empty-cart" id="empty-cart"><p>Your cart is empty.</p></div>
+
+    <ul class="chips flex" id="chips-flex"><li>Science Fiction</li><li>Classics</li><li>Children</li><li>Poetry</li><li>History of Science</li></ul>
+    <ul class="chips grid" id="chips-grid"><li>Science Fiction</li><li>Classics</li><li>Children</li><li>Poetry</li><li>History of Science</li></ul>
+
+    <div class="covers" id="covers">
+        <div style="block-size: 150px">Dune</div>
+        <div style="block-size: 90px">Emma</div>
+        <div style="block-size: 120px">Ulysses</div>
+        <div style="block-size: 60px">Middlemarch</div>
+        <div style="block-size: 100px">The Hobbit</div>
+    </div>
+</body>
+</html>
