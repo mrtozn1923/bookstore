@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Order Form</title>
+</head>
+<body>
+  <form id="order">
+    <p>
+      <label for="name">Name</label>
+      <input id="name" type="text">
+    </p>
+    <p>
+      <label for="quantity">Quantity</label>
+      <input id="quantity" type="number">
+    </p>
+    <p>
+      <label for="city">City</label>
+      <select id="city">
+        <option value="">Choose one</option>
+        <option value="ist">Istanbul</option>
+        <option value="ank">Ankara</option>
+        <option value="izm">Izmir</option>
+      </select>
+    </p>
+    <p>
+      <label><input type="radio" name="shipping" value="standard" checked> Standard shipping</label>
+      <label><input type="radio" name="shipping" value="express"> Express shipping</label>
+    </p>
+    <p>
+      <label><input id="gift-wrap" type="checkbox"> Gift wrap</label>
+    </p>
+    <button>Place order</button>
+  </form>
+  <script>
+    const form = document.getElementById("order");
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const name = document.getElementById("name").value.trim();
+      const quantityText = document.getElementById("quantity").value;
+      const cityBox = document.getElementById("city");
+      const shipping = document.querySelector('input[name="shipping"]:checked').value;
+      const giftWrap = document.getElementById("gift-wrap").checked;
+
+      console.log("Name:", name);
+      console.log("Quantity:", Number(quantityText));
+      console.log("City code:", cityBox.value);
+      console.log("Selected index:", cityBox.selectedIndex);
+      console.log("Visible text:", cityBox.options[cityBox.selectedIndex].text);
+      console.log("Shipping:", shipping);
+      console.log("Gift wrap:", giftWrap);
+    });
+  </script>
+</body>
+</html>

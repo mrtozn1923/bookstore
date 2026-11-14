@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Built-in Validation</title>
+</head>
+<body>
+  <form id="order">
+    <p><input id="name" placeholder="Name" required minlength="2"></p>
+    <p><input id="email" type="email" placeholder="Email" required></p>
+    <p><input id="quantity" type="number" placeholder="Quantity" required min="1" max="10"></p>
+    <p><input id="coupon" placeholder="Coupon code" maxlength="10"></p>
+    <button>Place order</button>
+  </form>
+  <script>
+    document.getElementById("order").addEventListener("submit", (event) => {
+      event.preventDefault();
+      console.log("submit ran, every field is valid.");
+    });
+  </script>
+</body>
+</html>
