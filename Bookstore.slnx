@@ -8,5 +8,6 @@
     <Project Path="samples/Cd03.SentinelValues/Cd03.SentinelValues.csproj" />
     <Project Path="samples/Cd04.PublicId/Cd04.PublicId.csproj" />
     <Project Path="samples/Cd05.ReferenceData/Cd05.ReferenceData.csproj" />
+    <Project Path="samples/Cd06.SoftDelete/Cd06.SoftDelete.csproj" />
   </Folder>
 </Solution>
