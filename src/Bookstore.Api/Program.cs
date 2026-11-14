@@ -47,6 +47,8 @@ app.UseExceptionHandler(new ExceptionHandlerOptions
 });
 app.UseStatusCodePages();
 app.UseAuthentication();
+// Resolves ?api-version= (ADR-0004) and writes Deprecation/Sunset for old versions.
+app.UseApiVersions();
 app.UseAuthorization();
 
 app.MapBookEndpoints();

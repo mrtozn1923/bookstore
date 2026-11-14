@@ -18,6 +18,8 @@ public sealed class OrderData
             "2026-10-12T08:50:00Z", [new("9780061120084", "To Kill a Mockingbird", 25, 260.10m)]),
         Institutional("01a1c112-d7c0-706c-8cb9-c18a8fadc1a6", "lakeside-school", "main-campus", OrderStatus.Pending,
             "2026-11-09T16:10:00Z", [new("9780451524935", "Nineteen Eighty-Four", 40, 197.10m)]),
+        Institutional("01a1d3b8-5e40-7f2a-9c61-3d8e0b47a915", "lakeside-school", "main-campus", OrderStatus.PartiallyShipped,
+            "2026-11-13T09:30:00Z", [new("9780553293357", "Foundation", 30, 269.10m), new("9780441172719", "Dune", 30, 440.10m)]),
         Institutional("01a0fbdc-1660-71a3-af67-19acad3c2d6d", "lakeside-school", "east-campus", OrderStatus.Delivered,
             "2026-10-02T09:05:00Z", [new("9780141441146", "Jane Eyre", 20, 233.10m)]),
         Institutional("01a1a612-9c80-7e46-8590-67e08b9d2434", "lakeside-school", "east-campus", OrderStatus.Confirmed,

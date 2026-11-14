@@ -43,3 +43,11 @@ Each rule has an id. Rules marked [lint] are enforced by .spectral.yaml.
 - BS-35 Filters are plain query parameters named after the representation's fields; ranges use min/max or After/Before; unknown parameters are 400.
 - BS-36 sort is a comma-separated field list with '-' for descending, on documented fields only, with a unique tie-breaker; fields selects members of each item.
 - BS-37 Criteria too large for a URL (e.g. 500 ISBNs) use QUERY (RFC 10008) with a JSON body; results are bounded by the request.
+
+## Evolution and versioning
+- BS-50 Additive changes need no new version: a new optional request field, a new response field, a new endpoint, a new problem type, a new value of an open enum.
+- BS-51 Breaking changes: removing or renaming a field, changing a type or format, making an optional request field required, changing a default, a status code, a problem type or the meaning of a value, adding a value to an enum the contract declares closed, tightening validation.
+- BS-52 Response enums are open: the contract lists today's values and clients map unknown values to a fallback (tolerant reader). Request enums are closed and validated.
+- BS-53 A breaking change ships as a new dated api-version (ADR-0004); the old version stays until its Sunset.
+- BS-54 A deprecated version or endpoint answers with Deprecation (RFC 9745), Sunset (RFC 8594, at least 6 months later) and Link rel="deprecation" to a migration guide; deprecated schema members are marked deprecated: true.
+- BS-55 Usage of deprecated versions and endpoints is logged per client before the sunset date.

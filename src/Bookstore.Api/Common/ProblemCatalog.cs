@@ -24,6 +24,10 @@ public static class ProblemCatalog
         "Request body could not be read", "İstek gövdesi okunamadı",
         "The body is not valid JSON, or a body or query value has the wrong type.",
         "Gövde geçerli bir JSON değil ya da gövdedeki veya query'deki bir değerin tipi yanlış.");
+    public static readonly ProblemType UnsupportedApiVersion = new("unsupported-api-version", 400,
+        "Unsupported api-version", "Desteklenmeyen api-version",
+        "api-version {0} is not supported; see supportedVersions.",
+        "{0} api-version'ı desteklenmiyor; desteklenenler supportedVersions içinde.");
     public static readonly ProblemType InvalidPageToken = new("invalid-page-token", 400,
         "Invalid page token", "Geçersiz sayfa token'ı",
         "The page token is invalid, has expired or belongs to a different query; start again without pageToken.",
@@ -75,7 +79,7 @@ public static class ProblemCatalog
 
     public static readonly IReadOnlyList<ProblemType> All =
     [
-        ValidationFailed, MalformedRequest, InvalidPageToken, Unauthenticated, Forbidden, UnitNotAllowed, NotFound, MethodNotAllowed,
+        ValidationFailed, MalformedRequest, UnsupportedApiVersion, InvalidPageToken, Unauthenticated, Forbidden, UnitNotAllowed, NotFound, MethodNotAllowed,
         BookAlreadyExists, OrderNotCancellable, OrderNotReturnable, PreconditionFailed, UnsupportedMediaType,
         InsufficientStock, UnsupportedCurrency, InternalError,
     ];

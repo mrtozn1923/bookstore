@@ -2,7 +2,8 @@ using Bookstore.Api.Catalog;
 
 namespace Bookstore.Api.Ordering;
 
-public enum OrderStatus { Pending, Confirmed, Shipped, Delivered, Cancelled }
+// PartiallyShipped arrived with institutional partial shipments; OrderStatus is open (ADR-0004).
+public enum OrderStatus { Pending, Confirmed, PartiallyShipped, Shipped, Delivered, Cancelled }
 
 public sealed record OrderItem(string Isbn, string Title, int Quantity, decimal UnitPrice);
 

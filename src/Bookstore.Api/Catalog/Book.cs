@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Bookstore.Api.Common;
 
 namespace Bookstore.Api.Catalog;
 
@@ -6,7 +7,7 @@ namespace Bookstore.Api.Catalog;
 public sealed record Book(
     string Isbn,
     string Title,
-    string Author,
+    IReadOnlyList<string> Authors,
     string Category,
     decimal Price,
     int StockQuantity,
@@ -15,6 +16,9 @@ public sealed record Book(
     int Version = 1)
 {
     public string ETag => $"\"{Version}\"";
+
+    // The single author string of api-version 2026-09-01: "Terry Pratchett, Neil Gaiman".
+    public string AuthorLine => string.Join(", ", Authors);
 }
 
 public sealed record Money(
@@ -61,13 +65,15 @@ public sealed record CreateBookRequest(
 public sealed record BookResponse(
     string Isbn,
     string Title,
-    string Author,
+    [property: Obsolete("Only in api-version 2026-09-01; use Authors.")] string? Author,
+    IReadOnlyList<string> Authors,
     string Category,
     Money Price,
     bool InStock,
     string? Description)
 {
-    public static BookResponse From(Book book) =>
-        new(book.Isbn, book.Title, book.Author, book.Category, new Money(book.Price, "TRY"), book.StockQuantity > 0,
-            book.Description);
+    // author was replaced by authors in 2026-11-15; null values are omitted from the JSON.
+    public static BookResponse From(Book book, ApiVersion version) =>
+        new(book.Isbn, book.Title, version == ApiVersions.V20260901 ? book.AuthorLine : null, book.Authors,
+            book.Category, new Money(book.Price, "TRY"), book.StockQuantity > 0, book.Description);
 }

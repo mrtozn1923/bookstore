@@ -54,7 +54,7 @@ public sealed class Paging(IDataProtectionProvider protection)
 
     // Unknown query parameters are errors, so a typo such as ?catgory= does not silently return everything.
     public static ProblemHttpResult? RejectUnknownParameters(HttpRequest request, IReadOnlyCollection<string> allowed) =>
-        request.Query.Keys.FirstOrDefault(k => !allowed.Contains(k)) is { } unknown
+        request.Query.Keys.FirstOrDefault(k => !allowed.Contains(k) && k != ApiVersions.QueryName) is { } unknown
             ? Invalid(unknown, "unknown-parameter")
             : null;
 
@@ -95,7 +95,7 @@ public sealed class Paging(IDataProtectionProvider protection)
                 .Where(q => q.Key != "pageToken")
                 .ToDictionary(q => q.Key, q => (string?)q.Value.ToString());
             nextQuery["pageToken"] = next;
-            http.Response.Headers.Link = $"<{QueryHelpers.AddQueryString(http.Request.Path, nextQuery)}>; rel=\"next\"";
+            http.Response.Headers.Append("Link", $"<{QueryHelpers.AddQueryString(http.Request.Path, nextQuery)}>; rel=\"next\"");
         }
 
         return TypedResults.Ok(new Page<TOut>([.. pageItems.Select(map)], next));

@@ -30,6 +30,8 @@ tags:
     description: Institutional customers (schools, libraries, companies).
 paths:
   /books:
+    parameters:
+      - $ref: '#/components/parameters/ApiVersion'
     get:
       operationId: listBooks
       summary: List books
@@ -46,7 +48,7 @@ paths:
             examples: [classics]
         - name: author
           in: query
-          description: Exact author name, case-insensitive.
+          description: Exact name of one of the authors, case-insensitive.
           schema:
             type: string
         - name: minPrice
@@ -76,8 +78,8 @@ paths:
         - name: fields
           in: query
           description: >-
-            Comma-separated subset of isbn, title, author, category, price, inStock,
-            description. Items contain only these members.
+            Comma-separated subset of isbn, title, authors, category, price, inStock,
+            description (and author in 2026-09-01). Items contain only these members.
           schema:
             type: string
             examples: ['isbn,title,price']
@@ -89,6 +91,12 @@ paths:
           headers:
             Link:
               $ref: '#/components/headers/NextLink'
+            Api-Version:
+              $ref: '#/components/headers/ApiVersion'
+            Deprecation:
+              $ref: '#/components/headers/Deprecation'
+            Sunset:
+              $ref: '#/components/headers/Sunset'
           content:
             application/json:
               schema:
@@ -162,6 +170,7 @@ paths:
           $ref: '#/components/responses/Problem'
   /books/{isbn}:
     parameters:
+      - $ref: '#/components/parameters/ApiVersion'
       - $ref: '#/components/parameters/Isbn'
     get:
       operationId: getBook
@@ -175,6 +184,12 @@ paths:
           headers:
             ETag:
               $ref: '#/components/headers/ETag'
+            Api-Version:
+              $ref: '#/components/headers/ApiVersion'
+            Deprecation:
+              $ref: '#/components/headers/Deprecation'
+            Sunset:
+              $ref: '#/components/headers/Sunset'
           content:
             application/json:
               schema:
@@ -308,6 +323,8 @@ paths:
         '412':
           $ref: '#/components/responses/Problem'
   /orders:
+    parameters:
+      - $ref: '#/components/parameters/ApiVersion'
     get:
       operationId: listOrders
       summary: List my orders
@@ -329,6 +346,7 @@ paths:
           $ref: '#/components/responses/Problem'
   /orders/{orderId}:
     parameters:
+      - $ref: '#/components/parameters/ApiVersion'
       - $ref: '#/components/parameters/OrderId'
     get:
       operationId: getOrder
@@ -350,6 +368,7 @@ paths:
           $ref: '#/components/responses/Problem'
   /orders/{orderId}:cancel:
     parameters:
+      - $ref: '#/components/parameters/ApiVersion'
       - $ref: '#/components/parameters/OrderId'
     post:
       operationId: cancelOrder
@@ -371,6 +390,7 @@ paths:
           $ref: '#/components/responses/Problem'
   /orders/{orderId}/returns:
     parameters:
+      - $ref: '#/components/parameters/ApiVersion'
       - $ref: '#/components/parameters/OrderId'
     post:
       operationId: createReturn
@@ -405,6 +425,7 @@ paths:
           $ref: '#/components/responses/Problem'
   /orders/{orderId}/returns/{returnId}:
     parameters:
+      - $ref: '#/components/parameters/ApiVersion'
       - $ref: '#/components/parameters/OrderId'
       - name: returnId
         in: path
@@ -429,6 +450,8 @@ paths:
         '404':
           $ref: '#/components/responses/Problem'
   /customers/{customerId}/cart:
+    parameters:
+      - $ref: '#/components/parameters/ApiVersion'
     get:
       operationId: getCart
       summary: Get a cart
@@ -449,6 +472,7 @@ paths:
           $ref: '#/components/responses/Problem'
   /customers/{customerId}/cart/items/{isbn}:
     parameters:
+      - $ref: '#/components/parameters/ApiVersion'
       - $ref: '#/components/parameters/CustomerId'
       - $ref: '#/components/parameters/Isbn'
     put:
@@ -501,6 +525,8 @@ paths:
         '404':
           $ref: '#/components/responses/Problem'
   /institutions/{institutionId}:
+    parameters:
+      - $ref: '#/components/parameters/ApiVersion'
     get:
       operationId: getInstitution
       summary: Get an institution
@@ -520,6 +546,8 @@ paths:
         '404':
           $ref: '#/components/responses/Problem'
   /institutions/{institutionId}/orders:
+    parameters:
+      - $ref: '#/components/parameters/ApiVersion'
     get:
       operationId: listInstitutionOrders
       summary: List an institution's orders
@@ -578,6 +606,8 @@ paths:
         '404':
           $ref: '#/components/responses/Problem'
   /problems:
+    parameters:
+      - $ref: '#/components/parameters/ApiVersion'
     get:
       operationId: listProblemTypes
       summary: List problem types
@@ -594,6 +624,8 @@ paths:
                 items:
                   $ref: '#/components/schemas/ProblemType'
   /problems/{code}:
+    parameters:
+      - $ref: '#/components/parameters/ApiVersion'
     get:
       operationId: getProblemType
       summary: Describe a problem type
@@ -621,6 +653,18 @@ components:
       type: http
       scheme: bearer
   headers:
+    ApiVersion:
+      description: The api-version that produced this response.
+      schema:
+        type: string
+    Deprecation:
+      description: RFC 9745 structured field date (@epoch-seconds) on responses of a deprecated version.
+      schema:
+        type: string
+    Sunset:
+      description: RFC 8594 HTTP-date after which the deprecated version stops answering.
+      schema:
+        type: string
     NextLink:
       description: RFC 8288 link to the next page, rel="next"; absent on the last page.
       schema:
@@ -635,6 +679,18 @@ components:
       schema:
         type: string
   parameters:
+    ApiVersion:
+      name: api-version
+      in: query
+      description: >-
+        Dated contract version (ADR-0004). Absent means the oldest supported version,
+        2026-09-01, until its sunset. Responses carry Api-Version; a deprecated version
+        also gets Deprecation (RFC 9745), Sunset (RFC 8594) and a Link rel="deprecation".
+        Unknown versions return 400 unsupported-api-version.
+      schema:
+        type: string
+        enum: ['2026-09-01', '2026-11-15']
+        default: '2026-09-01'
     Isbn:
       name: isbn
       in: path
@@ -797,7 +853,7 @@ components:
           maximum: 99
     Book:
       type: object
-      required: [isbn, title, author, category, price, inStock]
+      required: [isbn, title, authors, category, price, inStock]
       properties:
         isbn:
           type: string
@@ -805,6 +861,15 @@ components:
           type: string
         author:
           type: string
+          deprecated: true
+          description: >-
+            Only in api-version 2026-09-01: the authors joined with ", ". Removed in
+            2026-11-15; use authors.
+        authors:
+          type: array
+          minItems: 1
+          items:
+            type: string
         category:
           type: string
         price:
@@ -827,7 +892,7 @@ components:
     OrderStatus:
       type: string
       description: New values may be added; clients must accept unknown values.
-      examples: [Pending, Confirmed, Shipped, Delivered, Cancelled]
+      examples: [Pending, Confirmed, PartiallyShipped, Shipped, Delivered, Cancelled]
     OrderItem:
       type: object
       required: [isbn, title, quantity, unitPrice]
