@@ -1,0 +1,29 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "ReverseProxy": {
+    "Routes": {
+      "catalog-v1": {
+        "ClusterId": "catalog",
+        "Match": {
+          "Path": "/api/v1/books/{**rest}"
+        },
+        "Transforms": [
+          { "PathPattern": "/books/{**rest}" }
+        ]
+      }
+    },
+    "Clusters": {
+      "catalog": {
+        "Destinations": {
+          "catalog-1": { "Address": "http://host.docker.internal:5301/" },
+          "catalog-2": { "Address": "http://host.docker.internal:5311/" }
+        }
+      }
+    }
+  }
+}

@@ -1,6 +1,20 @@
 using Bookstore.Inventory;
+using OpenTelemetry;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Traces and metrics go to an OTLP collector when OTEL_EXPORTER_OTLP_ENDPOINT is set.
+OpenTelemetryBuilder otel = builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource.AddService("bookstore-inventory"))
+    .WithTracing(tracing => tracing.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation())
+    .WithMetrics(metrics => metrics.AddAspNetCoreInstrumentation());
+if (!string.IsNullOrEmpty(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]))
+{
+    otel.UseOtlpExporter();
+}
 
 // Artificial delay to simulate a slow Inventory in aggregation demos.
 int responseDelayMs = builder.Configuration.GetValue<int>("Inventory:ResponseDelayMs");

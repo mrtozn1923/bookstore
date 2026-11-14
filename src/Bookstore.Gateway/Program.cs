@@ -2,6 +2,7 @@ using Bookstore.Gateway.Bff;
 using Bookstore.Gateway.Configuration;
 using Bookstore.Gateway.Forwarding;
 using Bookstore.Gateway.LoadBalancing;
+using Bookstore.Gateway.Observability;
 using Bookstore.Gateway.Security;
 using Bookstore.Gateway.Traffic;
 using Bookstore.Gateway.Transforms;
@@ -12,6 +13,7 @@ using Yarp.ReverseProxy.Model;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddGatewayTelemetry(builder.Configuration);
 builder.Services.AddGatewayAuthentication(builder.Configuration);
 builder.Services.AddGatewayTrafficPolicies();
 builder.Services.AddServiceDiscovery();

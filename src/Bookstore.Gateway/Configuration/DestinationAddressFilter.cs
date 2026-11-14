@@ -16,7 +16,10 @@ public sealed class DestinationAddressFilter(IConfiguration configuration) : IPr
         Dictionary<string, DestinationConfig> destinations = new(StringComparer.OrdinalIgnoreCase);
         foreach ((string id, DestinationConfig destination) in cluster.Destinations)
         {
-            string? address = configuration[$"DestinationAddresses:{id}"];
+            // The service discovery destination resolver runs before config filters and renames
+            // "catalog-1" to "catalog-1[localhost:5301]"; look the override up by the configured id.
+            string configuredId = id.Split('[')[0];
+            string? address = configuration[$"DestinationAddresses:{configuredId}"];
             destinations[id] = string.IsNullOrEmpty(address)
                 ? destination
                 : destination with { Address = address };

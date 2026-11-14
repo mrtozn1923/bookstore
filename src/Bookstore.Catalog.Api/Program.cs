@@ -1,7 +1,21 @@
 using Bookstore.Catalog;
+using OpenTelemetry;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Traces and metrics go to an OTLP collector when OTEL_EXPORTER_OTLP_ENDPOINT is set.
+OpenTelemetryBuilder otel = builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource.AddService("bookstore-catalog"))
+    .WithTracing(tracing => tracing.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation())
+    .WithMetrics(metrics => metrics.AddAspNetCoreInstrumentation());
+if (!string.IsNullOrEmpty(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]))
+{
+    otel.UseOtlpExporter();
+}
 
 InstanceInfo instance = new()
 {
