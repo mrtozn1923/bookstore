@@ -10,7 +10,7 @@ import { BookCard } from './book-card';
         <app-book-card bookTitle="Emma" author="Jane Austen" cover="emma.svg" />
       </aside>
       <main>
-        <app-book-card bookTitle="Dune" author="Frank Herbert" cover="dune.svg" />
+        <app-book-card bookTitle="Dune" author="Frank Herbert" cover="dune.svg" [note]="duneNote" />
       </main>
     </div>
   `,
@@ -22,4 +22,7 @@ import { BookCard } from './book-card';
     }
   `,
 })
-export class App {}
+export class App {
+  // in the real app this HTML comes from the CMS
+  protected readonly duneNote = '<p>Read the <a href="guide.html">reading guide</a> first.</p>';
+}

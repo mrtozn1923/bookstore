@@ -22,50 +22,91 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
     background-color: var(--color-surface);
-}
 
-.book-card > * {
-    margin: 0;
-}
+    & > * {
+        margin: 0;
+    }
 
-.book-card > img {
-    grid-area: cover;
-    justify-self: center;
-}
+    & > img {
+        grid-area: cover;
+        justify-self: center;
+    }
 
-.book-card .book-title {
-    grid-area: title;
-}
+    /* no & needed: a nested ".book-title" means ".book-card .book-title" */
+    .book-title {
+        grid-area: title;
+    }
 
-.book-card .book-author {
-    grid-area: author;
-}
+    .book-author {
+        grid-area: author;
+    }
 
-/* the price row is shared, so the price sits at its bottom edge */
-.book-card .price {
-    grid-area: price;
-    align-self: end;
-}
+    /* the price row is shared, so the price sits at its bottom edge */
+    .price {
+        grid-area: price;
+        align-self: end;
+    }
 
-/* a card without a cover image gets a tinted background instead */
-.book-card:not(:has(> img)) {
-    background-color: var(--color-tint);
-}
+    /* a card without a cover image gets a tinted background instead */
+    &:not(:has(> img)) {
+        background-color: var(--color-tint);
+    }
 
-/* zebra stripes count only the books that are in stock */
-.book-card:nth-child(even of .in-stock) {
-    border-color: light-dark(#93c5fd, #1e40af);
-}
+    /* zebra stripes count only the books that are in stock */
+    &:nth-child(even of .in-stock) {
+        border-color: light-dark(#93c5fd, #1e40af);
+    }
 
-.book-card[data-stock="0"] .price {
-    text-decoration: line-through;
-    color: var(--color-muted);
-}
+    &[data-stock="0"] .price {
+        text-decoration: line-through;
+        color: var(--color-muted);
+    }
 
-.book-card[data-format~="ebook"] .book-title::after {
-    content: " · e-book";
-    font-size: 0.75em;
-    color: var(--color-muted);
+    /* the editor's note runs across the whole card, under everything else */
+    .staff-note {
+        grid-column: 1 / -1;
+    }
+
+    &[data-format~="ebook"] .book-title::after {
+        content: " · e-book";
+        font-size: 0.75em;
+        color: var(--color-muted);
+    }
+
+    /* wide slot: cover on the left, text on the right */
+    @container book-card (width >= 32rem) {
+        grid-template-columns: auto minmax(0, 1fr);
+        grid-template-rows: auto auto 1fr;
+        grid-template-areas:
+            "cover title"
+            "cover author"
+            "cover price";
+        column-gap: var(--space);
+
+        /* 1cqi = 1% of the slot's inline size */
+        .book-title {
+            font-size: clamp(1.25rem, 1rem + 1.5cqi, 2rem);
+        }
+    }
+
+    /* name-only query: any card in the sidebar gets a smaller cover */
+    @container sidebar {
+        & > img {
+            inline-size: 4rem;
+            block-size: auto;
+        }
+    }
+
+    /* style query: the slot says it is dark, the card follows */
+    @container style(--surface: dark) {
+        border-color: #4b5563;
+        background-color: #111827;
+        color: #f9fafb;
+
+        .book-author {
+            color: #d1d5db;
+        }
+    }
 }
 
 .badge {
@@ -78,50 +119,18 @@
     background-color: var(--color-accent);
     color: #ffffff;
     font-size: 0.75rem;
-}
 
-/* black or white, whichever contrasts more with the accent; #ffffff above stays for older browsers */
-@supports (color: contrast-color(red)) {
-    .badge {
+    /* black or white, whichever contrasts more with the accent; #ffffff above stays for older browsers */
+    @supports (color: contrast-color(red)) {
         color: contrast-color(var(--color-accent));
     }
 }
 
-/* wide slot: cover on the left, text on the right */
-@container book-card (width >= 32rem) {
-    .book-card {
-        grid-template-columns: auto minmax(0, 1fr);
-        grid-template-rows: auto auto 1fr;
-        grid-template-areas:
-            "cover title"
-            "cover author"
-            "cover price";
-        column-gap: var(--space);
-    }
-
-    /* 1cqi = 1% of the slot's inline size */
-    .book-card .book-title {
-        font-size: clamp(1.25rem, 1rem + 1.5cqi, 2rem);
-    }
-}
-
-/* name-only query: any card in the sidebar gets a smaller cover */
-@container sidebar {
-    .book-card > img {
-        inline-size: 4rem;
-        block-size: auto;
-    }
-}
-
-/* style query: the slot says it is dark, the card follows */
-@container style(--surface: dark) {
-    .book-card {
-        border-color: #4b5563;
-        background-color: #111827;
-        color: #f9fafb;
-    }
-
-    .book-card .book-author {
-        color: #d1d5db;
+/* inside a card, links look like plain text (the title is a link), but only down to the editor's note:
+   links in .user-content come from the CMS and keep their underline */
+@scope (.book-card) to (.user-content) {
+    a {
+        color: inherit;
+        text-decoration: none;
     }
 }

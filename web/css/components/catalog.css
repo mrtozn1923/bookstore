@@ -22,6 +22,8 @@
 /* a dark band: components inside read --surface with a style query */
 .featured {
     --surface: dark;
+    /* light-dark() tokens and the browser's own colours (links, controls) inside the band go dark too */
+    color-scheme: dark;
     padding: var(--space);
     border-radius: var(--radius);
     background-color: #1f2937;

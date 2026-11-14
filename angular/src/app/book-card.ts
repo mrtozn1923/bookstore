@@ -5,8 +5,12 @@ import { Component, input } from '@angular/core';
   template: `
     <article class="card">
       <img [src]="cover()" [alt]="'Cover of ' + bookTitle()" width="120" height="180">
-      <h3>{{ bookTitle() }}</h3>
+      <h3><a href="book.html">{{ bookTitle() }}</a></h3>
       <p class="author">{{ author() }}</p>
+      @if (note()) {
+        <!-- the editor's note is HTML from the CMS, inserted as is -->
+        <div class="note" [innerHTML]="note()"></div>
+      }
     </article>
   `,
   styles: `
@@ -19,6 +23,12 @@ import { Component, input } from '@angular/core';
     .card {
       display: grid;
       gap: 0.25rem 1rem;
+    }
+
+    /* the title link looks like text */
+    a {
+      color: inherit;
+      text-decoration: none;
     }
 
     /* a container cannot query itself, so the layout lives on the inner .card */
@@ -38,4 +48,5 @@ export class BookCard {
   readonly bookTitle = input.required<string>();
   readonly author = input.required<string>();
   readonly cover = input.required<string>();
+  readonly note = input('');
 }

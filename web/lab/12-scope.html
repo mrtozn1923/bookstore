@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Lab 12: @scope and Shadow DOM</title>
+    <style>
+        /* self-contained: this lab does not load main.css */
+        body { margin: 0; color: rgb(0, 0, 0); }
+        p { margin: 0; }
+
+        /* 1) a plain descendant selector also reaches into the editor's note */
+        .leaky a { color: inherit; text-decoration: none; }
+
+        /* 2) donut scope: from the card down to, but not into, .user-content */
+        @scope (.scoped) to (.user-content) {
+            a { color: inherit; text-decoration: none; }
+        }
+
+        /* 3) proximity: the nearer scope root wins, whatever the source order */
+        @scope (.theme-dark) {
+            a { color: rgb(147, 197, 253); }
+        }
+        @scope (.theme-light) {
+            a { color: rgb(29, 78, 216); }
+        }
+
+        /* 4) the scope root adds no specificity: (0,1,0) here, against (0,2,0) below */
+        .scoped .price { color: rgb(185, 28, 28); }
+        @scope (.scoped) {
+            .price { color: rgb(22, 163, 74); }
+        }
+    </style>
+</head>
+<body>
+    <article class="leaky">
+        <h3><a href="book.html" id="leaky-title">Dune</a></h3>
+        <div class="user-content"><p>Read the <a href="guide.html" id="leaky-note">reading guide</a> first.</p></div>
+    </article>
+    <article class="scoped">
+        <h3><a href="book.html" id="scoped-title">Dune</a></h3>
+        <p class="price" id="scoped-price">349.00 TRY</p>
+        <div class="user-content"><p>Read the <a href="guide.html" id="scoped-note">reading guide</a> first.</p></div>
+    </article>
+
+    <div class="theme-light"><a href="#" id="light">light</a>
+        <div class="theme-dark"><a href="#" id="dark-in-light">dark inside light</a></div>
+    </div>
+    <div class="theme-dark">
+        <div class="theme-light"><a href="#" id="light-in-dark">light inside dark</a></div>
+    </div>
+
+    <!-- 5) Shadow DOM: page rules stay out, inherited properties still come in -->
+    <section style="color: rgb(75, 85, 99)">
+        <book-note id="note"></book-note>
+    </section>
+    <p id="light-dom-p">A paragraph outside the shadow root.</p>
+    <script>
+        customElements.define('book-note', class extends HTMLElement {
+            constructor() {
+                super();
+                this.attachShadow({ mode: 'open' }).innerHTML =
+                    '<style>p { font-weight: 700; }</style><p>Staff pick of the week.</p>';
+            }
+        });
+    </script>
+</body>
+</html>

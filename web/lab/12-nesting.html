@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Lab 12: native nesting</title>
+    <style>
+        /* self-contained: this lab does not load main.css */
+        body { margin: 0; color: rgb(0, 0, 0); }
+
+        /* 1) & is a selector, not text: this is __title.book-card, not .book-card__title */
+        .book-card {
+            &__title { color: rgb(185, 28, 28); }
+        }
+
+        /* 2) a parent selector list is wrapped in :is(), which takes its most specific member */
+        #featured, .book-card {
+            & .price { font-weight: 700; }
+        }
+        .book-card .price { font-weight: 400; }
+
+        /* 3) every level of nesting adds the parent's specificity */
+        .catalog {
+            .book-list {
+                .book-card {
+                    .book-title { color: rgb(29, 78, 216); }
+                }
+            }
+        }
+        .book-title.highlight { color: rgb(22, 163, 74); }
+    </style>
+</head>
+<body>
+    <div class="book-card"><h3 class="book-card__title">Dune</h3><p class="price">349.00 TRY</p></div>
+    <main class="catalog">
+        <ul class="book-list"><li class="book-card"><h3 class="book-title highlight">Emma</h3></li></ul>
+    </main>
+</body>
+</html>
