@@ -1,0 +1,4 @@
+# openapi-typescript 7.13 validates with @redocly/openapi-core 1.x, which does not know
+# OpenAPI 3.2 and rejects the QUERY operation; the contract is linted by Redocly CLI 2.x instead.
+rules:
+  struct: off

@@ -28,6 +28,8 @@ builder.Services.AddRequestLocalization(options =>
     options.ApplyCurrentCultureToResponseHeaders = true;
 });
 builder.Services.AddValidation();
+// The document generated from the code; CI compares its operations with contract/ (post 09).
+builder.Services.AddOpenApi();
 // Page tokens are encrypted with Data Protection. The ephemeral key ring keeps the sample self-contained
 // (tokens die on restart); several instances need a shared, persisted key ring.
 builder.Services.AddDataProtection().UseEphemeralDataProtectionProvider();
@@ -68,5 +70,9 @@ app.MapOrderBatchEndpoints(new QuotaPolicy("batches", 5, TimeSpan.FromMinutes(1)
     http => http.GetRouteValue("institutionId") as string ?? "", TimeProvider.System));
 app.MapProblemEndpoints();
 app.MapLegacyEndpoints();
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+}
 
 app.Run();

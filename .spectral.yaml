@@ -55,3 +55,24 @@ rules:
           allOf:
             - contains: {properties: {name: {const: pageSize}}, required: [name]}
             - contains: {properties: {name: {const: pageToken}}, required: [name]}
+  bookstore-lro-headers:
+    description: A 202 response points to its status monitor (BS-63).
+    message: "{{path}} needs Operation-Location and Retry-After"
+    severity: error
+    # Given the 202 itself, not its headers: a 202 without headers must fail too.
+    given: $.paths[*][*].responses['202']
+    then:
+      - field: headers.Operation-Location
+        function: truthy
+      - field: headers.Retry-After
+        function: truthy
+  bookstore-deprecated-explained:
+    description: Deprecated operations and properties say what replaces them and when (BS-54).
+    message: "{{path}} is deprecated without a description"
+    severity: error
+    given:
+      - $.paths[*][?(@.deprecated == true)]
+      - $..properties[?(@.deprecated == true)]
+    then:
+      field: description
+      function: truthy

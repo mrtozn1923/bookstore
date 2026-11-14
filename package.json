@@ -2,10 +2,16 @@
   "name": "bookstore-api-contract",
   "private": true,
   "scripts": {
-    "lint:contract": "redocly lint contract/bookstore.openapi.yaml && spectral lint contract/bookstore.openapi.yaml"
+    "lint:contract": "redocly lint contract/bookstore.openapi.yaml && spectral lint contract/bookstore.openapi.yaml",
+    "bundle:contract": "redocly bundle contract/bookstore.openapi.yaml --ext json -o contract/.bundled.json",
+    "drift": "npm run bundle:contract && node scripts/contract-drift.mjs",
+    "mock": "prism mock -h 127.0.0.1 -p 52328 contract/bookstore.openapi.yaml",
+    "generate:client": "openapi-typescript contract/bookstore.openapi.yaml --redocly clients/redocly.openapi-typescript.yaml -o clients/angular-snippets/src/api/bookstore.ts"
   },
   "devDependencies": {
     "@redocly/cli": "2.78.0",
-    "@stoplight/spectral-cli": "6.17.1"
+    "@stoplight/prism-cli": "5.16.0",
+    "@stoplight/spectral-cli": "6.17.1",
+    "openapi-typescript": "7.13.0"
   }
 }
