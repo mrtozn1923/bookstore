@@ -1,25 +1,20 @@
 using Bookstore.Search;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Core.Search;
-using Elastic.Clients.Elasticsearch.QueryDsl;
 
 namespace Bookstore.Api;
 
-public sealed record BookSearchHit(string Isbn, string Title, IReadOnlyList<string> Authors, string Language, decimal Price, double? Score);
+// Highlights are HTML: the text is escaped by Elasticsearch (encoder html), only <mark> tags are added.
+public sealed record BookSearchHit(string Isbn, string Title, IReadOnlyList<string> Authors, string Language, decimal Price, double? Score,
+    string? TitleHighlight, string? DescriptionHighlight);
 
-public sealed record BookSearchResult(long Total, int Page, int PageSize, IReadOnlyList<BookSearchHit> Items);
+public sealed record BookSearchResult(long Total, int Page, int PageSize, IReadOnlyList<BookSearchHit> Items, string? DidYouMean);
 
 public static class BookSearchEndpoints
 {
     private const int MaxPageSize = 50;
     private const int MaxResultWindow = 10_000;
-
-    // Analyzed variants of title and description (post 04); boosts are still guesses until post 07.
-    private static readonly string[] TextFields =
-    [
-        "title^3", "title.tr^2", "title.folded^2", "title.en",
-        "description", "description.tr", "description.folded", "description.en"
-    ];
+    private const string DidYouMean = "did-you-mean";
 
     public static IEndpointRouteBuilder MapBookSearchEndpoints(this IEndpointRouteBuilder app)
     {
@@ -39,12 +34,18 @@ public static class BookSearchEndpoints
                 return Results.Problem("Only the first 10,000 results can be paged. Narrow the search with filters.", statusCode: StatusCodes.Status400BadRequest);
             }
 
-            SearchResponse<Book> response = await client.SearchAsync<Book>(s => s
-                .From(from)
-                .Size(size)
-                .TrackTotalHits(new TrackHits(true))
-                .Query(BuildQuery(q, category, language, minPrice, maxPrice)), cancellationToken);
+            BookSearchFilter filter = new(q, category, language, minPrice, maxPrice);
+            SearchRequest<Book> request = new()
+            {
+                From = from,
+                Size = size,
+                TrackTotalHits = new TrackHits(true),
+                Query = BookSearchQuery.Build(filter, SearchTuning.Tuned),
+                Highlight = string.IsNullOrWhiteSpace(q) ? null : BuildHighlight(),
+                Suggest = string.IsNullOrWhiteSpace(q) ? null : BuildDidYouMean(q)
+            };
 
+            SearchResponse<Book> response = await client.SearchAsync<Book>(request, cancellationToken);
             if (!response.IsValidResponse)
             {
                 ILogger logger = loggerFactory.CreateLogger("Bookstore.Api.BookSearchEndpoints");
@@ -55,58 +56,64 @@ public static class BookSearchEndpoints
                 return Results.Problem("Search is unavailable.", statusCode: StatusCodes.Status503ServiceUnavailable);
             }
 
-            List<BookSearchHit> items = response.Hits
-                .Select(h => new BookSearchHit(h.Source!.Isbn, h.Source.Title,
-                    h.Source.Authors.Where(a => a.Role == "author").Select(a => a.Name).ToList(),
-                    h.Source.Language, h.Source.Price, h.Score))
-                .ToList();
-            return Results.Ok(new BookSearchResult(response.Total, currentPage, size, items));
+            List<BookSearchHit> items = response.Hits.Select(ToHit).ToList();
+            return Results.Ok(new BookSearchResult(response.Total, currentPage, size, items, ReadDidYouMean(response, q)));
         });
 
         return app;
     }
 
-    public static Query BuildQuery(string? text, string? category, string? language, decimal? minPrice, decimal? maxPrice)
+    private static Highlight BuildHighlight() => new()
     {
-        // Query context: what the user typed decides the score.
-        Query textQuery = string.IsNullOrWhiteSpace(text)
-            ? new MatchAllQuery()
-            : new BoolQuery
-            {
-                Should =
-                [
-                    new MultiMatchQuery { Query = text, Fields = Fields.FromStrings(TextFields) },
-                    // Authors are nested (post 03): a root-level multi_match cannot see them.
-                    new NestedQuery
-                    {
-                        Path = "authors",
-                        ScoreMode = ChildScoreMode.Max,
-                        Query = new MatchQuery { Field = "authors.name", Query = text }
-                    }
-                ],
-                MinimumShouldMatch = 1
-            };
+        Encoder = HighlighterEncoder.Html,
+        PreTags = ["<mark>"],
+        PostTags = ["</mark>"],
+        Fields = new Dictionary<Field, HighlightField>
+        {
+            // The query hits title.folded / title.tr too; matched_fields maps those hits back onto the original title.
+            ["title"] = new HighlightField { NumberOfFragments = 0, MatchedFields = Fields.FromStrings(["title", "title.folded", "title.tr"]) },
+            ["description"] = new HighlightField { NumberOfFragments = 1, FragmentSize = 160, MatchedFields = Fields.FromStrings(["description", "description.folded", "description.tr"]) }
+        }
+    };
 
-        // Filter context: yes/no conditions, no score, cacheable.
-        List<Query> filters = [];
-        if (!string.IsNullOrWhiteSpace(category))
+    // "Did you mean?": a phrase suggester on the folded title; collate drops suggestions that would find nothing.
+    private static Suggester BuildDidYouMean(string text) => new()
+    {
+        Text = text,
+        Suggesters = new Dictionary<string, FieldSuggester>
         {
-            filters.Add(new TermQuery { Field = "categories", Value = category });
-        }
-        if (!string.IsNullOrWhiteSpace(language))
-        {
-            filters.Add(new TermQuery { Field = "language", Value = language });
-        }
-        if (minPrice is not null || maxPrice is not null)
-        {
-            filters.Add(new NumberRangeQuery
+            [DidYouMean] = new FieldSuggester { Phrase = new PhraseSuggester
             {
-                Field = "price",
-                Gte = minPrice is null ? null : (double)minPrice.Value,
-                Lte = maxPrice is null ? null : (double)maxPrice.Value
-            });
+                Field = "title.folded",
+                Size = 1,
+                DirectGenerator = [new DirectGenerator { Field = "title.folded", SuggestMode = SuggestMode.Always }],
+                Collate = new PhraseSuggestCollate
+                {
+                    Query = new PhraseSuggestCollateQuery { Source = """{ "match": { "title.folded": { "query": "{{suggestion}}", "operator": "and" } } }""" },
+                    Prune = false
+                }
+            } }
         }
+    };
 
-        return new BoolQuery { Must = [textQuery], Filter = filters };
+    // Fuzziness already finds most typos, so the suggestion is shown whenever it differs from what was typed.
+    private static string? ReadDidYouMean(SearchResponse<Book> response, string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text) || response.Suggest is null)
+        {
+            return null;
+        }
+        string? suggestion = response.Suggest.GetPhrase(DidYouMean)?.SelectMany(s => s.Options).Select(o => o.Text).FirstOrDefault();
+        return suggestion is not null && !string.Equals(suggestion, text.Trim(), StringComparison.OrdinalIgnoreCase) ? suggestion : null;
+    }
+
+    private static BookSearchHit ToHit(Hit<Book> hit)
+    {
+        Book book = hit.Source!;
+        string? title = hit.Highlight?.GetValueOrDefault("title")?.FirstOrDefault();
+        string? description = hit.Highlight?.GetValueOrDefault("description")?.FirstOrDefault();
+        return new BookSearchHit(book.Isbn, book.Title,
+            book.Authors.Where(a => a.Role == "author").Select(a => a.Name).ToList(),
+            book.Language, book.Price, hit.Score, title, description);
     }
 }

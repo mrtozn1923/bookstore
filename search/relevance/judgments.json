@@ -1,0 +1,22 @@
+[
+  { "query": "ince memed", "ratings": { "9781000000016": 3, "9781000000023": 2 } },
+  { "query": "kurk mantolu", "ratings": { "9781000000030": 3 } },
+  { "query": "sabahattin ali", "ratings": { "9781000000030": 2, "9781000000047": 2, "9781000000054": 2 } },
+  { "query": "yasar kemal", "ratings": { "9781000000016": 2, "9781000000023": 2 } },
+  { "query": "tolkien", "ratings": { "9781000000207": 2, "9781000000252": 2, "9781000000344": 2 } },
+  { "query": "hobbit", "ratings": { "9781000000207": 3, "9781000000252": 3 } },
+  { "query": "the hobbit", "ratings": { "9781000000252": 3, "9781000000207": 2 } },
+  { "query": "dostoyevski", "ratings": { "9781000000177": 3, "9781000000306": 2 } },
+  { "query": "suç ve ceza", "ratings": { "9781000000177": 3, "9781000000306": 2 } },
+  { "query": "crime and punishment", "ratings": { "9781000000306": 3, "9781000000177": 2 } },
+  { "query": "calikusu", "ratings": { "9781000000061": 3 } },
+  { "query": "öğretmen", "ratings": { "9781000000061": 3 } },
+  { "query": "jane austen", "ratings": { "9781000000238": 2, "9781000000245": 2 } },
+  { "query": "orwell", "ratings": { "9781000000214": 2, "9781000000276": 2 } },
+  { "query": "dune herbert", "ratings": { "9781000000191": 3, "9781000000221": 3 } },
+  { "query": "tolstoy savaş", "ratings": { "9781000000184": 3 } },
+  { "query": "domain driven design", "ratings": { "9781000000368": 3 } },
+  { "query": "madona", "ratings": { "9781000000030": 3 } },
+  { "query": "tutunamayanlar oguz atay", "ratings": { "9781000000108": 3 } },
+  { "query": "dostoevsky crime", "ratings": { "9781000000306": 3, "9781000000177": 2 } }
+]
