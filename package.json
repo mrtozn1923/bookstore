@@ -1,0 +1,6 @@
+{
+  "name": "bookstore-javascript-orta",
+  "private": true,
+  "description": "Code from the JavaScript Orta series on mertozen.com (Bookstore examples)",
+  "engines": { "node": ">=24" }
+}
