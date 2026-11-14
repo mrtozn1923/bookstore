@@ -1,0 +1,28 @@
+# promtool test rules prometheus/anchoring-test.yml
+rule_files: []
+evaluation_interval: 1m
+tests:
+  - interval: 1m
+    input_series:
+      - series: 'http_requests_total{path="/api/books"}'
+        values: '1+1x5'
+      - series: 'http_requests_total{path="/api/books/9780441172719"}'
+        values: '1+1x5'
+      - series: 'http_requests_total{path="/api/orders"}'
+        values: '1+1x5'
+    promql_expr_test:
+      # expectation: "contains /api/books", so 2 series
+      - expr: count(http_requests_total{path=~"/api/books"})
+        eval_time: 5m
+        exp_samples:
+          - value: 2
+      # written as a full match, the same expectation holds
+      - expr: count(http_requests_total{path=~"/api/books.*"})
+        eval_time: 5m
+        exp_samples:
+          - value: 2
+      # negative lookahead: "everything under /api except orders"
+      - expr: count(http_requests_total{path=~"/api/(?!orders).*"})
+        eval_time: 5m
+        exp_samples:
+          - value: 2

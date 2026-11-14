@@ -1,0 +1,14 @@
+lookahead	[0-9]+(?= TRY)	450 TRY
+lookbehind	(?<=BKS-)[0-9]{4}	BKS-2026-000123
+backref	\b(\w+) \1\b	is is
+atomic	(?>[0-9]+)0	1230
+possessive	[0-9]++0	1230
+named	(?<year>[0-9]{4})	2026
+named-P	(?P<year>[0-9]{4})	2026
+unicode-prop	\p{Lu}+	ÇALIKUŞU
+digit	\d	٣
+recursion	\((?:[^()]|(?R))*\)	f(a(b)c)
+inline-i	(?i)bks	BKS
+posix-class	[[:digit:]]+	2026
+alternation	BKS|BKS-2026	BKS-2026
+portable	^BKS-[0-9]{4}-[0-9]{6}$	BKS-2026-000123
