@@ -3,9 +3,13 @@ using Bookstore.Api.Carts;
 using Bookstore.Api.Catalog;
 using Bookstore.Api.Institutional;
 using Bookstore.Api.Middleware;
+using Bookstore.Api.Shipping;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Http.Headers;
+using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +18,11 @@ builder.Services.AddSingleton<CartStore>();
 builder.Services.AddSingleton<InstitutionDirectory>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<OrderAudit>();
+builder.Services.AddKeyedSingleton<IShippingCalculator, StandardShipping>("standard");
+builder.Services.AddKeyedSingleton<IShippingCalculator, ExpressShipping>("express");
+builder.Services.AddValidation();
+builder.Services.AddProblemDetails();
+builder.Services.AddAntiforgery();
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
@@ -28,6 +37,7 @@ app.UseForwardedHeaders();
 app.UseMiddleware<ResponseTimeMiddleware>();
 app.UseMiddleware<RequestBodyLoggingMiddleware>();
 app.UseMiddleware<TenantMiddleware>();
+app.UseAntiforgery();
 
 app.MapGet("/api/debug/request", (HttpRequest request) =>
 {
@@ -103,6 +113,35 @@ app.MapPost("/api/institution/orders", (InstitutionOrderRequest order, HttpConte
 
     return TypedResults.Created($"/api/institution/orders/{orderNumber}", new { orderNumber, unit = unit.Name, order.Items });
 });
+
+app.MapGet("/api/books", ([AsParameters] BookQuery query) => query.Apply());
+
+app.MapGet("/api/books/{isbn}", Results<Ok<Book>, NotFound> (Isbn isbn, BookCatalog catalog) =>
+    catalog.Find(isbn) is { } book ? TypedResults.Ok(book) : TypedResults.NotFound());
+
+app.MapGet("/api/books/lookup", (Isbn[] isbn, BookCatalog catalog) =>
+    isbn.Select(i => catalog.Find(i)?.Title ?? $"{i}: not found"));
+
+app.MapGet("/api/shipping/quote", (
+    InstitutionContext institution,
+    int quantity,
+    [FromKeyedServices("express")] IShippingCalculator express,
+    [FromKeyedServices("standard")] IShippingCalculator standard) =>
+    new
+    {
+        Unit = institution.Unit.Name,
+        Standard = standard.Calculate(quantity),
+        Express = express.Calculate(quantity),
+    });
+
+app.MapGet("/api/antiforgery/token", (IAntiforgery antiforgery, HttpContext context) =>
+{
+    AntiforgeryTokenSet tokens = antiforgery.GetAndStoreTokens(context);
+    return new { tokens.FormFieldName, tokens.RequestToken };
+});
+
+app.MapPost("/api/books/{isbn}/cover", (Isbn isbn, IFormFile file, [FromForm] string? altText) =>
+    new { Isbn = isbn.Value, file.FileName, file.ContentType, file.Length, AltText = altText });
 
 app.Run();
 
