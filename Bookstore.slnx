@@ -18,5 +18,6 @@
     <Project Path="samples/Cd13.MultiTenancy/Cd13.MultiTenancy.csproj" />
     <Project Path="samples/Cd14.SettingsHierarchy/Cd14.SettingsHierarchy.csproj" />
     <Project Path="samples/Cd15.FeatureFlags/Cd15.FeatureFlags.csproj" />
+    <Project Path="samples/Cd16.Numbering/Cd16.Numbering.csproj" />
   </Folder>
 </Solution>
