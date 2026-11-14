@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lab 08: rem inside a media query</title>
+    <style>
+        /* self-contained: this lab does not load main.css */
+        html { font-size: 20px; }   /* the page changes its own rem... */
+        .layout::after { content: "one column"; }
+        @media (width >= 48rem) {   /* ...but this 48rem is still 48 × 16px */
+            .layout::after { content: "two columns"; }
+        }
+        @media (48rem <= width < 64rem) {
+            .layout::before { content: "tablet: "; }
+        }
+    </style>
+</head>
+<body>
+    <p class="layout"></p>
+</body>
+</html>

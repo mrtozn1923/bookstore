@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lab 08: fluid type and zoom</title>
+    <style>
+        /* self-contained: this lab does not load main.css */
+        body { margin: 0; font-family: system-ui, sans-serif; }
+        h1 { margin: 0; line-height: 1.2; }
+        .vw-only { font-size: 4vw; }
+        .fluid { font-size: clamp(1.75rem, 1.2rem + 2vw, 2.5rem); }
+    </style>
+</head>
+<body>
+    <h1 class="vw-only">Catalog</h1>
+    <h1 class="fluid">Catalog</h1>
+    <p class="body-text">Free shipping on orders over 500 TRY.</p>
+</body>
+</html>

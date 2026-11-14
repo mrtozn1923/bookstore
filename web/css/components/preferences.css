@@ -1,0 +1,32 @@
+/* user preferences: these rules come last in the components layer, so they win over the component defaults */
+
+/* smooth scrolling only for users who did not ask for less motion */
+@media (prefers-reduced-motion: no-preference) {
+    html {
+        scroll-behavior: smooth;
+    }
+}
+
+/* darker borders and secondary text for users who asked for more contrast */
+@media (prefers-contrast: more) {
+    :root {
+        --color-muted: #374151;
+        --color-border: #6b7280;
+    }
+}
+
+/* a hover effect only where the main pointer can actually hover */
+@media (hover: hover) {
+    .book-card:hover {
+        box-shadow: 0 0 0 2px var(--color-muted);
+    }
+}
+
+/* bigger tap targets when the main pointer is a finger */
+@media (pointer: coarse) {
+    .filters a {
+        display: block;
+        min-block-size: 2.75rem;
+        align-content: center;
+    }
+}

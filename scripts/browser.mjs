@@ -4,9 +4,10 @@ import path from 'node:path';
 
 export const pageUrl = (file) => pathToFileURL(path.resolve('web', file)).href;
 
-export async function open(file, { engine = 'chromium', width = 1280, height = 800 } = {}) {
+// extra options (deviceScaleFactor, isMobile, hasTouch, reducedMotion, contrast, colorScheme…) go to the page context
+export async function open(file, { engine = 'chromium', width = 1280, height = 800, ...context } = {}) {
     const browser = await (engine === 'webkit' ? webkit : chromium).launch();
-    const page = await browser.newPage({ viewport: { width, height } });
+    const page = await browser.newPage({ viewport: { width, height }, ...context });
     await page.goto(pageUrl(file));
     return { browser, page };
 }
