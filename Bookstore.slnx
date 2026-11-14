@@ -3,7 +3,9 @@
     <Project Path="src/Bookstore.Api/Bookstore.Api.csproj" />
     <Project Path="src/Bookstore.AppHost/Bookstore.AppHost.csproj" />
     <Project Path="src/Bookstore.Data/Bookstore.Data.csproj" />
+    <Project Path="src/Bookstore.Gateway/Bookstore.Gateway.csproj" />
     <Project Path="src/Bookstore.MigrationService/Bookstore.MigrationService.csproj" />
+    <Project Path="src/Bookstore.Ordering.Api/Bookstore.Ordering.Api.csproj" />
     <Project Path="src/Bookstore.ServiceDefaults/Bookstore.ServiceDefaults.csproj" />
   </Folder>
 </Solution>

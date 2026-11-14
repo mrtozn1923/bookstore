@@ -24,6 +24,16 @@ IResourceBuilder<ProjectResource> catalog = builder.AddProject<Projects.Bookstor
     .WaitFor(redis)
     .WithHttpHealthCheck("/health");
 
+IResourceBuilder<ProjectResource> ordering = builder.AddProject<Projects.Bookstore_Ordering_Api>("ordering")
+    .WithReference(catalog)
+    .WaitFor(catalog)
+    .WithHttpHealthCheck("/health");
+
+IResourceBuilder<ProjectResource> gateway = builder.AddProject<Projects.Bookstore_Gateway>("gateway")
+    .WithReference(catalog)
+    .WithReference(ordering)
+    .WithHttpHealthCheck("/health");
+
 // Catches order e-mails locally; started from the dashboard only when needed
 builder.AddContainer("mailpit", "axllent/mailpit", "v1.33")
     .WithContainerName("aspire-mailpit")
@@ -34,7 +44,7 @@ builder.AddContainer("mailpit", "axllent/mailpit", "v1.33")
 builder.AddJavaScriptApp("web", "../../web/bookstore-web", "start")
     .WithHttpEndpoint(env: "PORT")
     .WithExternalHttpEndpoints()
-    .WithReference(catalog)
-    .WaitFor(catalog);
+    .WithReference(gateway)
+    .WaitFor(gateway);
 
 builder.Build().Run();

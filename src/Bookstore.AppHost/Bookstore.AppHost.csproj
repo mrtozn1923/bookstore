@@ -3,6 +3,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Bookstore.Api\Bookstore.Api.csproj" />
     <ProjectReference Include="..\Bookstore.MigrationService\Bookstore.MigrationService.csproj" />
+    <ProjectReference Include="..\Bookstore.Ordering.Api\Bookstore.Ordering.Api.csproj" />
+    <ProjectReference Include="..\Bookstore.Gateway\Bookstore.Gateway.csproj" />
   </ItemGroup>
 
   <ItemGroup>

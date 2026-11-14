@@ -28,16 +28,22 @@ public static class Extensions
 
         builder.Services.ConfigureHttpClientDefaults(http =>
         {
-            // Turn on resilience by default
-            http.AddStandardResilienceHandler();
+            // Turn on resilience by default; calls between Bookstore services fail fast
+            http.AddStandardResilienceHandler(options =>
+            {
+                options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(2);
+                options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(5);
+            });
 
             // Turn on service discovery by default
             http.AddServiceDiscovery();
         });
 
-        // Uncomment the following to restrict the allowed schemes for service discovery.
+        // To allow only HTTPS, AllowAllSchemes must be turned off as well;
+        // setting AllowedSchemes alone changes nothing.
         // builder.Services.Configure<ServiceDiscoveryOptions>(options =>
         // {
+        //     options.AllowAllSchemes = false;
         //     options.AllowedSchemes = ["https"];
         // });
 
