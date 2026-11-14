@@ -1,9 +1,9 @@
 import { Component, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import _ from 'lodash';
-import moment from 'moment';
 import { Book } from './book';
 import { books } from './books';
+import { groupBy } from '../shared/collections';
+import { fromNow } from '../shared/dates';
 import { formatPrice } from '../shared/format';
 
 @Component({
@@ -35,8 +35,13 @@ export class CatalogPage {
     const matches = books.filter(
       (book) => book.title.toLowerCase().includes(term) || book.author.toLowerCase().includes(term),
     );
-    const byAuthor = _.groupBy(_.sortBy(matches, 'title'), 'author');
-    return _.sortBy(Object.keys(byAuthor)).map((author) => ({ author, books: byAuthor[author] }));
+    const byAuthor = groupBy(
+      [...matches].sort((a, b) => a.title.localeCompare(b.title)),
+      (book) => book.author,
+    );
+    return [...byAuthor.keys()]
+      .sort((a, b) => a.localeCompare(b))
+      .map((author) => ({ author, books: byAuthor.get(author) ?? [] }));
   });
 
   protected price(book: Book): string {
@@ -44,6 +49,6 @@ export class CatalogPage {
   }
 
   protected added(book: Book): string {
-    return moment(book.addedAt).fromNow();
+    return fromNow(book.addedAt);
   }
 }

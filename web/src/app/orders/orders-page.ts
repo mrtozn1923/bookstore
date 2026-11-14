@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import moment from 'moment';
+import { formatLongDate } from '../shared/dates';
 
 interface OrderSummary {
   id: string;
@@ -23,6 +23,6 @@ export default class OrdersPage {
   ];
 
   protected placed(order: OrderSummary): string {
-    return moment(order.placedAt).format('LL');
+    return formatLongDate(order.placedAt);
   }
 }

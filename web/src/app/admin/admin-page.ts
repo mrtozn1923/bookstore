@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import _ from 'lodash';
 import { books } from '../catalog/books';
+import { groupBy } from '../shared/collections';
 import { formatPrice } from '../shared/format';
 
 @Component({
@@ -13,8 +13,8 @@ import { formatPrice } from '../shared/format';
   `,
 })
 export default class AdminPage {
-  protected readonly rows = _.map(_.groupBy(books, 'author'), (items, author) => ({
+  protected readonly rows = [...groupBy(books, (book) => book.author)].map(([author, items]) => ({
     author,
-    value: formatPrice(_.sumBy(items, 'price')),
+    value: formatPrice(items.reduce((sum, book) => sum + book.price, 0)),
   }));
 }

@@ -1,3 +1,4 @@
+import { visualizer } from "rollup-plugin-visualizer";
 import { defineConfig, normalizePath, type Plugin } from "vite";
 
 // Runs with "npx vite build --mode graph": prints the module graph and what ended up in each chunk
@@ -28,7 +29,16 @@ function moduleGraphReport(): Plugin {
 }
 
 export default defineConfig(({ mode }) => ({
-    plugins: mode === "graph" ? [moduleGraphReport()] : [],
+    plugins: [
+        ...(mode === "graph" ? [moduleGraphReport()] : []),
+        // npx vite build --mode analyze: stats/treemap.html (open in a browser) and stats/list.md
+        ...(mode === "analyze"
+            ? [
+                visualizer({ filename: "stats/treemap.html", template: "treemap", gzipSize: true }),
+                visualizer({ filename: "stats/list.md", template: "markdown", gzipSize: true }),
+            ]
+            : []),
+    ],
     server: {
         port: 5173,
         strictPort: true,
@@ -36,6 +46,18 @@ export default defineConfig(({ mode }) => ({
         proxy: { "/api/": "http://localhost:5080" },
         cors: { origin: "http://localhost:5080" },
     },
+    // npx vite build --mode vendor: node_modules goes into its own long-lived chunk
+    ...(mode === "vendor" && {
+        build: {
+            rolldownOptions: {
+                output: {
+                    codeSplitting: {
+                        groups: [{ name: "vendor", test: /node_modules/ }],
+                    },
+                },
+            },
+        },
+    }),
     ...(mode === "server" && {
         base: "/dist/",
         input: "src/main.ts",
