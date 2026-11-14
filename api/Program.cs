@@ -43,9 +43,11 @@ WebApplication app = builder.Build();
 app.UseRateLimiter();
 
 // System prompt da sunucuda: tarayıcı yalnız kullanıcının mesajını gönderir
-const string SystemPrompt =
+string SystemPrompt =
     "You are the assistant of Bookstore, an online bookstore. Answer briefly and only about books, " +
-    "orders and the store. If you are not sure, say so.";
+    "orders and the store. If you are not sure, say so. You may use Markdown.\n" +
+    "Store catalog notes. When you use a note, cite it with its number in square brackets, like [1]:\n" +
+    Catalog.Notes();
 
 app.MapPost("/chat/sse", IResult (ChatStreamRequest request, IChatClient chat, ConversationStore conversations,
     ILogger<Program> logger, CancellationToken ct) =>
@@ -83,7 +85,9 @@ app.MapPost("/chat/sse", IResult (ChatStreamRequest request, IChatClient chat, C
     }, ct);
 
     return TypedResults.ServerSentEvents(
-        events.Prepend(new SseItem<object>(new ConversationEvent(id), "conversation"))
+        events
+            .Prepend(new SseItem<object>(Catalog.Sources(), "sources"))
+            .Prepend(new SseItem<object>(new ConversationEvent(id), "conversation"))
             .WithHeartbeatAsync(TimeSpan.FromSeconds(5), ct));
 }).RequireRateLimiting("chat");
 

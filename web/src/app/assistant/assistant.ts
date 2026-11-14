@@ -1,8 +1,10 @@
 import { Component, ElementRef, afterRenderEffect, inject, signal, viewChild } from '@angular/core';
 import { ChatStore } from './chat-store';
+import { MessageBody } from './message-body';
 
 @Component({
   selector: 'app-assistant',
+  imports: [MessageBody],
   templateUrl: './assistant.html',
   styleUrl: './assistant.css',
 })

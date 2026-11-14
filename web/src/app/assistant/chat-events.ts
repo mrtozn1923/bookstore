@@ -1,6 +1,13 @@
+export interface Source {
+  id: number;
+  title: string;
+  url: string;
+}
+
 // /chat/sse event sözlüğü: Bookstore.Assistant.Api'deki record'larla aynı alanlar
 export type ChatEvent =
   | { type: 'conversation'; id: string }
+  | { type: 'sources'; items: Source[] }
   | { type: 'ping' }
   | { type: 'thinking' }
   | { type: 'delta'; text: string }
@@ -16,6 +23,8 @@ export function toChatEvent(event: string, data: string): ChatEvent | null {
     case 'thinking':
     case 'done':
       return { type: event };
+    case 'sources':
+      return { type: event, items: JSON.parse(data) };
     case 'conversation':
     case 'delta':
     case 'tool':

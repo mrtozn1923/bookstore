@@ -1,5 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { ChatApi, ChatHttpError } from './chat-api';
+import { Source } from './chat-events';
 
 export type ChatStatus = 'idle' | 'submitted' | 'streaming' | 'done' | 'error' | 'aborted';
 
@@ -26,6 +27,7 @@ export interface ChatMessage {
   text: string;
   // Asistan mesajının nasıl bittiği; kesilen cevap silinmez, işaretlenir
   ending: 'complete' | 'interrupted' | 'stopped' | null;
+  sources: Source[];
 }
 
 export interface Usage {
@@ -72,7 +74,13 @@ export class ChatStore {
       return;
     }
     this.messages.set(
-      history.map((h) => ({ id: this.nextId++, role: h.role, text: h.text, ending: h.role === 'assistant' ? 'complete' : null })),
+      history.map((h) => ({
+        id: this.nextId++,
+        role: h.role,
+        text: h.text,
+        ending: h.role === 'assistant' ? 'complete' : null,
+        sources: [],
+      })),
     );
   }
 
@@ -150,6 +158,9 @@ export class ChatStore {
             this.conversationId.set(event.id);
             sessionStorage.setItem(CONVERSATION_KEY, event.id);
             break;
+          case 'sources':
+            this.patch(id, { sources: event.items });
+            break;
           case 'thinking':
           case 'delta':
             clearTimeout(timer);
@@ -219,8 +230,8 @@ export class ChatStore {
     const id = this.nextId++;
     this.messages.update((list) => [
       ...list,
-      { id: userId, role: 'user', text, ending: null },
-      { id, role: 'assistant', text: '', ending: null },
+      { id: userId, role: 'user', text, ending: null, sources: [] },
+      { id, role: 'assistant', text: '', ending: null, sources: [] },
     ]);
     return id;
   }

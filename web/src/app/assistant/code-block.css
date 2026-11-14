@@ -1,0 +1,35 @@
+:host {
+  display: block;
+  margin: 8px 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+.code-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+pre {
+  margin: 0;
+  padding: 8px 12px;
+  overflow-x: auto;
+}
+
+:host ::ng-deep .hljs-keyword {
+  color: #f472b6;
+}
+
+:host ::ng-deep .hljs-string {
+  color: #34d399;
+}
+
+:host ::ng-deep .hljs-title,
+:host ::ng-deep .hljs-type {
+  color: #38bdf8;
+}

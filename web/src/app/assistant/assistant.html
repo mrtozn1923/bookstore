@@ -8,7 +8,11 @@
       @if (message.role === 'assistant' && message.text === '' && store.busy() && last) {
         <p class="status">{{ store.status() === 'submitted' ? 'Sending…' : 'Thinking…' }}</p>
       }
-      <p class="text">{{ message.text }}</p>
+      @if (message.role === 'assistant') {
+        <app-message-body [text]="message.text" [final]="message.ending !== null" [sources]="message.sources" />
+      } @else {
+        <p class="text">{{ message.text }}</p>
+      }
       @if (message.ending === 'stopped') {
         <p class="status">Stopped.</p>
       } @else if (message.ending === 'interrupted' && message.text !== '') {

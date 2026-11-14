@@ -1,0 +1,21 @@
+:host {
+  display: block;
+}
+
+.md :first-child {
+  margin-top: 0;
+}
+
+.md :last-child {
+  margin-bottom: 0;
+}
+
+.sources {
+  margin: 8px 0 0;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.sources a {
+  margin-left: 8px;
+}
