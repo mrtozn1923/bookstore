@@ -9,5 +9,7 @@
     "moduleDetection": "force",
     "skipLibCheck": true,
     "types": []
-  }
+  },
+  // O11 is its own small project (the post's recommended Node tsconfig): check it with `npx tsc -p O11`.
+  "exclude": ["node_modules", "O11"]
 }

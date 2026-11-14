@@ -1,0 +1,12 @@
+{
+  // The tsconfig the post recommends for running .ts files directly with Node ("type": "module" comes from ../package.json).
+  // `npx tsc -p O11` prints the three errors the post shows on purpose (value-use.ts, index.ts, extensionless.ts).
+  "compilerOptions": {
+    "module": "nodenext",
+    "target": "esnext",
+    "noEmit": true,
+    "rewriteRelativeImportExtensions": true,
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true
+  }
+}
