@@ -9,6 +9,7 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Bookstore.Catalog.Tests/Bookstore.Catalog.Tests.csproj" />
+    <Project Path="tests/Bookstore.Inventory.Tests/Bookstore.Inventory.Tests.csproj" />
     <Project Path="tests/Bookstore.Ordering.AwesomeAssertions.Tests/Bookstore.Ordering.AwesomeAssertions.Tests.csproj" />
     <Project Path="tests/Bookstore.Ordering.Fakes.Tests/Bookstore.Ordering.Fakes.Tests.csproj" />
     <Project Path="tests/Bookstore.Ordering.Legacy.Tests/Bookstore.Ordering.Legacy.Tests.csproj" />
