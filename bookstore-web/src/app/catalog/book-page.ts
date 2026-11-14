@@ -23,8 +23,9 @@ import { SimilarBooks } from './similar-books';
       </article>
       <!-- The slot keeps the block's final height: placeholder, skeleton and cards all fit in it -->
       <div class="similar-slot">
-        @defer (on viewport) {
-          <app-similar-books [isbn]="b.isbn" />
+        <!-- SSR renders the block into the HTML; its JavaScript loads and hydrates when it becomes visible -->
+        @defer (on viewport; hydrate on viewport) {
+          <app-similar-books [books]="similar.value()" />
         } @placeholder {
           <div></div>
         }
@@ -60,4 +61,7 @@ import { SimilarBooks } from './similar-books';
 export class BookPage {
   readonly isbn = input.required<string>();
   protected readonly book = httpResource<Book>(() => `/api/books/${this.isbn()}`);
+  // Requested together with the book, during the first render: on the server, and in the browser
+  // from the HTTP transfer cache
+  protected readonly similar = httpResource<Book[]>(() => `/api/books/${this.isbn()}/similar?count=8`);
 }

@@ -1,5 +1,4 @@
 import { Component, computed, input, signal } from '@angular/core';
-import { httpResource } from '@angular/common/http';
 import { CurrencyPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Book } from './book';
@@ -11,7 +10,7 @@ import { Book } from './book';
     <!-- Heading and button share one fixed-height row: the button appearing later moves nothing -->
     <div class="head">
       <h2>Similar books</h2>
-      @if (!showAll() && (similar.value()?.length ?? 0) > 4) {
+      @if (!showAll() && (books()?.length ?? 0) > 4) {
         <button type="button" class="more" (click)="showAll.set(true)">Show more</button>
       }
     </div>
@@ -45,10 +44,11 @@ import { Book } from './book';
   `,
 })
 export class SimilarBooks {
-  readonly isbn = input.required<string>();
-  protected readonly similar = httpResource<Book[]>(() => `/api/books/${this.isbn()}/similar?count=8`);
+  // Loaded by the book page: the block hydrates after the app is stable, when the HTTP transfer cache
+  // no longer answers, so a request made here would go to the API a second time
+  readonly books = input<Book[] | undefined>();
   // 4 cards at first, the other 4 behind "Show more"
   protected readonly showAll = signal(false);
   protected readonly skeleton = [1, 2, 3, 4];
-  protected readonly visible = computed(() => (this.similar.value() ?? []).slice(0, this.showAll() ? 8 : 4));
+  protected readonly visible = computed(() => (this.books() ?? []).slice(0, this.showAll() ? 8 : 4));
 }

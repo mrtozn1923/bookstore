@@ -1,6 +1,7 @@
 using Bookstore.Api.Catalog;
 using Bookstore.Api.Images;
 using Bookstore.Api.Rum;
+using Bookstore.Api.Ssr;
 using Microsoft.Extensions.FileProviders;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(new WebApplicationOptions
@@ -17,12 +18,20 @@ builder.Services.AddMemoryCache(options => options.SizeLimit = 64 * 1024 * 1024)
 builder.Services.AddSingleton<CoverImageService>();
 // Compress text responses (HTML, JS, CSS, JSON); the Brotli/zstd details are in the navigation post
 builder.Services.AddResponseCompression();
+// Angular SSR server (Node.js) that renders the pages
+builder.Services.AddHttpClient("ssr", client =>
+    client.BaseAddress = new Uri(builder.Configuration["Ssr:Origin"] ?? "http://127.0.0.1:5301"));
+// Rendered pages are the same for every user (no cookies are forwarded): keep them for a short time
+int pageCacheSeconds = builder.Configuration.GetValue("Ssr:CacheSeconds", 60);
+builder.Services.AddOutputCache(options =>
+    options.AddPolicy("pages", policy => policy.Expire(TimeSpan.FromSeconds(pageCacheSeconds))));
 
 WebApplication app = builder.Build();
 
 app.UseResponseCompression();
-// "/" -> index.html, the home page prerendered at build time
-app.UseDefaultFiles();
+// "/" -> index.html, the home page prerendered at build time; "/books/{isbn}" -> books/{isbn}/index.html
+// for prerendered book pages, without a 301 redirect to "/books/{isbn}/" (one round trip less)
+app.UseDefaultFiles(new DefaultFilesOptions { RedirectToAppendTrailingSlash = false });
 app.UseStaticFiles();
 app.UseStaticFiles(new StaticFileOptions
 {
@@ -32,11 +41,16 @@ app.UseStaticFiles(new StaticFileOptions
 // Route matching after the static files: otherwise the fallback endpoint below already
 // matches "/" and UseDefaultFiles never serves the prerendered index.html
 app.UseRouting();
+app.UseOutputCache();
 
 app.MapCatalogEndpoints();
 app.MapRumEndpoints();
 app.MapCoverImageEndpoints();
-// Every other route renders on the client: serve the CSR shell, not the prerendered home page
-app.MapFallbackToFile("index.csr.html");
+// Every other page goes to the Angular SSR server: prerendered, server-rendered or the CSR shell, per route
+RouteHandlerBuilder pages = app.MapFallback(SsrProxy.ForwardAsync);
+if (pageCacheSeconds > 0)
+{
+    pages.CacheOutput("pages");
+}
 
 app.Run();

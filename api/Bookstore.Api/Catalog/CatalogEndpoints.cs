@@ -1,10 +1,12 @@
+using Bookstore.Api.Lab;
+
 namespace Bookstore.Api.Catalog;
 
 public static class CatalogEndpoints
 {
     public static IEndpointRouteBuilder MapCatalogEndpoints(this IEndpointRouteBuilder app)
     {
-        RouteGroupBuilder books = app.MapGroup("/api/books");
+        RouteGroupBuilder books = app.MapGroup("/api/books").AddEndpointFilter<LabDelayFilter>();
 
         books.MapGet("/", (BookCatalog catalog, int? take) =>
             TypedResults.Ok(catalog.All.Take(Math.Clamp(take ?? BookCatalog.CatalogSize, 1, BookCatalog.CatalogSize))));
