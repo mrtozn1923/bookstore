@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Catalog import</title>
+</head>
+<body>
+  <input type="file" id="picker" accept=".txt,.csv,.json" multiple>
+  <pre id="output"></pre>
+  <script>
+    const picker = document.getElementById("picker");
+    const output = document.getElementById("output");
+
+    picker.addEventListener("change", async () => {
+      output.textContent = "";
+      for (const file of picker.files) {
+        const text = await file.text();
+        const kb = (file.size / 1024).toFixed(1);
+        output.textContent += `${file.name} (${kb} KB, ${file.type || "unknown type"})\n`;
+        output.textContent += text.slice(0, 200) + "\n\n";
+      }
+    });
+  </script>
+</body>
+</html>

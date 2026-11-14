@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cover upload</title>
+  <style>
+    #zone { border: 3px dashed #888; padding: 40px; text-align: center; }
+    #zone.over { border-color: #2563eb; background: #eff6ff; }
+    #preview img { max-width: 200px; margin: 8px; }
+  </style>
+</head>
+<body>
+  <div id="zone">Drop book covers here</div>
+  <div id="preview"></div>
+  <script>
+    const zone = document.getElementById("zone");
+    const preview = document.getElementById("preview");
+
+    zone.addEventListener("dragover", (event) => {
+      event.preventDefault(); // without this, drop never fires
+      zone.classList.add("over");
+    });
+    zone.addEventListener("dragleave", () => zone.classList.remove("over"));
+
+    zone.addEventListener("drop", (event) => {
+      event.preventDefault(); // stops the browser from opening the file
+      zone.classList.remove("over");
+
+      for (const file of event.dataTransfer.files) {
+        if (!file.type.startsWith("image/")) continue;
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(file);
+        img.alt = file.name;
+        img.addEventListener("load", () => URL.revokeObjectURL(img.src));
+        preview.append(img);
+      }
+    });
+  </script>
+</body>
+</html>

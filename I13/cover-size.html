@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cover size</title>
+</head>
+<body>
+  <input type="file" id="picker" accept="image/png">
+  <p id="result"></p>
+  <script>
+    async function pngSize(file) {
+      const buffer = await file.slice(0, 24).arrayBuffer();
+      const view = new DataView(buffer);
+      const signature = [0x89, 0x50, 0x4e, 0x47]; // "\x89PNG"
+
+      for (let i = 0; i < signature.length; i++) {
+        if (view.getUint8(i) !== signature[i]) throw new Error("This is not a PNG");
+      }
+      return { width: view.getUint32(16), height: view.getUint32(20) };
+    }
+
+    document.getElementById("picker").addEventListener("change", async (event) => {
+      const result = document.getElementById("result");
+      try {
+        const { width, height } = await pngSize(event.target.files[0]);
+        result.textContent = `${width} × ${height} pixels`;
+      } catch (error) {
+        result.textContent = error.message;
+      }
+    });
+  </script>
+</body>
+</html>
