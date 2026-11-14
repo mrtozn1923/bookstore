@@ -1,5 +1,5 @@
 <h2>Book {{ isbn }}</h2>
-<p *ngIf="book$ | async as book">{{ book.title }}: {{ book.price }} TRY</p>
+<p *ngIf="book">{{ book.title }}: {{ book.price }} TRY</p>
 <nav>
   <a routerLink="summary" routerLinkActive="active">Summary</a>
   <a routerLink="reviews" routerLinkActive="active">Reviews</a>

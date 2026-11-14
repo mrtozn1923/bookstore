@@ -36,6 +36,8 @@ import { AboutComponent } from './about/about.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { BookSummaryComponent } from './book-summary/book-summary.component';
 import { BookReviewsComponent } from './book-reviews/book-reviews.component';
+import { LoginComponent } from './login/login.component';
+import { AddressEditComponent } from './address-edit/address-edit.component';
 
 registerLocaleData(localeTr);
 
@@ -64,7 +66,9 @@ registerLocaleData(localeTr);
     AboutComponent,
     NotFoundComponent,
     BookSummaryComponent,
-    BookReviewsComponent
+    BookReviewsComponent,
+    LoginComponent,
+    AddressEditComponent
   ],
   imports: [
     BrowserModule,
