@@ -288,7 +288,72 @@ switch (command)
         break;
     }
 
+    case "flush":
+    {
+        int count = int.Parse(args[1]);
+        foreach (bool toDisk in new[] { false, true })
+        {
+            FlushResult r = FsLab.WriteOrders("orders.log", count, toDisk);
+            Console.WriteLine($"{r.Mode,-12} {r.Orders} orders in {r.Milliseconds,8:F1} ms ({r.Milliseconds * 1000 / r.Orders,7:F1} us per order)");
+        }
+        break;
+    }
+
+    case "fd-limit":
+    {
+        Directory.CreateDirectory(args[1]);
+        Console.WriteLine($"soft limit: {File.ReadLines("/proc/self/limits").First(l => l.StartsWith("Max open files"))}");
+        Console.WriteLine($"open descriptors before: {FsLab.OpenDescriptors()}");
+        (int opened, string error) = FsLab.OpenUntilFailure(args[1]);
+        Console.WriteLine($"opened {opened} files, then: {error}");
+        Console.WriteLine($"open descriptors after: {FsLab.OpenDescriptors()}");
+        break;
+    }
+
+    case "open-delete":
+        foreach (string line in FsLab.DeleteWhileOpen(args[1]))
+        {
+            Console.WriteLine(line);
+        }
+        break;
+
+    case "lock":
+    {
+        using FileStream held = new(args[1], FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+        Console.WriteLine($"pid={Environment.ProcessId} holds {args[1]} with FileShare.None for {args[2]} s");
+        Thread.Sleep(TimeSpan.FromSeconds(int.Parse(args[2])));
+        break;
+    }
+
+    case "open":
+        try
+        {
+            using FileStream fs = new(args[1], FileMode.Open, FileAccess.ReadWrite);
+            Console.WriteLine($"opened {args[1]}");
+        }
+        catch (IOException ex)
+        {
+            Console.WriteLine($"{ex.GetType().Name}: {ex.Message}");
+        }
+        break;
+
+    case "case-check":
+    {
+        Directory.CreateDirectory("Views/Home");
+        File.WriteAllText("Views/Home/Index.cshtml", "<h1>Bookstore</h1>");
+        foreach (string path in new[] { "Views/Home/Index.cshtml", "Views/Home/index.cshtml" })
+        {
+            Console.WriteLine($"File.Exists(\"{path}\") = {File.Exists(path)}");
+        }
+        break;
+    }
+
+    case "atomic-save":
+        FsLab.AtomicSave(args[1], args[2]);
+        Console.WriteLine($"{args[1]}: {File.ReadAllText(args[1])}");
+        break;
+
     default:
-        Console.WriteLine("usage: read-catalog | log-naive N | log-buffered N | proc-info S | report-naive N | report N [--fail] | report-timeout | shell-demo TEXT | env-demo | threads S | thread-cost N [stackKB] | task-cost N | context | cpu-info | workers N S | spin S [PriorityClass] | pingpong N | nice | paging MB | mem-info | overcommit GB | oom MB | gc-config | gc-limits | fill MB | churn MB | map-share FILE MB S | cow FILE MB | layout | big-maps MB | wx");
+        Console.WriteLine("usage: read-catalog | log-naive N | log-buffered N | proc-info S | report-naive N | report N [--fail] | report-timeout | shell-demo TEXT | env-demo | threads S | thread-cost N [stackKB] | task-cost N | context | cpu-info | workers N S | spin S [PriorityClass] | pingpong N | nice | paging MB | mem-info | overcommit GB | oom MB | gc-config | gc-limits | fill MB | churn MB | map-share FILE MB S | cow FILE MB | layout | big-maps MB | wx | flush N | fd-limit DIR | open-delete FILE | lock FILE S | open FILE | case-check | atomic-save FILE TEXT");
         break;
 }
