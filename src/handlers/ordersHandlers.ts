@@ -16,7 +16,7 @@ export function placeOrder(orders: OrderService): RequestHandler {
             throw new HttpError(415, "content-type must be application/json");
         }
         const body = parseRequest(placeOrderBody, req.body);
-        const order = await orders.placeOrder(body.customerId, body.lines);
+        const order = await orders.placeOrder(res.locals.user!.userId, body.lines);
         res.status(201).location(`/api/orders/${order.id}`).json(toOrderDto(order));
     };
 }
@@ -24,7 +24,7 @@ export function placeOrder(orders: OrderService): RequestHandler {
 // GET /api/orders/:id
 export function getOrder(orders: OrderService): RequestHandler {
     return async (req, res) => {
-        res.json(toOrderDto(await orders.get(req.params.id as string)));
+        res.json(toOrderDto(await orders.getForUser(req.params.id as string, res.locals.user!)));
     };
 }
 

@@ -9,6 +9,18 @@ const environmentSchema = z.object({
     DB_CONNECTION_STRING: z.string().min(1),
     SHUTDOWN_DRAIN_MS: z.coerce.number().int().min(0).max(60_000).default(0),
     SHUTDOWN_TIMEOUT_MS: z.coerce.number().int().min(1_000).max(120_000).default(10_000),
+    // Comma-separated allow-list of browser origins (the Angular client); never "*"
+    CORS_ORIGINS: z
+        .string()
+        .default("http://localhost:4200")
+        .transform((text) => text.split(",").map((o) => o.trim()))
+        .pipe(z.array(z.url({ protocol: /^https?$/ }))),
+    // How many proxies in front of the API may add X-Forwarded-For: 0 = none, 1 = one load balancer
+    TRUST_PROXY: z.coerce.number().int().min(0).max(5).default(0),
+    RATE_LIMIT_PER_MINUTE: z.coerce.number().int().min(1).default(120),
+    AUTH_ISSUER: z.string().min(1),
+    AUTH_AUDIENCE: z.string().min(1).default("bookstore-api"),
+    AUTH_JWKS_URL: z.url({ protocol: /^https?$/ }),
 });
 
 export interface AppConfig {
@@ -18,6 +30,8 @@ export interface AppConfig {
     logLevel: "fatal" | "error" | "warn" | "info" | "debug" | "trace";
     db: { connectionString: string };
     shutdown: { drainMs: number; timeoutMs: number };
+    http: { corsOrigins: string[]; trustProxy: number; rateLimitPerMinute: number };
+    auth: { issuer: string; audience: string; jwksUrl: string };
 }
 
 export class ConfigError extends Error {
@@ -41,5 +55,7 @@ export function loadConfig(environment: Record<string, string | undefined> = pro
         logLevel: e.LOG_LEVEL,
         db: Object.freeze({ connectionString: e.DB_CONNECTION_STRING }),
         shutdown: Object.freeze({ drainMs: e.SHUTDOWN_DRAIN_MS, timeoutMs: e.SHUTDOWN_TIMEOUT_MS }),
+        http: Object.freeze({ corsOrigins: e.CORS_ORIGINS, trustProxy: e.TRUST_PROXY, rateLimitPerMinute: e.RATE_LIMIT_PER_MINUTE }),
+        auth: Object.freeze({ issuer: e.AUTH_ISSUER, audience: e.AUTH_AUDIENCE, jwksUrl: e.AUTH_JWKS_URL }),
     });
 }

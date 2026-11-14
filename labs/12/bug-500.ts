@@ -9,8 +9,11 @@ const buggyBooks = {
     },
 } as unknown as BookService;
 
-// readiness added in post 14; not used here
-const app = createApp({ books: buggyBooks, orders: {} as OrderService, readiness: async () => ({ status: "ready", checks: {} }) });
+// readiness (post 14) and the options (post 15) are not used here
+const app = createApp(
+    { books: buggyBooks, orders: {} as OrderService, readiness: async () => ({ status: "ready", checks: {} }) },
+    { corsOrigins: [], trustProxy: 0, rateLimitPerMinute: 100, verifyToken: async () => ({ userId: "ada", roles: [] }) },
+);
 const server = app.listen(0, "127.0.0.1", async () => {
     const { port } = server.address() as { port: number };
     const res = await fetch(`http://127.0.0.1:${port}/api/books`, { headers: { "x-request-id": "req-12z" } });

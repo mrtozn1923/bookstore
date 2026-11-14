@@ -6,9 +6,8 @@ const orderLine = z.object({
     quantity: z.int().min(1).max(20),
 });
 
-// The request contract for POST /api/orders; unknown fields are rejected
+// The request contract for POST /api/orders; unknown fields are rejected and the customer comes from the token
 export const placeOrderBody = z.strictObject({
-    customerId: z.string().trim().min(1).max(64),
     lines: z
         .array(orderLine)
         .min(1)

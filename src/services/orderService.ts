@@ -4,6 +4,7 @@ import type { Order, OrderItem } from "#domain/order";
 import { MixedCurrencyError, OrderNotFoundError, UnknownBookError } from "#domain/errors";
 import type { BookRepository } from "#repositories/bookRepository";
 import type { OrderRepository } from "#repositories/orderRepository";
+import type { Principal } from "../auth/tokenVerifier.ts";
 import { logger } from "../diagnostics/logger.ts";
 
 export interface OrderLine {
@@ -62,9 +63,11 @@ export class OrderService extends EventEmitter<OrderEvents> {
         return this.#orders.exportRows();
     }
 
-    async get(id: string): Promise<Order> {
+    // Object-level authorization: customers see their own orders, store staff see all of them
+    async getForUser(id: string, user: Principal): Promise<Order> {
         const order = await this.#orders.findById(id);
-        if (!order) {
+        // Someone else's order is "not found", not "forbidden": the answer must not confirm that it exists
+        if (!order || (order.customerId !== user.userId && !user.roles.includes("StoreStaff"))) {
             throw new OrderNotFoundError(id);
         }
         return order;

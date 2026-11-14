@@ -5,6 +5,7 @@ import { ConfigError, loadConfig, type AppConfig } from "./config.ts";
 import { logger } from "./diagnostics/logger.ts";
 import { createReadinessCheck, type Lifecycle } from "./lifecycle/readiness.ts";
 import { registerGracefulShutdown } from "./lifecycle/shutdown.ts";
+import { createJwtVerifier } from "./auth/tokenVerifier.ts";
 
 let config: AppConfig;
 try {
@@ -20,7 +21,10 @@ logger.info({ config }, "configuration loaded");
 // Top-level await: the API starts listening only after the first SQL connection succeeded
 const pool = await openPool(config.db.connectionString);
 const lifecycle: Lifecycle = { shuttingDown: false };
-const app = createApp({ ...createServices(pool), readiness: createReadinessCheck(pool, lifecycle) });
+const app = createApp(
+    { ...createServices(pool), readiness: createReadinessCheck(pool, lifecycle) },
+    { ...config.http, verifyToken: createJwtVerifier(config.auth) },
+);
 app.set("env", config.env);
 
 // Express 5 passes listen errors (EADDRINUSE...) to this callback instead of throwing them
