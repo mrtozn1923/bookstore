@@ -1,0 +1,10 @@
+{
+  "name": "bookstore-web-css-properties",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "@mdn/browser-compat-data": "8.1.9",
+    "playwright": "1.65.0",
+    "web-features": "3.46.0"
+  }
+}

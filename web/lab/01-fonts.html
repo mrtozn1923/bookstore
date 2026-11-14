@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>01 fonts lab</title>
+    <link rel="stylesheet" href="../css/fonts.css">
+    <style>
+        /* the same file, declared once WITHOUT a weight range */
+        @font-face {
+            font-family: "Fraunces Single";
+            src: url("../fonts/fraunces-latin-normal.woff2") format("woff2");
+            font-weight: 400;
+        }
+        /* no font-weight descriptor at all */
+        @font-face {
+            font-family: "Fraunces Auto";
+            src: url("../fonts/fraunces-latin-normal.woff2") format("woff2");
+        }
+        /* only the upright file: italic must be synthesized */
+        @font-face {
+            font-family: "Fraunces Upright";
+            src: url("../fonts/fraunces-latin-normal.woff2") format("woff2");
+            font-weight: 100 900;
+            font-style: normal;
+        }
+        /* only the latin subset: no latin-ext face */
+        @font-face {
+            font-family: "Fraunces Latin";
+            src: url("../fonts/fraunces-latin-normal.woff2") format("woff2");
+            font-weight: 100 900;
+            unicode-range: U+0000-00FF, U+0131;
+        }
+
+        body { font-size: 24px; }
+        span { display: inline-block; white-space: nowrap; }
+
+        .card { line-height: 1.6; font-variation-settings: "SOFT" 100; }
+        .card .title { font: 600 1.25rem "Fraunces", serif; }
+
+        .weights span { font-family: "Fraunces", serif; }
+        .w400 { font-weight: 400; }
+        .w600 { font-weight: 600; }
+        .w650 { font-weight: 650; }
+        .w700 { font-weight: 700; }
+        .w700-fvs { font-weight: 700; font-variation-settings: "wght" 400; }
+
+        /* one block per line, so pixel comparisons start at the same x/y offset */
+        .single span, .upright span { display: block; width: max-content; line-height: 40px; }
+        .single span { font-family: "Fraunces Single", serif; }
+        .single .no-synth { font-synthesis: none; }
+        .single .auto { font-family: "Fraunces Auto", serif; }
+
+        .upright span { font-family: "Fraunces Upright", serif; }
+        .upright .real { font-family: "Fraunces", serif; }
+        .upright .italic { font-style: italic; }
+        .upright .no-synth { font-synthesis: none; }
+
+        .generic span { font-size: 20px; }
+        .generic .mono { font-family: monospace; }
+        .generic .ui { font-family: ui-sans-serif, monospace; }
+        .generic .system { font-family: system-ui, monospace; }
+
+        .glyphs .full { font-family: "Fraunces", serif; }
+        .glyphs .latin-only { font-family: "Fraunces Latin", Georgia, serif; }
+
+        .optical span { font-family: "Fraunces", serif; font-size: 48px; }
+        .optical .off { font-optical-sizing: none; }
+    </style>
+</head>
+<body>
+    <div class="card"><p class="title" id="title">Middlemarch</p></div>
+
+    <p class="weights">
+        <span class="w400">Middlemarch</span> <span class="w600">Middlemarch</span>
+        <span class="w650">Middlemarch</span> <span class="w700">Middlemarch</span>
+        <span class="w700-fvs">Middlemarch</span>
+    </p>
+
+    <p class="single">
+        <span class="w400">Middlemarch</span> <span class="w700">Middlemarch</span>
+        <span class="w700 no-synth">Middlemarch</span>
+        <span class="w700 auto">Middlemarch</span>
+    </p>
+
+    <p class="upright">
+        <span class="plain">Middlemarch</span> <span class="italic">Middlemarch</span>
+        <span class="italic no-synth">Middlemarch</span> <span class="real italic">Middlemarch</span>
+    </p>
+
+    <p class="generic">
+        <span class="mono">Bookstore</span> <span class="ui">Bookstore</span> <span class="system">Bookstore</span>
+    </p>
+
+    <p class="glyphs" lang="tr">
+        <span class="full">ğ ş ı İ ç ö ü</span> <span class="latin-only">ğ ş ı İ ç ö ü</span>
+    </p>
+
+    <p class="optical">
+        <span class="auto">Dune</span> <span class="off">Dune</span>
+    </p>
+</body>
+</html>
