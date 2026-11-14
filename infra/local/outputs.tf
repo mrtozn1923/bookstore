@@ -5,7 +5,7 @@ output "api_url" {
 
 output "volume_names" {
   description = "Docker volume names, keyed by data set."
-  value       = { for key, volume in docker_volume.api_data : key => volume.name }
+  value       = module.api.volume_names
 }
 
 output "app_settings" {

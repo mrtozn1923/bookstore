@@ -1,6 +1,6 @@
 output "api_url" {
   description = "Public URL of the Bookstore API."
-  value       = "https://${azurerm_linux_web_app.api.default_hostname}"
+  value       = module.api.url
 }
 
 output "sql_server_fqdn" {

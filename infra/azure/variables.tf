@@ -23,6 +23,11 @@ variable "api" {
     app_settings = optional(map(string), {})
   })
   description = "Bookstore API: container image and App Service settings."
+
+  validation {
+    condition     = var.environment != "prod" || var.api.sku_name != "B1"
+    error_message = "Production needs at least a P0v3 plan, not B1."
+  }
 }
 
 variable "allowed_ip_ranges" {

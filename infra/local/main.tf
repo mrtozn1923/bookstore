@@ -11,15 +11,6 @@ data "docker_network" "shared" {
   }
 }
 
-data "docker_image" "api" {
-  name = "bookstore-api:${var.api.image_tag}"
-}
-
-# Rebuilding the same tag changes the image ID; this resource carries that change
-resource "terraform_data" "api_image" {
-  input = data.docker_image.api.id
-}
-
 resource "docker_network" "bookstore" {
   name = local.name_prefix
 
@@ -32,78 +23,24 @@ resource "docker_network" "bookstore" {
   }
 }
 
-resource "docker_volume" "api_data" {
-  for_each = var.volume_names
-  name     = "${local.name_prefix}-${each.key}"
+module "api" {
+  source = "../modules/bookstore-service"
 
-  dynamic "labels" {
-    for_each = local.labels
-    content {
-      label = labels.key
-      value = labels.value
-    }
-  }
-
-  lifecycle {
-    prevent_destroy = true
-  }
-}
-
-resource "docker_container" "api" {
-  name    = "${local.name_prefix}-api"
-  image   = "bookstore-api:${var.api.image_tag}"
-  restart = var.environment == "prod" ? "always" : "unless-stopped"
-
-  env = concat(
-    [for key, value in local.app_settings : "${key}=${value}"],
-    ["Bookstore__Payments__ApiKey=${var.payments_api_key}"],
-  )
-
-  dynamic "labels" {
-    for_each = local.labels
-    content {
-      label = labels.key
-      value = labels.value
-    }
-  }
-
-  dynamic "volumes" {
-    for_each = docker_volume.api_data
-    content {
-      volume_name    = volumes.value.name
-      container_path = "/data/${volumes.key}"
-    }
-  }
-
-  networks_advanced {
-    name = docker_network.bookstore.name
-  }
-
-  networks_advanced {
-    name = data.docker_network.shared.name
-  }
-
-  ports {
-    internal = 8080
-    external = var.api.external_port
-  }
-
-  lifecycle {
-    replace_triggered_by = [terraform_data.api_image]
-
-    # Memory limits are tuned by the operations team with docker update
-    ignore_changes = [memory, memory_swap]
-
-    precondition {
-      condition     = var.environment != "prod" || var.api.image_tag != "latest"
-      error_message = "Production must run a pinned image tag, not latest."
-    }
-  }
+  name          = "${local.name_prefix}-api"
+  volume_prefix = local.name_prefix
+  image         = "bookstore-api:${var.api.image_tag}"
+  restart       = var.environment == "prod" ? "always" : "unless-stopped"
+  env           = local.app_settings
+  secret_env    = { Bookstore__Payments__ApiKey = var.payments_api_key }
+  networks      = [docker_network.bookstore.name, data.docker_network.shared.name]
+  data_volumes  = var.volume_names
+  external_port = var.api.external_port
+  labels        = local.labels
 }
 
 check "api_health" {
   data "http" "health" {
-    url = "http://localhost:${var.api.external_port}/health"
+    url = "${module.api.base_url}/health"
 
     # The container needs a few seconds to start after a replace
     retry {
