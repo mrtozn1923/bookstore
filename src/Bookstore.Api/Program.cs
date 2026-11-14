@@ -28,8 +28,12 @@ builder.Services.AddAuthentication()
         // Keep claim names as Keycloak writes them; otherwise "roles" is renamed and RequireRole finds nothing
         options.MapInboundClaims = false;
         options.TokenValidationParameters.RoleClaimType = "roles";
-        // Locally Keycloak is reached over http; production sets an https Authority
-        if (builder.Environment.IsDevelopment())
+        // Deployed environments pass the real https Authority; locally it comes from service discovery over http
+        if (builder.Configuration["Keycloak:Authority"] is { Length: > 0 } authority)
+        {
+            options.Authority = authority;
+        }
+        else if (builder.Environment.IsDevelopment())
         {
             options.RequireHttpsMetadata = false;
         }

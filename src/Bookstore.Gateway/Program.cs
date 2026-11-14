@@ -8,7 +8,12 @@ builder.Services.AddReverseProxy()
 
 WebApplication app = builder.Build();
 
+// In the published image wwwroot holds Angular's build output; locally the folder doesn't exist
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 app.MapDefaultEndpoints();
 app.MapReverseProxy();
+app.MapFallbackToFile("index.html");
 
 app.Run();
