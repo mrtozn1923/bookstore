@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
 import { BookCardComponent } from './book-card/book-card.component';
+import { CatalogModule } from './catalog/catalog.module';
 
 @NgModule({
   declarations: [
@@ -10,7 +11,8 @@ import { BookCardComponent } from './book-card/book-card.component';
     BookCardComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    CatalogModule
   ],
   providers: [],
   bootstrap: [AppComponent]
