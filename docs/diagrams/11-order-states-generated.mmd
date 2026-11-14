@@ -1,0 +1,13 @@
+stateDiagram-v2
+	state PendingApproval {
+		PendingApprover
+		PendingPurchasingManager
+	}
+	Draft --> PendingApprover : Submit [HasEnoughBudget]
+	PendingApproval --> Rejected : Reject [HasComment]
+	PendingApproval --> Cancelled : Cancel
+	PendingApprover --> PendingPurchasingManager : Approve [RequiresPurchasingApproval]
+	PendingApprover --> Approved : Approve [else]
+	PendingPurchasingManager --> Approved : Approve [HasEnoughBudget]
+	Approved --> Cancelled : Cancel [BeforeDeliveryOrAdmin]
+[*] --> Draft

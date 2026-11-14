@@ -1,0 +1,24 @@
+@startuml order-states
+title Order state machine
+hide empty description
+
+[*] --> Draft
+Draft --> PendingApprover : Submit [hasEnoughBudget]
+
+state "Pending Approval" as PendingApproval {
+    state PendingApprover : entry / notifyApprover
+    state PendingApprover : after(2 working days) / remindApprover
+    state PendingPurchasingManager : entry / notifyPurchasingManager
+    state PendingPurchasingManager : after(2 working days) / remindApprover
+    state afterApprover <<choice>>
+    PendingApprover --> afterApprover : Approve [hasEnoughBudget]
+    afterApprover --> PendingPurchasingManager : [requiresPurchasingApproval]
+}
+
+afterApprover --> Approved : [else]
+PendingPurchasingManager --> Approved : Approve [hasEnoughBudget]
+PendingApproval --> Rejected : Reject [hasComment] / recordApproval
+PendingApproval --> Cancelled : Cancel
+state Approved : entry / deductBudget; placeDistributorOrder
+Approved --> Cancelled : Cancel [today < deliveryDate || byPortalAdmin] / refundBudget; cancelDistributorOrder
+@enduml
