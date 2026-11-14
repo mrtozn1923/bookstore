@@ -1,0 +1,6 @@
+{
+  "name": "bookstore-javascript-ileri",
+  "private": true,
+  "description": "Code from the JavaScript İleri series on mertozen.com (Bookstore examples)",
+  "engines": { "node": ">=24" }
+}
