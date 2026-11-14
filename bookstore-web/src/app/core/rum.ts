@@ -105,6 +105,9 @@ function pickAttribution(metric: MetricWithAttribution): Attribution {
       return {
         target: metric.attribution.largestShiftTarget,
         largestShift: round(metric.attribution.largestShiftValue ?? 0, 4),
+        // When it happened: loadState 'complete' means after the load event (scroll, late content)
+        time: round(metric.attribution.largestShiftTime ?? 0),
+        loadState: metric.attribution.loadState,
       };
     default:
       return {};

@@ -64,6 +64,10 @@ public sealed class BookCatalog
     public Book Featured => All[0];
     public IEnumerable<Book> NewArrivals => All.Skip(1).Take(8);
 
+    // Other books from the same category for the "Similar books" block on the book page
+    public IEnumerable<Book> Similar(Book book, int count) =>
+        All.Where(b => b.Category == book.Category && b.Title != book.Title).Take(count);
+
     public static string Slug(string title) =>
         new string(title.ToLowerInvariant().Select(c => char.IsLetterOrDigit(c) ? c : '-').ToArray());
 

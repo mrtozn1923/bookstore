@@ -1,6 +1,6 @@
 // Lab run: loads a page N times in fresh contexts with a throttling profile and reads the
 // web-vitals values from the app's own RUM beacons (POST /api/rum).
-// Usage: node measure.mjs <url> [--runs 5] [--profile mobile] [--type "war"] [--json]
+// Usage: node measure.mjs <url> [--runs 5] [--profile mobile] [--type "war"] [--scroll 3] [--json]
 import { parseArgs } from 'node:util';
 import { captureRum, finishVisit, launch, newThrottledPage } from './browser.mjs';
 
@@ -11,6 +11,7 @@ const { values, positionals } = parseArgs({
     profile: { type: 'string', default: 'mobile' },
     type: { type: 'string' },
     clear: { type: 'boolean', default: false },
+    scroll: { type: 'string', default: '0' },
     json: { type: 'boolean', default: false },
   },
 });
@@ -30,6 +31,11 @@ for (let run = 1; run <= Number(values.runs); run++) {
       await page.waitForTimeout(150);
     }
     await page.waitForTimeout(1000);
+  }
+  // --scroll: read on, 400 px per wheel step (CLS also counts shifts after the load)
+  for (let i = 0; i < Number(values.scroll); i++) {
+    await page.mouse.wheel(0, 400);
+    await page.waitForTimeout(600);
   }
   await finishVisit(page);
   results.push(Object.fromEntries((await readRum()).map((r) => [r.name, r])));

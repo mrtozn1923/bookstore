@@ -16,6 +16,11 @@ public static class CatalogEndpoints
         books.MapGet("/{isbn}", Results<Ok<Book>, NotFound> (string isbn, BookCatalog catalog) =>
             catalog.ByIsbn.TryGetValue(isbn, out Book? book) ? TypedResults.Ok(book) : TypedResults.NotFound());
 
+        books.MapGet("/{isbn}/similar", Results<Ok<IEnumerable<Book>>, NotFound> (string isbn, int? count, BookCatalog catalog) =>
+            catalog.ByIsbn.TryGetValue(isbn, out Book? book)
+                ? TypedResults.Ok(catalog.Similar(book, Math.Clamp(count ?? 4, 1, 8)))
+                : TypedResults.NotFound());
+
         return app;
     }
 }
