@@ -1,4 +1,5 @@
 using System.Net;
+using Bookstore.Api;
 using Bookstore.Api.Carts;
 using Bookstore.Api.Catalog;
 using Bookstore.Api.Formatters;
@@ -19,6 +20,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,7 +33,31 @@ builder.Services.AddScoped<OrderAudit>();
 builder.Services.AddKeyedSingleton<IShippingCalculator, StandardShipping>("standard");
 builder.Services.AddKeyedSingleton<IShippingCalculator, ExpressShipping>("express");
 builder.Services.AddValidation();
-builder.Services.AddProblemDetails();
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+builder.Services.AddRequestLocalization(options =>
+{
+    string[] cultures = ["en-US", "tr-TR"];
+    options.SetDefaultCulture(cultures[0])
+        .AddSupportedCultures(cultures)
+        .AddSupportedUICultures(cultures);
+    options.ApplyCurrentCultureToResponseHeaders = true;
+});
+builder.Services.AddProblemDetails(options => options.CustomizeProblemDetails = context =>
+{
+    // Kendi code'u olan problem'ler zaten yerelleştirilmiş geliyor
+    if (context.ProblemDetails.Extensions.ContainsKey("code") || context.ProblemDetails.Status is not { } status)
+    {
+        return;
+    }
+
+    IStringLocalizer<SharedMessages> localizer =
+        context.HttpContext.RequestServices.GetRequiredService<IStringLocalizer<SharedMessages>>();
+    LocalizedString title = localizer[$"Status{status}"];
+    if (!title.ResourceNotFound)
+    {
+        context.ProblemDetails.Title = title;
+    }
+});
 builder.Services.AddAntiforgery();
 builder.Services.AddSingleton<OrderStore>();
 
@@ -89,6 +115,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 var app = builder.Build();
 
 app.UseForwardedHeaders();
+app.UseRequestLocalization();
 app.UseExceptionHandler();
 app.UseStatusCodePages();
 app.UseRewriter(new RewriteOptions()
@@ -173,8 +200,20 @@ app.MapGet("/api/cart", (HttpRequest request, CartStore carts) =>
 app.MapGet("/api/institution/profile", (HttpContext context) =>
     TenantMiddleware.GetUnit(context));
 
-app.MapPost("/api/institution/orders", (InstitutionOrderRequest order, HttpContext context, OrderAudit audit) =>
+app.MapPost("/api/institution/orders", Results<Created<InstitutionOrderResponse>, ProblemHttpResult> (
+    InstitutionOrderRequest order, HttpContext context, OrderAudit audit, BookCatalog catalog, IStringLocalizer<SharedMessages> localizer) =>
 {
+    if (order.Items.FirstOrDefault(i => !Isbn.TryParse(i.Isbn, null, out Isbn isbn) || catalog.Find(isbn) is null) is { } missing)
+    {
+        // type ve code makine için: hiçbir dilde değişmez
+        return TypedResults.Problem(
+            type: "https://bookstore.example.com/problems/isbn-not-found",
+            title: localizer["IsbnNotFound.Title"],
+            detail: localizer["IsbnNotFound.Detail", missing.Isbn],
+            statusCode: StatusCodes.Status422UnprocessableEntity,
+            extensions: new Dictionary<string, object?> { ["code"] = "catalog.isbn_not_found", ["isbn"] = missing.Isbn });
+    }
+
     InstitutionUnit unit = TenantMiddleware.GetUnit(context);
     string orderNumber = $"INS-{unit.Id}-{Random.Shared.Next(1000, 9999)}";
     audit.Record(orderNumber);
@@ -185,7 +224,7 @@ app.MapPost("/api/institution/orders", (InstitutionOrderRequest order, HttpConte
         return Task.CompletedTask;
     });
 
-    return TypedResults.Created($"/api/institution/orders/{orderNumber}", new { orderNumber, unit = unit.Name, order.Items });
+    return TypedResults.Created($"/api/institution/orders/{orderNumber}", new InstitutionOrderResponse(orderNumber, unit.Name, order.Items));
 });
 
 app.MapGet("/api/books", ([AsParameters] BookQuery query) => query.Apply());
@@ -226,4 +265,5 @@ app.MapControllers();
 
 app.Run();
 
-public record InstitutionOrderRequest(List<CartItem> Items);
+public record InstitutionOrderResponse(string OrderNumber, string Unit, List<InstitutionOrderLine> Items);
+

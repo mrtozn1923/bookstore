@@ -16,7 +16,8 @@ public record BookQuery(
     [FromQuery(Name = "q")] string? Search,
     [property: Range(1, 50)] int PageSize = 10,
     int Page = 1,
-    BookSort Sort = BookSort.Title)
+    BookSort Sort = BookSort.Title,
+    decimal? MaxPrice = null)
 {
     public IEnumerable<Book> Apply()
     {
@@ -24,6 +25,10 @@ public record BookQuery(
         if (Category is not null)
         {
             books = books.Where(b => b.Category == Category);
+        }
+        if (MaxPrice is not null)
+        {
+            books = books.Where(b => b.Price <= MaxPrice);
         }
         if (Search is not null)
         {
