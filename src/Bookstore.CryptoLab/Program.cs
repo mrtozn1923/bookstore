@@ -17,6 +17,10 @@ switch (command)
     case "chacha": EncryptionCommands.ChaCha(); break;
     case "envelope": EncryptionCommands.Envelope(); break;
     case "customers": await EncryptionCommands.CustomersAsync(); break;
+    case "key-sizes": AsymmetricCommands.KeySizes(); break;
+    case "rsa-limit": AsymmetricCommands.RsaLimit(); break;
+    case "purchase-order": AsymmetricCommands.PurchaseOrderDemo(); break;
+    case "rsa-certificate": AsymmetricCommands.RsaFromCertificate(); break;
     default: Console.Error.WriteLine($"Unknown command: {command}"); return 1;
 }
 return 0;
