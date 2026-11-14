@@ -23,5 +23,3 @@ public sealed record BookResponse(
     public static BookResponse From(Book book) =>
         new(book.Isbn, book.Title, book.Author, book.Category, new Money(book.Price, "TRY"), book.StockQuantity > 0);
 }
-
-public sealed record BookListResponse(IReadOnlyList<BookResponse> Items, string? NextPageToken);

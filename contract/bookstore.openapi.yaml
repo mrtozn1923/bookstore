@@ -20,6 +20,12 @@ security:
 tags:
   - name: Books
     description: Catalog books.
+  - name: Orders
+    description: Orders of individual and institutional customers.
+  - name: Carts
+    description: Shopping carts.
+  - name: Institutions
+    description: Institutional customers (schools, libraries, companies).
 paths:
   /books:
     get:
@@ -64,12 +70,224 @@ paths:
                 $ref: '#/components/schemas/Book'
         '404':
           $ref: '#/components/responses/Problem'
+  /orders:
+    get:
+      operationId: listOrders
+      summary: List my orders
+      description: Orders of the calling individual customer, newest first.
+      tags: [Orders]
+      parameters:
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/PageToken'
+      responses:
+        '200':
+          description: One page of orders.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderList'
+        '400':
+          $ref: '#/components/responses/Problem'
+        '401':
+          $ref: '#/components/responses/Problem'
+  /orders/{orderId}:
+    parameters:
+      - $ref: '#/components/parameters/OrderId'
+    get:
+      operationId: getOrder
+      summary: Get an order
+      description: >-
+        The canonical URL of an order. Orders the caller may not see return 404,
+        exactly like orders that do not exist.
+      tags: [Orders]
+      responses:
+        '200':
+          description: The order.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+  /orders/{orderId}:cancel:
+    parameters:
+      - $ref: '#/components/parameters/OrderId'
+    post:
+      operationId: cancelOrder
+      summary: Cancel an order
+      description: Custom method (BS-03). Only Pending or Confirmed orders can be cancelled.
+      tags: [Orders]
+      responses:
+        '200':
+          description: The cancelled order.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+  /orders/{orderId}/returns:
+    parameters:
+      - $ref: '#/components/parameters/OrderId'
+    post:
+      operationId: createReturn
+      summary: Request a return
+      description: >-
+        A return has its own lifecycle (Requested, Approved, Rejected, Refunded),
+        so it is a resource, not a custom method (BS-04).
+      tags: [Orders]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReturnRequest'
+      responses:
+        '201':
+          description: The return request was created.
+          headers:
+            Location:
+              description: URL of the new return.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Return'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+  /orders/{orderId}/returns/{returnId}:
+    parameters:
+      - $ref: '#/components/parameters/OrderId'
+      - name: returnId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: getReturn
+      summary: Get a return
+      description: Returns one return request of an order.
+      tags: [Orders]
+      responses:
+        '200':
+          description: The return.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Return'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+  /customers/{customerId}/cart:
+    get:
+      operationId: getCart
+      summary: Get a cart
+      description: The cart is a singleton sub-resource of a customer. Use "me" for the caller.
+      tags: [Carts]
+      parameters:
+        - $ref: '#/components/parameters/CustomerId'
+      responses:
+        '200':
+          description: The cart.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+  /institutions/{institutionId}:
+    get:
+      operationId: getInstitution
+      summary: Get an institution
+      description: Returns the caller's institution with its units.
+      tags: [Institutions]
+      parameters:
+        - $ref: '#/components/parameters/InstitutionId'
+      responses:
+        '200':
+          description: The institution.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Institution'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+  /institutions/{institutionId}/orders:
+    get:
+      operationId: listInstitutionOrders
+      summary: List an institution's orders
+      description: >-
+        A filtered view of the orders collection. Items link to their canonical
+        URL /orders/{orderId}; there is no /institutions/{institutionId}/orders/{orderId}.
+      tags: [Institutions]
+      parameters:
+        - $ref: '#/components/parameters/InstitutionId'
+        - name: unitId
+          in: query
+          description: Only orders of this unit. Buyers can only ask for their own unit.
+          schema:
+            type: string
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/PageToken'
+      responses:
+        '200':
+          description: One page of orders.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderList'
+        '400':
+          $ref: '#/components/responses/Problem'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
   parameters:
+    OrderId:
+      name: orderId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    CustomerId:
+      name: customerId
+      in: path
+      required: true
+      description: Customer id, or "me" for the caller.
+      schema:
+        type: string
+    InstitutionId:
+      name: institutionId
+      in: path
+      required: true
+      schema:
+        type: string
+        pattern: '^[a-z][a-z0-9-]{1,62}$'
     PageSize:
       name: pageSize
       in: query
@@ -130,6 +348,131 @@ components:
         nextPageToken:
           type: string
           description: Absent on the last page.
+    OrderStatus:
+      type: string
+      description: New values may be added; clients must accept unknown values.
+      examples: [Pending, Confirmed, Shipped, Delivered, Cancelled]
+    OrderItem:
+      type: object
+      required: [isbn, title, quantity, unitPrice]
+      properties:
+        isbn:
+          type: string
+        title:
+          type: string
+        quantity:
+          type: integer
+          minimum: 1
+        unitPrice:
+          $ref: '#/components/schemas/Money'
+    Order:
+      type: object
+      required: [id, status, createdAt, items, total]
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/OrderStatus'
+        customerId:
+          type: string
+          description: Present on orders of individual customers.
+        institutionId:
+          type: string
+          description: Present on institutional orders.
+        unitId:
+          type: string
+          description: Present on institutional orders.
+        createdAt:
+          type: string
+          format: date-time
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        total:
+          $ref: '#/components/schemas/Money'
+    OrderList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Order'
+        nextPageToken:
+          type: string
+          description: Absent on the last page.
+    CreateReturnRequest:
+      type: object
+      required: [reason]
+      properties:
+        reason:
+          type: string
+          maxLength: 500
+    Return:
+      type: object
+      required: [id, orderId, status, reason, requestedAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        orderId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          examples: [Requested, Approved, Rejected, Refunded]
+        reason:
+          type: string
+        requestedAt:
+          type: string
+          format: date-time
+    CartItem:
+      type: object
+      required: [isbn, title, quantity, unitPrice]
+      properties:
+        isbn:
+          type: string
+        title:
+          type: string
+        quantity:
+          type: integer
+          minimum: 1
+        unitPrice:
+          $ref: '#/components/schemas/Money'
+    Cart:
+      type: object
+      required: [customerId, items, total]
+      properties:
+        customerId:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItem'
+        total:
+          $ref: '#/components/schemas/Money'
+    InstitutionUnit:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    Institution:
+      type: object
+      required: [id, name, units]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        units:
+          type: array
+          items:
+            $ref: '#/components/schemas/InstitutionUnit'
     Problem:
       type: object
       properties:

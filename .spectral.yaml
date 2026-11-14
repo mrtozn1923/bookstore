@@ -2,14 +2,14 @@
 extends: ["spectral:oas"]
 rules:
   bookstore-path-kebab-case:
-    description: Path segments are lowercase kebab-case; parameters are camelCase.
+    description: Path segments are lowercase kebab-case; parameters are camelCase; an optional :customMethod ends the path.
     message: "Path is not kebab-case: {{property}}"
     severity: error
     given: $.paths[*]~
     then:
       function: pattern
       functionOptions:
-        match: "^(/([a-z0-9]+(-[a-z0-9]+)*|\\{[a-z][a-zA-Z0-9]*\\}))+$"
+        match: "^(/([a-z0-9]+(-[a-z0-9]+)*|\\{[a-z][a-zA-Z0-9]*\\}))+(:[a-z][a-zA-Z]*)?$"
   bookstore-no-verbs-in-path:
     description: Resources are nouns; CRUD verbs do not belong in the URL.
     message: "Verb in path: {{property}}"
@@ -19,3 +19,12 @@ rules:
       function: pattern
       functionOptions:
         notMatch: "/(get|list|create|add|update|save|delete|remove)([A-Z/-]|$)"
+  bookstore-max-two-path-params:
+    description: At most two path parameters (BS-05); deeper hierarchies use query filters.
+    message: "Too deep: {{property}}"
+    severity: error
+    given: $.paths[*]~
+    then:
+      function: pattern
+      functionOptions:
+        notMatch: "(\\{[^}]+\\}.*){3,}"
