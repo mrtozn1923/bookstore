@@ -1,0 +1,42 @@
+@startuml order-approval-activity
+|Institution User|
+start
+:Submit order;
+|Institutional Ordering|
+:Check budget and active orders;
+if (valid?) then (no)
+  |Institution User|
+  :See the error;
+  stop
+else (yes)
+  |Institutional Ordering|
+  :Order [PendingApprover]; <<object>>
+endif
+|Approver|
+:Review order;
+if (decision?) then (reject)
+  :Reject with reason;
+  stop
+else (approve)
+endif
+|Institutional Ordering|
+if (Total > 50,000 TL?) then (yes)
+  |Purchasing Manager|
+  :Review order;
+  if (decision?) then (reject)
+    :Reject with reason;
+    stop
+  else (approve)
+  endif
+else (no)
+endif
+|Institutional Ordering|
+fork
+  :Deduct budget;
+fork again
+  :Send to distributor;
+fork again
+  :Notify user; <<sendSignal>>
+end fork
+stop
+@enduml
