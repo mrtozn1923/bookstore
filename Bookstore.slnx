@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Bookstore.Institutional/Bookstore.Institutional.csproj" />
+  </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/Cd01.PatternTemplate/Cd01.PatternTemplate.csproj" />
+  </Folder>
+</Solution>
