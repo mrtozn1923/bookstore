@@ -5,6 +5,7 @@ using Bookstore.Api.Catalog;
 using Bookstore.Api.Cloud;
 using Bookstore.Api.KeyVault;
 using Bookstore.Api.Options;
+using Bookstore.Api.Payments;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -98,5 +99,6 @@ app.MapGet("/api/shipping/threshold", (
 });
 
 app.MapBookEndpoints();
+app.MapPaymentWebhook();
 
 app.Run();

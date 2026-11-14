@@ -10,3 +10,6 @@ public sealed partial class JwtOptionsValidator : IValidateOptions<JwtOptions>;
 
 [OptionsValidator]
 public sealed partial class EmailOptionsValidator : IValidateOptions<EmailOptions>;
+
+[OptionsValidator]
+public sealed partial class PaymentWebhookOptionsValidator : IValidateOptions<PaymentWebhookOptions>;

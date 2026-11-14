@@ -9,12 +9,13 @@ public static class OptionsRegistration
         services.AddOptions<ShippingOptions>().BindConfiguration(ShippingOptions.SectionName).ValidateOnStart();
         services.AddOptions<JwtOptions>().BindConfiguration(JwtOptions.SectionName).ValidateOnStart();
         services.AddOptions<EmailOptions>().BindConfiguration(EmailOptions.SectionName).ValidateOnStart();
-        services.AddOptions<PaymentWebhookOptions>().BindConfiguration(PaymentWebhookOptions.SectionName);
+        services.AddOptions<PaymentWebhookOptions>().BindConfiguration(PaymentWebhookOptions.SectionName).ValidateOnStart();
 
         // Reflection yerine source generator'ın ürettiği validator'lar
         services.AddSingleton<IValidateOptions<ShippingOptions>, ShippingOptionsValidator>();
         services.AddSingleton<IValidateOptions<JwtOptions>, JwtOptionsValidator>();
         services.AddSingleton<IValidateOptions<EmailOptions>, EmailOptionsValidator>();
+        services.AddSingleton<IValidateOptions<PaymentWebhookOptions>, PaymentWebhookOptionsValidator>();
         return services;
     }
 }
