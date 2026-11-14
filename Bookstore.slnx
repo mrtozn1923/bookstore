@@ -22,5 +22,6 @@
     <Project Path="samples/Cd17.Money/Cd17.Money.csproj" />
     <Project Path="samples/Cd18.TimeZones/Cd18.TimeZones.csproj" />
     <Project Path="samples/Cd19.Idempotency/Cd19.Idempotency.csproj" />
+    <Project Path="samples/Cd20.OptimisticConcurrency/Cd20.OptimisticConcurrency.csproj" />
   </Folder>
 </Solution>
