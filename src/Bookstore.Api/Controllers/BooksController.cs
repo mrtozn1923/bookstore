@@ -1,9 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Bookstore.Api.Data;
 using Bookstore.Api.Dtos;
-using Bookstore.Api.Mapping;
-using Bookstore.Api.Models;
+using Bookstore.Api.Services;
 
 namespace Bookstore.Api.Controllers;
 
@@ -11,29 +8,23 @@ namespace Bookstore.Api.Controllers;
 [Route("api/[controller]")]
 public class BooksController : ControllerBase
 {
-    private readonly BookstoreContext _db;
+    private readonly IBookService _bookService;
 
-    public BooksController(BookstoreContext db)
+    public BooksController(IBookService bookService)
     {
-        _db = db;
+        _bookService = bookService;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<BookDto>>> GetAll()
+    public async Task<ActionResult<List<BookDto>>> GetAll()
     {
-        List<BookDto> books = await _db.Books
-            .Select(b => new BookDto(b.Id, b.Title, b.Price, b.Category!.Name))
-            .ToListAsync();
-        return books;
+        return await _bookService.GetAllAsync();
     }
 
     [HttpGet("{id:int}")]
     public async Task<ActionResult<BookDto>> GetById(int id)
     {
-        BookDto? book = await _db.Books
-            .Where(b => b.Id == id)
-            .Select(b => new BookDto(b.Id, b.Title, b.Price, b.Category!.Name))
-            .FirstOrDefaultAsync();
+        BookDto? book = await _bookService.GetByIdAsync(id);
         if (book is null)
         {
             return NotFound();
@@ -45,45 +36,26 @@ public class BooksController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<BookDto>> Create(CreateBookRequest request)
     {
-        Category? category = await _db.Categories.FindAsync(request.CategoryId);
-        if (category is null)
+        BookDto? created = await _bookService.CreateAsync(request);
+        if (created is null)
         {
-            ModelState.AddModelError(nameof(request.CategoryId), "Category does not exist.");
-            return ValidationProblem(ModelState);
+            return Conflict($"A book titled '{request.Title}' already exists.");
         }
 
-        Book book = request.ToEntity();
-        book.Category = category;
-        _db.Books.Add(book);
-        await _db.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetById), new { id = book.Id }, book.ToDto());
+        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, UpdateBookRequest request)
     {
-        Book? book = await _db.Books.FindAsync(id);
-        if (book is null)
-        {
-            return NotFound();
-        }
-
-        request.ApplyTo(book);
-        await _db.SaveChangesAsync();
-        return NoContent();
+        bool updated = await _bookService.UpdateAsync(id, request);
+        return updated ? NoContent() : NotFound();
     }
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
-        Book? book = await _db.Books.FindAsync(id);
-        if (book is null)
-        {
-            return NotFound();
-        }
-
-        _db.Books.Remove(book);
-        await _db.SaveChangesAsync();
-        return NoContent();
+        bool deleted = await _bookService.DeleteAsync(id);
+        return deleted ? NoContent() : NotFound();
     }
 }

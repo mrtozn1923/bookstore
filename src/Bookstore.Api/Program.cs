@@ -29,6 +29,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateOrderRequestValidator
 ValidatorOptions.Global.LanguageManager.Culture = new CultureInfo("en");
 builder.Services.AddDbContext<BookstoreContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("Bookstore")));
+builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddSingleton<SingletonOperation>();
 builder.Services.AddScoped<ScopedOperation>();
 builder.Services.AddTransient<TransientOperation>();
