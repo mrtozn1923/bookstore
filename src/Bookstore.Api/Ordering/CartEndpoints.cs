@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using Bookstore.Api.Catalog;
 using Bookstore.Api.Identity;
@@ -8,6 +9,8 @@ namespace Bookstore.Api.Ordering;
 public sealed record CartItemResponse(string Isbn, string Title, int Quantity, Money UnitPrice);
 
 public sealed record CartResponse(string CustomerId, IReadOnlyList<CartItemResponse> Items, Money Total);
+
+public sealed record SetCartItemRequest([property: Range(1, 99)] int Quantity);
 
 public sealed class CartData
 {
@@ -28,6 +31,8 @@ public static class CartEndpoints
         // The cart is a singleton sub-resource of a customer; "me" is an alias for the caller.
         RouteGroupBuilder cart = app.MapGroup("/customers/{customerId}/cart").RequireAuthorization();
         cart.MapGet("", GetCart).WithName("getCart");
+        cart.MapPut("/items/{isbn}", SetCartItem).WithName("setCartItem");
+        cart.MapDelete("/items/{isbn}", RemoveCartItem).WithName("removeCartItem");
         return app;
     }
 
@@ -40,6 +45,52 @@ public static class CartEndpoints
         }
 
         return TypedResults.Ok(ToResponse(id, carts.For(id), catalog));
+    }
+
+    // PUT creates or replaces one line; sending the same quantity twice leaves the same cart (idempotent).
+    private static Results<Ok<CartItemResponse>, Created<CartItemResponse>, ProblemHttpResult> SetCartItem(
+        string customerId, string isbn, SetCartItemRequest request, ClaimsPrincipal principal, CartData carts,
+        CatalogData catalog)
+    {
+        if (ResolveCustomer(customerId, principal) is not { } id)
+        {
+            return CustomerNotFound(customerId);
+        }
+
+        if (catalog.Find(isbn) is not { } book)
+        {
+            return TypedResults.Problem(statusCode: 404, title: "Book not found",
+                detail: $"No book with ISBN {isbn} exists in the catalog.");
+        }
+
+        if (request.Quantity > book.StockQuantity)
+        {
+            return TypedResults.Problem(statusCode: 422, title: "Insufficient stock",
+                detail: $"Only {book.StockQuantity} copies of {book.Title} are available.",
+                extensions: new Dictionary<string, object?> { ["availableQuantity"] = book.StockQuantity });
+        }
+
+        Dictionary<string, int> cart = carts.For(id);
+        bool existed = cart.ContainsKey(isbn);
+        cart[isbn] = request.Quantity;
+        CartItemResponse item = new(book.Isbn, book.Title, request.Quantity, new Money(book.Price, "TRY"));
+        return existed
+            ? TypedResults.Ok(item)
+            : TypedResults.Created($"/customers/{customerId}/cart/items/{isbn}", item);
+    }
+
+    private static Results<NoContent, ProblemHttpResult> RemoveCartItem(
+        string customerId, string isbn, ClaimsPrincipal principal, CartData carts)
+    {
+        if (ResolveCustomer(customerId, principal) is not { } id)
+        {
+            return CustomerNotFound(customerId);
+        }
+
+        return carts.For(id).Remove(isbn)
+            ? TypedResults.NoContent()
+            : TypedResults.Problem(statusCode: 404, title: "Cart item not found",
+                detail: $"The cart has no line for ISBN {isbn}.");
     }
 
     internal static string? ResolveCustomer(string customerId, ClaimsPrincipal principal)

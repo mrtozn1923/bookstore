@@ -35,4 +35,10 @@ public sealed class CatalogData
     public IReadOnlyList<Book> All => _books;
 
     public Book? Find(string isbn) => _books.Find(b => b.Isbn == isbn);
+
+    public void Add(Book book) => _books.Add(book);
+
+    public void Replace(Book book) => _books[_books.FindIndex(b => b.Isbn == book.Isbn)] = book;
+
+    public bool Remove(string isbn) => _books.RemoveAll(b => b.Isbn == isbn) > 0;
 }

@@ -18,6 +18,7 @@ builder.Services.AddAuthentication(DemoBearerHandler.SchemeName)
     .AddScheme<AuthenticationSchemeOptions, DemoBearerHandler>(DemoBearerHandler.SchemeName, null);
 builder.Services.AddAuthorization();
 builder.Services.AddProblemDetails();
+builder.Services.AddValidation();
 builder.Services.AddSingleton<CatalogData>();
 builder.Services.AddSingleton<OrderData>();
 builder.Services.AddSingleton<CartData>();

@@ -17,6 +17,15 @@ Each rule has an id. Rules marked [lint] are enforced by .spectral.yaml.
 - BS-12 Money is an object: { "amount": 489.00, "currency": "TRY" }.
 - BS-13 Internal fields (stock counts, supplier codes, database keys) are not exposed.
 
+## Methods and status codes
+- BS-40 POST to a collection creates: 201, Location and the new representation. A duplicate natural key is 409.
+- BS-41 PUT replaces every writable field and may create (201) when the client owns the id (ISBN). A missing field is a validation error, not "keep the old value".
+- BS-42 PATCH uses application/merge-patch+json (RFC 7396); other media types get 415 with Accept-Patch. Read-only fields in a patch are 400.
+- BS-43 DELETE returns 204; deleting what does not exist is 404 (the effect is idempotent, the status code is not).
+- BS-44 400: malformed or schema-invalid request. 422: valid request that a business rule rejects. 409: conflicts with the target resource's current state. 412: If-Match does not match.
+- BS-45 Resources the caller may not see answer 404; 403 only when the caller already knows the resource exists.
+- BS-46 GET and HEAD never change state.
+
 ## Errors
 - BS-20 Every 4xx and 5xx response is application/problem+json (RFC 9457).
 

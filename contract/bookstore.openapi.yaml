@@ -46,29 +46,185 @@ paths:
                 $ref: '#/components/schemas/BookList'
         '400':
           $ref: '#/components/responses/Problem'
+    post:
+      operationId: createBook
+      summary: Add a book to the catalog
+      description: StoreStaff only. A book with the same ISBN returns 409.
+      tags: [Books]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBookRequest'
+      responses:
+        '201':
+          description: The book was created.
+          headers:
+            Location:
+              $ref: '#/components/headers/Location'
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          $ref: '#/components/responses/Problem'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
   /books/{isbn}:
+    parameters:
+      - $ref: '#/components/parameters/Isbn'
     get:
       operationId: getBook
       summary: Get a book
-      description: Returns one book by its ISBN-13.
+      description: Returns one book by its ISBN-13. HEAD returns the same headers without a body.
       tags: [Books]
       security: []
-      parameters:
-        - name: isbn
-          in: path
-          required: true
-          description: ISBN-13 without dashes.
-          schema:
-            type: string
-            pattern: '^97[89][0-9]{10}$'
       responses:
         '200':
           description: The book.
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Book'
         '404':
+          $ref: '#/components/responses/Problem'
+    head:
+      operationId: headBook
+      summary: Check a book
+      description: Same as GET without a body; used to read the ETag cheaply.
+      tags: [Books]
+      security: []
+      responses:
+        '200':
+          description: The book exists.
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+        '404':
+          description: No such book.
+    put:
+      operationId: replaceBook
+      summary: Create or replace a book
+      description: >-
+        StoreStaff only. Replaces every writable field; creates the book (201) when
+        the ISBN is new. If-Match is honoured when sent (post 07 makes it required).
+      tags: [Books]
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookFields'
+      responses:
+        '200':
+          description: The book was replaced.
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '201':
+          description: The book was created.
+          headers:
+            Location:
+              $ref: '#/components/headers/Location'
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          $ref: '#/components/responses/Problem'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '412':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+    patch:
+      operationId: updateBook
+      summary: Update some fields of a book
+      description: >-
+        StoreStaff only. JSON Merge Patch (RFC 7396): a member set to null is removed,
+        objects are merged, everything else is replaced. Read-only fields return 400.
+      tags: [Books]
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/BookPatch'
+      responses:
+        '200':
+          description: The updated book.
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          $ref: '#/components/responses/Problem'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '412':
+          $ref: '#/components/responses/Problem'
+        '415':
+          description: The patch is not application/merge-patch+json.
+          headers:
+            Accept-Patch:
+              description: The patch formats this resource accepts.
+              schema:
+                type: string
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+    delete:
+      operationId: deleteBook
+      summary: Remove a book from the catalog
+      description: StoreStaff only. A second DELETE returns 404.
+      tags: [Books]
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '204':
+          description: The book was removed.
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '412':
           $ref: '#/components/responses/Problem'
   /orders:
     get:
@@ -210,6 +366,59 @@ paths:
           $ref: '#/components/responses/Problem'
         '404':
           $ref: '#/components/responses/Problem'
+  /customers/{customerId}/cart/items/{isbn}:
+    parameters:
+      - $ref: '#/components/parameters/CustomerId'
+      - $ref: '#/components/parameters/Isbn'
+    put:
+      operationId: setCartItem
+      summary: Set the quantity of a cart line
+      description: >-
+        Creates the line (201) or replaces its quantity (200). Sending the same request
+        twice leaves the same cart. A quantity above the available stock returns 422.
+      tags: [Carts]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetCartItemRequest'
+      responses:
+        '200':
+          description: The line was updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartItem'
+        '201':
+          description: The line was created.
+          headers:
+            Location:
+              $ref: '#/components/headers/Location'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartItem'
+        '400':
+          $ref: '#/components/responses/Problem'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+    delete:
+      operationId: removeCartItem
+      summary: Remove a cart line
+      description: Removes the line; a line that is not in the cart returns 404.
+      tags: [Carts]
+      responses:
+        '204':
+          description: The line was removed.
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
   /institutions/{institutionId}:
     get:
       operationId: getInstitution
@@ -266,7 +475,31 @@ components:
     bearerAuth:
       type: http
       scheme: bearer
+  headers:
+    Location:
+      description: URL of the created resource.
+      schema:
+        type: string
+        format: uri-reference
+    ETag:
+      description: Current version of the representation.
+      schema:
+        type: string
   parameters:
+    Isbn:
+      name: isbn
+      in: path
+      required: true
+      description: ISBN-13 without dashes.
+      schema:
+        type: string
+        pattern: '^97[89][0-9]{10}$'
+    IfMatch:
+      name: If-Match
+      in: header
+      description: ETag from a previous GET; a mismatch returns 412.
+      schema:
+        type: string
     OrderId:
       name: orderId
       in: path
@@ -321,6 +554,63 @@ components:
           type: string
           description: ISO 4217 code.
           examples: [TRY]
+    BookFields:
+      type: object
+      required: [title, author, category, price]
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        author:
+          type: string
+          minLength: 1
+          maxLength: 200
+        category:
+          type: string
+          pattern: '^[a-z]+(-[a-z]+)*$'
+        price:
+          $ref: '#/components/schemas/Money'
+        description:
+          type: string
+          maxLength: 2000
+    CreateBookRequest:
+      allOf:
+        - $ref: '#/components/schemas/BookFields'
+        - type: object
+          required: [isbn]
+          properties:
+            isbn:
+              type: string
+              pattern: '^97[89][0-9]{10}$'
+    BookPatch:
+      type: object
+      description: Any subset of the writable fields; null removes description.
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+        author:
+          type: string
+        category:
+          type: string
+        price:
+          type: object
+          properties:
+            amount:
+              type: number
+            currency:
+              type: string
+        description:
+          type: [string, 'null']
+    SetCartItemRequest:
+      type: object
+      required: [quantity]
+      properties:
+        quantity:
+          type: integer
+          minimum: 1
+          maximum: 99
     Book:
       type: object
       required: [isbn, title, author, category, price, inStock]
@@ -337,6 +627,8 @@ components:
           $ref: '#/components/schemas/Money'
         inStock:
           type: boolean
+        description:
+          type: string
     BookList:
       type: object
       required: [items]
