@@ -4,6 +4,7 @@
 #   page:   6h window and 30m window above 6    (5 % of the budget in six hours)
 #   ticket: 3d window and 6h window above 1     (10 % of the budget in three days)
 # The short window (1/12 of the long one) makes the alert stop soon after the problem is gone.
+# Page annotations: the first two runbook checks (error ratio, failing dependency) and the runbook link.
 groups:
   - name: bookstore-slo-burn
     rules:
@@ -38,6 +39,10 @@ groups:
           long_window: 1h
         annotations:
           summary: "Checkout is burning its 30-day error budget 14.4 times too fast (1h and 5m windows)"
+          description: >-
+            Checkout errors (5m): {{ with query "slo:checkout_availability:error_ratio_rate5m" }}{{ . | first | value | humanizePercentage }}{{ end }}.
+            {{ with query "topk(1, sum by (server_address) (rate(http_client_request_duration_seconds_count{job='bookstore-api', error_type!=''}[5m])))" }}Most failing outgoing calls: {{ (. | first).Labels.server_address }} ({{ . | first | value | printf "%.2f" }}/s).{{ else }}No failing outgoing calls.{{ end }}
+          runbook_url: https://git.example.com/bookstore/blob/main/docs/runbooks/checkout-error-budget-burn.md
       - alert: CheckoutErrorBudgetBurn
         expr: |
           slo:checkout_availability:error_ratio_rate6h > (6 * 0.005)
@@ -48,6 +53,10 @@ groups:
           long_window: 6h
         annotations:
           summary: "Checkout is burning its 30-day error budget 6 times too fast (6h and 30m windows)"
+          description: >-
+            Checkout errors (5m): {{ with query "slo:checkout_availability:error_ratio_rate5m" }}{{ . | first | value | humanizePercentage }}{{ end }}.
+            {{ with query "topk(1, sum by (server_address) (rate(http_client_request_duration_seconds_count{job='bookstore-api', error_type!=''}[5m])))" }}Most failing outgoing calls: {{ (. | first).Labels.server_address }} ({{ . | first | value | printf "%.2f" }}/s).{{ else }}No failing outgoing calls.{{ end }}
+          runbook_url: https://git.example.com/bookstore/blob/main/docs/runbooks/checkout-error-budget-burn.md
       - alert: CheckoutErrorBudgetBurn
         expr: |
           slo:checkout_availability:error_ratio_rate3d > (1 * 0.005)

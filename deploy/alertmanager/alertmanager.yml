@@ -1,0 +1,33 @@
+# Alertmanager routing for Bookstore (check: amtool check-config deploy/alertmanager/alertmanager.yml).
+# page   → the on-call person's phone via the paging tool (escalation to the secondary happens there)
+# ticket → the team's work tracker, read during working hours
+route:
+  receiver: team-ticket
+  group_by: [alertname, long_window]
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+  routes:
+    - matchers: [severity="page"]
+      receiver: oncall-pager
+      repeat_interval: 1h
+    - matchers: [severity="ticket"]
+      receiver: team-ticket
+      group_wait: 10m
+      repeat_interval: 24h
+
+# While the page of an alert is firing, its ticket is held back.
+inhibit_rules:
+  - source_matchers: [severity="page"]
+    target_matchers: [severity="ticket"]
+    equal: [alertname]
+
+receivers:
+  - name: oncall-pager
+    pagerduty_configs:
+      # The key is never in the repo; it is mounted from the secret store at deploy time.
+      - routing_key_file: /etc/alertmanager/secrets/pagerduty-routing-key
+        severity: critical
+  - name: team-ticket
+    webhook_configs:
+      - url: https://tickets.example.com/hooks/alertmanager

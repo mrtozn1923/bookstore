@@ -27,9 +27,10 @@ public static class ObservabilityExtensions
                 .AddView("http.server.request.duration", new ExplicitBucketHistogramConfiguration
                 {
                     Boundaries = [0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 0.8, 1, 2.5, 5, 7.5, 10]
-                }))
-            // OTEL_EXPORTER_OTLP_ENDPOINT / _PROTOCOL decide where the metrics go (here: Prometheus' OTLP receiver).
-            .UseOtlpExporter();
+                })
+                // Metrics only. OTEL_EXPORTER_OTLP_ENDPOINT / _PROTOCOL decide where they go (here: Prometheus' OTLP
+                // receiver). UseOtlpExporter() would also send logs there, and Prometheus answers those with 404.
+                .AddOtlpExporter());
 
         return builder;
     }

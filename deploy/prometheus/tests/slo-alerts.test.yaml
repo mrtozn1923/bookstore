@@ -26,6 +26,8 @@ tests:
               long_window: 1h
             exp_annotations:
               summary: "Checkout is burning its 30-day error budget 14.4 times too fast (1h and 5m windows)"
+              description: "Checkout errors (5m): 10%. No failing outgoing calls."
+              runbook_url: https://git.example.com/bookstore/blob/main/docs/runbooks/checkout-error-budget-burn.md
 
   # Five minutes in which every checkout fails, after three days without errors: burn rate 200, a page after about 4.3 minutes,
   # and quiet again a few minutes after it ends.
@@ -34,6 +36,9 @@ tests:
       - series: 'http_server_request_duration_seconds_count{job="bookstore-api", http_route="/api/orders/", http_request_method="POST", http_response_status_code="201"}'
         values: '0+600x4320 2592000+0x5 2592000+600x30'
       - series: 'http_server_request_duration_seconds_count{job="bookstore-api", http_route="/api/orders/", http_request_method="POST", http_response_status_code="502"}'
+        values: '0+0x4320 600+600x4 3000+0x30'
+      # The cause: the payment provider answers 503 to every charge.
+      - series: 'http_client_request_duration_seconds_count{job="bookstore-api", server_address="payments.example.com", http_response_status_code="503", error_type="503"}'
         values: '0+0x4320 600+600x4 3000+0x30'
     alert_rule_test:
       - eval_time: 72h4m
@@ -47,6 +52,8 @@ tests:
               long_window: 1h
             exp_annotations:
               summary: "Checkout is burning its 30-day error budget 14.4 times too fast (1h and 5m windows)"
+              description: "Checkout errors (5m): 100%. Most failing outgoing calls: payments.example.com (10.00/s)."
+              runbook_url: https://git.example.com/bookstore/blob/main/docs/runbooks/checkout-error-budget-burn.md
       - eval_time: 72h15m
         alertname: CheckoutErrorBudgetBurn
         exp_alerts: []
