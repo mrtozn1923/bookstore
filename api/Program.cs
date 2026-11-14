@@ -26,6 +26,7 @@ builder.Services.AddSingleton<AssistantTools>();
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<PendingApprovals>();
 builder.Services.AddProblemDetails();
+builder.Services.AddMemoryCache();
 // AG-UI tiplerinin (RunAgentInput, BaseEvent ve alt tipleri) JSON sözleşmesi
 builder.Services.ConfigureHttpJsonOptions(o => o.SerializerOptions.TypeInfoResolverChain.Insert(0, AGUIJsonUtilities.DefaultTypeInfoResolver));
 builder.Services.AddRateLimiter(options =>
@@ -120,6 +121,8 @@ app.MapPost("/chat/feedback", IResult (FeedbackRequest feedback, ConversationSto
 }).RequireRateLimiting("chat");
 
 app.MapAgUi(SystemPrompt);
+app.MapReviews();
+app.MapCatalog();
 app.MapUiMessageStream(SystemPrompt);
 
 app.MapGet("/chat/conversations/{id:guid}/messages", IResult (Guid id, ConversationStore conversations) =>

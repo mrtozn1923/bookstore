@@ -6,5 +6,13 @@
   "/agui": {
     "target": "http://localhost:19640",
     "secure": false
+  },
+  "/reviews": {
+    "target": "http://localhost:19640",
+    "secure": false
+  },
+  "/catalog": {
+    "target": "http://localhost:19640",
+    "secure": false
   }
 }

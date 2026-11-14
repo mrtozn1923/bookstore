@@ -1,6 +1,7 @@
 import { Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { BookPitch } from './book-pitch';
+import { ReviewSummary } from './review-summary';
 
 const BOOKS: Record<string, string> = {
   '9780441172719': 'Dune',
@@ -10,7 +11,7 @@ const BOOKS: Record<string, string> = {
 
 @Component({
   selector: 'app-book-detail',
-  imports: [BookPitch, RouterLink],
+  imports: [BookPitch, ReviewSummary, RouterLink],
   template: `
     <nav>
       @for (book of books; track book.isbn) {
@@ -19,6 +20,8 @@ const BOOKS: Record<string, string> = {
     </nav>
     <h1>{{ title() }}</h1>
     <app-book-pitch [title]="title()" />
+    <h2>What readers say</h2>
+    <app-review-summary [isbn]="isbn()" />
   `,
   styles: `nav { display: flex; gap: 12px; }`,
 })
