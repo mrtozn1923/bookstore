@@ -2,9 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <VersionPrefix>1.1.0</VersionPrefix>
-    <!-- Library: AssemblyVersion changes only when the major changes -->
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <!-- Version comes from tags such as contracts/v1.2.0 -->
+    <MinVerTagPrefix>contracts/v</MinVerTagPrefix>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MinVer" Version="8.0.0" PrivateAssets="all" />
+  </ItemGroup>
 
 </Project>
