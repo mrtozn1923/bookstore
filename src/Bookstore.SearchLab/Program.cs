@@ -12,10 +12,13 @@ switch (command)
     case "inverted-index":
         InvertedIndexDemo.Run(rest);
         break;
+    case "first-connection":
+        await FirstConnectionDemo.RunAsync();
+        break;
     case "seed-sql":
         await SqlSeeder.RunAsync(rest);
         break;
     default:
-        Console.WriteLine("Commands: inverted-index [query], seed-sql [syntheticCount]");
+        Console.WriteLine("Commands: inverted-index [query], seed-sql [syntheticCount], first-connection");
         break;
 }
