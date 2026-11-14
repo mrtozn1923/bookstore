@@ -7,8 +7,8 @@ public sealed class CartPricingTests
 {
     private static readonly Dictionary<int, BookInfo> Books = new()
     {
-        [1] = new BookInfo(1, "9780441172719", "Dune", 489.00m),
-        [2] = new BookInfo(2, "9780261102217", "The Hobbit", 329.90m)
+        [1] = new BookInfo(1, "9780441172719", "Dune", 489.00m, CategoryId: 2),
+        [2] = new BookInfo(2, "9780261102217", "The Hobbit", 329.90m, CategoryId: 3)
     };
 
     [Fact]
@@ -36,8 +36,8 @@ public sealed class CartPricingTests
     {
         Dictionary<int, BookInfo> books = new()
         {
-            [1] = new BookInfo(1, "9780141439518", "Pride and Prejudice", 0.125m),
-            [2] = new BookInfo(2, "9780141439587", "Emma", 0.125m)
+            [1] = new BookInfo(1, "9780141439518", "Pride and Prejudice", 0.125m, CategoryId: 1),
+            [2] = new BookInfo(2, "9780141439587", "Emma", 0.125m, CategoryId: 1)
         };
 
         CartPrice price = CartPricing.Price(

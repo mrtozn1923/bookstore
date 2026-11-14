@@ -69,7 +69,7 @@ public sealed class OrderService(
         }
         Coupon? coupon = cart.CouponCode is null ? null : await coupons.FindValidAsync(cart.CouponCode, price.Subtotal, ct);
         order.Subtotal = price.Subtotal;
-        order.Discount = coupon is null ? 0m : await coupons.CalculateDiscountAsync(coupon, price, ct);
+        order.Discount = coupon is null ? 0m : CouponService.CalculateDiscount(coupon, price);
         order.Total = order.Subtotal - order.Discount;
         order.CouponCode = coupon?.Code;
 
@@ -86,8 +86,8 @@ public sealed class OrderService(
         }
         await transaction.CommitAsync(ct);
 
-        logger.LogInformation("Order {OrderId} placed by {CustomerEmail} with coupon {CouponCode}, discount {Discount}",
-            order.Id, customer.Email, order.CouponCode, order.Discount);
+        logger.LogInformation("Order {OrderId} placed by customer {CustomerId} with coupon {CouponCode}, discount {Discount}",
+            order.Id, customer.Id, order.CouponCode, order.Discount);
 
         return new PlaceOrderOutcome.Placed(order);
     }

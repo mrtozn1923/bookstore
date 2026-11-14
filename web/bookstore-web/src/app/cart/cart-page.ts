@@ -1,7 +1,6 @@
 import { CurrencyPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, computed, inject, signal } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
+import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { OrderView } from '../core/api-models';
 import { CartStore } from './cart-store';
@@ -16,10 +15,6 @@ export class CartPage {
   protected readonly placedOrder = signal<OrderView | null>(null);
   protected readonly errorMessage = signal('');
   protected readonly couponError = signal('');
-
-  private readonly sanitizer = inject(DomSanitizer);
-  protected readonly couponDescription = computed(() =>
-    this.sanitizer.bypassSecurityTrustHtml(this.store.cart()?.couponDescription ?? ''));
 
   protected async changeQuantity(isbn: string, quantity: number): Promise<void> {
     if (quantity >= 1 && quantity <= 99) {

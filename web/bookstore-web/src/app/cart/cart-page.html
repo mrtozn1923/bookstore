@@ -33,7 +33,7 @@
     <p class="error">{{ couponError() }}</p>
   }
   @if (store.cart()!.couponCode) {
-    <p class="coupon-info" data-testid="coupon-description" [innerHTML]="couponDescription()"></p>
+    <p class="coupon-info" data-testid="coupon-description" [innerHTML]="store.cart()!.couponDescription"></p>
     <p class="discount" data-testid="cart-discount">
       Discount ({{ store.cart()!.couponCode }}): -{{ store.cart()!.discount | currency: 'TRY' : 'symbol-narrow' }}
       <button type="button" (click)="store.removeCoupon()">Remove coupon</button>

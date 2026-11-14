@@ -27,4 +27,20 @@ public sealed class CouponRulesTests
 
         Assert.Equal(50m, CouponRules.CalculateDiscount(save50, 489.00m));
     }
+
+    [Fact]
+    public void Amount_discount_never_exceeds_the_eligible_subtotal()
+    {
+        Coupon welcome25 = new() { Code = "WELCOME25", Kind = CouponKind.Amount, Value = 25m };
+
+        Assert.Equal(19.90m, CouponRules.CalculateDiscount(welcome25, 19.90m));
+    }
+
+    [Fact]
+    public void Nothing_eligible_means_no_discount()
+    {
+        Coupon welcome25 = new() { Code = "WELCOME25", Kind = CouponKind.Amount, Value = 25m };
+
+        Assert.Equal(0m, CouponRules.CalculateDiscount(welcome25, 0m));
+    }
 }

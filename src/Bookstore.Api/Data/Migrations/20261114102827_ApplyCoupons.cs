@@ -39,6 +39,9 @@ namespace Bookstore.Data.Migrations
                 nullable: false,
                 defaultValue: 0m);
 
+            // Orders placed before coupons had no discount: their subtotal is their total.
+            migrationBuilder.Sql("UPDATE [ordering].[Orders] SET [Subtotal] = [Total] WHERE [Subtotal] = 0;");
+
             migrationBuilder.AddColumn<string>(
                 name: "CouponCode",
                 schema: "ordering",

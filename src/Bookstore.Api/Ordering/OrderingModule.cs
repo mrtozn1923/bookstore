@@ -169,7 +169,7 @@ public static class OrderingModule
         CartPrice price = CartPricing.Price(cart.Items, books);
 
         Coupon? coupon = cart.CouponCode is null ? null : await coupons.FindValidAsync(cart.CouponCode, price.Subtotal, ct);
-        decimal discount = coupon is null ? 0m : await coupons.CalculateDiscountAsync(coupon, price, ct);
+        decimal discount = coupon is null ? 0m : CouponService.CalculateDiscount(coupon, price);
 
         return new CartView(
             cart.Id,
