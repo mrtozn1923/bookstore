@@ -5,6 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aspire.Keycloak.Authentication" />
+    <PackageReference Include="Aspire.StackExchange.Redis" />
+    <PackageReference Include="MailKit" />
     <PackageReference Include="WolverineFx.RabbitMQ" />
     <PackageReference Include="WolverineFx.RuntimeCompilation" />
   </ItemGroup>

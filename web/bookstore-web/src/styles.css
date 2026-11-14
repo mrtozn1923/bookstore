@@ -1,0 +1,9 @@
+body { font-family: system-ui, sans-serif; margin: 0; color: #1f2933; }
+header { display: flex; gap: 1rem; align-items: center; padding: 0.75rem 1.5rem; border-bottom: 1px solid #d9e2ec; }
+header .brand { font-weight: 700; margin-right: auto; }
+main { padding: 1.5rem; max-width: 48rem; }
+.books li, .line { display: flex; gap: 1rem; justify-content: space-between; padding: 0.25rem 0; }
+.error { color: #b42318; }
+.muted { color: #627d98; }
+.status.ok { color: #067647; }
+.status.pending { color: #b54708; }

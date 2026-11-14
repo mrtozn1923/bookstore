@@ -14,9 +14,11 @@ public sealed record PlaceOrderRequest(
 
 public sealed record OrderLineResponse(string Isbn, string Title, decimal UnitPrice, int Quantity, decimal LineTotal);
 
+// CancellationReason is new in post 11 (an added field, not a breaking change): the UI tells the customer why.
 public sealed record OrderResponse(
     Guid Id, string Status, DateTime PlacedAtUtc, string CustomerName, string CustomerEmail,
-    IReadOnlyList<OrderLineResponse> Items, decimal Total, string Currency, DateTime? StockReservedUntilUtc);
+    IReadOnlyList<OrderLineResponse> Items, decimal Total, string Currency, DateTime? StockReservedUntilUtc,
+    string? CancellationReason);
 
 public sealed record OrderSummaryResponse(Guid Id, string Status, DateTime PlacedAtUtc, int ItemCount, decimal Total, string Currency);
 

@@ -11,6 +11,8 @@
     <PackageVersion Include="Aspire.Hosting.Redis" Version="13.6.5" />
     <PackageVersion Include="Aspire.Hosting.SqlServer" Version="13.6.5" />
     <PackageVersion Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" Version="13.6.5" />
+    <PackageVersion Include="Aspire.Hosting.JavaScript" Version="13.6.5" />
+    <PackageVersion Include="Aspire.StackExchange.Redis" Version="13.6.5" />
     <PackageVersion Include="Aspire.StackExchange.Redis.OutputCaching" Version="13.6.5" />
   </ItemGroup>
   <ItemGroup Label="ServiceDefaults">
@@ -37,6 +39,9 @@
     <PackageVersion Include="WolverineFx.RabbitMQ" Version="6.64.0" />
     <PackageVersion Include="WolverineFx.RuntimeCompilation" Version="6.64.0" />
     <PackageVersion Include="WolverineFx.SqlServer" Version="6.64.0" />
+  </ItemGroup>
+  <ItemGroup Label="Notifications">
+    <PackageVersion Include="MailKit" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup Label="Gateway">
     <PackageVersion Include="Yarp.ReverseProxy" Version="2.3.0" />

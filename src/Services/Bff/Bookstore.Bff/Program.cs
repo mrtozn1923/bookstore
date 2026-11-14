@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using System.Threading.RateLimiting;
 using Bookstore.Bff.Books;
 using Bookstore.Bff.Security;
@@ -68,6 +69,25 @@ WebApplication app = builder.Build();
 
 app.UseExceptionHandler();
 app.UseStatusCodePages();
+// The Angular build output (web/bookstore-web, post 11) lands in wwwroot. In a production build the file names
+// carry a content hash (main-UPE27H4M.js), so those files can be cached for a year; index.html must never be,
+// it points at the current hashes. UseStaticFiles instead of MapStaticAssets: during development
+// "ng build --watch" writes new files after the BFF was built, and MapStaticAssets only knows the files
+// that existed at build time.
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = context =>
+    {
+        if (context.File.Name == "index.html")
+        {
+            context.Context.Response.Headers.CacheControl = "no-cache";
+        }
+        else if (HashedFileName().IsMatch(context.File.Name))
+        {
+            context.Context.Response.Headers.CacheControl = "public, max-age=31536000, immutable";
+        }
+    }
+});
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseAntiforgeryHeader();
@@ -78,9 +98,17 @@ app.MapBffEndpoints();
 app.MapBookPage();
 app.MapReverseProxy();
 
-// The Angular application (post 11) is served from wwwroot; unknown paths fall back to index.html.
-app.UseDefaultFiles();
-app.MapStaticAssets();
-app.MapFallbackToFile("index.html");
+// Client-side routes (/books/..., /orders/...) all get index.html; Angular's router takes over.
+app.MapFallbackToFile("index.html", new StaticFileOptions
+{
+    OnPrepareResponse = context => context.Context.Response.Headers.CacheControl = "no-cache"
+});
 
 app.Run();
+
+internal static partial class Program
+{
+    // "main-UPE27H4M.js", "styles-N2GZJMYJ.css": the hash Angular's production build adds
+    [GeneratedRegex(@"-[A-Z0-9]{8}\.(js|css)$")]
+    private static partial Regex HashedFileName();
+}

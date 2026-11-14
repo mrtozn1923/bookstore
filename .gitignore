@@ -480,3 +480,6 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Angular build output (web/bookstore-web builds into the BFF)
+src/Services/Bff/Bookstore.Bff/wwwroot/

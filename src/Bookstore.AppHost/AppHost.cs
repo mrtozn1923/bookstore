@@ -5,7 +5,10 @@ IResourceBuilder<SqlServerServerResource> sql = builder.AddSqlServer("sql")
     .WithImageTag("2025-latest")
     .WithContainerName("msapp-sql")
     .WithDataVolume("msapp-sql-data")
-    .WithLifetime(ContainerLifetime.Persistent);
+    .WithLifetime(ContainerLifetime.Persistent)
+    // Without a limit SQL Server sizes itself for all the memory Docker's VM has and competes with every other
+    // container there; on a developer machine 1 GB is plenty for four small databases.
+    .WithEnvironment("MSSQL_MEMORY_LIMIT_MB", "1024");
 
 IResourceBuilder<SqlServerDatabaseResource> catalogDb = sql.AddDatabase("catalogdb");
 IResourceBuilder<SqlServerDatabaseResource> orderingDb = sql.AddDatabase("orderingdb");
@@ -34,6 +37,8 @@ IResourceBuilder<KeycloakResource> keycloak = builder.AddKeycloak("keycloak", 81
     .WithDataVolume("msapp-keycloak-data")
     .WithLifetime(ContainerLifetime.Persistent)
     .WithRealmImport("./Realms")
+    // Keycloak's JVM takes a share of all the memory it sees by default; a fixed heap is enough locally.
+    .WithEnvironment("JAVA_OPTS_KC_HEAP", "-Xms128m -Xmx512m")
     .WithEnvironment("BOOKSTORE_BFF_CLIENT_SECRET", bffClientSecret)
     .WithEnvironment("BOOKSTORE_BFF_SERVICE_SECRET", bffServiceSecret)
     .WithEnvironment("BOOKSTORE_DEMO_PASSWORD", demoPassword);
@@ -129,25 +134,46 @@ IResourceBuilder<ProjectResource> payments = builder.AddProject<Projects.Booksto
 paymentProvider.WithEnvironment("Webhooks__Url",
     ReferenceExpression.Create($"{payments.GetEndpoint("http")}/webhooks/payment-provider"));
 
-builder.AddProject<Projects.Bookstore_Notifications_Api>("notifications")
+// A fake SMTP server: it accepts every e-mail and shows it in a web UI instead of delivering it.
+IResourceBuilder<ContainerResource> mailpit = builder.AddContainer("mailpit", "axllent/mailpit", "v1.33")
+    .WithContainerName("msapp-mailpit")
+    .WithEndpoint(targetPort: 1025, name: "smtp", scheme: "tcp")
+    .WithHttpEndpoint(targetPort: 8025, name: "http");
+EndpointReference smtp = mailpit.GetEndpoint("smtp");
+
+// Pushes order status changes to the browser (SignalR, behind the BFF) and sends the e-mails.
+IResourceBuilder<ProjectResource> notifications = builder.AddProject<Projects.Bookstore_Notifications_Api>("notifications")
     .WithReference(redis)
     .WithReference(rabbitmq)
+    .WithReference(keycloak)
+    .WithEnvironment("Smtp__Host", smtp.Property(EndpointProperty.Host))
+    .WithEnvironment("Smtp__Port", smtp.Property(EndpointProperty.Port))
     .WaitFor(redis)
     .WaitFor(rabbitmq)
+    .WaitFor(mailpit)
     .WithHttpHealthCheck("/health");
 
 // The only entry point for the browser. The services behind it keep their ports for local debugging;
 // in production (post 14) only the BFF is exposed.
-builder.AddProject<Projects.Bookstore_Bff>("bff")
+IResourceBuilder<ProjectResource> bff = builder.AddProject<Projects.Bookstore_Bff>("bff")
     .WithReference(catalog)
     .WithReference(ordering)
     .WithReference(inventory)
+    .WithReference(notifications)
     .WithReference(keycloak)
     .WithEnvironment("Keycloak__ClientSecret", bffClientSecret)
     .WithEnvironment("Keycloak__ServiceClientSecret", bffServiceSecret)
     .WaitFor(keycloak)
     .WithExternalHttpEndpoints()
     .WithHttpHealthCheck("/health");
+
+// The Angular application. Locally "npm run watch" rebuilds it into the BFF's wwwroot on every change and the BFF
+// serves it from the same origin as the API. Its production build goes into the BFF's image (post 14).
+if (builder.ExecutionContext.IsRunMode)
+{
+    builder.AddJavaScriptApp("web", "../../web/bookstore-web", "watch")
+        .WithParentRelationship(bff);
+}
 
 builder.Build().Run();
 
