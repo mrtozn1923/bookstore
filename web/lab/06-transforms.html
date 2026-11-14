@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>06 transforms</title>
+    <style>
+        body { margin: 0; font: 16px/1.4 system-ui, sans-serif; }
+        .stage { position: relative; block-size: 200px; margin: 0 0 20px 100px; }
+        .box { position: absolute; inset-block-start: 80px; inset-inline-start: 0; inline-size: 80px; block-size: 40px; background: #1d4ed8; }
+
+        /* 1) the order of transform functions */
+        #translate-rotate { transform: translate(100px, 0) rotate(45deg); }
+        #rotate-translate { transform: rotate(45deg) translate(100px, 0); }
+
+        /* 2) individual properties: always translate, then rotate, then scale, then transform */
+        #individual { rotate: 45deg; translate: 100px 0; }
+        #rotate-only { rotate: 45deg; }
+        #combined { transform: rotate(20deg); rotate: 25deg; }
+
+        /* 3) transform-origin */
+        #origin-center { rotate: 90deg; }
+        #origin-corner { rotate: 90deg; transform-origin: top left; }
+
+        /* 4) transforms do not change layout */
+        .row { display: flex; gap: 10px; margin: 60px 0 60px 100px; }
+        .row div { inline-size: 80px; block-size: 40px; background: #1d4ed8; }
+        #grown { scale: 1.5; }
+
+        /* 5) a whole transform animation replaces the static transform */
+        @keyframes tilt-transform { from { transform: rotate(0deg); } to { transform: rotate(10deg); } }
+        @keyframes tilt-rotate { from { rotate: 0deg; } to { rotate: 10deg; } }
+        #anim-transform { transform: scale(1.5); animation: tilt-transform 1s linear paused; }
+        #anim-rotate { scale: 1.5; animation: tilt-rotate 1s linear paused; }
+
+        /* 6) 3D flip: perspective on the parent, preserve-3d on the rotating element */
+        .flip { position: relative; inline-size: 120px; block-size: 180px; margin: 20px 0 20px 100px; perspective: 800px; }
+        .flip-inner { display: grid; block-size: 100%; transform-style: preserve-3d; }
+        .flip.is-flipped .flip-inner { rotate: y 180deg; }
+        .face { grid-area: 1 / 1; backface-visibility: hidden; }
+        .front { background: #15803d; }
+        .back { background: #1e293b; rotate: y 180deg; }
+        #flip-visible .face { backface-visibility: visible; }
+        /* overflow: hidden flattens the 3D scene */
+        #flip-clipped .flip-inner { overflow: hidden; border-radius: 8px; }
+
+        /* 7) transform-origin inside SVG: view-box (default) vs fill-box */
+        svg { inline-size: 240px; block-size: 240px; margin-inline-start: 100px; background: #f3f4f6; }
+        #wheel-view, #wheel-fill { rotate: 45deg; transform-origin: center; }
+        #wheel-fill { transform-box: fill-box; }
+    </style>
+</head>
+<body>
+    <div class="stage"><div class="box" id="translate-rotate"></div></div>
+    <div class="stage"><div class="box" id="rotate-translate"></div></div>
+    <div class="stage"><div class="box" id="individual"></div></div>
+    <div class="stage"><div class="box" id="rotate-only"></div></div>
+    <div class="stage"><div class="box" id="combined"></div></div>
+    <div class="stage"><div class="box" id="origin-center"></div></div>
+    <div class="stage"><div class="box" id="origin-corner"></div></div>
+    <div class="row"><div id="before"></div><div id="grown"></div><div id="after"></div></div>
+    <div class="stage"><div class="box" id="anim-transform"></div></div>
+    <div class="stage"><div class="box" id="anim-rotate"></div></div>
+    <div class="flip" id="flip-ok"><div class="flip-inner"><div class="face front"></div><div class="face back"></div></div></div>
+    <div class="flip" id="flip-visible"><div class="flip-inner"><div class="face front"></div><div class="face back"></div></div></div>
+    <div class="flip" id="flip-clipped"><div class="flip-inner"><div class="face front"></div><div class="face back"></div></div></div>
+    <svg viewBox="0 0 24 24"><rect id="wheel-view" x="2" y="2" width="6" height="6" fill="#b91c1c"/></svg>
+    <svg viewBox="0 0 24 24"><rect id="wheel-fill" x="2" y="2" width="6" height="6" fill="#b91c1c"/></svg>
+</body>
+</html>

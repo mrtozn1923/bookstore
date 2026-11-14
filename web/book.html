@@ -9,11 +9,23 @@
 <body>
     <header class="site-header">
         <a class="logo" href="catalog.html">Bookstore</a>
+        <a class="cart-link" href="checkout.html">
+            <svg class="cart-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.4 10.2a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.8L20 7H6"/><circle cx="9" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/></svg>
+            Cart <span class="cart-count">0</span>
+        </a>
     </header>
     <main class="book-page">
+        <div class="cover-flip">
+            <div class="cover-flip-inner">
+                <img class="cover-face" src="img/cover-middlemarch.webp" alt="Front cover of Middlemarch" width="240" height="360">
+                <img class="cover-face cover-back" src="img/cover-middlemarch-back.webp" alt="Back cover of Middlemarch" width="240" height="360">
+            </div>
+        </div>
+        <button type="button" class="flip-button" aria-pressed="false">Show back cover</button>
         <h1>Middlemarch</h1>
         <p class="author">George Eliot</p>
         <div class="rating-ring" style="--rating: 4.2" role="img" aria-label="Rated 4.2 out of 5">4.2</div>
+        <button type="button" class="add-to-cart">Add to cart</button>
         <blockquote class="book-quote">A study of provincial life.</blockquote>
         <p class="book-summary is-clamped" id="summary">Middlemarch follows the lives of the people of a small
             English town in the years before the 1832 Reform Act: Dorothea Brooke, who marries an elderly
@@ -32,5 +44,7 @@ Shipping took two days. The notes are at https://bookstore.test/books/9780141439
         </section>
     </main>
     <script src="js/read-more.js" defer></script>
+    <script src="js/cover-flip.js" defer></script>
+    <script src="js/cart.js" defer></script>
 </body>
 </html>

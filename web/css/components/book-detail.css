@@ -51,3 +51,25 @@
         radial-gradient(closest-side, #ffffff 78%, transparent 80%),
         conic-gradient(#f59e0b calc(var(--rating) / 5 * 100%), #e5e7eb 0);
 }
+
+/* front and back cover: perspective on the parent, preserve-3d on the turning element */
+.cover-flip { inline-size: 240px; perspective: 800px; }
+.cover-flip-inner {
+    display: grid;
+    transform-style: preserve-3d;
+    transition: rotate 400ms ease-in-out;
+}
+.cover-flip.is-flipped .cover-flip-inner { rotate: y 180deg; }
+.cover-face {
+    grid-area: 1 / 1;
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+    border-radius: 0.25rem;
+    backface-visibility: hidden;
+}
+.cover-back { rotate: y 180deg; }
+@media (prefers-reduced-motion: reduce) {
+    .cover-flip-inner { transition: none; }
+}
+.flip-button, .add-to-cart { margin-block: 0.75rem; font: inherit; }
