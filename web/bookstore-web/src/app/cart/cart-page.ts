@@ -5,6 +5,12 @@ import { RouterLink } from '@angular/router';
 import { OrderView } from '../core/api-models';
 import { CartStore } from './cart-store';
 
+// The fields of an RFC 9457 problem response that the page shows.
+interface ProblemDetails {
+  title?: string;
+  detail?: string;
+}
+
 @Component({
   selector: 'app-cart-page',
   imports: [CurrencyPipe, RouterLink],
@@ -28,8 +34,16 @@ export class CartPage {
       this.placedOrder.set(await this.store.placeOrder(name, email));
     } catch (error) {
       // The API answers with ProblemDetails: 400 validation errors or 409 when stock is not enough.
-      const problem = error instanceof HttpErrorResponse ? error.error : null;
+      const problem =
+        error instanceof HttpErrorResponse ? (error.error as ProblemDetails | null) : null;
       this.errorMessage.set(problem?.detail ?? problem?.title ?? 'The order could not be placed.');
+    }
+  }
+
+  protected async clearCart(): Promise<void> {
+    // One request at a time: every response replaces the whole cart state.
+    for (const line of this.store.cart()?.items ?? []) {
+      await this.store.remove(line.isbn);
     }
   }
 }

@@ -36,12 +36,25 @@ input, select {
 }
 
 .book-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
   padding: 1rem;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
+}
+
+/* The title link covers the whole card, so the card is clickable and keyboard accessible. */
+.book-card .card-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.book-card button {
+  position: relative;
+  z-index: 1;
 }
 
 .cart { width: 100%; border-collapse: collapse; }

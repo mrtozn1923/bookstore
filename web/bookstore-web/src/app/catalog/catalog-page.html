@@ -20,7 +20,7 @@
   <ul class="book-grid">
     @for (book of result.items; track book.isbn) {
       <li class="book-card">
-        <a [routerLink]="['/books', book.isbn]">{{ book.title }}</a>
+        <a class="card-link" [routerLink]="['/books', book.isbn]">{{ book.title }}</a>
         <span class="muted">{{ book.author }} · {{ book.publishedYear }}</span>
         <span class="muted">{{ book.category }}</span>
         <strong>{{ book.price | currency: 'TRY' : 'symbol-narrow' }}</strong>

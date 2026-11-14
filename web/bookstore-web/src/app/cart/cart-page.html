@@ -25,6 +25,7 @@
       }
     </tbody>
   </table>
+  <button type="button" (click)="clearCart()">Clear cart</button>
   <p class="total" data-testid="cart-total">Total: {{ store.cart()!.total | currency: 'TRY' : 'symbol-narrow' }}</p>
 
   <form class="checkout" (submit)="checkout($event, nameBox.value, emailBox.value)">
