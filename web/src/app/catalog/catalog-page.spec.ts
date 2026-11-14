@@ -1,7 +1,9 @@
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { DeferBlockBehavior, TestBed } from '@angular/core/testing';
+import { MatSelectHarness } from '@angular/material/select/testing';
 import { render, screen } from '@testing-library/angular';
-import { dune, emma } from '../../testing/books';
+import { dune, emma, hobbit } from '../../testing/books';
 import { CartStore } from '../cart/cart-store';
 import { CatalogPage } from './catalog-page';
 
@@ -65,5 +67,23 @@ describe('CatalogPage with Testing Library', () => {
 
     expect(await screen.findByRole('heading', { name: 'Dune' })).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'Emma' })).not.toBeInTheDocument();
+  });
+});
+
+describe('CatalogPage sorting', () => {
+  it('sorts the books by price', async () => {
+    const { fixture } = await render(CatalogPage, {
+      providers: [provideHttpClientTesting()],
+      deferBlockBehavior: DeferBlockBehavior.Manual,
+    });
+    TestBed.inject(HttpTestingController).expectOne('/api/books').flush([dune, hobbit, { ...emma, stock: 2 }]);
+    const loader = TestbedHarnessEnvironment.loader(fixture);
+
+    const sort = await loader.getHarness(MatSelectHarness.with({ label: 'Sort by' }));
+    await sort.clickOptions({ text: 'Price: low to high' });
+
+    expect(await sort.getValueText()).toBe('Price: low to high');
+    const titles = screen.getAllByRole('heading', { level: 3 }).map((heading) => heading.textContent);
+    expect(titles).toEqual(['Emma', 'The Hobbit', 'Dune']);
   });
 });
