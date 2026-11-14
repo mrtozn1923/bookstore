@@ -1,0 +1,5 @@
+<p *ngIf="errorMessage">{{ errorMessage }}</p>
+<ul>
+  <li *ngFor="let customer of customers">{{ customer.name }} - {{ customer.email }}</li>
+</ul>
+<button (click)="addCustomer()">Add customer</button>

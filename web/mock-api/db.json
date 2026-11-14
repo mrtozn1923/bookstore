@@ -1,0 +1,13 @@
+{
+  "customers": [
+    { "id": 1, "name": "Ada Lovelace", "email": "ada@example.com", "city": "Izmir" },
+    { "id": 2, "name": "Alan Turing", "email": "alan@example.com", "city": "Ankara" },
+    { "id": 3, "name": "Grace Hopper", "email": "grace@example.com", "city": "Istanbul" }
+  ],
+  "orders": [
+    { "id": 1040, "customerId": 2, "books": "The Hobbit", "total": 390, "status": "delivered" },
+    { "id": 1041, "customerId": 3, "books": "Middlemarch", "total": 380, "status": "shipped" },
+    { "id": 1042, "customerId": 1, "books": "Dune, Emma", "total": 770, "status": "pending" },
+    { "id": 1043, "customerId": 1, "books": "Frankenstein", "total": 280, "status": "delivered" }
+  ]
+}

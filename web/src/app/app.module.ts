@@ -1,6 +1,9 @@
 import { LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { AuthInterceptor } from './auth.interceptor';
+import { ErrorInterceptor } from './error.interceptor';
 import { registerLocaleData } from '@angular/common';
 import localeTr from '@angular/common/locales/tr';
 
@@ -26,6 +29,7 @@ import { CartBadgeComponent } from './cart-badge/cart-badge.component';
 import { ReservationTimerComponent } from './reservation-timer/reservation-timer.component';
 import { BookSearchComponent } from './book-search/book-search.component';
 import { CartNotifierComponent } from './cart-notifier/cart-notifier.component';
+import { CustomerListComponent } from './customer-list/customer-list.component';
 
 registerLocaleData(localeTr);
 
@@ -48,12 +52,14 @@ registerLocaleData(localeTr);
     CartBadgeComponent,
     ReservationTimerComponent,
     BookSearchComponent,
-    CartNotifierComponent
+    CartNotifierComponent,
+    CustomerListComponent
   ],
   imports: [
     BrowserModule,
     CatalogModule,
-    FormsModule
+    FormsModule,
+    HttpClientModule
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'tr' },
@@ -61,7 +67,9 @@ registerLocaleData(localeTr);
       provide: LoggerService,
       useFactory: () => environment.production ? new SilentLoggerService() : new LoggerService()
     },
-    { provide: APP_CONFIG, useValue: { appName: 'Bookstore', pageSize: 20 } }
+    { provide: APP_CONFIG, useValue: { appName: 'Bookstore', pageSize: 20 } },
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]
 })
