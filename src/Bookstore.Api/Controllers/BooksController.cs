@@ -16,13 +16,24 @@ public class BooksController : ControllerBase
     };
 
     [HttpGet]
-    public ActionResult<IEnumerable<Book>> GetAll()
+    public ActionResult<IEnumerable<Book>> Search(int? categoryId, decimal? minPrice, int page = 1)
     {
-        return Books;
+        IEnumerable<Book> result = Books;
+        if (categoryId is not null)
+        {
+            result = result.Where(b => b.CategoryId == categoryId);
+        }
+
+        if (minPrice is not null)
+        {
+            result = result.Where(b => b.Price >= minPrice);
+        }
+
+        return result.Skip((page - 1) * 10).Take(10).ToList();
     }
 
     [HttpGet("{id:int}")]
-    public ActionResult<Book> GetById(int id)
+    public ActionResult<Book> GetById([FromRoute] int id)
     {
         Book? book = Books.FirstOrDefault(b => b.Id == id);
         if (book is null)
@@ -30,48 +41,86 @@ public class BooksController : ControllerBase
             return NotFound();
         }
 
-        return Ok(book);
-    }
-
-    [HttpGet("{id:int}/text-404")]
-    public ActionResult<Book> GetWithMessage(int id)
-    {
-        return NotFound($"Book {id} was not found.");
-    }
-
-    [HttpGet("{id:int}/null")]
-    public ActionResult<Book> GetNull(int id)
-    {
-        Book? book = Books.FirstOrDefault(b => b.Id == id);
-        return book!;
-    }
-
-    [HttpGet("{id:int}/problem-404")]
-    public ActionResult<Book> GetWithProblem(int id)
-    {
-        Book? book = Books.FirstOrDefault(b => b.Id == id);
-        if (book is null)
-        {
-            return Problem(
-                title: "Book not found",
-                detail: $"There is no book with id {id}.",
-                statusCode: StatusCodes.Status404NotFound);
-        }
-
         return book;
     }
 
-    [HttpPost]
-    public ActionResult<Book> Create(Book book)
+    [HttpGet("by-ids")]
+    public ActionResult<IEnumerable<Book>> GetByIds([FromQuery] int[] ids)
     {
-        if (Books.Any(b => b.Title.Equals(book.Title, StringComparison.OrdinalIgnoreCase)))
+        return Books.Where(b => ids.Contains(b.Id)).ToList();
+    }
+
+    [HttpGet("sorted")]
+    public ActionResult<IEnumerable<string>> GetSorted([FromQuery(Name = "sort_by")] string? sortBy)
+    {
+        IEnumerable<Book> result = sortBy == "price"
+            ? Books.OrderBy(b => b.Price)
+            : Books.OrderBy(b => b.Title);
+        return result.Select(b => b.Title).ToList();
+    }
+
+    [HttpGet("filter")]
+    public ActionResult<IEnumerable<Book>> Filter([FromQuery] BookQuery query)
+    {
+        IEnumerable<Book> result = Books;
+        if (query.CategoryId is not null)
         {
-            return Conflict();
+            result = result.Where(b => b.CategoryId == query.CategoryId);
         }
 
-        book.Id = Books.Max(b => b.Id) + 1;
+        if (query.MinPrice is not null)
+        {
+            result = result.Where(b => b.Price >= query.MinPrice);
+        }
+
+        if (query.MaxPrice is not null)
+        {
+            result = result.Where(b => b.Price <= query.MaxPrice);
+        }
+
+        return result.Skip((query.Page - 1) * 10).Take(10).ToList();
+    }
+
+    [HttpPost]
+    public ActionResult<Book> Create(
+        [FromBody] CreateBookRequest request,
+        [FromHeader(Name = "X-Correlation-Id")] string? correlationId)
+    {
+        Book book = new()
+        {
+            Id = Books.Max(b => b.Id) + 1,
+            Title = request.Title,
+            Price = request.Price,
+            CategoryId = request.CategoryId
+        };
+        Books.Add(book);
+
+        if (correlationId is not null)
+        {
+            Response.Headers["X-Correlation-Id"] = correlationId;
+        }
+
+        return CreatedAtAction(nameof(GetById), new { id = book.Id }, book);
+    }
+
+    [HttpPost("form")]
+    public ActionResult<Book> CreateFromForm([FromForm] CreateBookRequest request)
+    {
+        Book book = new()
+        {
+            Id = Books.Max(b => b.Id) + 1,
+            Title = request.Title,
+            Price = request.Price,
+            CategoryId = request.CategoryId
+        };
         Books.Add(book);
         return CreatedAtAction(nameof(GetById), new { id = book.Id }, book);
+    }
+
+    [HttpGet("environment")]
+    public ActionResult<string> GetEnvironment([FromServices] IWebHostEnvironment environment)
+    {
+        return environment.EnvironmentName;
     }
 
     [HttpPut("{id:int}")]
