@@ -13,10 +13,8 @@ public sealed record BookSearchResult(long Total, int Page, int PageSize, IReadO
 
 public static class BookSearchEndpoints
 {
-    private const int MaxPageSize = 50;
-    private const int MaxResultWindow = 10_000;
-    private const string DidYouMean = "did-you-mean";
-    private const int MinHitsWithoutSuggestion = 3;
+    private const int MaxPageSize = BookSearchRequestBuilder.MaxPageSize;
+    private const int MaxResultWindow = BookSearchRequestBuilder.MaxResultWindow;
 
     public static IEndpointRouteBuilder MapBookSearchEndpoints(this IEndpointRouteBuilder app)
     {
@@ -37,21 +35,8 @@ public static class BookSearchEndpoints
                 return Results.Problem("Only the first 10,000 results can be paged. Narrow the search with filters.", statusCode: StatusCodes.Status400BadRequest);
             }
 
-            BookSearchFilter filter = new(q, category, language, minPrice, maxPrice, minRating);
-            SearchRequest<Book> request = new()
-            {
-                From = from,
-                Size = size,
-                TrackTotalHits = new TrackHits(true),
-                // Only the text goes into the query, so every facet counts over everything the text matched.
-                Query = BookSearchQuery.Build(new BookSearchFilter(q), SearchTuning.Tuned),
-                // Selected filters narrow the hits only, after the aggregations have run.
-                PostFilter = BookFacets.PostFilter(filter),
-                Aggregations = BookFacets.Aggregations(filter),
-                Sort = BuildSort(sort),
-                Highlight = string.IsNullOrWhiteSpace(q) ? null : BuildHighlight(),
-                Suggest = string.IsNullOrWhiteSpace(q) ? null : BuildDidYouMean(q)
-            };
+            BookSearchInput input = new(new BookSearchFilter(q, category, language, minPrice, maxPrice, minRating), sort, currentPage, size);
+            SearchRequest<Book> request = BookSearchRequestBuilder.Build(input, SearchTuning.Tuned);
 
             SearchResponse<Book> response = await client.SearchAsync<Book>(request, cancellationToken);
             if (!response.IsValidResponse)
@@ -65,66 +50,11 @@ public static class BookSearchEndpoints
             }
 
             List<BookSearchHit> items = response.Hits.Select(ToHit).ToList();
-            return Results.Ok(new BookSearchResult(response.Total, currentPage, size, items, ReadDidYouMean(response, q),
+            return Results.Ok(new BookSearchResult(response.Total, currentPage, size, items, BookSearchRequestBuilder.ReadDidYouMean(response, q),
                 BookFacets.Read(response.Aggregations)));
         });
 
         return app;
-    }
-
-    // isbn is the tie-breaker: equal prices or dates must not reorder between pages.
-    private static ICollection<SortOptions> BuildSort(string? sort) => sort switch
-    {
-        "price_asc" => [By("price", SortOrder.Asc), By("isbn", SortOrder.Asc)],
-        "price_desc" => [By("price", SortOrder.Desc), By("isbn", SortOrder.Asc)],
-        "newest" => [By("publishedOn", SortOrder.Desc), By("isbn", SortOrder.Asc)],
-        _ => [new SortOptions { Score = new ScoreSort { Order = SortOrder.Desc } }, By("isbn", SortOrder.Asc)]
-    };
-
-    private static SortOptions By(string field, SortOrder order) => new() { Field = new FieldSort { Field = field, Order = order } };
-
-    private static Highlight BuildHighlight() => new()
-    {
-        Encoder = HighlighterEncoder.Html,
-        PreTags = ["<mark>"],
-        PostTags = ["</mark>"],
-        Fields = new Dictionary<Field, HighlightField>
-        {
-            // The query hits title.folded / title.tr too; matched_fields maps those hits back onto the original title.
-            ["title"] = new HighlightField { NumberOfFragments = 0, MatchedFields = Fields.FromStrings(["title", "title.folded", "title.tr"]) },
-            ["description"] = new HighlightField { NumberOfFragments = 1, FragmentSize = 160, MatchedFields = Fields.FromStrings(["description", "description.folded", "description.tr"]) }
-        }
-    };
-
-    // "Did you mean?": a phrase suggester on the folded title; collate drops suggestions that would find nothing.
-    private static Suggester BuildDidYouMean(string text) => new()
-    {
-        Text = text,
-        Suggesters = new Dictionary<string, FieldSuggester>
-        {
-            [DidYouMean] = new FieldSuggester { Phrase = new PhraseSuggester
-            {
-                Field = "title.folded",
-                Size = 1,
-                DirectGenerator = [new DirectGenerator { Field = "title.folded", SuggestMode = SuggestMode.Always }],
-                Collate = new PhraseSuggestCollate
-                {
-                    Query = new PhraseSuggestCollateQuery { Source = """{ "match": { "title.folded": { "query": "{{suggestion}}", "operator": "and" } } }""" },
-                    Prune = false
-                }
-            } }
-        }
-    };
-
-    // Fuzziness already finds most typos; suggest only when the search found little (post 09: "roman" got "road").
-    private static string? ReadDidYouMean(SearchResponse<Book> response, string? text)
-    {
-        if (string.IsNullOrWhiteSpace(text) || response.Suggest is null || response.Total >= MinHitsWithoutSuggestion)
-        {
-            return null;
-        }
-        string? suggestion = response.Suggest.GetPhrase(DidYouMean)?.SelectMany(s => s.Options).Select(o => o.Text).FirstOrDefault();
-        return suggestion is not null && !string.Equals(suggestion, text.Trim(), StringComparison.OrdinalIgnoreCase) ? suggestion : null;
     }
 
     private static BookSearchHit ToHit(Hit<Book> hit)

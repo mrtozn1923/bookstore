@@ -5,4 +5,7 @@
     <Project Path="src/Bookstore.SearchLab/Bookstore.SearchLab.csproj" />
     <Project Path="src/Bookstore.SearchSync/Bookstore.SearchSync.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Bookstore.Search.Tests/Bookstore.Search.Tests.csproj" />
+  </Folder>
 </Solution>

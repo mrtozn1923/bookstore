@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <!-- Post 10: a nullable warning hid a bug that broke every unfiltered search (post 09). -->
+    <WarningsAsErrors>nullable</WarningsAsErrors>
+  </PropertyGroup>
+</Project>

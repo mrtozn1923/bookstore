@@ -14,7 +14,9 @@ public static class SearchDemo
         SearchTuning tuning = RankEvalDemo.ParseTuning(args.SkipWhile(a => !a.StartsWith("--")).ToArray());
         ElasticsearchClient client = LabClient.Create();
 
+        // A descriptor does not take the index from DefaultMappingFor (post 10): name it.
         SearchResponse<Book> response = await client.SearchAsync<Book>(s => s
+            .Indices(SearchClientFactory.BooksIndex)
             .Size(5)
             .Query(BookSearchQuery.Build(new BookSearchFilter(text), tuning)));
 

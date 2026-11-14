@@ -30,6 +30,8 @@ public static class BookSuggestEndpoints
 
             // The token is cancelled when the browser aborts the request (a newer keystroke); the Elasticsearch call stops too.
             SearchResponse<Book> response = await client.SearchAsync<Book>(s => s
+                // A descriptor does not take the index from DefaultMappingFor (post 10): name it.
+                .Indices(SearchClientFactory.BooksIndex)
                 .Size(MaxSuggestions)
                 .Source(new SourceConfig(new SourceFilter { Includes = Fields.FromStrings(["isbn", "title"]) }))
                 .TrackTotalHits(new TrackHits(false))

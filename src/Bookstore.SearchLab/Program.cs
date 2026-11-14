@@ -45,10 +45,22 @@ switch (command)
     case "rank-eval":
         await RankEvalDemo.RunAsync(rest);
         break;
+    case "syntax":
+        await ClientDemo.SyntaxAsync();
+        break;
+    case "serialization":
+        ClientDemo.Serialization();
+        break;
+    case "errors":
+        await ClientDemo.ErrorsAsync();
+        break;
+    case "esql":
+        await ClientDemo.EsqlAsync();
+        break;
     case "seed-sql":
         await SqlSeeder.RunAsync(rest);
         break;
     default:
-        Console.WriteLine("Commands: inverted-index [query], seed-sql [syntheticCount], first-connection, create-index [name], translators [name], search <text>, bulk-compare, bulk-all [count], bulk-errors, refresh, concurrency, export [pageSize], rank-eval [options]");
+        Console.WriteLine("Commands: inverted-index [query], seed-sql [syntheticCount], first-connection, create-index [name], translators [name], search <text>, bulk-compare, bulk-all [count], bulk-errors, refresh, concurrency, export [pageSize], rank-eval [options], syntax, serialization, errors, esql");
         break;
 }
