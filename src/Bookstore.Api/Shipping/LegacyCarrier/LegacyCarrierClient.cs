@@ -2,6 +2,8 @@ using System.Globalization;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Polly.CircuitBreaker;
+using Polly.Timeout;
 
 namespace Bookstore.Shipping.LegacyCarrier;
 
@@ -15,7 +17,18 @@ public sealed class LegacyCarrierClient([FromKeyedServices(LegacyCarrierClient.C
         var url = $"api/v2/quotes?from={Uri.EscapeDataString(request.FromPostalCode)}" +
                   $"&to={Uri.EscapeDataString(request.ToPostalCode)}&weight={request.WeightGrams}";
 
-        using var response = await httpClient.GetAsync(url, cancellationToken);
+        HttpResponseMessage response;
+        try
+        {
+            response = await httpClient.GetAsync(url, cancellationToken);
+        }
+        catch (Exception ex) when (ex is TimeoutRejectedException or BrokenCircuitException or HttpRequestException)
+        {
+            var kind = ex is BrokenCircuitException ? ShippingFailureKind.Unavailable : ShippingFailureKind.Transient;
+            throw new ShippingCarrierException(kind, $"Carrier call failed: {ex.GetType().Name}.", ex);
+        }
+
+        using var _ = response;
         if ((int)response.StatusCode >= 500 || (int)response.StatusCode == 429)
         {
             var kind = (int)response.StatusCode == 503 ? ShippingFailureKind.Unavailable : ShippingFailureKind.Transient;

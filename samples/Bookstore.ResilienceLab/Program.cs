@@ -16,7 +16,14 @@ var demos = new Dictionary<string, Func<Task>>
     ["timeout"] = FactoryDemos.TimeoutAsync,
     ["singleton-handler"] = FactoryDemos.SingletonHandlerAsync,
     ["base-address"] = FactoryDemos.BaseAddressAsync,
-    ["stream"] = FactoryDemos.StreamAsync
+    ["stream"] = FactoryDemos.StreamAsync,
+    ["standard-defaults"] = StandardPipelineDemos.DefaultsAsync,
+    ["standard-retry"] = StandardPipelineDemos.RetryAsync,
+    ["standard-post"] = StandardPipelineDemos.PostAsync,
+    ["standard-validation"] = StandardPipelineDemos.ValidationAsync,
+    ["client-timeout"] = StandardPipelineDemos.ClientTimeoutAsync,
+    ["stacked"] = StandardPipelineDemos.StackedAsync,
+    ["hedging"] = StandardPipelineDemos.HedgingAsync
 };
 
 if (args.Length == 0 || !demos.TryGetValue(args[0], out var demo))

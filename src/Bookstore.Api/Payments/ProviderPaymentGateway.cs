@@ -2,6 +2,8 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Polly.CircuitBreaker;
+using Polly.Timeout;
 
 namespace Bookstore.Payments;
 
@@ -34,6 +36,17 @@ public sealed class ProviderPaymentGateway(
         {
             // Nothing reached the provider (DNS, connection refused, TLS): safe to try again later.
             throw new PaymentGatewayException(PaymentFailureKind.Transient, "Payment provider is unreachable.", ex);
+        }
+        catch (BrokenCircuitException ex)
+        {
+            // The circuit is open: the request never left our process.
+            throw new PaymentGatewayException(PaymentFailureKind.Unavailable, "Payment provider circuit is open.", ex)
+                { RetryAfter = ex.RetryAfter };
+        }
+        catch (TimeoutRejectedException ex)
+        {
+            // The resilience pipeline gave up; the request may have reached the provider.
+            throw new PaymentGatewayException(PaymentFailureKind.UnknownOutcome, "Payment provider did not answer in time.", ex);
         }
         catch (TaskCanceledException ex) when (!cancellationToken.IsCancellationRequested)
         {
