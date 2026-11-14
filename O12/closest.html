@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>closest</title>
+</head>
+<body>
+  <article class="card" data-id="7">
+    <h3>Dune</h3>
+    <div class="actions">
+      <button class="delete">Delete</button>
+    </div>
+  </article>
+
+  <script>
+    const deleteButton = document.querySelector(".delete");
+
+    const card = deleteButton.closest(".card");
+    console.log(card.dataset.id);                  // "7"
+    console.log(deleteButton.closest("button") === deleteButton); // true
+    console.log(deleteButton.closest(".sidebar")); // null
+  </script>
+</body>
+</html>

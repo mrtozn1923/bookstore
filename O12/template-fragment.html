@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>template and fragment</title>
+</head>
+<body>
+  <ul id="books"></ul>
+
+  <template id="book-template">
+    <li class="book">
+      <strong class="title"></strong>
+      <span class="price"></span>
+    </li>
+  </template>
+
+  <script>
+    const books = [
+      { id: 1, title: "Dune", price: 450 },
+      { id: 2, title: "Emma", price: 320 },
+      { id: 3, title: "The Hobbit", price: 390 },
+    ];
+
+    const template = document.querySelector("#book-template");
+    const fragment = document.createDocumentFragment();
+
+    for (const book of books) {
+      const item = template.content.cloneNode(true);
+      const li = item.querySelector(".book");
+      li.dataset.id = book.id;
+      item.querySelector(".title").textContent = book.title;
+      item.querySelector(".price").textContent = ` ${book.price} TRY`;
+      fragment.append(item);
+    }
+
+    document.querySelector("#books").append(fragment);
+  </script>
+</body>
+</html>

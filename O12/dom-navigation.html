@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DOM navigation</title>
+</head>
+<body>
+  <ul id="menu">
+    <li>Catalog</li>
+    <li class="active">Cart</li>
+    <li>My orders</li>
+  </ul>
+
+  <script>
+    const active = document.querySelector(".active");
+
+    console.log(active.parentElement.id);                    // "menu"
+    console.log(active.previousElementSibling.textContent);  // "Catalog"
+    console.log(active.nextElementSibling.textContent);      // "My orders"
+
+    const menu = document.querySelector("#menu");
+    console.log(menu.firstElementChild.textContent); // "Catalog"
+    console.log(menu.lastElementChild.textContent);  // "My orders"
+    console.log(menu.children.length);               // 3
+    console.log(menu.childNodes.length);             // 7
+  </script>
+</body>
+</html>
