@@ -2,11 +2,17 @@
   <button type="button" (click)="store.newConversation()" [disabled]="store.busy()">New chat</button>
 </div>
 
-<section class="log" #log (scroll)="onScroll()">
+<section class="log" #log (scroll)="onScroll()" aria-label="Conversation with the Bookstore assistant">
   @for (message of store.messages(); track message.id; let last = $last) {
-    <article class="bubble" [class.user]="message.role === 'user'">
+    <article class="bubble" [class.user]="message.role === 'user'" [attr.aria-busy]="last && store.busy() ? 'true' : null">
       @if (message.role === 'assistant' && message.text === '' && store.busy() && last) {
-        <p class="status">{{ store.status() === 'submitted' ? 'Sending…' : 'Thinking…' }}</p>
+        <p class="status typing">
+          <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+          {{ store.status() === 'submitted' ? 'Sending…' : 'Thinking…' }}
+          @if (elapsed() >= 3) {
+            <span class="elapsed">{{ elapsed() }} s</span>
+          }
+        </p>
       }
       @if (message.role === 'assistant') {
         @for (tool of message.tools; track tool.callId) {
@@ -28,6 +34,12 @@
         <p class="status">Stopped.</p>
       } @else if (message.ending === 'interrupted' && message.text !== '') {
         <p class="status error">The answer was cut off.</p>
+      } @else if (message.ending === 'complete') {
+        <div class="meta">
+          <span>AI-generated, may contain mistakes.</span>
+          <button type="button" class="link" [attr.aria-pressed]="message.feedback === 'up'" (click)="store.rate(message.id, 'up')">Helpful</button>
+          <button type="button" class="link" [attr.aria-pressed]="message.feedback === 'down'" (click)="store.rate(message.id, 'down')">Not helpful</button>
+        </div>
       }
       @if (message.role === 'user' && $index === store.messages().length - 2 && store.canRegenerate()) {
         <button type="button" class="link" (click)="startEdit(message.text)">Edit</button>
@@ -39,7 +51,7 @@
 </section>
 
 @if (store.error(); as error) {
-  <p class="banner" [class.warn]="error.kind === 'rate-limit'">
+  <p class="banner" role="alert" [class.warn]="error.kind === 'rate-limit'">
     {{ error.message }}
     @if (store.cooldown() > 0) {
       You can send again in {{ store.cooldown() }} s.
@@ -48,15 +60,22 @@
 }
 
 <form (submit)="submit($event)">
-  <input #input [value]="draft()" (input)="draft.set(input.value)" placeholder="Ask the Bookstore assistant" />
+  <input #input [value]="draft()" (input)="draft.set(input.value)" placeholder="Ask the Bookstore assistant"
+    aria-label="Message to the Bookstore assistant" aria-describedby="privacy-hint" />
   @if (store.busy()) {
-    <button type="button" (click)="store.stop()">Stop</button>
+    <button type="button" (click)="store.stop()" aria-keyshortcuts="Escape">Stop</button>
   } @else {
     <button type="submit" [disabled]="draft().trim() === '' || !store.canSend()">{{ editing() ? 'Resend' : 'Send' }}</button>
     <button type="button" (click)="store.regenerate()" [disabled]="!store.canRegenerate()">Regenerate</button>
   }
 </form>
+<p id="privacy-hint" class="hint">Do not share passwords, card numbers or other personal data with the assistant.</p>
 
 @if (store.usage(); as usage) {
-  <p class="usage">Last answer: {{ usage.inputTokens }} input / {{ usage.outputTokens }} output tokens</p>
+  <p class="usage">
+    Last answer: {{ usage.inputTokens }} input / {{ usage.outputTokens }} output tokens
+    @if (usage.durationMs !== null) {
+      in {{ (usage.durationMs / 1000).toFixed(1) }} s
+    }
+  </p>
 }

@@ -9,7 +9,7 @@ export interface ApprovalRequest {
 }
 
 // Hassas tool'lar için insan diliyle bir özet; bilinmeyen tool'un adı ve argümanları olduğu gibi gösterilir
-function describe(tool: string, args: Record<string, unknown> | null): string {
+export function describe(tool: string, args: Record<string, unknown> | null): string {
   if (tool === 'cancel_order') {
     return `Cancel order ${args?.['orderId']}?`;
   }

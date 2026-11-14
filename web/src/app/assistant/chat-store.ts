@@ -33,6 +33,7 @@ export interface ChatMessage {
   tools: ToolActivity[];
   blocks: UiBlock[];
   approval: ApprovalRequest | null;
+  feedback: 'up' | 'down' | null;
 }
 
 export interface ToolActivity {
@@ -44,6 +45,7 @@ export interface ToolActivity {
 export interface Usage {
   inputTokens: number | null;
   outputTokens: number | null;
+  durationMs: number | null;
 }
 
 const FIRST_TOKEN_TIMEOUT_MS = 30_000;
@@ -94,6 +96,7 @@ export class ChatStore {
         tools: [],
         blocks: [],
         approval: null,
+        feedback: null,
       })),
     );
   }
@@ -123,6 +126,21 @@ export class ChatStore {
     }
     this.messages.set(list.slice(0, -2));
     return this.run(text, answer.ending === 'complete');
+  }
+
+  // Beğen/beğenme: cevabı sunucudaki konuşmada sırasıyla tanımlar ve backend'e gönderir
+  async rate(messageId: number, rating: 'up' | 'down'): Promise<void> {
+    const conversationId = this.conversationId();
+    const answers = this.messages().filter((m) => m.role === 'assistant' && m.ending === 'complete');
+    const turn = answers.findIndex((m) => m.id === messageId);
+    if (conversationId === null || turn === -1) {
+      return;
+    }
+    this.patch(messageId, { feedback: rating });
+    const ok = await this.api.feedback({ conversationId, turn, rating });
+    if (!ok) {
+      this.patch(messageId, { feedback: null });
+    }
   }
 
   stop(): void {
@@ -161,6 +179,7 @@ export class ChatStore {
 
   private async consume(id: number, open: (signal: AbortSignal) => AsyncGenerator<ChatEvent>): Promise<void> {
     this.error.set(null);
+    const startedAt = performance.now();
     const controller = new AbortController();
     this.controller = controller;
     // İlk token gelmezse isteği "timeout" nedeniyle iptal et
@@ -226,10 +245,12 @@ export class ChatStore {
             });
             break;
           case 'usage':
-            this.usage.set({ inputTokens: event.inputTokens, outputTokens: event.outputTokens });
+            this.usage.set({ inputTokens: event.inputTokens, outputTokens: event.outputTokens, durationMs: null });
             break;
           case 'done':
             ended = true;
+            // Kullanıcının beklediği toplam süre: gönderimden son event'e kadar
+            this.usage.update((u) => u && { ...u, durationMs: Math.round(performance.now() - startedAt) });
             this.finish(id, 'complete', 'done');
             break;
           case 'error':
@@ -284,8 +305,8 @@ export class ChatStore {
     const id = this.nextId++;
     this.messages.update((list) => [
       ...list,
-      { id: userId, role: 'user', text, ending: null, sources: [], tools: [], blocks: [], approval: null },
-      { id, role: 'assistant', text: '', ending: null, sources: [], tools: [], blocks: [], approval: null },
+      { id: userId, role: 'user', text, ending: null, sources: [], tools: [], blocks: [], approval: null, feedback: null },
+      { id, role: 'assistant', text: '', ending: null, sources: [], tools: [], blocks: [], approval: null, feedback: null },
     ]);
     return id;
   }

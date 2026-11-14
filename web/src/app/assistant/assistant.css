@@ -29,7 +29,8 @@
 .hint,
 .usage {
   margin: 4px 0;
-  color: #6b7280;
+  /* #6b7280 açık gri balon üzerinde 4.39:1 kalıyordu; WCAG AA metin için 4.5:1 ister */
+  color: #4b5563;
   font-size: 0.875rem;
 }
 
@@ -75,4 +76,51 @@ button.link {
   color: #1d4ed8;
   font-size: 0.875rem;
   cursor: pointer;
+}
+
+.meta {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  color: #4b5563;
+  font-size: 0.75rem;
+}
+
+.meta button[aria-pressed='true'] {
+  font-weight: 600;
+}
+
+.typing span[aria-hidden] {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 3px;
+  border-radius: 50%;
+  background: #9ca3af;
+  animation: blink 1.2s infinite;
+}
+
+.typing span[aria-hidden]:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing span[aria-hidden]:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.2;
+  }
+}
+
+/* Hareketi azaltmak isteyen kullanıcı için noktalar sabit durur */
+@media (prefers-reduced-motion: reduce) {
+  .typing span[aria-hidden] {
+    animation: none;
+  }
+}
+
+.elapsed {
+  margin-left: 6px;
 }

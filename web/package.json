@@ -13,6 +13,7 @@
   "dependencies": {
     "@ag-ui/client": "1.0.4",
     "@ai-sdk/angular": "3.0.173",
+    "@angular/cdk": "22.2.7",
     "@angular/common": "^22.2.0",
     "@angular/compiler": "^22.2.0",
     "@angular/core": "^22.2.0",

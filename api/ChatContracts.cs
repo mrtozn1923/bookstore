@@ -15,3 +15,6 @@ public sealed record UiEvent(string CallId, string Component, object? Props);
 public sealed record ApprovalDecision(bool Approved, string? Reason = null);
 
 public sealed record HistoryItem(string Role, string Text);
+
+// Beğen/beğenme: hangi konuşmanın kaçıncı cevabı, hangi yönde
+public sealed record FeedbackRequest(Guid ConversationId, int Turn, string Rating, string? Comment = null);

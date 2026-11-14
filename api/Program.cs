@@ -106,6 +106,19 @@ app.MapPost("/chat/approvals/{approvalId}", IResult (string approvalId, Approval
     return TypedResults.ServerSentEvents(events.WithHeartbeatAsync(TimeSpan.FromSeconds(5), ct));
 }).RequireRateLimiting("chat");
 
+// Cevaba verilen geri bildirim; değerlendirme döngüsü için log'a yazılır
+app.MapPost("/chat/feedback", IResult (FeedbackRequest feedback, ConversationStore conversations, ILogger<Program> logger) =>
+{
+    if (feedback.Rating is not ("up" or "down") || conversations.Find(feedback.ConversationId) is null
+        || feedback.Comment?.Length > 500)
+    {
+        return TypedResults.Problem(title: "Invalid feedback", statusCode: 400);
+    }
+    logger.LogInformation("Feedback {Rating} for conversation {ConversationId}, turn {Turn}: {Comment}",
+        feedback.Rating, feedback.ConversationId, feedback.Turn, feedback.Comment ?? "");
+    return TypedResults.NoContent();
+}).RequireRateLimiting("chat");
+
 app.MapAgUi(SystemPrompt);
 app.MapUiMessageStream(SystemPrompt);
 
