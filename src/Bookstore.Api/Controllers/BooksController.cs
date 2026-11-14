@@ -7,7 +7,6 @@ namespace Bookstore.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[TraceFilter("Controller")]
 public class BooksController : ControllerBase
 {
     private readonly IBookService _bookService;
@@ -20,12 +19,11 @@ public class BooksController : ControllerBase
     }
 
     [HttpGet]
-    [TraceFilter("Action")]
     [ServiceFilter(typeof(ExecutionTimeFilter))]
-    public async Task<ActionResult<List<BookDto>>> GetAll(CancellationToken cancellationToken)
+    public async Task<ActionResult<PagedResult<BookDto>>> GetAll(
+        [FromQuery] BookQueryParameters parameters, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("GetAll action is running");
-        return await _bookService.GetAllAsync(cancellationToken);
+        return await _bookService.GetPagedAsync(parameters, cancellationToken);
     }
 
     [HttpGet("{id:int}")]

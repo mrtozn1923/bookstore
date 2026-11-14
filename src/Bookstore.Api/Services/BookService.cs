@@ -29,6 +29,62 @@ public class BookService : IBookService
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<PagedResult<BookDto>> GetPagedAsync(
+        BookQueryParameters parameters, CancellationToken cancellationToken = default)
+    {
+        IQueryable<Book> query = _db.Books.AsNoTracking();
+
+        // 1. filtering: each condition is added to the query only if its parameter was sent
+        if (!string.IsNullOrWhiteSpace(parameters.Search))
+        {
+            query = query.Where(b => b.Title.Contains(parameters.Search));
+        }
+
+        if (parameters.CategoryId is not null)
+        {
+            query = query.Where(b => b.CategoryId == parameters.CategoryId);
+        }
+
+        if (parameters.MinPrice is not null)
+        {
+            query = query.Where(b => b.Price >= parameters.MinPrice);
+        }
+
+        if (parameters.MaxPrice is not null)
+        {
+            query = query.Where(b => b.Price <= parameters.MaxPrice);
+        }
+
+        // 2. total count: after the filters, before pagination
+        int totalCount = await query.CountAsync(cancellationToken);
+
+        // 3. sorting and pagination
+        List<BookDto> items = await ApplySorting(query, parameters.SortBy, parameters.Descending)
+            .Skip((parameters.Page - 1) * parameters.PageSize)
+            .Take(parameters.PageSize)
+            .Select(ToDto)
+            .ToListAsync(cancellationToken);
+
+        return new PagedResult<BookDto>(items, parameters.Page, parameters.PageSize, totalCount);
+    }
+
+    private static IQueryable<Book> ApplySorting(IQueryable<Book> query, string? sortBy, bool descending)
+    {
+        IOrderedQueryable<Book> ordered = (sortBy?.ToLowerInvariant(), descending) switch
+        {
+            ("title", false) => query.OrderBy(b => b.Title),
+            ("title", true) => query.OrderByDescending(b => b.Title),
+            // SQLite + EF Core 6 can't ORDER BY a decimal; we sort by casting to double
+            ("price", false) => query.OrderBy(b => (double)b.Price),
+            ("price", true) => query.OrderByDescending(b => (double)b.Price),
+            (_, false) => query.OrderBy(b => b.Id),
+            (_, true) => query.OrderByDescending(b => b.Id)
+        };
+
+        // a second sort by Id keeps equal values in the same order in every query
+        return ordered.ThenBy(b => b.Id);
+    }
+
     public async Task<BookDto> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         BookDto? book = await _db.Books

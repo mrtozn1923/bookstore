@@ -20,7 +20,6 @@ builder.Host.UseSerilog((context, configuration) => configuration
 
 builder.Services.AddControllers(options =>
     {
-        options.Filters.Add(new TraceFilterAttribute("Global"));
         options.Filters.Add<CatalogVersionHeaderFilter>();
     })
     .ConfigureApiBehaviorOptions(options =>
