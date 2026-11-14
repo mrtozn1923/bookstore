@@ -20,5 +20,6 @@
     <Project Path="samples/Cd15.FeatureFlags/Cd15.FeatureFlags.csproj" />
     <Project Path="samples/Cd16.Numbering/Cd16.Numbering.csproj" />
     <Project Path="samples/Cd17.Money/Cd17.Money.csproj" />
+    <Project Path="samples/Cd18.TimeZones/Cd18.TimeZones.csproj" />
   </Folder>
 </Solution>
