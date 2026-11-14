@@ -1,8 +1,10 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/Bookstore.Api/Bookstore.Api.csproj" />
+    <Project Path="src/Bookstore.Functions/Bookstore.Functions.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Bookstore.Api.Tests/Bookstore.Api.Tests.csproj" />
+    <Project Path="tests/Bookstore.Functions.Tests/Bookstore.Functions.Tests.csproj" />
   </Folder>
 </Solution>

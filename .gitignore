@@ -484,3 +484,6 @@ $RECYCLE.BIN/
 # Angular client
 .angular/
 web/bookstore-web/dist/
+
+# Azure Functions local settings (copy local.settings.sample.json)
+local.settings.json
