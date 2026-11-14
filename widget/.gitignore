@@ -1,5 +1,3 @@
 node_modules/
 dist/
-dist-webpack/
-dist-loaders/
-dist-federation/
+dist-*/
