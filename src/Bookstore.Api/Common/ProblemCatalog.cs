@@ -22,8 +22,12 @@ public static class ProblemCatalog
         "Fix the fields listed in errors.", "errors içindeki alanları düzelt.");
     public static readonly ProblemType MalformedRequest = new("malformed-request", 400,
         "Request body could not be read", "İstek gövdesi okunamadı",
-        "The body is not valid JSON or a value has the wrong type.",
-        "Gövde geçerli bir JSON değil ya da bir değerin tipi yanlış.");
+        "The body is not valid JSON, or a body or query value has the wrong type.",
+        "Gövde geçerli bir JSON değil ya da gövdedeki veya query'deki bir değerin tipi yanlış.");
+    public static readonly ProblemType InvalidPageToken = new("invalid-page-token", 400,
+        "Invalid page token", "Geçersiz sayfa token'ı",
+        "The page token is invalid, has expired or belongs to a different query; start again without pageToken.",
+        "Sayfa token'ı geçersiz, süresi dolmuş ya da başka bir sorguya ait; pageToken olmadan baştan başla.");
     public static readonly ProblemType Unauthenticated = new("unauthenticated", 401,
         "Authentication required", "Kimlik doğrulaması gerekiyor",
         "Send a valid bearer token.", "Geçerli bir bearer token gönder.");
@@ -71,7 +75,7 @@ public static class ProblemCatalog
 
     public static readonly IReadOnlyList<ProblemType> All =
     [
-        ValidationFailed, MalformedRequest, Unauthenticated, Forbidden, UnitNotAllowed, NotFound, MethodNotAllowed,
+        ValidationFailed, MalformedRequest, InvalidPageToken, Unauthenticated, Forbidden, UnitNotAllowed, NotFound, MethodNotAllowed,
         BookAlreadyExists, OrderNotCancellable, OrderNotReturnable, PreconditionFailed, UnsupportedMediaType,
         InsufficientStock, UnsupportedCurrency, InternalError,
     ];

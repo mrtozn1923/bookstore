@@ -6,6 +6,7 @@ using Bookstore.Api.Institutional;
 using Bookstore.Api.Legacy;
 using Bookstore.Api.Ordering;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Localization;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -27,6 +28,10 @@ builder.Services.AddRequestLocalization(options =>
     options.ApplyCurrentCultureToResponseHeaders = true;
 });
 builder.Services.AddValidation();
+// Page tokens are encrypted with Data Protection. The ephemeral key ring keeps the sample self-contained
+// (tokens die on restart); several instances need a shared, persisted key ring.
+builder.Services.AddDataProtection().UseEphemeralDataProtectionProvider();
+builder.Services.AddSingleton<Paging>();
 builder.Services.AddSingleton<CatalogData>();
 builder.Services.AddSingleton<OrderData>();
 builder.Services.AddSingleton<CartData>();

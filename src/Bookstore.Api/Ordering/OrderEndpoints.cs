@@ -19,15 +19,22 @@ public static class OrderEndpoints
         return app;
     }
 
+    internal static readonly SortField<Order>[] SortFields =
+        [new("createdAt", o => o.CreatedAt), new("total", o => o.Total)];
+    internal static readonly SortField<Order> ById = new("id", o => o.Id.ToString());
+
     private static Results<Ok<Page<OrderResponse>>, ProblemHttpResult> ListMyOrders(
-        int? pageSize, string? pageToken, ClaimsPrincipal principal, OrderData data)
+        HttpContext http, int? pageSize, string? pageToken, ClaimsPrincipal principal, OrderData data, Paging paging)
     {
+        if (Paging.RejectUnknownParameters(http.Request, ["pageSize", "pageToken"]) is { } unknown)
+        {
+            return unknown;
+        }
+
         DemoUser user = principal.Current();
-        List<OrderResponse> items =
-        [
-            .. data.All.Where(o => o.CustomerId == user.Name).OrderByDescending(o => o.CreatedAt).Select(OrderResponse.From),
-        ];
-        return Paging.Paginate(items, pageSize, pageToken);
+        _ = Paging.ParseSort("-createdAt", SortFields, out List<SortSpec<Order>> order);
+        return paging.Paginate(http, data.All.Where(o => o.CustomerId == user.Name), order, ById, user.Name,
+            pageSize, pageToken, OrderResponse.From);
     }
 
     private static Results<Ok<OrderResponse>, ProblemHttpResult> GetOrder(

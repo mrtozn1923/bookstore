@@ -11,11 +11,20 @@ public static class BookEndpoints
 {
     private const string MergePatch = "application/merge-patch+json";
     private static readonly string[] WritableFields = ["title", "author", "category", "price", "description"];
+    private static readonly string[] ListParameters =
+        ["category", "author", "minPrice", "maxPrice", "inStock", "q", "sort", "fields", "pageSize", "pageToken"];
+    private static readonly string[] SelectableFields =
+        ["isbn", "title", "author", "category", "price", "inStock", "description"];
+    private static readonly SortField<Book>[] SortFields =
+        [new("title", b => b.Title), new("author", b => b.Author), new("price", b => b.Price)];
+    private static readonly SortField<Book> ByIsbn = new("isbn", b => b.Isbn);
 
     public static IEndpointRouteBuilder MapBookEndpoints(this IEndpointRouteBuilder app)
     {
         RouteGroupBuilder books = app.MapGroup("/books");
         books.MapGet("", ListBooks).WithName("listBooks");
+        // RFC 10008 QUERY: safe and idempotent like GET, but the criteria travel in the body.
+        books.MapMethods("", ["QUERY"], LookupBooks).WithName("lookupBooks");
         books.MapMethods("/{isbn}", ["GET", "HEAD"], GetBook).WithName("getBook");
 
         RouteGroupBuilder staff = app.MapGroup("/books").RequireAuthorization(p => p.RequireRole("StoreStaff"));
@@ -26,9 +35,59 @@ public static class BookEndpoints
         return app;
     }
 
-    private static Results<Ok<Page<BookResponse>>, ProblemHttpResult> ListBooks(
-        CatalogData catalog, int? pageSize, string? pageToken) =>
-        Paging.Paginate([.. catalog.All.Select(BookResponse.From)], pageSize, pageToken);
+    private static Results<Ok<Page<JsonObject>>, ProblemHttpResult> ListBooks(
+        HttpContext http, CatalogData catalog, Paging paging, IOptions<Microsoft.AspNetCore.Http.Json.JsonOptions> json,
+        string? category, string? author, decimal? minPrice, decimal? maxPrice, bool? inStock, string? q,
+        string? sort, string? fields, int? pageSize, string? pageToken)
+    {
+        if (Paging.RejectUnknownParameters(http.Request, ListParameters) is { } unknown)
+        {
+            return unknown;
+        }
+
+        if (Paging.ParseSort(sort ?? "title", SortFields, out List<SortSpec<Book>> order) is { } badSort)
+        {
+            return badSort;
+        }
+
+        string[] selected = fields?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            ?? SelectableFields;
+        if (selected.Any(f => !SelectableFields.Contains(f)))
+        {
+            return Paging.Invalid("fields", "unknown-field");
+        }
+
+        IEnumerable<Book> books = catalog.All.Where(b =>
+            (category is null || b.Category == category) &&
+            (author is null || b.Author.Equals(author, StringComparison.OrdinalIgnoreCase)) &&
+            (minPrice is null || b.Price >= minPrice) &&
+            (maxPrice is null || b.Price <= maxPrice) &&
+            (inStock is null || b.StockQuantity > 0 == inStock) &&
+            (q is null || b.Title.Contains(q, StringComparison.OrdinalIgnoreCase)
+                || b.Author.Contains(q, StringComparison.OrdinalIgnoreCase)));
+
+        // The token is bound to everything that changes the sequence; pageSize and fields may change between pages.
+        string query = string.Join('|', category, author, minPrice, maxPrice, inStock, q);
+        JsonSerializerOptions options = json.Value.SerializerOptions;
+        return paging.Paginate(http, books, order, ByIsbn, query, pageSize, pageToken, book =>
+        {
+            JsonObject item = JsonSerializer.SerializeToNode(BookResponse.From(book), options)!.AsObject();
+            foreach (string name in item.Select(p => p.Key).Where(k => !selected.Contains(k)).ToList())
+            {
+                item.Remove(name);
+            }
+
+            return item;
+        });
+    }
+
+    // A school checks up to 500 ISBNs at once; that list does not fit in a URL.
+    private static Results<Ok<Page<BookResponse>>, ValidationProblem> LookupBooks(
+        BookLookupRequest request, CatalogData catalog) =>
+        request.Isbns.Length is 0 or > 500
+            ? TypedResults.ValidationProblem(new Dictionary<string, string[]> { ["isbns"] = ["out-of-range"] })
+            : TypedResults.Ok(new Page<BookResponse>(
+                [.. request.Isbns.Distinct().Select(catalog.Find).OfType<Book>().Select(BookResponse.From)], null));
 
     private static Results<Ok<BookResponse>, ProblemHttpResult> GetBook(
         string isbn, CatalogData catalog, HttpResponse response)

@@ -37,6 +37,10 @@ public sealed record BookFields(
     [property: StringLength(2000, ErrorMessage = "invalid-length")]
     string? Description = null);
 
+public sealed record BookLookupRequest(
+    [property: Required(ErrorMessage = "required")]
+    string[] Isbns);
+
 public sealed record CreateBookRequest(
     [property: Required(ErrorMessage = "required"), RegularExpression("^97[89][0-9]{10}$", ErrorMessage = "invalid-format")]
     string Isbn,

@@ -33,15 +33,94 @@ paths:
     get:
       operationId: listBooks
       summary: List books
-      description: Returns one page of the catalog. Lists are always paginated.
+      description: >-
+        One page of the catalog, sorted by title unless sort says otherwise; the
+        ISBN breaks ties. Unknown query parameters return 400.
       tags: [Books]
       security: []
       parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+            examples: [classics]
+        - name: author
+          in: query
+          description: Exact author name, case-insensitive.
+          schema:
+            type: string
+        - name: minPrice
+          in: query
+          schema:
+            type: number
+        - name: maxPrice
+          in: query
+          schema:
+            type: number
+        - name: inStock
+          in: query
+          schema:
+            type: boolean
+        - name: q
+          in: query
+          description: Free text searched in title and author.
+          schema:
+            type: string
+        - name: sort
+          in: query
+          description: "Comma-separated fields, '-' for descending; allowed: title, author, price."
+          schema:
+            type: string
+            default: title
+            examples: ['-price,title']
+        - name: fields
+          in: query
+          description: >-
+            Comma-separated subset of isbn, title, author, category, price, inStock,
+            description. Items contain only these members.
+          schema:
+            type: string
+            examples: ['isbn,title,price']
         - $ref: '#/components/parameters/PageSize'
         - $ref: '#/components/parameters/PageToken'
       responses:
         '200':
           description: One page of books.
+          headers:
+            Link:
+              $ref: '#/components/headers/NextLink'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookList'
+        '400':
+          $ref: '#/components/responses/Problem'
+    query:
+      operationId: lookupBooks
+      summary: Look up books by ISBN
+      description: >-
+        HTTP QUERY (RFC 10008): safe and idempotent like GET, with the ISBN list
+        in the body. At most 500 ISBNs; unknown ISBNs are left out of items.
+      tags: [Books]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [isbns]
+              properties:
+                isbns:
+                  type: array
+                  minItems: 1
+                  maxItems: 500
+                  items:
+                    type: string
+                    pattern: '^97[89][0-9]{10}$'
+      responses:
+        '200':
+          description: The books that exist, in no particular order.
           content:
             application/json:
               schema:
@@ -455,11 +534,37 @@ paths:
           description: Only orders of this unit. Buyers can only ask for their own unit.
           schema:
             type: string
+        - name: status
+          in: query
+          description: Comma-separated statuses, case-sensitive, e.g. Confirmed,Shipped.
+          schema:
+            type: string
+        - name: createdAfter
+          in: query
+          description: Inclusive lower bound, RFC 3339.
+          schema:
+            type: string
+            format: date-time
+        - name: createdBefore
+          in: query
+          description: Exclusive upper bound, RFC 3339.
+          schema:
+            type: string
+            format: date-time
+        - name: sort
+          in: query
+          description: createdAt or total, '-' for descending; the order id breaks ties.
+          schema:
+            type: string
+            default: -createdAt
         - $ref: '#/components/parameters/PageSize'
         - $ref: '#/components/parameters/PageToken'
       responses:
         '200':
           description: One page of orders.
+          headers:
+            Link:
+              $ref: '#/components/headers/NextLink'
           content:
             application/json:
               schema:
@@ -516,6 +621,10 @@ components:
       type: http
       scheme: bearer
   headers:
+    NextLink:
+      description: RFC 8288 link to the next page, rel="next"; absent on the last page.
+      schema:
+        type: string
     Location:
       description: URL of the created resource.
       schema:
@@ -564,16 +673,19 @@ components:
     PageSize:
       name: pageSize
       in: query
-      description: Maximum number of items in the page (default 10, maximum 50).
+      description: >-
+        Maximum number of items in the page. Absent or 0 means 10; values above 50
+        are reduced to 50; negative values return 400. A page may hold fewer items.
       schema:
         type: integer
-        minimum: 1
-        maximum: 50
+        minimum: 0
         default: 10
     PageToken:
       name: pageToken
       in: query
-      description: Opaque token from a previous response's nextPageToken.
+      description: >-
+        Opaque nextPageToken from the previous page. Valid for 3 days and only with the
+        same filters and sort; pageSize and fields may change. Otherwise 400 invalid-page-token.
       schema:
         type: string
   responses:

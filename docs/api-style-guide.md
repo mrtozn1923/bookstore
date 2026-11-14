@@ -35,4 +35,11 @@ Each rule has an id. Rules marked [lint] are enforced by .spectral.yaml.
 - BS-25 Localized problems carry Content-Language and Vary: Accept-Language.
 
 ## Collections
-- BS-30 Every list endpoint is paginated from its first version: pageSize, pageToken, nextPageToken.
+- BS-30 [lint] Every list endpoint is paginated from its first version: pageSize, pageToken, nextPageToken (Google AIP-158).
+- BS-31 pageSize absent or 0 means 10, above 50 is reduced to 50, negative is 400. A page may hold fewer items than asked.
+- BS-32 nextPageToken is opaque (encrypted and signed), valid for 3 days and bound to the filters and sort of the first page; it is absent on the last page. Clients never build or parse it.
+- BS-33 The next page is also in the Link header (RFC 8288, rel="next").
+- BS-34 No total count by default; it costs a second query on every page.
+- BS-35 Filters are plain query parameters named after the representation's fields; ranges use min/max or After/Before; unknown parameters are 400.
+- BS-36 sort is a comma-separated field list with '-' for descending, on documented fields only, with a unique tie-breaker; fields selects members of each item.
+- BS-37 Criteria too large for a URL (e.g. 500 ISBNs) use QUERY (RFC 10008) with a JSON body; results are bounded by the request.

@@ -1,5 +1,10 @@
 # Rules from ADR-0001 that a linter can check.
 extends: ["spectral:oas"]
+overrides:
+  # ADR-0003: the problem type catalog is small and bounded; it is not paginated.
+  - files: ["contract/bookstore.openapi.yaml#/paths/~1problems/get"]
+    rules:
+      bookstore-paginated-lists: "off"
 rules:
   bookstore-path-kebab-case:
     description: Path segments are lowercase kebab-case; parameters are camelCase; an optional :customMethod ends the path.
@@ -36,3 +41,17 @@ rules:
     then:
       field: content.application/problem+json
       function: truthy
+  bookstore-paginated-lists:
+    description: Every list operation takes pageSize and pageToken from its first version (BS-30).
+    message: "{{path}} is a list without pageSize and pageToken"
+    severity: error
+    given: $.paths[*][?(@property === 'get' && @.operationId && @.operationId.match(/^list/))]
+    then:
+      field: parameters
+      function: schema
+      functionOptions:
+        schema:
+          type: array
+          allOf:
+            - contains: {properties: {name: {const: pageSize}}, required: [name]}
+            - contains: {properties: {name: {const: pageToken}}, required: [name]}

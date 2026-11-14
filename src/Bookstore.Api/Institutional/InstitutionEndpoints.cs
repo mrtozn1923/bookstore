@@ -23,10 +23,19 @@ public static class InstitutionEndpoints
             : InstitutionNotFound(institutionId);
 
     // A filtered view of the /orders collection; each item's canonical URL is /orders/{id}.
+    private static readonly string[] ListParameters =
+        ["unitId", "status", "createdAfter", "createdBefore", "sort", "pageSize", "pageToken"];
+
     private static Results<Ok<Page<OrderResponse>>, ProblemHttpResult> ListInstitutionOrders(
-        string institutionId, string? unitId, int? pageSize, string? pageToken, ClaimsPrincipal principal,
-        InstitutionData institutions, OrderData orders)
+        HttpContext http, string institutionId, string? unitId, string? status, DateTime? createdAfter,
+        DateTime? createdBefore, string? sort, int? pageSize, string? pageToken, ClaimsPrincipal principal,
+        InstitutionData institutions, OrderData orders, Paging paging)
     {
+        if (Paging.RejectUnknownParameters(http.Request, ListParameters) is { } unknown)
+        {
+            return unknown;
+        }
+
         if (Member(institutionId, principal, institutions) is null)
         {
             return InstitutionNotFound(institutionId);
@@ -38,15 +47,31 @@ public static class InstitutionEndpoints
             return ProblemCatalog.Create(ProblemCatalog.UnitNotAllowed, [user.UnitId]);
         }
 
-        List<OrderResponse> items =
-        [
-            .. orders.All
-                .Where(o => o.InstitutionId == institutionId && (unitId is null || o.UnitId == unitId))
-                .Where(o => OrderData.CanSee(user, o))
-                .OrderByDescending(o => o.CreatedAt)
-                .Select(OrderResponse.From),
-        ];
-        return Paging.Paginate(items, pageSize, pageToken);
+        // status=Pending,Confirmed: enum values are case-sensitive, as in the representation.
+        List<OrderStatus> statuses = [];
+        foreach (string name in (status ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            if (!Enum.TryParse(name, ignoreCase: false, out OrderStatus parsed) || !Enum.IsDefined(parsed))
+            {
+                return Paging.Invalid("status", "invalid-value");
+            }
+
+            statuses.Add(parsed);
+        }
+
+        if (Paging.ParseSort(sort ?? "-createdAt", OrderEndpoints.SortFields, out List<SortSpec<Order>> order) is { } badSort)
+        {
+            return badSort;
+        }
+
+        IEnumerable<Order> visible = orders.All.Where(o =>
+            o.InstitutionId == institutionId && (unitId is null || o.UnitId == unitId) && OrderData.CanSee(user, o) &&
+            (statuses.Count == 0 || statuses.Contains(o.Status)) &&
+            (createdAfter is null || o.CreatedAt >= createdAfter.Value.ToUniversalTime()) &&
+            (createdBefore is null || o.CreatedAt < createdBefore.Value.ToUniversalTime()));
+        string query = string.Join('|', user.Name, institutionId, unitId, string.Join(',', statuses),
+            createdAfter?.ToString("O"), createdBefore?.ToString("O"));
+        return paging.Paginate(http, visible, order, OrderEndpoints.ById, query, pageSize, pageToken, OrderResponse.From);
     }
 
     private static Institution? Member(string institutionId, ClaimsPrincipal principal, InstitutionData data)
