@@ -9,5 +9,6 @@ switch (args.FirstOrDefault())
     case "count": PointsVsCount.Run(); break;
     case "pert": Pert.Run(); break;
     case "release": ReleasePlan.Run(); break;
-    default: Console.WriteLine("Usage: dotnet run --project src/Bookstore.Planning -- cone|count|pert|release"); break;
+    case "risk": RiskRegister.Run(); break;
+    default: Console.WriteLine("Usage: dotnet run --project src/Bookstore.Planning -- cone|count|pert|release|risk"); break;
 }
