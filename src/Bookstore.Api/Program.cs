@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using Bookstore.Catalog;
 using Bookstore.Data;
 using Bookstore.Inventory;
+using Bookstore.Observability;
 using Bookstore.Ordering;
 using Bookstore.Payments;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,7 @@ builder.Logging.AddSimpleConsole(options =>
     options.TimestampFormat = "HH:mm:ss.fff ";
     options.UseUtcTimestamp = true;
 });
+builder.AddBookstoreObservability();
 
 string connectionString = builder.Configuration.GetConnectionString("BookstoreDb") is { Length: > 0 } value
     ? value

@@ -98,6 +98,13 @@ Bu branch, mertozen.com'daki Observability serisinin kodudur. Bu tag'e kadar ekl
   dotnet run --project src/Bookstore.Api
   dotnet run --project tools/Bookstore.Traffic -- 300 4
   ```
+- OpenTelemetry (trace, metric, log) ve OTLP exporter'ı (`src/Bookstore.Api/Observability`). Lokal görüntüleme için Aspire Dashboard:
+
+  ```powershell
+  docker run -d --name bookstore-dashboard -p 18888:18888 -p 4317:18889 -p 4318:18890 mcr.microsoft.com/aspire/dashboard:13.6.5
+  $env:OTEL_EXPORTER_OTLP_ENDPOINT = "http://localhost:4317"
+  dotnet run --project src/Bookstore.Api
+  ```
 
 ---
 
@@ -194,4 +201,11 @@ This branch holds the code of the Observability series on mertozen.com. Added up
   dotnet run --project tools/Bookstore.FakePaymentProvider
   dotnet run --project src/Bookstore.Api
   dotnet run --project tools/Bookstore.Traffic -- 300 4
+  ```
+- OpenTelemetry (traces, metrics, logs) with the OTLP exporter (`src/Bookstore.Api/Observability`). The Aspire Dashboard for viewing locally:
+
+  ```powershell
+  docker run -d --name bookstore-dashboard -p 18888:18888 -p 4317:18889 -p 4318:18890 mcr.microsoft.com/aspire/dashboard:13.6.5
+  $env:OTEL_EXPORTER_OTLP_ENDPOINT = "http://localhost:4317"
+  dotnet run --project src/Bookstore.Api
   ```
