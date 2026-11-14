@@ -1,6 +1,6 @@
-$TTL 172800
+$TTL 86400
 @               IN SOA  ns1.nic.example. hostmaster.nic.example. (
-                        2026111401 ; serial
+                        2026111405 ; serial
                         1800       ; refresh
                         900        ; retry
                         604800     ; expire
