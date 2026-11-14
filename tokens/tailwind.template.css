@@ -1,0 +1,15 @@
+@import "tailwindcss";
+@source "../../10-design-system";
+
+@theme {
+  @tz (theme: "light", motion: "default");
+}
+
+/* a bare @variant dark at the top level has no selector: put it inside :root */
+@layer theme {
+  :root {
+    @variant dark {
+      @tz (theme: "dark", motion: "default");
+    }
+  }
+}

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Design tokens - Bookstore</title>
+  <link rel="stylesheet" href="/web/styles/base.css">
+  <link rel="stylesheet" href="/web/styles/generated/tokens.css">
+  <link rel="stylesheet" href="docs.css">
+</head>
+<body>
+  <main>
+    <h1>Bookstore design tokens</h1>
+    <p class="lead">Generated from <code>tokens/*.tokens.json</code>. Every swatch shows its contrast against <code>--color-bg</code>.</p>
+    <h2>Semantic colours</h2>
+    <ul id="colors" class="swatches"></ul>
+    <h2>Spacing</h2>
+    <ul id="spacing" class="scale"></ul>
+    <h2>Button states</h2>
+    <div class="states">
+      <button class="btn">Default</button>
+      <button class="btn is-hover">Hover</button>
+      <button class="btn is-focus">Focus-visible</button>
+      <button class="btn" aria-disabled="true">Disabled</button>
+    </div>
+  </main>
+  <script src="docs.js"></script>
+</body>
+</html>

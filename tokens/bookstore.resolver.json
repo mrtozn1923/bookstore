@@ -1,0 +1,35 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/resolver.json",
+  "name": "Bookstore",
+  "version": "2025.10",
+  "sets": {
+    "base": {
+      "sources": [
+        { "$ref": "primitive.tokens.json" },
+        { "$ref": "semantic.tokens.json" },
+        { "$ref": "component.tokens.json" }
+      ]
+    }
+  },
+  "modifiers": {
+    "theme": {
+      "contexts": {
+        "light": [],
+        "dark": [{ "$ref": "theme-dark.tokens.json" }]
+      },
+      "default": "light"
+    },
+    "motion": {
+      "contexts": {
+        "default": [],
+        "reduced": [{ "$ref": "motion-reduced.tokens.json" }]
+      },
+      "default": "default"
+    }
+  },
+  "resolutionOrder": [
+    { "$ref": "#/sets/base" },
+    { "$ref": "#/modifiers/theme" },
+    { "$ref": "#/modifiers/motion" }
+  ]
+}

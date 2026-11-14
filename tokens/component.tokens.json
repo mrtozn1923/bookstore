@@ -1,0 +1,17 @@
+{
+  "button": {
+    "primary": {
+      "$type": "color",
+      "bg": { "$value": "{color.action}" },
+      "bg-hover": { "$value": "{color.action-hover}" },
+      "text": { "$value": "{color.on-action}" }
+    },
+    "radius": { "$type": "dimension", "$value": { "value": 6, "unit": "px" } },
+    "min-height": { "$type": "dimension", "$value": { "value": 44, "unit": "px" } }
+  },
+  "card": {
+    "bg": { "$type": "color", "$value": "{color.surface-raised}" },
+    "radius": { "$type": "dimension", "$value": "{radius.md}" },
+    "shadow": { "$type": "shadow", "$value": "{shadow.raised}" }
+  }
+}
