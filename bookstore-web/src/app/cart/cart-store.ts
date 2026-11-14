@@ -1,38 +1,43 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, effect, inject } from '@angular/core';
+import { patchState, signalStore, type, withComputed, withHooks, withMethods, withProps, withState } from '@ngrx/signals';
 import {
-  getState,
-  patchState,
-  signalStore,
-  withComputed,
-  withHooks,
-  withMethods,
-  withProps,
-  withState,
-} from '@ngrx/signals';
+  addEntity,
+  entityConfig,
+  removeAllEntities,
+  removeEntity,
+  setAllEntities,
+  updateEntity,
+  withEntities,
+} from '@ngrx/signals/entities';
 import { firstValueFrom } from 'rxjs';
 import { apiUrl } from '../api';
 import type { Book, CartItem, Coupon } from '../models';
+import { withRequestLog } from '../shared/with-request-log';
+import { setError, setFulfilled, setPending, withRequestStatus } from '../shared/with-request-status';
 
-type CartState = {
-  items: CartItem[];
-  coupon: Coupon | null;
-};
+// Cart lines as an entity collection: the ISBN is the id, '_' keeps the collection private
+const lineConfig = entityConfig({
+  entity: type<CartItem>(),
+  collection: '_line',
+  selectId: (line) => line.isbn,
+});
 
-const initialState: CartState = { items: [], coupon: null };
-
-// Global client state: one instance for the whole app (root injector)
 export const CartStore = signalStore(
   { providedIn: 'root' },
-  withState(initialState),
-  // Dependencies and constants; the _ prefix keeps them private to the store
+  withEntities(lineConfig),
+  withState({ coupon: null as Coupon | null }),
+  withRequestStatus(),
+  withRequestLog('cart'),
   withProps(() => ({
     _http: inject(HttpClient),
     _storageKey: 'bookstore.cart',
   })),
-  withComputed(({ items }) => ({
-    count: computed(() => items().reduce((sum, item) => sum + item.quantity, 0)),
-    totalPrice: computed(() => items().reduce((sum, item) => sum + item.price * item.quantity, 0)),
+  withComputed(({ _lineEntities }) => ({
+    // the public API stays the same: components still read cart.items()
+    items: _lineEntities,
+    count: computed(() => _lineEntities().reduce((sum, line) => sum + line.quantity, 0)),
+    totalPrice: computed(() => _lineEntities().reduce((sum, line) => sum + line.price * line.quantity, 0)),
   })),
   withComputed(({ totalPrice, coupon }) => ({
     discount: computed(() => {
@@ -45,54 +50,64 @@ export const CartStore = signalStore(
   })),
   withMethods((store) => ({
     add(book: Book): void {
-      patchState(store, ({ items }) => ({
-        items: items.some((item) => item.isbn === book.isbn)
-          ? items.map((item) =>
-              item.isbn === book.isbn ? { ...item, quantity: item.quantity + 1 } : item,
-            )
-          : [...items, { isbn: book.isbn, title: book.title, price: book.price, quantity: 1 }],
-      }));
+      // addEntity ignores an id that already exists, so an existing line is updated instead
+      patchState(
+        store,
+        store._lineEntityMap()[book.isbn]
+          ? updateEntity({ id: book.isbn, changes: (line) => ({ quantity: line.quantity + 1 }) }, lineConfig)
+          : addEntity({ isbn: book.isbn, title: book.title, price: book.price, quantity: 1 }, lineConfig),
+      );
     },
     setQuantity(isbn: string, quantity: number): void {
-      patchState(store, ({ items }) => ({
-        items:
-          quantity < 1
-            ? items.filter((item) => item.isbn !== isbn)
-            : items.map((item) => (item.isbn === isbn ? { ...item, quantity } : item)),
-      }));
+      patchState(
+        store,
+        quantity < 1 ? removeEntity(isbn, lineConfig) : updateEntity({ id: isbn, changes: { quantity } }, lineConfig),
+      );
     },
     remove(isbn: string): void {
-      patchState(store, ({ items }) => ({ items: items.filter((item) => item.isbn !== isbn) }));
+      patchState(store, removeEntity(isbn, lineConfig));
     },
     clear(): void {
-      patchState(store, initialState);
+      patchState(store, removeAllEntities(lineConfig), { coupon: null });
     },
-    async applyCoupon(code: string): Promise<boolean> {
+    async applyCoupon(code: string): Promise<void> {
+      patchState(store, setPending());
       try {
         const url = `${apiUrl}/coupons/${encodeURIComponent(code)}`;
         const coupon = await firstValueFrom(store._http.get<Coupon>(url));
-        patchState(store, { coupon });
-        return true;
-      } catch {
-        patchState(store, { coupon: null });
-        return false;
+        patchState(store, { coupon }, setFulfilled());
+      } catch (error) {
+        patchState(store, { coupon: null }, setError(error));
       }
     },
   })),
   withHooks({
     onInit(store) {
-      // Hydrate once from localStorage, then save every state change (outward sync only)
-      patchState(store, readSavedCart(store._storageKey));
-      effect(() => localStorage.setItem(store._storageKey, JSON.stringify(getState(store))));
+      const saved = readSavedCart(store._storageKey);
+      patchState(store, setAllEntities(saved.items, lineConfig), { coupon: saved.coupon });
+      // Save a versioned copy of the cart, not getState(): entityMap, ids and requestStatus are internal details
+      effect(() => {
+        const cart: SavedCart = { version: 2, items: store.items(), coupon: store.coupon() };
+        localStorage.setItem(store._storageKey, JSON.stringify(cart));
+      });
     },
   }),
 );
 
-function readSavedCart(key: string): Partial<CartState> {
+type SavedCart = { version: 2; items: CartItem[]; coupon: Coupon | null };
+
+// Reads every shape this app has ever saved: v0 array (posts 01-04), v1 object (05), v2 (06)
+function readSavedCart(key: string): SavedCart {
+  const empty: SavedCart = { version: 2, items: [], coupon: null };
   try {
-    const saved = JSON.parse(localStorage.getItem(key) ?? '{}') as Partial<CartState>;
-    return Array.isArray(saved.items) ? { items: saved.items, coupon: saved.coupon ?? null } : {};
+    const saved: unknown = JSON.parse(localStorage.getItem(key) ?? 'null');
+    if (Array.isArray(saved)) return { ...empty, items: saved as CartItem[] };
+    if (saved && typeof saved === 'object' && Array.isArray((saved as SavedCart).items)) {
+      const { items, coupon } = saved as SavedCart;
+      return { version: 2, items, coupon: coupon ?? null };
+    }
+    return empty;
   } catch {
-    return {}; // storage blocked or corrupt JSON: start with an empty cart
+    return empty; // storage blocked or corrupt JSON: start with an empty cart
   }
 }

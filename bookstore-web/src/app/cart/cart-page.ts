@@ -23,6 +23,9 @@ import { CartStore } from './cart-store';
       <input class="coupon-code" placeholder="Coupon" #code />
       <button class="apply" (click)="cart.applyCoupon(code.value)">Apply</button>
     </p>
+    @if (cart.requestError(); as error) {
+      <p class="coupon-error">Coupon not applied ({{ error }})</p>
+    }
     @if (cart.coupon(); as coupon) {
       <p class="discount">{{ coupon.code }}: -{{ cart.discount() }} TRY</p>
     }

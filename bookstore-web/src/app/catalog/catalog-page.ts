@@ -6,6 +6,7 @@ import { apiUrl } from '../api';
 import { CartStore } from '../cart/cart-store';
 import type { Book, BookPage } from '../models';
 import { Categories } from './categories';
+import { RecentlyViewedStore } from './recently-viewed-store';
 import { toPage, toSearch, toSort, type SortOrder } from './catalog-params';
 
 @Component({
@@ -51,6 +52,14 @@ import { toPage, toSearch, toSort, type SortOrder } from './catalog-params';
       <p>Could not load the books.</p>
     } @else {
       <p>Loading...</p>
+    }
+    @if (recent.viewedEntities().length) {
+      <p class="recent">
+        Recently viewed:
+        @for (book of recent.viewedEntities(); track book.isbn) {
+          <a [routerLink]="['/books', book.isbn]">{{ book.title }}</a>
+        }
+      </p>
     }
     @if (coverOf(); as book) {
       <div class="cover-dialog" role="dialog">
@@ -107,6 +116,7 @@ export class CatalogPage {
   });
 
   protected readonly categories = inject(Categories);
+  protected readonly recent = inject(RecentlyViewedStore);
 
   constructor() {
     effect(() => {

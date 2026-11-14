@@ -5,6 +5,7 @@ import { patchState, signalState } from '@ngrx/signals';
 import { firstValueFrom } from 'rxjs';
 import { apiUrl } from '../api';
 import type { Book, BookPage, Review } from '../models';
+import { RecentlyViewedStore } from './recently-viewed-store';
 
 @Component({
   selector: 'app-book-details-page',
@@ -65,6 +66,8 @@ export class BookDetailsPage {
   protected readonly form = signalState({ text: '', saving: false, error: null as string | null });
 
   constructor() {
+    // signalMethod called with a computation, in the component's injection context: cleaned up with the page
+    inject(RecentlyViewedStore).track(() => (this.book.hasValue() ? this.book.value() : undefined));
     effect(() => console.log(`[book] ${this.book.status()} | [related] ${this.related.status()}`));
     effect(() => console.log(`[reviews] ${this.reviews.status()}: ${this.reviews.value().length} reviews`));
   }

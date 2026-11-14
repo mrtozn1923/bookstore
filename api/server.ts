@@ -108,4 +108,5 @@ async function readJson<T>(req: IncomingMessage): Promise<T> {
   return JSON.parse(raw || "{}") as T;
 }
 
-server.listen(port, () => console.log(`[api] listening on http://localhost:${port}`));
+// 127.0.0.1 only: the mock API is never reachable from the network
+server.listen(port, "127.0.0.1", () => console.log(`[api] listening on http://127.0.0.1:${port}`));
