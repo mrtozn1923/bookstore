@@ -4,6 +4,7 @@ import { AppUpdates } from './core/app-updates';
 import { BookstoreDatabase } from './core/bookstore-database';
 import { InstallPrompt } from './core/install-prompt';
 import { OrderBadge } from './core/order-badge';
+import { PushNotifications } from './core/push-notifications';
 
 @Component({
   selector: 'app-root',
@@ -79,6 +80,7 @@ export class App {
 
   constructor() {
     void this.badge.refresh();
+    inject(PushNotifications); // listens for push messages and notification clicks on every page
   }
 
   async install() {

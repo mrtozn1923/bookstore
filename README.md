@@ -6,6 +6,8 @@ example across the site's series.
 - `api/server.ts`: a small mock of Bookstore.Api (Node.js 24, no dependencies). It also serves `web/`.
 - `web/`: framework-free examples (open http://localhost:5281/).
 - `bookstore-web/`: the Angular 22.2 client.
+- `notifications/Bookstore.Notifications.Api/`: ASP.NET Core 10 API for Web Push subscriptions and sending (07).
+- `tools/local-push-service.ts`: a local stand-in for a browser push service, for tests only (07).
 
 ```bash
 npm run api                  # http://localhost:5281
@@ -17,4 +19,12 @@ npm start                    # http://localhost:4200, /api is proxied to the moc
 npm run build
 cd ..
 npm run serve:app            # http://localhost:5281 serves the build and /api
+```
+
+```bash
+# Web Push (07): generate a VAPID key pair once per environment and keep it in a secret store
+cd notifications/Bookstore.Notifications.Api
+dotnet run -- generate-vapid-keys      # prints Push__PublicKey=... and Push__PrivateKey=...
+# set both as environment variables, then:
+dotnet run                             # http://127.0.0.1:5290; the mock API forwards /api/push/* to it
 ```

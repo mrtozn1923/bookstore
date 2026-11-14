@@ -106,6 +106,27 @@ const appArg = process.argv.indexOf("--app");
 const appFolder = appArg > 0 ? process.argv[appArg + 1] : process.env.APP_DIST;
 const appDist = appFolder ? `${resolve(appFolder)}/` : null;
 
+// 07: push subscriptions and "order shipped" live in the ASP.NET Core Bookstore.Notifications.Api
+const notificationsApi = process.env.NOTIFICATIONS_API ?? "http://127.0.0.1:5290";
+
+async function forward(req: IncomingMessage, res: ServerResponse, no: number, url: URL) {
+  const { text } = await readBody(req);
+  try {
+    const answer = await fetch(new URL(url.pathname + url.search, notificationsApi), {
+      method: req.method,
+      headers: { "Content-Type": req.headers["content-type"] ?? "application/json" },
+      body: req.method === "GET" || req.method === "HEAD" ? undefined : text,
+    });
+    const payload = Buffer.from(await answer.arrayBuffer());
+    res.writeHead(answer.status, { "Content-Type": answer.headers.get("content-type") ?? "application/json", "Cache-Control": "no-store" }).end(payload);
+    if (answer.ok && url.pathname.endsWith("/shipped")) unreadOrderUpdates++; // one more update for the badge (06)
+    log(no, `${answer.status} from Bookstore.Notifications.Api`);
+  } catch {
+    res.writeHead(502).end();
+    log(no, "502 Bookstore.Notifications.Api is not running");
+  }
+}
+
 function cacheControlFor(pathname: string) {
   if (appDist && /-[\w-]{8}\.(js|css)$/.test(pathname)) return "public, max-age=31536000, immutable"; // hashed bundles never change
   // 04: the service worker script gets a long max-age, like a careless "cache all .js for an hour" rule
@@ -148,7 +169,9 @@ async function handle(req: IncomingMessage, res: ServerResponse) {
   if (delay) await sleep(delay);
   if (res.destroyed) return;
 
-  if (req.method === "GET" && url.pathname === "/api/books") {
+  if (url.pathname.startsWith("/api/push/") || /^\/api\/orders\/\d+\/shipped$/.test(url.pathname)) {
+    await forward(req, res, no, url);
+  } else if (req.method === "GET" && url.pathname === "/api/books") {
     sendJson(req, res, no, books, "max-age=60");
   } else if (req.method === "GET" && /^\/api\/books\/\d{13}$/.test(url.pathname)) {
     const book = books.find((b) => b.isbn === url.pathname.split("/")[3]);
