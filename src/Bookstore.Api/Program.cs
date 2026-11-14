@@ -1,5 +1,6 @@
 using System.Globalization;
 using FluentValidation;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Bookstore.Api.Data;
@@ -17,6 +18,18 @@ builder.Host.UseSerilog((context, configuration) => configuration
     .Enrich.FromLogContext()
     .WriteTo.Console()
     .WriteTo.File("logs/bookstore-.log", rollingInterval: RollingInterval.Day));
+
+// Kestrel limit for every request body: 10 MB
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 10 * 1024 * 1024;
+});
+
+// limit of the multipart form reader: 10 MB
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 10 * 1024 * 1024;
+});
 
 builder.Services.AddControllers(options =>
     {

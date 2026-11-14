@@ -47,6 +47,7 @@ public class ExceptionHandlingMiddleware
         {
             NotFoundException => (StatusCodes.Status404NotFound, "Resource not found"),
             ConflictException => (StatusCodes.Status409Conflict, "Conflict"),
+            BadHttpRequestException badRequest => (badRequest.StatusCode, "Bad request"),
             _ => (StatusCodes.Status500InternalServerError, "An unexpected error occurred")
         };
 
