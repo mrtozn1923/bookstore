@@ -491,3 +491,4 @@ App_Data/
 # HTTP client secrets and reports (Rider / ijhttp)
 http-client.private.env.json
 tests/http/reports/
+reports/

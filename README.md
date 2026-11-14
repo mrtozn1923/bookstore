@@ -82,6 +82,10 @@ Uçtan uca smoke test (bash, curl 8.3+ ve jq; Windows'ta Git Bash ya da WSL):
 (şifre `tests/http/http-client.private.env.json`'dan):
 `docker run --rm -v "$PWD/tests/http:/workdir" jetbrains/intellij-http-client -D -e dev -v http-client.env.json -p http-client.private.env.json bookstore-flow.http --report`
 
+Postman collection'ı (`postman/`): Postman'de import et ya da komut satırından koş:
+`npx newman run postman/Bookstore.postman_collection.json -e postman/dev.postman_environment.json --env-var password=Bookstore-Demo-1`
+(Postman CLI ile: `postman collection run ...` aynı parametrelerle).
+
 Migration'ları elle yönetmek istersen: `dotnet tool restore` sonra
 `dotnet ef database update --project src/Bookstore.Api`.
 
@@ -182,6 +186,10 @@ End-to-end smoke test (bash, curl 8.3+ and jq; on Windows use Git Bash or WSL):
 `src/Bookstore.Api/.env`, see `.env.example`); `tests/http/bookstore-flow.http` for Rider and `ijhttp`
 (password from `tests/http/http-client.private.env.json`):
 `docker run --rm -v "$PWD/tests/http:/workdir" jetbrains/intellij-http-client -D -e dev -v http-client.env.json -p http-client.private.env.json bookstore-flow.http --report`
+
+Postman collection (`postman/`): import it into Postman or run it from the command line:
+`npx newman run postman/Bookstore.postman_collection.json -e postman/dev.postman_environment.json --env-var password=Bookstore-Demo-1`
+(with the Postman CLI: `postman collection run ...` with the same parameters).
 
 To manage migrations by hand: `dotnet tool restore`, then
 `dotnet ef database update --project src/Bookstore.Api`.

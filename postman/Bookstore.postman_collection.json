@@ -1,0 +1,419 @@
+{
+  "info": {
+    "_postman_id": "6f1b2a7e-3c1d-4f0e-9a51-0b7e2d9c4a10",
+    "name": "Bookstore API",
+    "description": "Bookstore.Api flow: login, catalog, cart, order. Run with Postman, Postman CLI or Newman.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Gets a token once and reuses it until 30 seconds before it expires.",
+          "if (pm.info.requestName === \"Login\") {",
+          "    return;",
+          "}",
+          "const token = pm.collectionVariables.get(\"accessToken\");",
+          "const expiresAt = Number(pm.collectionVariables.get(\"accessTokenExpiresAt\") || 0);",
+          "if (token && Date.now() < expiresAt - 30000) {",
+          "    return;",
+          "}",
+          "pm.sendRequest({",
+          "    url: pm.variables.replaceIn(\"{{baseUrl}}/api/auth/login\"),",
+          "    method: \"POST\",",
+          "    header: { \"Content-Type\": \"application/json\" },",
+          "    body: {",
+          "        mode: \"raw\",",
+          "        raw: JSON.stringify({ email: pm.variables.get(\"email\"), password: pm.variables.get(\"password\") })",
+          "    }",
+          "}, (error, response) => {",
+          "    pm.test(\"automatic login succeeds\", () => {",
+          "        pm.expect(error).to.equal(null);",
+          "        pm.expect(response.code).to.equal(200);",
+          "    });",
+          "    const body = response.json();",
+          "    pm.collectionVariables.set(\"accessToken\", body.accessToken);",
+          "    pm.collectionVariables.set(\"accessTokenExpiresAt\", Date.now() + body.expiresIn * 1000);",
+          "    console.log(`new token for ${pm.variables.get(\"email\")}, expires in ${body.expiresIn}s`);",
+          "});"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Identity",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"token type is Bearer\", () => pm.expect(pm.response.json().tokenType).to.eql(\"Bearer\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"token belongs to the environment user\", () => {",
+                  "    pm.expect(pm.response.json().email).to.eql(pm.environment.get(\"email\"));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Catalog",
+      "item": [
+        {
+          "name": "List books",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/books?page=1&pageSize=5",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "5"
+                }
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 200\", () => pm.response.to.have.status(200));",
+                  "const page = pm.response.json();",
+                  "pm.test(\"page has at most 5 books\", () => pm.expect(page.items.length).to.be.within(1, 5));",
+                  "pm.test(\"response time is below 500 ms\", () => pm.expect(pm.response.responseTime).to.be.below(500));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Book by ISBN",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/books/{{isbn}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books",
+                "{{isbn}}"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(`${pm.variables.get(\"isbn\")} is ${pm.variables.get(\"expectedTitle\")}`, () => {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.expect(pm.response.json().title).to.eql(pm.variables.get(\"expectedTitle\"));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Ordering",
+      "item": [
+        {
+          "name": "Create cart",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/carts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "carts"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 201\", () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set(\"cartId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Add two copies",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/carts/{{cartId}}/items/{{isbn}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "carts",
+                "{{cartId}}",
+                "items",
+                "{{isbn}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const cart = pm.response.json();",
+                  "pm.test(\"cart has one line with two copies\", () => {",
+                  "    pm.expect(cart.items).to.have.lengthOf(1);",
+                  "    pm.expect(cart.items[0].quantity).to.eql(2);",
+                  "    pm.expect(cart.total).to.eql(cart.items[0].unitPrice * 2);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Place order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cartId\": \"{{cartId}}\",\n  \"customerName\": \"Ada Lovelace\",\n  \"customerEmail\": \"{{email}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 201 with a Location header\", () => {",
+                  "    pm.response.to.have.status(201);",
+                  "    pm.response.to.have.header(\"Location\");",
+                  "});",
+                  "pm.collectionVariables.set(\"orderUrl\", pm.response.headers.get(\"Location\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Read order",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/{{orderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "{{orderId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// The order id comes from the Location header of \"Place order\".",
+                  "pm.variables.set(\"orderId\", pm.collectionVariables.get(\"orderUrl\").split(\"/\").pop());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"order is Placed\", () => pm.expect(pm.response.json().status).to.eql(\"Placed\"));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "isbn",
+      "value": "9780261102217"
+    },
+    {
+      "key": "expectedTitle",
+      "value": "The Hobbit"
+    },
+    {
+      "key": "accessToken",
+      "value": ""
+    },
+    {
+      "key": "accessTokenExpiresAt",
+      "value": ""
+    },
+    {
+      "key": "cartId",
+      "value": ""
+    },
+    {
+      "key": "orderUrl",
+      "value": ""
+    }
+  ]
+}
