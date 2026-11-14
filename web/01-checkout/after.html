@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Checkout - Bookstore</title>
+  <link rel="stylesheet" href="/web/styles/base.css">
+  <link rel="stylesheet" href="after.css">
+</head>
+<body>
+  <header class="top">
+    <a class="logo" href="#">Bookstore</a>
+    <a class="cart" href="#">Cart (2)</a>
+  </header>
+  <main>
+    <h1>Checkout</h1>
+    <form id="checkout" novalidate>
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" autocomplete="email">
+      <label for="fullName">Full name</label>
+      <input id="fullName" name="fullName" autocomplete="name">
+      <label for="address">Address</label>
+      <input id="address" name="address" autocomplete="street-address">
+      <label for="postcode">Postcode</label>
+      <input id="postcode" name="postcode" inputmode="numeric" autocomplete="postal-code" aria-describedby="postcode-error">
+      <p id="postcode-error" class="field-error" hidden></p>
+      <fieldset>
+        <legend>Delivery</legend>
+        <label class="option"><input type="radio" name="shipping" value="49.90" checked> Standard, 3-5 business days <span>₺49.90</span></label>
+        <label class="option"><input type="radio" name="shipping" value="89.90"> Express, next business day <span>₺89.90</span></label>
+        <label class="option"><input type="radio" name="shipping" value="0"> Pick up in store <span>Free</span></label>
+      </fieldset>
+      <label for="card">Card number</label>
+      <input id="card" name="card" inputmode="numeric" autocomplete="cc-number">
+      <div class="row">
+        <div><label for="expiry">Expiry (MM/YY)</label><input id="expiry" name="expiry" autocomplete="cc-exp"></div>
+        <div><label for="cvc">Security code</label><input id="cvc" name="cvc" inputmode="numeric" autocomplete="cc-csc"></div>
+      </div>
+      <aside class="summary" aria-labelledby="summary-title">
+        <h2 id="summary-title">Your cart</h2>
+        <p class="line"><span>Dune</span><span>₺420.00</span></p>
+        <p class="line"><span>The Hobbit</span><span>₺415.00</span></p>
+        <p class="line"><span>Delivery</span><span id="delivery">₺49.90</span></p>
+        <p class="line total"><span>Total</span><span id="total">₺884.90</span></p>
+      </aside>
+      <div class="actions">
+        <a class="back" href="#">Back to cart</a>
+        <button type="submit" class="pay" id="pay">Pay ₺884.90</button>
+      </div>
+      <p id="status" class="status" role="status"></p>
+    </form>
+  </main>
+  <script src="fake-api.js"></script>
+  <script src="after.js"></script>
+</body>
+</html>

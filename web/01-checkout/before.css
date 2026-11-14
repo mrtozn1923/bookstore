@@ -1,0 +1,14 @@
+body { background: #f4f4f4; color: #222; }
+.top { display: flex; justify-content: space-between; padding: 14px 20px; background: #fff; }
+.logo, .basket { color: #1d4ed8; font-weight: 600; text-decoration: none; }
+main { max-width: 640px; margin: 0 auto; padding: 16px 20px; }
+h1 { font-size: 22px; }
+input, select { display: block; width: 100%; margin: 8px 0; padding: 10px; font: inherit; border: 1px solid #ddd; }
+input::placeholder { color: #aaa; }
+.row { display: flex; gap: 8px; }
+.summary { margin: 16px 0; padding: 8px 12px; background: #fff; }
+.summary h2 { font-size: 16px; margin: 4px 0; }
+.hint { color: #999; font-size: 13px; }
+.message { padding: 10px; background: #fee2e2; color: #b91c1c; }
+.actions { display: flex; gap: 8px; }
+.btn { flex: 1; padding: 12px; border: 0; background: #1d4ed8; color: #fff; font: inherit; }

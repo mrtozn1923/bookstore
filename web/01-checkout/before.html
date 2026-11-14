@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Checkout - Bookstore</title>
+  <link rel="stylesheet" href="/web/styles/base.css">
+  <link rel="stylesheet" href="before.css">
+</head>
+<body>
+  <header class="top">
+    <a class="logo" href="#">Bookstore</a>
+    <a class="basket" href="#">Basket (2)</a>
+  </header>
+  <main>
+    <h1>Checkout</h1>
+    <p id="message" class="message" hidden></p>
+    <form id="checkout" novalidate>
+      <input name="email" placeholder="Email">
+      <input name="fullName" placeholder="Full name">
+      <input name="address" placeholder="Address">
+      <input name="postcode" placeholder="Postcode">
+      <select name="shipping">
+        <option>STD</option>
+        <option>EXP</option>
+        <option>PUP</option>
+      </select>
+      <input name="card" placeholder="Card number">
+      <div class="row">
+        <input name="expiry" placeholder="MM/YY">
+        <input name="cvc" placeholder="CVC">
+      </div>
+      <aside class="summary">
+        <h2>Your cart</h2>
+        <p>2 items</p>
+        <p class="hint">Shipping and total are shown after payment.</p>
+      </aside>
+      <div class="actions">
+        <button type="reset" class="btn">Cancel</button>
+        <button type="submit" class="btn">Pay now</button>
+      </div>
+    </form>
+  </main>
+  <script src="fake-api.js"></script>
+  <script src="before.js"></script>
+</body>
+</html>
