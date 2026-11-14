@@ -1,5 +1,6 @@
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { DeferBlockBehavior, TestBed } from '@angular/core/testing';
+import { render, screen } from '@testing-library/angular';
 import { dune, emma } from '../../testing/books';
 import { CartStore } from '../cart/cart-store';
 import { CatalogPage } from './catalog-page';
@@ -51,5 +52,18 @@ describe('CatalogPage', () => {
 
     expect(fixture.nativeElement.querySelector('[role="alert"]')).toBeNull();
     expect(fixture.nativeElement.querySelector('h3').textContent).toBe('Dune');
+  });
+});
+
+describe('CatalogPage with Testing Library', () => {
+  it('shows the books once the catalog arrives', async () => {
+    await render(CatalogPage, {
+      providers: [provideHttpClientTesting()],
+      deferBlockBehavior: DeferBlockBehavior.Manual,
+    });
+    TestBed.inject(HttpTestingController).expectOne('/api/books').flush([dune, emma]);
+
+    expect(await screen.findByRole('heading', { name: 'Dune' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Emma' })).not.toBeInTheDocument();
   });
 });
