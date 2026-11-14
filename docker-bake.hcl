@@ -11,16 +11,24 @@ group "default" {
 }
 
 group "ci" {
-  targets = ["lint", "tools"]
+  targets = ["lint", "test", "tools"]
 }
 
 target "tools" {
   context    = "."
   dockerfile = "src/Bookstore.Tools/Dockerfile"
+  target     = "final"
   args = {
     APP_VERSION = TAG
   }
   tags = ["dockerseries-bookstore-tools:${TAG}"]
+}
+
+target "test" {
+  context    = "."
+  dockerfile = "src/Bookstore.Tools/Dockerfile"
+  target     = "test"
+  output     = ["type=cacheonly"]
 }
 
 target "lint" {
@@ -30,6 +38,7 @@ target "lint" {
 
 target "tools-release" {
   inherits   = ["tools"]
+  platforms  = ["linux/amd64", "linux/arm64"]
   tags       = ["${REGISTRY}/bookstore/tools:${TAG}"]
   cache-from = ["type=registry,ref=${REGISTRY}/bookstore/tools:buildcache"]
   cache-to   = ["type=registry,ref=${REGISTRY}/bookstore/tools:buildcache,mode=max"]
