@@ -38,6 +38,9 @@ public static class RedisKeys
 
     public static RedisKey VerificationRequests(int customerId) => $"{Prefix}:verify:{customerId}:requests";
 
+    // Order events for the workers (Streams, post 10)
+    public static RedisKey OrderEvents => $"{Prefix}:orders:events";
+
     // Book prices in kurus: one hash, field = ISBN
     public static RedisKey Prices => $"{Prefix}:prices";
 

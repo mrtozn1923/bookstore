@@ -2,5 +2,6 @@
   <Folder Name="/src/">
     <Project Path="src/Bookstore.Api/Bookstore.Api.csproj" />
     <Project Path="src/Bookstore.RedisLab/Bookstore.RedisLab.csproj" />
+    <Project Path="src/Bookstore.Worker/Bookstore.Worker.csproj" />
   </Folder>
 </Solution>

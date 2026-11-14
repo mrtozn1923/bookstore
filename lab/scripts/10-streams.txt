@@ -1,0 +1,14 @@
+XADD demo:orders:events 1794650000001-0 type order-created orderId 1001 isbn 9780441013593 quantity 2
+XADD demo:orders:events 1794650000002-0 type order-created orderId 1002 isbn 9780141439518 quantity 1
+XADD demo:orders:events * type order-created orderId 1003 isbn 9780451524935 quantity 1
+XLEN demo:orders:events
+XRANGE demo:orders:events - + COUNT 1
+XGROUP CREATE demo:orders:events emails 0
+XGROUP CREATE demo:orders:events stock 0
+XREADGROUP GROUP emails emails-worker-1 COUNT 2 STREAMS demo:orders:events >
+XREADGROUP GROUP stock stock-worker-1 COUNT 1 STREAMS demo:orders:events >
+XACK demo:orders:events emails 1794650000001-0
+XPENDING demo:orders:events emails - + 10
+XNACK demo:orders:events emails FAIL IDS 1 1794650000002-0
+XPENDING demo:orders:events emails - + 10
+XAUTOCLAIM demo:orders:events emails emails-worker-2 0 0-0 COUNT 10

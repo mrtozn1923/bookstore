@@ -1,0 +1,2 @@
+XINFO GROUPS bookstore:orders:events
+XRANGE bookstore:orders:events:dead - +

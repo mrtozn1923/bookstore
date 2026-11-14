@@ -40,6 +40,7 @@ public static class OrderEndpoints
                 // SET key <orderId> IFEQ processing KEEPTTL: record the result only if we still own the key
                 await db.StringSetAsync(key, orderId, Expiration.KeepTtl, ValueCondition.Equal(Processing));
                 await RecordSaleAsync(db, request, orderId, clock.GetUtcNow());
+                await PublishOrderCreatedAsync(db, request, orderId, idempotencyKey);
                 return Results.Created($"/orders/{orderId}", new { orderId, replayed = false });
             }
             catch
@@ -52,6 +53,19 @@ public static class OrderEndpoints
 
         return app;
     }
+
+    // XADD bookstore:orders:events IDMP bookstore-api <Idempotency-Key> MAXLEN ~ 100000 * ...
+    // A retried XADD with the same idempotency key returns the first entry's id instead of a duplicate (Redis 8.6+)
+    private static Task<RedisValue> PublishOrderCreatedAsync(IDatabase db, CreateOrderRequest request, long orderId, string idempotencyKey) =>
+        db.StreamAddAsync(RedisKeys.OrderEvents,
+            [
+                new("type", "order-created"),
+                new("orderId", orderId),
+                new("customerId", request.CustomerId),
+                new("isbn", request.Isbn),
+                new("quantity", request.Quantity)
+            ],
+            new StreamIdempotentId("bookstore-api", idempotencyKey), maxLength: 100_000, useApproximateMaxLength: true);
 
     // Daily bestsellers (ZINCRBY) and the time-ordered recent orders (timestamp as score)
     private static async Task RecordSaleAsync(IDatabase db, CreateOrderRequest request, long orderId, DateTimeOffset now)
