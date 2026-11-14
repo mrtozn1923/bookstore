@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lab 03: box model</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        @layer components {
+            .box { width: 200px; padding: 16px; border: 4px solid #1f2937; }
+            .content-box { box-sizing: content-box; }
+
+            .stack > p { margin-block: 0; }
+            .stack > .first { margin-block-end: 24px; }
+            .stack > .second { margin-block-start: 16px; }
+            .stack > .pull-up { margin-block-start: -8px; }
+            .stack.as-flex { display: flex; flex-direction: column; }
+
+            .promo { background: #fef3c7; }
+            .promo > h2 { margin-block-start: 32px; }
+            .promo.flow-root { display: flow-root; }
+
+            .shelf { width: 300px; }
+            .shelf > p { margin: 0; background: #e0f2fe; }
+            .min { width: min-content; }
+            .max { width: max-content; }
+            .fit { width: fit-content; }
+        }
+    </style>
+</head>
+<body>
+    <div class="box">border-box</div>
+    <div class="box content-box">content-box</div>
+
+    <div class="stack" id="siblings"><p class="first">Dune</p><p class="second">Emma</p></div>
+    <div class="stack" id="negative"><p class="first">Dune</p><p class="pull-up">Emma</p></div>
+    <div class="stack as-flex" id="flex"><p class="first">Dune</p><p class="second">Emma</p></div>
+
+    <section class="promo" id="escape"><h2>Summer sale</h2></section>
+    <section class="promo flow-root" id="contained"><h2>Summer sale</h2></section>
+
+    <div class="shelf">
+        <p class="min">The Count of Monte Cristo</p>
+        <p class="max">The Count of Monte Cristo and Twenty Thousand Leagues Under the Seas</p>
+        <p class="fit">The Count of Monte Cristo</p>
+        <p class="fit">The Count of Monte Cristo and Twenty Thousand Leagues Under the Seas</p>
+    </div>
+</body>
+</html>
