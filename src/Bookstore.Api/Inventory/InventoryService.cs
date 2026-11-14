@@ -70,7 +70,8 @@ public sealed record StockReceipt(string Isbn, [property: System.ComponentModel.
 public static class InventoryModule
 {
     public static IServiceCollection AddInventoryModule(this IServiceCollection services) =>
-        services.AddScoped<IInventoryService, InventoryService>();
+        services.AddScoped<IInventoryService, InventoryService>()
+            .AddHostedService<InventoryMetrics>();
 
     public static IEndpointRouteBuilder MapInventoryEndpoints(this IEndpointRouteBuilder app)
     {

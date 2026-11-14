@@ -105,6 +105,7 @@ Bu branch, mertozen.com'daki Observability serisinin kodudur. Bu tag'e kadar ekl
   $env:OTEL_EXPORTER_OTLP_ENDPOINT = "http://localhost:4317"
   dotnet run --project src/Bookstore.Api
   ```
+- İş metric'leri: `Bookstore.Ordering` (sipariş sayısı, checkout süresi, işlenen checkout'lar) ve `Bookstore.Inventory` (stoğu azalan kitaplar); `MetricCollector` testleri.
 
 ---
 
@@ -209,3 +210,4 @@ This branch holds the code of the Observability series on mertozen.com. Added up
   $env:OTEL_EXPORTER_OTLP_ENDPOINT = "http://localhost:4317"
   dotnet run --project src/Bookstore.Api
   ```
+- Business metrics: `Bookstore.Ordering` (orders placed, checkout duration, checkouts in progress) and `Bookstore.Inventory` (books running low); `MetricCollector` tests.

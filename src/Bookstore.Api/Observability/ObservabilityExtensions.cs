@@ -25,6 +25,8 @@ public static class ObservabilityExtensions
                 .AddHttpClientInstrumentation()
                 .AddSqlClientInstrumentation())
             .WithMetrics(metrics => metrics
+                // Bookstore.Ordering, Bookstore.Inventory… and Polly's resilience metrics (retries, timeouts)
+                .AddMeter("Bookstore.*", "Polly")
                 .AddAspNetCoreInstrumentation()
                 .AddHttpClientInstrumentation()
                 .AddRuntimeInstrumentation())

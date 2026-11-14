@@ -19,12 +19,28 @@ public abstract record PlaceOrderOutcome
 
 public sealed class OrderService(
     BookstoreContext db, ICatalogService catalog, IInventoryService inventory, IPaymentGateway payments,
-    TimeProvider clock, ILogger<OrderService> logger)
+    TimeProvider clock, OrderingMetrics metrics, ILogger<OrderService> logger)
 {
+    // Institutional orders (schools, libraries, companies) have many lines; retail carts have a few.
+    private const int InstitutionalLineCount = 10;
+
     public async Task<PlaceOrderOutcome> PlaceOrderAsync(PlaceOrderRequest request, CancellationToken ct)
     {
         long started = clock.GetTimestamp();
-        PlaceOrderOutcome outcome = await PlaceAsync(request, ct);
+        metrics.CheckoutStarted();
+        PlaceOrderOutcome outcome;
+        int lineCount = 0;
+        try
+        {
+            (outcome, lineCount) = await PlaceAsync(request, ct);
+        }
+        catch
+        {
+            metrics.CheckoutFinished("error", "unknown", clock.GetElapsedTime(started));
+            throw;
+        }
+        metrics.CheckoutFinished(OutcomeName(outcome), lineCount >= InstitutionalLineCount ? "institutional" : "retail",
+            clock.GetElapsedTime(started));
         if (outcome is PlaceOrderOutcome.Placed placed)
         {
             logger.LogInformation("Order {OrderId} placed: {ItemCount} items, {Total} {Currency}, took {ElapsedMs} ms",
@@ -39,18 +55,32 @@ public sealed class OrderService(
         return outcome;
     }
 
-    private async Task<PlaceOrderOutcome> PlaceAsync(PlaceOrderRequest request, CancellationToken ct)
+    private static string OutcomeName(PlaceOrderOutcome outcome) => outcome switch
+    {
+        PlaceOrderOutcome.Placed => "placed",
+        PlaceOrderOutcome.OutOfStock => "out_of_stock",
+        PlaceOrderOutcome.PaymentFailed => "payment_failed",
+        PlaceOrderOutcome.CartEmpty => "cart_empty",
+        PlaceOrderOutcome.CartNotFound => "cart_not_found",
+        _ => "cart_changed"
+    };
+
+    private async Task<(PlaceOrderOutcome Outcome, int LineCount)> PlaceAsync(PlaceOrderRequest request, CancellationToken ct)
     {
         Cart? cart = await db.Carts.Include(c => c.Items).FirstOrDefaultAsync(c => c.Id == request.CartId, ct);
         if (cart is null)
         {
-            return new PlaceOrderOutcome.CartNotFound();
+            return (new PlaceOrderOutcome.CartNotFound(), 0);
         }
         if (cart.Items.Count == 0)
         {
-            return new PlaceOrderOutcome.CartEmpty();
+            return (new PlaceOrderOutcome.CartEmpty(), 0);
         }
+        return (await PlaceFromCartAsync(cart, request, ct), cart.Items.Count);
+    }
 
+    private async Task<PlaceOrderOutcome> PlaceFromCartAsync(Cart cart, PlaceOrderRequest request, CancellationToken ct)
+    {
         IReadOnlyDictionary<int, BookInfo> books =
             await catalog.GetByIdsAsync([.. cart.Items.Select(i => i.BookId)], ct);
 
