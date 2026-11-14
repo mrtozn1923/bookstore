@@ -1,9 +1,25 @@
+using Bookstore.Gateway.Configuration;
+using Bookstore.Gateway.Transforms;
+using Yarp.ReverseProxy.Configuration;
 using Yarp.ReverseProxy.Model;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddReverseProxy()
-    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"))
+    .AddTransforms(InternalHeaderTransforms.Apply)
+    .AddConfigFilter<DestinationAddressFilter>();
+
+string? gatewayDb = builder.Configuration.GetConnectionString("GatewayConfig");
+if (!string.IsNullOrEmpty(gatewayDb))
+{
+    builder.Services.AddSingleton(sp => new SqlProxyConfigProvider(
+        gatewayDb,
+        TimeSpan.FromSeconds(10),
+        sp.GetRequiredService<ILogger<SqlProxyConfigProvider>>()));
+    builder.Services.AddSingleton<IProxyConfigProvider>(sp => sp.GetRequiredService<SqlProxyConfigProvider>());
+    builder.Services.AddHostedService(sp => sp.GetRequiredService<SqlProxyConfigProvider>());
+}
 
 var app = builder.Build();
 

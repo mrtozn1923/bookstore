@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/samples/">
+    <Project Path="samples/Bookstore.Gateway.InMemory/Bookstore.Gateway.InMemory.csproj" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/Bookstore.Catalog.Api/Bookstore.Catalog.Api.csproj" />
     <Project Path="src/Bookstore.Gateway/Bookstore.Gateway.csproj" />

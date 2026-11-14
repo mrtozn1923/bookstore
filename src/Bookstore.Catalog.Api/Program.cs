@@ -11,11 +11,30 @@ Book[] books =
     new("9780141439549", "Middlemarch", "George Eliot", 265.00m),
 ];
 
-app.MapGet("/api/catalog/books", () => books);
+app.MapGet("/books", () => books);
 
-app.MapGet("/api/catalog/books/{isbn}", (string isbn) =>
+app.MapGet("/books/summary", () =>
+    books.Select(b => new BookSummary(b.Isbn, b.Title)));
+
+app.MapGet("/books/{isbn}", (string isbn) =>
     books.FirstOrDefault(b => b.Isbn == isbn) is { } book
         ? Results.Ok(book)
         : Results.NotFound());
+
+if (app.Environment.IsDevelopment())
+{
+    // Shows what the gateway actually sent: path, query, Host and X-*/Forwarded headers.
+    app.MapGet("/debug/request", (HttpRequest request) => new
+    {
+        Path = request.Path.Value,
+        Query = request.QueryString.Value,
+        Host = request.Host.Value,
+        Headers = request.Headers
+            .Where(h => h.Key.StartsWith("X-", StringComparison.OrdinalIgnoreCase)
+                || h.Key.Equals("Forwarded", StringComparison.OrdinalIgnoreCase))
+            .OrderBy(h => h.Key, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(h => h.Key, h => h.Value.ToString()),
+    });
+}
 
 app.Run();
