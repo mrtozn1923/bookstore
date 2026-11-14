@@ -11,8 +11,8 @@ example across the site's series.
 ```bash
 cd lab && npm ci && npx playwright install chromium && node make-covers.mjs
 node third-party.mjs                                  # simulated third-party origins on :5302
-cd ../bookstore-web && npm ci && npx ng build
-cd ../api/Bookstore.Api && dotnet run --urls http://127.0.0.1:5300
+cd ../api/Bookstore.Api && dotnet run --urls http://127.0.0.1:5300   # keep running
+cd ../bookstore-web && npm ci && npx ng build      # prerendering (from post 03) calls the running API
 cd lab && node measure.mjs http://127.0.0.1:5300/ --runs 5 --profile mobile
 ```
 

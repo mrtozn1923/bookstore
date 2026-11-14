@@ -1,4 +1,5 @@
-import { DOCUMENT, EnvironmentProviders, inject, makeEnvironmentProviders, provideAppInitializer } from '@angular/core';
+import { DOCUMENT, EnvironmentProviders, PLATFORM_ID, inject, makeEnvironmentProviders, provideAppInitializer } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter, take } from 'rxjs';
 import { onCLS, onFCP, onINP, onLCP, onTTFB, type MetricWithAttribution } from 'web-vitals/attribution';
@@ -23,6 +24,8 @@ interface RumReport {
 export function provideRum(options: RumOptions): EnvironmentProviders {
   return makeEnvironmentProviders([
     provideAppInitializer(() => {
+      // Only in the browser: during prerendering there is no page to measure
+      if (!isPlatformBrowser(inject(PLATFORM_ID))) return;
       // Sample per page view: either every metric of this visit is sent or none
       if (Math.random() < options.sampleRate) {
         startRum(options, inject(Router), inject(DOCUMENT));

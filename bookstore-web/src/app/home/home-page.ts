@@ -1,16 +1,17 @@
 import { Component } from '@angular/core';
 import { httpResource } from '@angular/common/http';
+import { NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Book } from '../catalog/book';
 
 @Component({
   selector: 'app-home-page',
-  imports: [RouterLink],
+  imports: [RouterLink, NgOptimizedImage],
   template: `
     @if (featured.value(); as book) {
       <section class="hero">
-        <div class="hero-cover" role="img" [attr.aria-label]="book.title"
-             [style.background-image]="'url(' + book.coverUrl + ')'"></div>
+        <!-- A real <img>: discoverable, prioritizable; priority = fetchpriority="high" + no lazy loading -->
+        <img class="hero-cover" [ngSrc]="book.coverUrl!" width="1200" height="1800" priority [alt]="book.title" />
         <div>
           <p class="eyebrow">Book of the week</p>
           <h1>{{ book.title }}</h1>
@@ -25,7 +26,7 @@ import { Book } from '../catalog/book';
       @for (book of newArrivals.value() ?? []; track book.isbn) {
         <li>
           <a [routerLink]="['/books', book.isbn]">
-            <img [src]="book.coverUrl" [alt]="book.title" loading="lazy" />
+            <img [ngSrc]="book.coverUrl!" width="1200" height="1800" [alt]="book.title" />
             <span>{{ book.title }}</span>
           </a>
         </li>
@@ -34,7 +35,7 @@ import { Book } from '../catalog/book';
   `,
   styles: `
     .hero { display: grid; grid-template-columns: minmax(0, 360px) 1fr; gap: 24px; align-items: center; }
-    .hero-cover { aspect-ratio: 2 / 3; background-size: cover; border-radius: 12px; }
+    .hero-cover { width: 100%; height: auto; border-radius: 12px; }
     .eyebrow { text-transform: uppercase; font-size: 13px; color: #64748b; }
     .grid { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; }
     .grid img { width: 100%; height: auto; border-radius: 8px; display: block; }
