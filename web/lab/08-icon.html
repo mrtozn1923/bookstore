@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>08 mask icon</title>
+    <style>
+        body { margin: 0; padding: 20px; background: #ffffff; color: #1f2937; }
+        /* an SVG icon as a mask: the color comes from currentColor */
+        .icon { display: inline-block; inline-size: 48px; block-size: 48px; background-color: currentColor;
+            mask: url("../img/heart.svg") center / contain no-repeat; }
+        #icon-red { color: #b91c1c; }
+        #icon-fixed { color: #b91c1c; }
+        @media (forced-colors: active) {
+            #icon-fixed { background-color: CanvasText; }
+        }
+    </style>
+</head>
+<body>
+    <span class="icon" id="icon-red"></span> <span class="icon" id="icon-fixed"></span>
+</body>
+</html>

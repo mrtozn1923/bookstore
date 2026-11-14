@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>08 clip-path, mask and shape-outside</title>
+    <style>
+        body { margin: 0; padding: 20px; font: 16px/1.5 system-ui, sans-serif; background: #ffffff; color: #1f2937; }
+        section { margin-block-end: 24px; }
+        .shape { display: inline-block; inline-size: 200px; block-size: 100px; margin-inline-end: 12px; background: #1d4ed8; }
+
+        /* 1) basic shapes */
+        #inset { clip-path: inset(10px round 8px); }
+        #circle { clip-path: circle(40px at 50% 50%); }
+        #polygon { clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+        /* box-shadow is clipped too */
+        #shadowed { clip-path: inset(0 round 8px); box-shadow: 0 0 0 6px #b91c1c; }
+
+        /* 2) path() uses fixed pixels, shape() can use percentages */
+        .wave { display: block; inline-size: 200px; block-size: 100px; margin-block-end: 8px; background: #15803d; }
+        .wave.wide { inline-size: 400px; }
+        .wave.path { clip-path: path("M 0 0 H 200 V 70 Q 100 100 0 70 Z"); }
+        .wave.shape { clip-path: shape(from 0 0, hline to 100%, vline to 70%, curve to 0 70% with 50% 100%, close); }
+
+        /* 3) a gradient mask fades the edges */
+        .strip { inline-size: 300px; block-size: 40px; background: #1d4ed8;
+            mask-image: linear-gradient(to right, transparent, #000000 40px, #000000 calc(100% - 40px), transparent); }
+
+        /* 4) text flows around the opaque pixels of the image */
+        .flow { inline-size: 420px; }
+        .flow img { float: left; inline-size: 180px; block-size: 180px; }
+        #shaped img { shape-outside: url("../img/book-tilted.png"); shape-margin: 8px; }
+    </style>
+</head>
+<body>
+    <section><div class="shape" id="inset"></div><div class="shape" id="circle"></div><div class="shape" id="polygon"></div><div class="shape" id="shadowed"></div></section>
+    <section>
+        <div class="wave path"></div><div class="wave path wide"></div>
+        <div class="wave shape"></div><div class="wave shape wide"></div>
+    </section>
+    <section><div class="strip"></div></section>
+    <section class="flow" id="boxed"><img src="../img/book-tilted.png" alt="" width="360" height="360"><p>Middlemarch follows the lives of the people of a small English town in the years before the 1832 Reform Act. Dorothea Brooke marries an elderly scholar, the young doctor Tertius Lydgate wants to reform medicine, and the families around them slowly change the town.</p></section>
+    <section class="flow" id="shaped"><img src="../img/book-tilted.png" alt="" width="360" height="360"><p>Middlemarch follows the lives of the people of a small English town in the years before the 1832 Reform Act. Dorothea Brooke marries an elderly scholar, the young doctor Tertius Lydgate wants to reform medicine, and the families around them slowly change the town.</p></section>
+</body>
+</html>

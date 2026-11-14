@@ -1,0 +1,12 @@
+.book-strip {
+    display: flex;
+    gap: 1rem;
+    margin: 0;
+    /* the first and last cover start outside the faded edges */
+    padding: 0 2rem;
+    list-style: none;
+    overflow-x: auto;
+    /* faded edges: a hint that the row scrolls sideways */
+    mask-image: linear-gradient(to right, transparent, #000000 2rem, #000000 calc(100% - 2rem), transparent);
+}
+.book-strip img { display: block; inline-size: 10rem; block-size: auto; border-radius: 0.25rem; }

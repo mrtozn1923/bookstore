@@ -73,3 +73,23 @@
     .cover-flip-inner { transition: none; }
 }
 .flip-button, .add-to-cart { margin-block: 0.75rem; font: inherit; }
+
+.author-card { display: flex; gap: 1rem; align-items: center; margin-block: 1.5rem; }
+.author-photo {
+    flex: none;
+    inline-size: 6rem;
+    block-size: 6rem;
+    object-fit: cover;
+    /* same result as border-radius: 50% here, but it also clips outline and shadows */
+    clip-path: circle(50%);
+}
+
+.edition-cover {
+    float: left;
+    inline-size: 180px;
+    block-size: auto;
+    /* the text follows the edge of the book, not the square image box */
+    shape-outside: url("../../img/book-tilted.png");
+    shape-margin: 0.75rem;
+}
+.edition { display: flow-root; }
