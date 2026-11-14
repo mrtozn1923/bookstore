@@ -1,0 +1,16 @@
+body { background: var(--color-bg); color: var(--color-text); font-family: var(--font-sans); }
+main { padding: 16px; }
+h1 { font-size: var(--text-lg); margin: 0 0 12px; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.card { position: relative; padding: 10px; background: var(--color-surface); border: 1px solid var(--color-border); }
+.card img { width: 100%; height: auto; }
+.card h2 { font-size: var(--text-base); margin: 8px 0 2px; }
+.card p { margin: 2px 0; font-size: 14px; }
+.author { color: var(--color-text-muted); }
+.price s { color: var(--color-text-muted); }
+.badge { position: absolute; top: 16px; left: 16px; padding: 2px 8px; background: var(--color-warning-bg); color: var(--color-warning-text); font-size: 12px; font-weight: 700; }
+.stock { display: inline-flex; gap: 4px; padding: 0 6px; font-weight: 600; }
+.stock.in { background: var(--color-success-bg); color: var(--color-success-text); }
+.stock.low { background: var(--color-warning-bg); color: var(--color-warning-text); }
+.stock.out { background: var(--color-danger-bg); color: var(--color-danger-text); }
+.btn { margin-top: 6px; width: 100%; padding: 6px; border: 1px solid var(--color-border-strong); background: transparent; color: var(--color-link); font: inherit; font-size: 14px; font-weight: 600; }

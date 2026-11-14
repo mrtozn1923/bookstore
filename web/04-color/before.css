@@ -1,0 +1,24 @@
+body { background: #fff; color: #111; }
+main { padding: 16px; }
+h1 { font-size: 20px; margin: 0 0 12px; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.card { position: relative; padding: 10px; border: 1px solid #e5e7eb; }
+.card img { width: 100%; height: auto; }
+.card h2 { font-size: 16px; margin: 8px 0 2px; }
+.card p { margin: 2px 0; font-size: 14px; }
+.author { color: #9ca3af; }
+.price s { color: #d1d5db; }
+.badge { position: absolute; top: 16px; left: 16px; padding: 2px 8px; background: #f59e0b; color: #fff; font-size: 12px; font-weight: 700; }
+.dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
+.dot.in { background: #22c55e; }
+.dot.low { background: #f59e0b; }
+.dot.out { background: #ef4444; }
+.btn { margin-top: 6px; width: 100%; padding: 6px; border: 1px solid #d1d5db; background: transparent; color: #3b82f6; font: inherit; font-size: 14px; }
+
+/* dark mode: swap black and white, keep the accent colors */
+@media (prefers-color-scheme: dark) {
+  body { background: #000; color: #fff; }
+  .card { border-color: #fff; }
+  .btn { border-color: #374151; color: #1d4ed8; }
+  .price s { color: #374151; }
+}

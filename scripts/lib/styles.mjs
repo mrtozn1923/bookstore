@@ -1,10 +1,17 @@
 // Runs in the page: describes every visible element that has its own text.
+// Colours are resolved through a canvas, so oklch() and other syntaxes end up as sRGB bytes.
 export function collectTextStyles() {
-  const rgb = (s) => s.match(/[\d.]+/g).slice(0, 4).map(Number);
+  const ctx = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
+  const rgba = (color) => {
+    ctx.clearRect(0, 0, 1, 1);
+    ctx.fillStyle = color;
+    ctx.fillRect(0, 0, 1, 1);
+    return [...ctx.getImageData(0, 0, 1, 1).data];
+  };
   const background = (el) => {
     for (let e = el; e; e = e.parentElement) {
-      const c = rgb(getComputedStyle(e).backgroundColor);
-      if (c.length < 4 || c[3] > 0) return c.slice(0, 3);
+      const c = rgba(getComputedStyle(e).backgroundColor);
+      if (c[3] > 0) return c.slice(0, 3);
     }
     return [255, 255, 255];
   };
@@ -19,8 +26,10 @@ export function collectTextStyles() {
       text: el.textContent.trim().slice(0, 24),
       size: parseFloat(cs.fontSize),
       weight: Number(cs.fontWeight),
-      color: rgb(cs.color).slice(0, 3),
+      color: rgba(cs.color).slice(0, 3),
       bg: background(el),
+      border: rgba(cs.borderTopColor).slice(0, 3),
+      parentBg: background(el.parentElement),
       top: Math.round(box.top + scrollY),
       area: Math.round(box.width * box.height),
     });
