@@ -1,0 +1,28 @@
+{
+  "feature_management": {
+    "feature_flags": [
+      {
+        "id": "PurchaseApprovalV2",
+        "enabled": true,
+        "conditions": {
+          "client_filters": [
+            { "name": "Bookstore.Tenant", "parameters": { "Tenants": [ 3 ] } }
+          ]
+        }
+      },
+      {
+        "id": "InvoicePdfExport",
+        "enabled": true
+      },
+      {
+        "id": "DashboardLayoutB",
+        "enabled": true,
+        "conditions": {
+          "client_filters": [
+            { "name": "Microsoft.Percentage", "parameters": { "Value": 50 } }
+          ]
+        }
+      }
+    ]
+  }
+}

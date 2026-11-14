@@ -17,5 +17,6 @@
     <Project Path="samples/Cd12.MultilingualData/Cd12.MultilingualData.csproj" />
     <Project Path="samples/Cd13.MultiTenancy/Cd13.MultiTenancy.csproj" />
     <Project Path="samples/Cd14.SettingsHierarchy/Cd14.SettingsHierarchy.csproj" />
+    <Project Path="samples/Cd15.FeatureFlags/Cd15.FeatureFlags.csproj" />
   </Folder>
 </Solution>
