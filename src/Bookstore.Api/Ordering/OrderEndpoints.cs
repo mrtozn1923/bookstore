@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Bookstore.Api.Catalog;
 using Bookstore.Api.Common;
 using Bookstore.Api.Identity;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -11,6 +12,10 @@ public static class OrderEndpoints
     {
         RouteGroupBuilder orders = app.MapGroup("/orders").RequireAuthorization();
         orders.MapGet("", ListMyOrders).WithName("listOrders");
+        // POST creates; Idempotency-Key makes a retry after a lost response safe (ADR-0005).
+        orders.MapPost("", CreateOrder).WithName("createOrder")
+            .AddEndpointFilter((context, next) => context.HttpContext.RequestServices
+                .GetRequiredService<IdempotencyStore>().InvokeAsync<CreateOrderRequest>(context, next));
         orders.MapGet("/{orderId:guid}", GetOrder).WithName("getOrder");
         // AIP-136 / Azure style custom method: POST /orders/{orderId}:cancel
         orders.MapPost("/{orderId:guid}:cancel", CancelOrder).WithName("cancelOrder");
@@ -35,6 +40,39 @@ public static class OrderEndpoints
         _ = Paging.ParseSort("-createdAt", SortFields, out List<SortSpec<Order>> order);
         return paging.Paginate(http, data.All.Where(o => o.CustomerId == user.Name), order, ById, user.Name,
             pageSize, pageToken, OrderResponse.From);
+    }
+
+    private static async Task<Results<Created<OrderResponse>, ProblemHttpResult>> CreateOrder(
+        CreateOrderRequest request, ClaimsPrincipal principal, OrderData orders, CatalogData catalog,
+        CancellationToken cancellationToken)
+    {
+        DemoUser user = principal.Current();
+        if (user.Role != "Customer")
+        {
+            return ProblemCatalog.Create(ProblemCatalog.Forbidden);
+        }
+
+        List<OrderItem> items = [];
+        foreach (CreateOrderItem line in request.Items)
+        {
+            if (catalog.Find(line.Isbn) is not { } book)
+            {
+                return ProblemCatalog.Create(ProblemCatalog.NotFound, [$"/books/{line.Isbn}"]);
+            }
+
+            if (line.Quantity > book.StockQuantity)
+            {
+                return ProblemCatalog.Create(ProblemCatalog.InsufficientStock, [book.StockQuantity, book.Title],
+                    new Dictionary<string, object?> { ["isbn"] = book.Isbn, ["availableQuantity"] = book.StockQuantity });
+            }
+
+            items.Add(new OrderItem(book.Isbn, book.Title, line.Quantity, book.Price));
+        }
+
+        // Stands in for the payment authorization, which takes a moment.
+        await Task.Delay(TimeSpan.FromMilliseconds(1500), cancellationToken);
+        Order order = orders.Add(user.Name, items);
+        return TypedResults.Created($"/orders/{order.Id}", OrderResponse.From(order));
     }
 
     private static Results<Ok<OrderResponse>, ProblemHttpResult> GetOrder(

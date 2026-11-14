@@ -28,6 +28,8 @@ tags:
     description: Shopping carts.
   - name: Institutions
     description: Institutional customers (schools, libraries, companies).
+  - name: Operations
+    description: Status monitors of long-running operations.
 paths:
   /books:
     parameters:
@@ -215,10 +217,15 @@ paths:
       summary: Create or replace a book
       description: >-
         StoreStaff only. Replaces every writable field; creates the book (201) when
-        the ISBN is new. If-Match is honoured when sent (post 07 makes it required).
+        the ISBN is new. Replacing an existing book requires If-Match (428 without it,
+        412 when stale); creating does not.
       tags: [Books]
       parameters:
-        - $ref: '#/components/parameters/IfMatch'
+        - name: If-Match
+          in: header
+          description: ETag from a previous GET; required when the book exists.
+          schema:
+            type: string
       requestBody:
         required: true
         content:
@@ -253,6 +260,8 @@ paths:
         '403':
           $ref: '#/components/responses/Problem'
         '412':
+          $ref: '#/components/responses/Problem'
+        '428':
           $ref: '#/components/responses/Problem'
         '422':
           $ref: '#/components/responses/Problem'
@@ -291,6 +300,8 @@ paths:
           $ref: '#/components/responses/Problem'
         '412':
           $ref: '#/components/responses/Problem'
+        '428':
+          $ref: '#/components/responses/Problem'
         '415':
           description: The patch is not application/merge-patch+json.
           headers:
@@ -322,6 +333,8 @@ paths:
           $ref: '#/components/responses/Problem'
         '412':
           $ref: '#/components/responses/Problem'
+        '428':
+          $ref: '#/components/responses/Problem'
   /orders:
     parameters:
       - $ref: '#/components/parameters/ApiVersion'
@@ -343,6 +356,43 @@ paths:
         '400':
           $ref: '#/components/responses/Problem'
         '401':
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: createOrder
+      summary: Place an order
+      description: >-
+        Customer only. Creates an order from the given lines (ADR-0005). The
+        Idempotency-Key makes a retry after a timeout or a lost response safe.
+      tags: [Orders]
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+      responses:
+        '201':
+          description: The order was created (or this is a retry of the request that created it).
+          headers:
+            Location:
+              $ref: '#/components/headers/Location'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/Problem'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
           $ref: '#/components/responses/Problem'
   /orders/{orderId}:
     parameters:
@@ -448,6 +498,111 @@ paths:
         '401':
           $ref: '#/components/responses/Problem'
         '404':
+          $ref: '#/components/responses/Problem'
+  /orders/{orderId}/invoices:
+    parameters:
+      - $ref: '#/components/parameters/ApiVersion'
+      - $ref: '#/components/parameters/OrderId'
+    post:
+      operationId: generateInvoice
+      summary: Generate the invoice PDF
+      description: >-
+        Long-running (ADR-0005): returns 202 with the status monitor in the body and
+        its URL in Operation-Location. Poll it no faster than Retry-After. One invoice
+        per order; a second request gets 409 invoice-already-requested with
+        operationLocation.
+      tags: [Orders]
+      responses:
+        '202':
+          description: Accepted; the invoice is being generated.
+          headers:
+            Operation-Location:
+              $ref: '#/components/headers/OperationLocation'
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+  /orders/{orderId}/invoices/{invoiceId}:
+    parameters:
+      - $ref: '#/components/parameters/ApiVersion'
+      - $ref: '#/components/parameters/OrderId'
+      - name: invoiceId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: getInvoice
+      summary: Download an invoice
+      description: The PDF that generateInvoice produced; its URL is the operation's resourceLocation.
+      tags: [Orders]
+      responses:
+        '200':
+          description: The invoice.
+          content:
+            application/pdf:
+              schema:
+                type: string
+                contentMediaType: application/pdf
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+  /operations/{operationId}:
+    parameters:
+      - $ref: '#/components/parameters/ApiVersion'
+      - $ref: '#/components/parameters/OperationId'
+    get:
+      operationId: getOperation
+      summary: Get the status of a long-running operation
+      description: >-
+        Visible only to the caller who started it. Kept for 24 hours after it ends,
+        then 404. While it runs, the response carries Retry-After.
+      tags: [Operations]
+      responses:
+        '200':
+          description: The status monitor.
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+  /operations/{operationId}:cancel:
+    parameters:
+      - $ref: '#/components/parameters/ApiVersion'
+      - $ref: '#/components/parameters/OperationId'
+    post:
+      operationId: cancelOperation
+      summary: Cancel a running operation
+      description: Ends a NotStarted or Running operation as Canceled; an ended one returns 409.
+      tags: [Operations]
+      responses:
+        '200':
+          description: The operation is cancelled.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
           $ref: '#/components/responses/Problem'
   /customers/{customerId}/cart:
     parameters:
@@ -665,6 +820,15 @@ components:
       description: RFC 8594 HTTP-date after which the deprecated version stops answering.
       schema:
         type: string
+    OperationLocation:
+      description: URL of the status monitor (GET /operations/{operationId}).
+      schema:
+        type: string
+        format: uri-reference
+    RetryAfter:
+      description: Seconds to wait before polling the status monitor again.
+      schema:
+        type: integer
     NextLink:
       description: RFC 8288 link to the next page, rel="next"; absent on the last page.
       schema:
@@ -702,9 +866,33 @@ components:
     IfMatch:
       name: If-Match
       in: header
-      description: ETag from a previous GET; a mismatch returns 412.
+      required: true
+      description: >-
+        ETag from a previous GET. Required for every change to an existing resource:
+        missing returns 428 precondition-required, a mismatch returns 412.
       schema:
         type: string
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: >-
+        draft-ietf-httpapi-idempotency-key-header-08: a Structured Field String (in
+        quotes), unique per request, e.g. a UUID. Scoped to the caller and the operation,
+        kept for 24 hours. Same key and body: the first response is returned again.
+        Same key, different body: 422 idempotency-key-reused. First request still
+        running: 409 idempotency-key-in-progress. Missing: 400 idempotency-key-missing.
+      schema:
+        type: string
+        pattern: '^"[ -~]{1,255}"$'
+        examples: ['"5f0c6e1a-8b2d-4c3e-9a71-2d4b8e6f1c90"']
+    OperationId:
+      name: operationId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
     OrderId:
       name: orderId
       in: path
@@ -944,6 +1132,57 @@ components:
         nextPageToken:
           type: string
           description: Absent on the last page.
+    CreateOrderRequest:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          minItems: 1
+          maxItems: 50
+          items:
+            type: object
+            required: [isbn, quantity]
+            properties:
+              isbn:
+                type: string
+                pattern: '^97[89][0-9]{10}$'
+              quantity:
+                type: integer
+                minimum: 1
+                maximum: 99
+    Operation:
+      type: object
+      required: [id, kind, status, percentComplete, createdAt, lastUpdatedAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+          examples: [invoice-generation]
+        status:
+          type: string
+          description: >-
+            As in the Azure guidelines; Succeeded, Failed and Canceled are terminal.
+            New values may be added; clients must accept unknown values (BS-52).
+          examples: [NotStarted, Running, Succeeded, Failed, Canceled]
+        percentComplete:
+          type: integer
+          minimum: 0
+          maximum: 100
+        createdAt:
+          type: string
+          format: date-time
+        lastUpdatedAt:
+          type: string
+          format: date-time
+        resourceLocation:
+          type: string
+          format: uri-reference
+          description: Present when Succeeded; the resource the operation produced.
+        error:
+          $ref: '#/components/schemas/Problem'
     CreateReturnRequest:
       type: object
       required: [reason]

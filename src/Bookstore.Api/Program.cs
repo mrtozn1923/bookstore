@@ -36,6 +36,11 @@ builder.Services.AddSingleton<CatalogData>();
 builder.Services.AddSingleton<OrderData>();
 builder.Services.AddSingleton<CartData>();
 builder.Services.AddSingleton<InstitutionData>();
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton<IdempotencyStore>();
+builder.Services.AddSingleton<OperationStore>();
+builder.Services.AddHostedService<OperationWorker>();
+builder.Services.AddSingleton<InvoiceData>();
 
 WebApplication app = builder.Build();
 
@@ -53,6 +58,8 @@ app.UseAuthorization();
 
 app.MapBookEndpoints();
 app.MapOrderEndpoints();
+app.MapInvoiceEndpoints();
+app.MapOperationEndpoints();
 app.MapCartEndpoints();
 app.MapInstitutionEndpoints();
 app.MapProblemEndpoints();

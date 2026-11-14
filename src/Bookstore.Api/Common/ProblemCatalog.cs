@@ -66,6 +66,36 @@ public static class ProblemCatalog
     public static readonly ProblemType UnsupportedMediaType = new("unsupported-media-type", 415,
         "Unsupported media type", "Desteklenmeyen içerik tipi",
         "This endpoint accepts {0}.", "Bu endpoint yalnız {0} kabul ediyor.");
+    public static readonly ProblemType IdempotencyKeyMissing = new("idempotency-key-missing", 400,
+        "Idempotency-Key is missing", "Idempotency-Key eksik",
+        "This operation requires an Idempotency-Key header (a quoted string, e.g. a UUID); see the type URI.",
+        "Bu işlem bir Idempotency-Key header'ı (tırnak içinde bir string, örneğin bir UUID) gerektiriyor; type URI'ına bak.");
+    public static readonly ProblemType IdempotencyKeyInProgress = new("idempotency-key-in-progress", 409,
+        "A request with this Idempotency-Key is in progress", "Bu Idempotency-Key ile bir istek işleniyor",
+        "Wait for the first request to finish, then retry with the same key.",
+        "İlk isteğin bitmesini bekle, sonra aynı anahtarla tekrar dene.");
+    public static readonly ProblemType IdempotencyKeyReused = new("idempotency-key-reused", 422,
+        "Idempotency-Key is already used", "Idempotency-Key zaten kullanılmış",
+        "This Idempotency-Key was used with a different request body; use a new key for a new request.",
+        "Bu Idempotency-Key farklı bir istek gövdesiyle kullanıldı; yeni bir istek için yeni bir anahtar kullan.");
+    public static readonly ProblemType OrderNotInvoiceable = new("order-not-invoiceable", 409,
+        "Order cannot be invoiced", "Sipariş faturalanamaz",
+        "Order {0} is {1}; Pending and Cancelled orders have no invoice.",
+        "{0} siparişi {1} durumunda; Pending ve Cancelled siparişlerin faturası olmaz.");
+    public static readonly ProblemType InvoiceAlreadyRequested = new("invoice-already-requested", 409,
+        "Invoice already requested", "Fatura zaten istendi",
+        "An invoice for order {0} is being generated or exists; see operationLocation.",
+        "{0} siparişinin faturası üretiliyor ya da hazır; operationLocation'a bak.");
+    public static readonly ProblemType OperationNotCancellable = new("operation-not-cancellable", 409,
+        "Operation cannot be cancelled", "Operation iptal edilemez",
+        "Operation {0} has already ended with {1}.", "{0} operation'ı {1} durumuyla bitmiş.");
+    public static readonly ProblemType PreconditionRequired = new("precondition-required", 428,
+        "Precondition required", "Ön koşul gerekiyor",
+        "Send If-Match with the ETag from your last GET.", "Son GET'teki ETag'i If-Match ile gönder.");
+    public static readonly ProblemType InvoiceDetailsMissing = new("invoice-details-missing", 422,
+        "Invoice details missing", "Fatura bilgileri eksik",
+        "Institution {0} has no tax number on file; ask your account manager to add it.",
+        "{0} kurumunun kayıtlı vergi numarası yok; müşteri temsilcinden eklemesini iste.");
     public static readonly ProblemType InsufficientStock = new("insufficient-stock", 422,
         "Insufficient stock", "Stok yetersiz",
         "Only {0} copies of {1} are available.", "{1} kitabından yalnızca {0} adet var.");
@@ -80,7 +110,9 @@ public static class ProblemCatalog
     public static readonly IReadOnlyList<ProblemType> All =
     [
         ValidationFailed, MalformedRequest, UnsupportedApiVersion, InvalidPageToken, Unauthenticated, Forbidden, UnitNotAllowed, NotFound, MethodNotAllowed,
-        BookAlreadyExists, OrderNotCancellable, OrderNotReturnable, PreconditionFailed, UnsupportedMediaType,
+        BookAlreadyExists, OrderNotCancellable, OrderNotReturnable, OrderNotInvoiceable, InvoiceAlreadyRequested,
+        OperationNotCancellable, IdempotencyKeyMissing, IdempotencyKeyInProgress, IdempotencyKeyReused, PreconditionFailed,
+        PreconditionRequired, UnsupportedMediaType, InvoiceDetailsMissing,
         InsufficientStock, UnsupportedCurrency, InternalError,
     ];
 
@@ -118,6 +150,7 @@ public static class ProblemCatalog
             404 => NotFound,
             405 => MethodNotAllowed,
             415 => UnsupportedMediaType,
+            428 => PreconditionRequired,
             >= 500 => InternalError,
             _ => null,
         };

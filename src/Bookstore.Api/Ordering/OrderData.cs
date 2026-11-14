@@ -46,6 +46,21 @@ public sealed class OrderData
         _ => false,
     };
 
+    public Order Add(string customerId, IReadOnlyList<OrderItem> items)
+    {
+        Order order = new()
+        {
+            Id = Guid.CreateVersion7(), CustomerId = customerId, Status = OrderStatus.Pending,
+            CreatedAt = DateTime.UtcNow, Items = items,
+        };
+        lock (_orders)
+        {
+            _orders.Add(order);
+        }
+
+        return order;
+    }
+
     public OrderReturn AddReturn(Order order, string reason)
     {
         OrderReturn result = new(Guid.CreateVersion7(), order.Id, ReturnStatus.Requested, reason, DateTime.UtcNow);

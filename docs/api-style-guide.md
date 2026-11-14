@@ -51,3 +51,10 @@ Each rule has an id. Rules marked [lint] are enforced by .spectral.yaml.
 - BS-53 A breaking change ships as a new dated api-version (ADR-0004); the old version stays until its Sunset.
 - BS-54 A deprecated version or endpoint answers with Deprecation (RFC 9745), Sunset (RFC 8594, at least 6 months later) and Link rel="deprecation" to a migration guide; deprecated schema members are marked deprecated: true.
 - BS-55 Usage of deprecated versions and endpoints is logged per client before the sunset date.
+
+## Concurrency, idempotency and long-running operations
+- BS-60 Every representation that can be changed has an ETag; PUT (replace), PATCH and DELETE of an existing resource require If-Match: missing is 428 precondition-required, stale is 412 precondition-failed.
+- BS-61 POSTs that create something with a side effect the client cannot see (orders, payments) require Idempotency-Key (draft-ietf-httpapi-idempotency-key-header-08): a quoted string, scoped to the caller and the operation, kept 24 hours, bound to the request body.
+- BS-62 Same key and body: the first response again. Same key, different body: 422. First request still running: 409. Missing key: 400. Server errors are not stored; the retry runs again.
+- BS-63 Work that may take longer than a few seconds is a long-running operation: 202 Accepted, Operation-Location to GET /operations/{operationId}, Retry-After, status NotStarted/Running/Succeeded/Failed/Canceled, resourceLocation on success and a Problem Details error on failure.
+- BS-64 Status monitors are visible to the caller who started the operation and are kept 24 hours after it ends. Running operations can be cancelled with POST /operations/{operationId}:cancel.

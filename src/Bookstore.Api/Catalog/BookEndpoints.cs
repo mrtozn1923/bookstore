@@ -246,12 +246,12 @@ public static class BookEndpoints
         return TypedResults.NoContent();
     }
 
-    // If-Match is optional here; post 07 makes it required (428) for every write.
+    // Every change to an existing book is conditional (ADR-0005): no If-Match is 428, a stale one is 412.
     private static ProblemHttpResult? PreconditionFailed(HttpRequest request, Book current)
     {
         string? ifMatch = request.Headers.IfMatch;
-        return ifMatch is null || ifMatch == "*" || ifMatch == current.ETag
-            ? null
+        return ifMatch is null ? ProblemCatalog.Create(ProblemCatalog.PreconditionRequired)
+            : ifMatch == "*" || ifMatch == current.ETag ? null
             : ProblemCatalog.Create(ProblemCatalog.PreconditionFailed, [ifMatch, current.ETag]);
     }
 

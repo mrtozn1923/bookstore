@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Bookstore.Api.Catalog;
 
 namespace Bookstore.Api.Ordering;
@@ -42,3 +43,12 @@ public sealed record OrderResponse(
 }
 
 public sealed record CreateReturnRequest(string Reason);
+
+public sealed record CreateOrderItem(
+    [property: Required(ErrorMessage = "required"), RegularExpression("^97[89][0-9]{10}$", ErrorMessage = "invalid-format")]
+    string Isbn,
+    [property: Range(1, 99, ErrorMessage = "out-of-range")] int Quantity);
+
+public sealed record CreateOrderRequest(
+    [property: Required(ErrorMessage = "required"), Length(1, 50, ErrorMessage = "out-of-range")]
+    IReadOnlyList<CreateOrderItem> Items);
