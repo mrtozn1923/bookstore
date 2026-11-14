@@ -25,3 +25,7 @@ dotnet_diagnostic.CA1848.severity = warning
 # Off on purpose.
 # CA2007: no SynchronizationContext in ASP.NET Core
 dotnet_diagnostic.CA2007.severity = none
+
+# Bookstore's own analyzers (src/Bookstore.Analyzers).
+# BS0001: use TimeProvider instead of DateTime.Now/UtcNow
+dotnet_diagnostic.BS0001.severity = error

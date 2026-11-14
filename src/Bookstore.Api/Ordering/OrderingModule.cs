@@ -9,7 +9,7 @@ namespace Bookstore.Ordering;
 public static class OrderingModule
 {
     public static IServiceCollection AddOrderingModule(this IServiceCollection services) =>
-        services.AddScoped<OrderService>();
+        services.AddScoped<OrderService>().AddScoped<CartCleanup>();
 
     public static IEndpointRouteBuilder MapOrderingEndpoints(this IEndpointRouteBuilder app)
     {
@@ -22,6 +22,9 @@ public static class OrderingModule
         RouteGroupBuilder orders = app.MapGroup("/api/orders").WithTags("Ordering");
         orders.MapPost("/", PlaceOrder);
         orders.MapGet("/{orderId:int}", GetOrder).WithName("GetOrder");
+
+        app.MapDelete("/api/admin/carts/expired", async (CartCleanup cleanup, CancellationToken ct) =>
+            TypedResults.Ok(new { Deleted = await cleanup.DeleteExpiredAsync(ct) })).WithTags("Ordering");
         return app;
     }
 

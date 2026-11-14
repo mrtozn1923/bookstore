@@ -1,8 +1,12 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/Bookstore.Analyzers.CodeFixes/Bookstore.Analyzers.CodeFixes.csproj" />
+    <Project Path="src/Bookstore.Analyzers.Package/Bookstore.Analyzers.Package.csproj" />
+    <Project Path="src/Bookstore.Analyzers/Bookstore.Analyzers.csproj" />
     <Project Path="src/Bookstore.Api/Bookstore.Api.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/Bookstore.Analyzers.Tests/Bookstore.Analyzers.Tests.csproj" />
     <Project Path="tests/Bookstore.Api.Tests/Bookstore.Api.Tests.csproj" />
   </Folder>
 </Solution>

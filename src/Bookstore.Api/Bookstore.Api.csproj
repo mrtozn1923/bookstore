@@ -14,4 +14,12 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Bookstore's own rules run in the compiler; the assembly is not referenced by the app. -->
+    <ProjectReference Include="..\Bookstore.Analyzers\Bookstore.Analyzers.csproj"
+                      OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\Bookstore.Analyzers.CodeFixes\Bookstore.Analyzers.CodeFixes.csproj"
+                      OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
 </Project>

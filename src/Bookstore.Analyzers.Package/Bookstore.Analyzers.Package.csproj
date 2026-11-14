@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <PackageId>Bookstore.CodeAnalysis</PackageId>
+    <Version>1.0.0</Version>
+    <Description>Bookstore's own Roslyn analyzers and code fixes.</Description>
+    <!-- No lib/ folder and no dependencies: the package only carries analyzers. -->
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);AddAnalyzersToPackage</TargetsForTfmSpecificContentInPackage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Bookstore.Analyzers\Bookstore.Analyzers.csproj" />
+    <ProjectReference Include="..\Bookstore.Analyzers.CodeFixes\Bookstore.Analyzers.CodeFixes.csproj" />
+  </ItemGroup>
+
+  <Target Name="AddAnalyzersToPackage">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="$(OutputPath)Bookstore.Analyzers.dll" PackagePath="analyzers/dotnet/cs" />
+      <TfmSpecificPackageFile Include="$(OutputPath)Bookstore.Analyzers.CodeFixes.dll" PackagePath="analyzers/dotnet/cs" />
+    </ItemGroup>
+  </Target>
+
+</Project>
