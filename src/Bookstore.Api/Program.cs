@@ -19,12 +19,13 @@ app.Logger.LogInformation("Bookstore.Api {Version} ({Commit}) starting", appVers
 
 BookDto[] books =
 [
-    new("9780441172719", "Dune", "Frank Herbert", 420.00m),
-    new("9780141439587", "Emma", "Jane Austen", 185.50m),
-    new("9780547928227", "The Hobbit", "J. R. R. Tolkien", 310.00m),
+    new("9780441172719", "Dune", "Frank Herbert", new(420.00m, "TRY")),
+    new("9780141439587", "Emma", "Jane Austen", new(185.50m, "TRY")),
+    new("9780547928227", "The Hobbit", "J. R. R. Tolkien", new(310.00m, "TRY")),
 ];
 
-app.MapGet("/api/books", () => books);
+app.MapGet("/api/books", (decimal? maxPrice) =>
+    books.Where(book => maxPrice is null || book.ListPrice.Amount <= maxPrice));
 app.MapGet("/version", () => appVersion);
 
 app.Run();

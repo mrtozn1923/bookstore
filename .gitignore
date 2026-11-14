@@ -1,8 +1,8 @@
-bin/
-obj/
-node_modules/
-dist/
 .angular/
 *.nupkg
 *.snupkg
 artifacts/
+bin/
+dist/
+node_modules/
+obj/

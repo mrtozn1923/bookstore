@@ -1,0 +1,11 @@
+{
+  "name": "bookstore-release",
+  "private": true,
+  "description": "Release tooling for Bookstore.Contracts",
+  "scripts": {
+    "release:contracts": "commit-and-tag-version"
+  },
+  "devDependencies": {
+    "commit-and-tag-version": "13.3.0"
+  }
+}
