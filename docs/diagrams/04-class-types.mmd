@@ -1,0 +1,34 @@
+classDiagram
+    class Order {
+        +id: int
+        +quantity: int
+        +deliveryDate: DateOnly
+        +note: string [0..1]
+        +total: Money
+        +status: OrderStatus = Draft
+        +purchasingApprovalThreshold: decimal = 50000$
+        +/requiresPurchasingApproval: bool
+        -approvals: List~PurchaseApproval~
+        +submit(total: Money, now: DateTimeOffset) void
+        +cancel(today: DateOnly) void
+    }
+    class OrderStatus {
+        <<enumeration>>
+        Draft
+        PendingApprover
+        PendingPurchasingManager
+        Approved
+        Rejected
+        Cancelled
+    }
+    class Money {
+        <<dataType>>
+        +amount: decimal
+        +currency: string
+        +add(other: Money) Money
+    }
+    class IOrderRepository {
+        <<interface>>
+        +findAsync(id: int, ct: CancellationToken)* Task~Order~
+        +add(order: Order)*
+    }
