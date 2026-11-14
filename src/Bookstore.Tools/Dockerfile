@@ -4,11 +4,12 @@ ARG DOTNET_VERSION=10.0
 # restore: SDK runs on the build machine's platform, never under QEMU
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:${DOTNET_VERSION} AS restore
 WORKDIR /src
-COPY Bookstore.slnx global.json ./
+COPY global.json ./
 COPY src/Bookstore.Tools/Bookstore.Tools.csproj src/Bookstore.Tools/
 COPY tests/Bookstore.Tools.Tests/Bookstore.Tools.Tests.csproj tests/Bookstore.Tools.Tests/
+# The test project references Bookstore.Tools, so this restores both
 RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
-    dotnet restore Bookstore.slnx
+    dotnet restore tests/Bookstore.Tools.Tests/Bookstore.Tools.Tests.csproj
 COPY src/ src/
 
 # build: publish for the target architecture (cross-compilation)
