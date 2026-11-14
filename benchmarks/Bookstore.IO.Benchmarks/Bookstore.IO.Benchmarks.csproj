@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Bookstore.IO.Pipelines\Bookstore.IO.Pipelines.csproj" />
+    <ProjectReference Include="..\..\src\Bookstore.IO.Json\Bookstore.IO.Json.csproj" />
   </ItemGroup>
 
 </Project>

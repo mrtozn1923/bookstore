@@ -3,6 +3,7 @@
     <Project Path="benchmarks/Bookstore.IO.Benchmarks/Bookstore.IO.Benchmarks.csproj" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="src/Bookstore.Api/Bookstore.Api.csproj" />
     <Project Path="src/Bookstore.IO.Files/Bookstore.IO.Files.csproj" />
     <Project Path="src/Bookstore.IO.Json/Bookstore.IO.Json.csproj" />
     <Project Path="src/Bookstore.IO.Pipelines/Bookstore.IO.Pipelines.csproj" />
