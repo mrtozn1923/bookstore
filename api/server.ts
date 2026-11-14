@@ -107,7 +107,9 @@ async function serveStatic(res: ServerResponse, no: number, pathname: string) {
   }
   try {
     const body = await readFile(file);
-    res.writeHead(200, { "Content-Type": types[extname(file)] ?? "application/octet-stream", "Cache-Control": "no-cache" });
+    // 04: the service worker script gets a long max-age, like a careless "cache all .js for an hour" rule
+    const cacheControl = pathname === "/sw/sw.js" ? "max-age=3600" : "no-cache";
+    res.writeHead(200, { "Content-Type": types[extname(file)] ?? "application/octet-stream", "Cache-Control": cacheControl });
     res.end(body);
     log(no, `200 ${pathname}`);
   } catch {
@@ -121,7 +123,8 @@ async function handle(req: IncomingMessage, res: ServerResponse) {
   const url = new URL(req.url ?? "/", `http://localhost:${port}`);
   const conditional = req.headers["if-none-match"] ? " (If-None-Match)" : "";
   const h2 = req.httpVersion === "2.0" ? " HTTP/2" : "";
-  log(no, `${req.method} ${url.pathname}${url.search}${conditional}${h2}`);
+  const preload = req.headers["service-worker-navigation-preload"] ? " (navigation preload)" : "";
+  log(no, `${req.method} ${url.pathname}${url.search}${conditional}${h2}${preload}`);
   res.on("close", () => {
     if (!res.writableFinished) log(no, "client aborted");
   });
@@ -141,6 +144,11 @@ async function handle(req: IncomingMessage, res: ServerResponse) {
     }
   } else if (req.method === "POST" && /^\/api\/books\/\d{13}\/reviews$/.test(url.pathname)) {
     await addReview(req, res, no, url.pathname.split("/")[3]);
+  } else if (req.method === "GET" && url.pathname === "/api/me/orders") {
+    // 04: a per-user response; ?vary=1 adds Vary: Authorization
+    const customer = (req.headers.authorization ?? "").replace("Bearer ", "") || "anonymous";
+    if (url.searchParams.get("vary")) res.setHeader("Vary", "Authorization");
+    sendJson(req, res, no, { customer, orders: customer === "ada" ? [1042] : [1051] });
   } else if (req.method === "GET" && url.pathname === "/api/reports/orders.csv") {
     await ordersCsv(res, no, Number(url.searchParams.get("rows") ?? 20000));
   } else if (req.method === "POST" && url.pathname.startsWith("/api/covers/")) {

@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Service worker lab</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module">
+    import * as lab from "./app.js";
+    // expose the examples so they can be called from the DevTools console (and Playwright)
+    window.lab = lab;
+  </script>
+</head>
+<body>
+  <h1>Bookstore catalog (service worker lab)</h1>
+  <pre id="log"></pre>
+</body>
+</html>
