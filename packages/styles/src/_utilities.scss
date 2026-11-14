@@ -2,7 +2,7 @@
 @use "sass:map";
 @use "breakpoints" as bp;
 
-// generates utility classes from a map: abstracts only define the mixin, utilities/ calls it
+// generates utility classes from a map: the package only defines the mixin, the app calls it
 
 // one rule per value; $prefix is "" or an escaped "md\:"
 @mixin -rules($utilities, $prefix, $responsive-only) {

@@ -1,0 +1,33 @@
+@use "sass:list";
+@use "sass:selector";
+@use "sass:string";
+
+.selector-demo {
+    append: selector.append(".book-card", "--featured", ":hover");
+    nest: selector.nest(".catalog", "& .book-card", ".price");
+    unify: selector.unify("button.book-card__add", ".is-loading");
+    unify-none: selector.unify("button", "a");
+    replace: selector.replace(".cart .price", ".price", ".price--sale");
+    extend: selector.extend(".cart .price", ".price", ".total");
+    parse: selector.parse(".a, .b .c");
+}
+
+// inside an element of a BEM block: style it when the block has a modifier
+@mixin when-block($modifier) {
+    // & is e.g. ".book-card__title"; the block is the part before "__"
+    $element: string.slice(list.nth(list.nth(&, 1), -1) + "", 2);
+    $block: string.slice($element, 1, string.index($element, "__") - 1);
+    @at-root #{selector.nest(".#{$block}--#{$modifier}", &)} {
+        @content;
+    }
+}
+
+.book-card {
+    &__title {
+        color: var(--color-text);
+
+        @include when-block(featured) {
+            color: var(--color-brand);
+        }
+    }
+}

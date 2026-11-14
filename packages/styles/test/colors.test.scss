@@ -1,0 +1,30 @@
+@use "sass:color";
+@use "sass:map";
+@use "sass:math";
+@use "true" as * with ($terminal-output: false);
+@use "../index" as bs;
+
+@function lightness($c) {
+    @return math.round(color.channel($c, "lightness", $space: oklch));
+}
+
+@include describe("tone()") {
+    @include it("moves perceived lightness by the given step") {
+        @include assert-equal(lightness(bs.tone(#b45309, -10%)), 46%);
+        @include assert-equal(lightness(bs.tone(#1d4ed8, -10%)), 39%);
+    }
+
+    @include it("returns a color inside sRGB") {
+        @include assert-true(color.is-in-gamut(bs.tone(#b45309, -10%), $space: rgb));
+    }
+}
+
+@include describe("with-states()") {
+    @include it("adds hover, active and subtle keys") {
+        $theme: bs.with-states((brand: #b45309), brand, -1);
+        @include assert-equal(
+            map.keys($theme),
+            ("brand", "brand-hover", "brand-active", "brand-subtle")
+        );
+    }
+}

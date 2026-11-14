@@ -1,0 +1,5 @@
+@use "@bookstore/styles" as bs;
+
+.book-card__title {
+    color: bs.tone("#b45309", -8%);
+}

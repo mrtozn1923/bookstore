@@ -1,0 +1,76 @@
+@use "true" as * with ($terminal-output: false);
+@use "../index" as bs;
+
+@include describe("up() / down() / between()") {
+    @include it("writes range syntax media queries") {
+        @include assert {
+            @include output {
+                .book-list {
+                    @include bs.up("md") {
+                        gap: 24px;
+                    }
+                    @include bs.between("sm", "lg") {
+                        padding-inline: 16px;
+                    }
+                }
+            }
+            @include expect {
+                @media (width >= 48rem) {
+                    .book-list {
+                        gap: 24px;
+                    }
+                }
+                @media (36rem <= width < 64rem) {
+                    .book-list {
+                        padding-inline: 16px;
+                    }
+                }
+            }
+        }
+    }
+
+    @include it("writes a container query when a container is given") {
+        @include assert {
+            @include output {
+                .book-card__add {
+                    @include bs.up(20rem, $container: book-card) {
+                        width: auto;
+                    }
+                }
+            }
+            @include expect {
+                @container book-card (width >= 20rem) {
+                    .book-card__add {
+                        width: auto;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@include describe("generate-utilities()") {
+    @include it("adds escaped responsive variants only where asked") {
+        @include assert {
+            @include output {
+                @include bs.generate-utilities(
+                    ("d": (property: display, values: (none: none), responsive: true), "m": (property: margin, values: (0: 0))),
+                    ("md",)
+                );
+            }
+            @include expect {
+                .d-none {
+                    display: none;
+                }
+                .m-0 {
+                    margin: 0;
+                }
+                @media (width >= 48rem) {
+                    .md\:d-none {
+                        display: none;
+                    }
+                }
+            }
+        }
+    }
+}

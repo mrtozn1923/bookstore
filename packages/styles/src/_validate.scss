@@ -1,0 +1,10 @@
+// package-internal: not forwarded from _index.scss
+@use "sass:meta";
+
+// returns $value if its type is $type, otherwise stops the build with a readable message
+@function expect($value, $type, $caller) {
+    @if meta.type-of($value) != $type {
+        @error "#{$caller} expects a #{$type}, got #{meta.inspect($value)} (#{meta.type-of($value)})";
+    }
+    @return $value;
+}

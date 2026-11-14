@@ -1,0 +1,7 @@
+@use "@bookstore/styles" as bs;
+
+.book-list {
+    @include bs.from("md") {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

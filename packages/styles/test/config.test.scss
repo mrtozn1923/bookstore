@@ -1,0 +1,28 @@
+@use "true" as * with ($terminal-output: false);
+// with() reaches the forwarded !default variables
+@use "../index" as bs with ($root-font-size: 10px, $breakpoints: ("tablet": 40rem));
+
+@include describe("configuration") {
+    @include it("uses the configured root font size") {
+        @include assert-equal(bs.rem(18px), 1.8rem);
+    }
+
+    @include it("uses the configured breakpoints") {
+        @include assert {
+            @include output {
+                .x {
+                    @include bs.up("tablet") {
+                        order: 1;
+                    }
+                }
+            }
+            @include expect {
+                @media (width >= 40rem) {
+                    .x {
+                        order: 1;
+                    }
+                }
+            }
+        }
+    }
+}

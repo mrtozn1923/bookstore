@@ -1,7 +1,4 @@
 // abstracts produce no CSS: only variables, functions and mixins
+@forward "@bookstore/styles";
 @forward "tokens";
-@forward "units";
-@forward "colors";
-@forward "breakpoints";
-@forward "utilities";
 @forward "theme";

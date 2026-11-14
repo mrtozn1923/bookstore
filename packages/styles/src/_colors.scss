@@ -1,8 +1,10 @@
 @use "sass:color";
 @use "sass:map";
+@use "validate" as v;
 
 // a tone of $color: lightness moved in oklch, then mapped back into sRGB
 @function tone($color, $lightness: 0%, $chroma: 0%) {
+    $color: v.expect($color, color, "tone()");
     $result: color.adjust($color, $lightness: $lightness, $space: oklch);
     $result: color.scale($result, $chroma: $chroma, $space: oklch);
     @return color.to-gamut($result, $space: rgb, $method: local-minde);

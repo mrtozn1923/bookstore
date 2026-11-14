@@ -1,15 +1,17 @@
 @use "sass:list";
 @use "sass:math";
+@use "validate" as v;
 
-$root-font-size: 16px;
+$root-font-size: 16px !default;
 
 // spacing scale: space(0) … space(5)
-$space-scale: 0 4px 8px 16px 24px 32px;
+$space-scale: 0 4px 8px 16px 24px 32px !default;
 
-$font-system: system-ui, "Segoe UI", Roboto, sans-serif;
+$font-system: system-ui, "Segoe UI", Roboto, sans-serif !default;
 
 // px (or a unit convertible to px) -> rem; a unitless number counts as px
 @function rem($value) {
+    $value: v.expect($value, number, "rem()");
     @if math.is-unitless($value) {
         $value: $value * 1px;
     }
@@ -21,6 +23,7 @@ $font-system: system-ui, "Segoe UI", Roboto, sans-serif;
 
 // steps start at 0, Sass lists at 1
 @function space($step) {
+    $step: v.expect($step, number, "space()");
     $last: list.length($space-scale) - 1;
     @if not math.is-unitless($step) or $step < 0 or $step > $last {
         @error "space() expects a step from 0 to #{$last}, got #{$step}";

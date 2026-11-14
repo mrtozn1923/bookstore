@@ -1,0 +1,33 @@
+@use "sass:map";
+@use "sass:meta";
+@use "@bookstore/styles" as bs;
+
+.meta-demo {
+    functions: map.keys(meta.module-functions("bs"));
+    mixins: map.keys(meta.module-mixins("bs"));
+    exists: meta.function-exists("rem", "bs") meta.function-exists("expect", "bs");
+}
+
+// utility values can be given in design units and converted by a function picked by name
+$transforms: (spacing: "rem", none: null);
+
+@function transform($value, $name) {
+    $fn-name: map.get($transforms, $name);
+    @if not $fn-name {
+        @return $value;
+    }
+    @return meta.call(meta.get-function($fn-name, $module: "bs"), $value);
+}
+
+.book-card {
+    padding: transform(12, spacing);
+    border-width: transform(1px, none);
+
+    @include bs.respond(between, "sm", "lg") {
+        padding: transform(16, spacing);
+    }
+
+    @include bs.respond(only, "xl") {
+        padding: transform(24, spacing);
+    }
+}

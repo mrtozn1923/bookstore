@@ -1,5 +1,5 @@
 @use "sass:map";
-@use "colors";
+@use "@bookstore/styles" as bs;
 
 // base colors per theme; both must have the same keys
 $-base: (
@@ -27,8 +27,8 @@ $-institutional: (
 
 @function -with-brand-states($themes) {
     @return (
-        light: colors.with-states(map.get($themes, light), brand, -1),
-        dark: colors.with-states(map.get($themes, dark), brand, 1),
+        light: bs.with-states(map.get($themes, light), brand, -1),
+        dark: bs.with-states(map.get($themes, dark), brand, 1),
     );
 }
 

@@ -1,0 +1,7 @@
+@use "sass:meta";
+
+$values: ("18px", 18px, null, (sm: 36rem), (Inter, system-ui), "#b45309", #b45309);
+
+@each $value in $values {
+    @debug "#{meta.type-of($value)}: #{meta.inspect($value)}";
+}

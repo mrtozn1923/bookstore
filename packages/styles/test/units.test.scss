@@ -1,0 +1,32 @@
+@use "true" as * with ($terminal-output: false);
+@use "../index" as bs;
+
+@include describe("rem()") {
+    @include it("converts px to rem") {
+        @include assert-equal(bs.rem(18px), 1.125rem);
+    }
+
+    @include it("treats a unitless number as px") {
+        @include assert-equal(bs.rem(6), 0.375rem);
+    }
+
+    @include it("converts units that are compatible with px") {
+        @include assert-equal(bs.rem(12pt), 1rem);
+    }
+}
+
+@include describe("space()") {
+    @include it("starts the scale at 0") {
+        @include assert-equal(bs.space(0), 0);
+        @include assert-equal(bs.space(3), 16px);
+    }
+}
+
+@include describe("font-stack()") {
+    @include it("puts the given fonts before the system stack") {
+        @include assert-equal(
+            bs.font-stack("Iowan Old Style", Georgia),
+            ("Iowan Old Style", Georgia, system-ui, "Segoe UI", Roboto, sans-serif)
+        );
+    }
+}

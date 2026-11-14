@@ -7,7 +7,7 @@ $breakpoints: (
     "md": 48rem,
     "lg": 64rem,
     "xl": 80rem,
-);
+) !default;
 
 // a breakpoint name from the map, or a size given directly (for containers)
 @function -size($name) {
@@ -86,8 +86,19 @@ $breakpoints: (
     }
 }
 
-// old name from the third post, kept for existing code
+// picks the query mixin by name: respond(up, md), respond(between, sm, lg)
+@mixin respond($kind, $args...) {
+    @if not list.index((up, down, between, only), $kind) {
+        @error "respond() expects up, down, between or only, got #{meta.inspect($kind)}";
+    }
+    @include meta.apply(meta.get-mixin($kind), $args...) {
+        @content;
+    }
+}
+
+// old name, still works but warns: callers should move to up()
 @mixin from($name) {
+    @warn "from() is deprecated and will be removed in @bookstore/styles 1.0. Use up(#{meta.inspect($name)}) instead.";
     @include up($name) {
         @content;
     }

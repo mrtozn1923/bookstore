@@ -1,0 +1,7 @@
+@use "@bookstore/styles" as bs;
+
+.x {
+    @include bs.respond(above, "md") {
+        color: red;
+    }
+}

@@ -1,0 +1,5 @@
+@use "@bookstore/styles" as bs;
+
+.book-card__title {
+    font-size: bs.rem("18px");
+}
