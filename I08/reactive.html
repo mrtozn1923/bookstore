@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Reactivity with Proxy</title>
+</head>
+<body>
+  <input id="name" placeholder="Your name">
+  <button id="add">Add to cart</button>
+  <p id="output"></p>
+
+  <script>
+    function reactive(initial, render) {
+      const state = new Proxy(initial, {
+        set(t, key, value, receiver) {
+          const result = Reflect.set(t, key, value, receiver);
+          render(state);
+          return result;
+        }
+      });
+      render(state);
+      return state;
+    }
+
+    const output = document.querySelector("#output");
+
+    const state = reactive({ name: "guest", cartCount: 0 }, (s) => {
+      output.textContent = `Hello ${s.name}, ${s.cartCount} books in your cart`;
+    });
+
+    document.querySelector("#name").addEventListener("input", (e) => {
+      state.name = e.target.value || "guest";
+    });
+    document.querySelector("#add").addEventListener("click", () => {
+      state.cartCount++;
+    });
+  </script>
+</body>
+</html>
