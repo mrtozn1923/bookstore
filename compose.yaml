@@ -1,4 +1,4 @@
-# Bookstore with one command: SQL Server, Bookstore.Api and bookstore-web
+# Bookstore with one command: SQL Server, schema migration, Bookstore.Api and bookstore-web
 name: composeseries
 
 services:
@@ -9,9 +9,31 @@ services:
       MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
     volumes:
       - db-data:/var/opt/mssql
-      - ./db:/scripts:ro
     ports:
       - "127.0.0.1:1433:1433"
+    healthcheck:
+      # $$ reaches the container as $: the shell inside the container expands it, not Compose
+      test: SQLCMDPASSWORD="$$MSSQL_SA_PASSWORD" /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -b -Q "SELECT 1" -o /dev/null
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+      start_interval: 2s
+    restart: unless-stopped
+
+  # One-off: creates BookstoreDb and the app login, then exits with 0
+  migrate:
+    image: mcr.microsoft.com/mssql/server:2025-latest
+    entrypoint: ["/opt/mssql-tools18/bin/sqlcmd"]
+    command: ["-C", "-S", "db", "-U", "sa", "-b", "-i", "/scripts/01-bookstore.sql", "-i", "/scripts/02-app-login.sql"]
+    environment:
+      SQLCMDPASSWORD: ${MSSQL_SA_PASSWORD}
+      BOOKSTORE_DB_PASSWORD: ${BOOKSTORE_DB_PASSWORD}
+    volumes:
+      - ./db:/scripts:ro
+    depends_on:
+      db:
+        condition: service_healthy
 
   api:
     build:
@@ -19,10 +41,16 @@ services:
       dockerfile: src/Bookstore.Api/Dockerfile
     environment:
       ConnectionStrings__Default: "Server=db;Database=BookstoreDb;User Id=bookstore_app;Password=${BOOKSTORE_DB_PASSWORD};TrustServerCertificate=True"
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     networks:
       default:
         aliases:
           - bookstore-api
+    restart: unless-stopped
 
   web:
     build: ./web
@@ -31,6 +59,10 @@ services:
       APP_ENVIRONMENT: compose
     ports:
       - "8080:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
 
 volumes:
   db-data:

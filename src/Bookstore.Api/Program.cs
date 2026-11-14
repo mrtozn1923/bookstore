@@ -23,7 +23,8 @@ if (string.IsNullOrWhiteSpace(connectionString))
 }
 else
 {
-    builder.Services.AddSingleton<IBookSource>(new SqlBookSource(connectionString));
+    builder.Services.AddSingleton<IBookSource>(services =>
+        new SqlBookSource(connectionString, services.GetRequiredService<ILogger<SqlBookSource>>()));
 }
 
 // bookstore-web is served from another origin (its own container), so the browser needs CORS

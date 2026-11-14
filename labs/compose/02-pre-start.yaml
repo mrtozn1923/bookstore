@@ -1,0 +1,16 @@
+# Compose 5.3+: the schema step as an init container (pre_start) of api instead of the migrate service.
+# docker compose -f compose.yaml -f labs/compose/02-pre-start.yaml up -d db api web
+services:
+  api:
+    depends_on: !override
+      db:
+        condition: service_healthy
+    pre_start:
+      - image: mcr.microsoft.com/mssql/server:2025-latest
+        entrypoint: ["/opt/mssql-tools18/bin/sqlcmd"]
+        command: ["-C", "-S", "db", "-U", "sa", "-b", "-i", "/scripts/01-bookstore.sql", "-i", "/scripts/02-app-login.sql"]
+        environment:
+          SQLCMDPASSWORD: ${MSSQL_SA_PASSWORD}
+          BOOKSTORE_DB_PASSWORD: ${BOOKSTORE_DB_PASSWORD}
+        volumes:
+          - ./db:/scripts:ro
