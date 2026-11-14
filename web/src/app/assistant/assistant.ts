@@ -1,10 +1,18 @@
 import { Component, ElementRef, afterRenderEffect, inject, signal, viewChild } from '@angular/core';
+import { ApprovalCard } from './approval-card';
 import { ChatStore } from './chat-store';
+import { GenerativeBlock } from './generative-block';
 import { MessageBody } from './message-body';
+
+// Tool çalışırken kullanıcıya gösterilen durum satırları
+const TOOL_LABELS: Record<string, string> = {
+  show_books: 'Looking through the catalog…',
+  cancel_order: 'Cancelling the order…',
+};
 
 @Component({
   selector: 'app-assistant',
-  imports: [MessageBody],
+  imports: [MessageBody, GenerativeBlock, ApprovalCard],
   templateUrl: './assistant.html',
   styleUrl: './assistant.css',
 })
@@ -25,6 +33,10 @@ export class Assistant {
         el.scrollTop = el.scrollHeight;
       }
     });
+  }
+
+  protected toolLabel(name: string): string {
+    return TOOL_LABELS[name] ?? 'Working on it…';
   }
 
   protected onScroll(): void {

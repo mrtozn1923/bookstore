@@ -1,6 +1,7 @@
 <header class="topbar">
   <a routerLink="/">Bookstore</a>
   <a routerLink="/books/9780441172719">Books</a>
+  <span class="cart">Cart: {{ cart.count() }}</span>
 </header>
 <main>
   <router-outlet />

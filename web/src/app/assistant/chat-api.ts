@@ -27,11 +27,20 @@ export class ChatHttpError extends Error {
 @Injectable({ providedIn: 'root' })
 export class ChatApi {
   // EventSource yalnız GET atar ve gövde gönderemez; mesajı POST ile göndermek için fetch kullanıyoruz
-  async *stream(request: ChatRequest, signal: AbortSignal): AsyncGenerator<ChatEvent> {
-    const response = await fetch('/chat/sse', {
+  stream(request: ChatRequest, signal: AbortSignal): AsyncGenerator<ChatEvent> {
+    return this.post('/chat/sse', request, signal);
+  }
+
+  // Onay kartındaki karar; sunucu bekleyen turu sürdürür ve aynı event akışını döner
+  approve(approvalId: string, approved: boolean, signal: AbortSignal): AsyncGenerator<ChatEvent> {
+    return this.post(`/chat/approvals/${encodeURIComponent(approvalId)}`, { approved }, signal);
+  }
+
+  private async *post(url: string, body: unknown, signal: AbortSignal): AsyncGenerator<ChatEvent> {
+    const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' },
-      body: JSON.stringify(request),
+      body: JSON.stringify(body),
       signal,
     });
     if (!response.ok || !response.body) {

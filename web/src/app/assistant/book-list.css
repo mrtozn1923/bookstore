@@ -1,0 +1,33 @@
+h3 {
+  margin: 8px 0;
+  font-size: 1rem;
+}
+
+ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 12px;
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+}
+
+span {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+button {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+}

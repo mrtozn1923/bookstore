@@ -11,7 +11,8 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 string endpoint = builder.Configuration["Assistant:OllamaEndpoint"] ?? "http://localhost:11434";
 string model = builder.Configuration["Assistant:Model"] ?? "qwen3:4b";
 ChatClientBuilder chatBuilder = builder.Services.AddChatClient(new OllamaApiClient(
-    new HttpClient { BaseAddress = new Uri(endpoint), Timeout = TimeSpan.FromMinutes(10) }, model));
+        new HttpClient { BaseAddress = new Uri(endpoint), Timeout = TimeSpan.FromMinutes(10) }, model))
+    .UseFunctionInvocation(configure: f => f.MaximumIterationsPerRequest = 5);
 if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddHttpContextAccessor();
@@ -19,6 +20,10 @@ if (builder.Environment.IsDevelopment())
 }
 
 builder.Services.AddSingleton<ConversationStore>();
+builder.Services.AddSingleton<OrderBook>();
+builder.Services.AddSingleton<AssistantTools>();
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton<PendingApprovals>();
 builder.Services.AddProblemDetails();
 builder.Services.AddRateLimiter(options =>
 {
@@ -46,11 +51,12 @@ app.UseRateLimiter();
 string SystemPrompt =
     "You are the assistant of Bookstore, an online bookstore. Answer briefly and only about books, " +
     "orders and the store. If you are not sure, say so. You may use Markdown.\n" +
+    "To recommend books, call show_books; do not list the books in text, write one short sentence instead.\n" +
     "Store catalog notes. When you use a note, cite it with its number in square brackets, like [1]:\n" +
     Catalog.Notes();
 
 app.MapPost("/chat/sse", IResult (ChatStreamRequest request, IChatClient chat, ConversationStore conversations,
-    ILogger<Program> logger, CancellationToken ct) =>
+    AssistantTools tools, PendingApprovals pending, ILogger<Program> logger, CancellationToken ct) =>
 {
     if (string.IsNullOrWhiteSpace(request.Message) || request.Message.Length > 2000)
     {
@@ -74,21 +80,27 @@ app.MapPost("/chat/sse", IResult (ChatStreamRequest request, IChatClient chat, C
         messages = [new(ChatRole.System, SystemPrompt), .. history, userMessage];
     }
 
-    IAsyncEnumerable<ChatResponseUpdate> updates = chat.GetStreamingResponseAsync(messages, cancellationToken: ct);
-    IAsyncEnumerable<SseItem<object>> events = ChatStreaming.ToSseAsync(updates, logger, answer =>
-    {
-        lock (history)
-        {
-            history.Add(userMessage);
-            history.Add(new ChatMessage(ChatRole.Assistant, answer));
-        }
-    }, ct);
+    IAsyncEnumerable<SseItem<object>> events = StreamTurn(id, history, userMessage, messages, chat, tools, pending, logger, ct)
+        .Prepend(new SseItem<object>(Catalog.Sources(), "sources"))
+        .Prepend(new SseItem<object>(new ConversationEvent(id), "conversation"));
+    return TypedResults.ServerSentEvents(events.WithHeartbeatAsync(TimeSpan.FromSeconds(5), ct));
+}).RequireRateLimiting("chat");
 
-    return TypedResults.ServerSentEvents(
-        events
-            .Prepend(new SseItem<object>(Catalog.Sources(), "sources"))
-            .Prepend(new SseItem<object>(new ConversationEvent(id), "conversation"))
-            .WithHeartbeatAsync(TimeSpan.FromSeconds(5), ct));
+// Onay kartındaki karar: bekleyen turu onay cevabıyla birlikte modele geri verir ve akışı sürdürür
+app.MapPost("/chat/approvals/{approvalId}", IResult (string approvalId, ApprovalDecision decision, IChatClient chat,
+    AssistantTools tools, PendingApprovals pending, ILogger<Program> logger, CancellationToken ct) =>
+{
+    PendingApproval? item = pending.Take(approvalId);
+    if (item is null)
+    {
+        return TypedResults.Problem(title: "Approval not found", statusCode: 404,
+            detail: "This approval request has expired or was already answered.");
+    }
+
+    item.Messages.Add(new ChatMessage(ChatRole.User, [item.Request.CreateResponse(decision.Approved, decision.Reason)]));
+    IAsyncEnumerable<SseItem<object>> events =
+        StreamTurn(item.ConversationId, item.History, item.UserMessage, item.Messages, chat, tools, pending, logger, ct);
+    return TypedResults.ServerSentEvents(events.WithHeartbeatAsync(TimeSpan.FromSeconds(5), ct));
 }).RequireRateLimiting("chat");
 
 app.MapGet("/chat/conversations/{id:guid}/messages", IResult (Guid id, ConversationStore conversations) =>
@@ -105,3 +117,34 @@ app.MapGet("/chat/conversations/{id:guid}/messages", IResult (Guid id, Conversat
 });
 
 app.Run();
+
+// Bir model turunu SSE event'lerine çevirir; onay istenirse turu bekletir, düzgün biterse geçmişe yazar
+static IAsyncEnumerable<SseItem<object>> StreamTurn(Guid conversationId, List<ChatMessage> history, ChatMessage userMessage,
+    List<ChatMessage> messages, IChatClient chat, AssistantTools tools, PendingApprovals pending, ILogger logger,
+    CancellationToken ct)
+{
+    List<ChatResponseUpdate> received = [];
+    IAsyncEnumerable<ChatResponseUpdate> updates = chat.GetStreamingResponseAsync(messages, tools.CreateOptions(), ct)
+        .Select(update =>
+        {
+            received.Add(update);
+            return update;
+        });
+
+    return ChatStreaming.ToSseAsync(updates, logger, answer =>
+    {
+        ToolApprovalRequestContent? approval = received.SelectMany(u => u.Contents).OfType<ToolApprovalRequestContent>().FirstOrDefault();
+        if (approval is not null)
+        {
+            // Tur bitmedi: model ve tool çağrıları dahil bütün mesajlar onay gelene kadar bekler
+            messages.AddMessages(received);
+            pending.Save(approval, conversationId, history, userMessage, messages);
+            return;
+        }
+        lock (history)
+        {
+            history.Add(userMessage);
+            history.Add(new ChatMessage(ChatRole.Assistant, answer));
+        }
+    }, ct);
+}

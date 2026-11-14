@@ -69,8 +69,17 @@ public static class ChatStreaming
                             break;
                         case FunctionResultContent result:
                             // Sonuçta yalnız CallId var; adı started event'inde sakladığımız eşlemeden buluyoruz
-                            yield return new SseItem<object>(
-                                new ToolEvent(result.CallId, toolNames.GetValueOrDefault(result.CallId, ""), "completed"), "tool");
+                            string name = toolNames.GetValueOrDefault(result.CallId, "");
+                            yield return new SseItem<object>(new ToolEvent(result.CallId, name, "completed"), "tool");
+                            // Tool hata verdiyse sonuç bir hata metnidir; component'e gitmez
+                            if (result.Exception is null && AssistantTools.UiComponents.TryGetValue(name, out string? component))
+                            {
+                                yield return new SseItem<object>(new UiEvent(result.CallId, component, result.Result), "ui");
+                            }
+                            break;
+                        case ToolApprovalRequestContent approval when approval.ToolCall is FunctionCallContent call:
+                            yield return new SseItem<object>(new ApprovalEvent(approval.RequestId, call.Name, call.Arguments,
+                                (int)PendingApprovals.Lifetime.TotalSeconds), "approval");
                             break;
                         case UsageContent usage:
                             yield return new SseItem<object>(

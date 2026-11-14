@@ -9,6 +9,17 @@
         <p class="status">{{ store.status() === 'submitted' ? 'Sending…' : 'Thinking…' }}</p>
       }
       @if (message.role === 'assistant') {
+        @for (tool of message.tools; track tool.callId) {
+          @if (tool.phase === 'started') {
+            <p class="status">{{ toolLabel(tool.name) }}</p>
+          }
+        }
+        @for (block of message.blocks; track $index) {
+          <app-generative-block [block]="block" />
+        }
+        @if (message.approval; as approval) {
+          <app-approval-card [request]="approval" [disabled]="store.busy()" (decide)="store.respond(message.id, $event)" />
+        }
         <app-message-body [text]="message.text" [final]="message.ending !== null" [sources]="message.sources" />
       } @else {
         <p class="text">{{ message.text }}</p>

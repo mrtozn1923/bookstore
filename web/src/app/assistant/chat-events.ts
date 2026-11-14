@@ -14,7 +14,9 @@ export type ChatEvent =
   | { type: 'tool'; callId: string; name: string; phase: 'started' | 'completed' }
   | { type: 'usage'; inputTokens: number | null; outputTokens: number | null }
   | { type: 'done' }
-  | { type: 'error'; message: string; partial: boolean };
+  | { type: 'error'; message: string; partial: boolean }
+  | { type: 'approval'; approvalId: string; tool: string; arguments: Record<string, unknown> | null; expiresInSeconds: number }
+  | { type: 'ui'; callId: string; component: string; props: unknown };
 
 // SSE'den gelen ham event adını ve JSON verisini tiplenmiş ChatEvent'e çevirir
 export function toChatEvent(event: string, data: string): ChatEvent | null {
@@ -30,6 +32,8 @@ export function toChatEvent(event: string, data: string): ChatEvent | null {
     case 'tool':
     case 'usage':
     case 'error':
+    case 'approval':
+    case 'ui':
       return { type: event, ...JSON.parse(data) };
     default:
       // Bilinmeyen event'i yok say: sunucu yeni bir event eklediğinde eski istemci bozulmasın

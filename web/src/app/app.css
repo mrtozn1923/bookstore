@@ -16,3 +16,8 @@ main {
   margin: 0 auto;
   padding: 24px;
 }
+
+.cart {
+  margin-left: auto;
+  color: #f9fafb;
+}

@@ -1,6 +1,8 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { ChatApi, ChatHttpError } from './chat-api';
-import { Source } from './chat-events';
+import { ApprovalRequest } from './approval-card';
+import { ChatEvent, Source } from './chat-events';
+import { UiBlock, parseUiBlock } from './ui-blocks';
 
 export type ChatStatus = 'idle' | 'submitted' | 'streaming' | 'done' | 'error' | 'aborted';
 
@@ -28,6 +30,15 @@ export interface ChatMessage {
   // Asistan mesajının nasıl bittiği; kesilen cevap silinmez, işaretlenir
   ending: 'complete' | 'interrupted' | 'stopped' | null;
   sources: Source[];
+  tools: ToolActivity[];
+  blocks: UiBlock[];
+  approval: ApprovalRequest | null;
+}
+
+export interface ToolActivity {
+  callId: string;
+  name: string;
+  phase: 'started' | 'completed';
 }
 
 export interface Usage {
@@ -80,6 +91,9 @@ export class ChatStore {
         text: h.text,
         ending: h.role === 'assistant' ? 'complete' : null,
         sources: [],
+        tools: [],
+        blocks: [],
+        approval: null,
       })),
     );
   }
@@ -131,6 +145,21 @@ export class ChatStore {
       return;
     }
     const id = this.addTurn(text);
+    const request = { message: text, conversationId: this.conversationId(), replaceLastTurn };
+    await this.consume(id, (signal) => this.api.stream(request, signal));
+  }
+
+  // Onay kartındaki karar: sunucu aynı turu sürdürür, cevap aynı asistan mesajına eklenir
+  async respond(messageId: number, approved: boolean): Promise<void> {
+    const approval = this.messages().find((m) => m.id === messageId)?.approval;
+    if (!approval || approval.state !== 'pending' || !this.canSend() || !this.to('submitted')) {
+      return;
+    }
+    this.patch(messageId, { approval: { ...approval, state: approved ? 'approved' : 'rejected' }, ending: null });
+    await this.consume(messageId, (signal) => this.api.approve(approval.approvalId, approved, signal));
+  }
+
+  private async consume(id: number, open: (signal: AbortSignal) => AsyncGenerator<ChatEvent>): Promise<void> {
     this.error.set(null);
     const controller = new AbortController();
     this.controller = controller;
@@ -150,9 +179,15 @@ export class ChatStore {
     resetSilence();
     let ended = false;
     try {
-      const request = { message: text, conversationId: this.conversationId(), replaceLastTurn };
-      for await (const event of this.api.stream(request, controller.signal)) {
+      for await (const event of open(controller.signal)) {
         resetSilence();
+        // Modelden gelen ilk hayat belirtisi (düşünme, metin, tool, onay, component) akışı başlatır
+        if (!['ping', 'conversation', 'sources', 'usage'].includes(event.type)) {
+          clearTimeout(timer);
+          if (this.status() === 'submitted') {
+            this.to('streaming');
+          }
+        }
         switch (event.type) {
           case 'conversation':
             this.conversationId.set(event.id);
@@ -161,15 +196,34 @@ export class ChatStore {
           case 'sources':
             this.patch(id, { sources: event.items });
             break;
-          case 'thinking':
           case 'delta':
-            clearTimeout(timer);
-            if (this.status() === 'submitted') {
-              this.to('streaming');
+            this.queueDelta(id, event.text);
+            break;
+          case 'tool':
+            this.update(id, (m) => ({
+              tools: [...m.tools.filter((t) => t.callId !== event.callId), { callId: event.callId, name: event.name, phase: event.phase }],
+            }));
+            break;
+          case 'ui': {
+            // Sunucudan gelse bile props doğrulanmadan component'e verilmez
+            const block = parseUiBlock(event.component, event.props);
+            if (block) {
+              this.update(id, (m) => ({ blocks: [...m.blocks, block] }));
+            } else {
+              console.warn(`Rejected UI block "${event.component}"`, event.props);
             }
-            if (event.type === 'delta') {
-              this.queueDelta(id, event.text);
-            }
+            break;
+          }
+          case 'approval':
+            this.patch(id, {
+              approval: {
+                approvalId: event.approvalId,
+                tool: event.tool,
+                arguments: event.arguments,
+                expiresAt: Date.now() + event.expiresInSeconds * 1000,
+                state: 'pending',
+              },
+            });
             break;
           case 'usage':
             this.usage.set({ inputTokens: event.inputTokens, outputTokens: event.outputTokens });
@@ -230,8 +284,8 @@ export class ChatStore {
     const id = this.nextId++;
     this.messages.update((list) => [
       ...list,
-      { id: userId, role: 'user', text, ending: null, sources: [] },
-      { id, role: 'assistant', text: '', ending: null, sources: [] },
+      { id: userId, role: 'user', text, ending: null, sources: [], tools: [], blocks: [], approval: null },
+      { id, role: 'assistant', text: '', ending: null, sources: [], tools: [], blocks: [], approval: null },
     ]);
     return id;
   }
@@ -281,5 +335,9 @@ export class ChatStore {
 
   private patch(id: number, change: Partial<ChatMessage>): void {
     this.messages.update((list) => list.map((m) => (m.id === id ? { ...m, ...change } : m)));
+  }
+
+  private update(id: number, change: (m: ChatMessage) => Partial<ChatMessage>): void {
+    this.messages.update((list) => list.map((m) => (m.id === id ? { ...m, ...change(m) } : m)));
   }
 }
