@@ -1,0 +1,9 @@
+@import "buttons";
+
+.book-card {
+    @include card-surface;
+
+    &__price {
+        color: map-get((sale: #b91c1c, regular: #1c1917), sale);
+    }
+}

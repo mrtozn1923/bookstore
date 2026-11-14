@@ -1,0 +1,5 @@
+@use "../modern/abstracts";
+
+.debug {
+    @include abstracts.debug-outline;
+}

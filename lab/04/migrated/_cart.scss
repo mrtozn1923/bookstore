@@ -1,0 +1,8 @@
+@use "sass:math";
+@use "buttons";
+@use "mixins";
+
+.cart {
+    @include mixins.card-surface;
+    width: math.percentage(1 / 3);
+}

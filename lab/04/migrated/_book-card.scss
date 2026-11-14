@@ -1,0 +1,11 @@
+@use "sass:map";
+@use "buttons";
+@use "mixins";
+
+.book-card {
+    @include mixins.card-surface;
+
+    &__price {
+        color: map.get((sale: #b91c1c, regular: #1c1917), sale);
+    }
+}

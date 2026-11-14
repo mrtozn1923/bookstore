@@ -1,4 +1,5 @@
 @use "sass:color";
+@use "abstracts" as *;
 
 .book-card {
     padding: var(--space);
@@ -17,6 +18,10 @@
     &__title {
         margin: 0 0 4px;
         color: var(--color-brand);
+
+        @include from("lg") {
+            font-size: 1.25rem;
+        }
     }
 
     &__author {

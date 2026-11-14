@@ -1,0 +1,5 @@
+@use "../modern/abstracts/mixins";
+
+.debug {
+    border-color: mixins.$-border-shade;
+}

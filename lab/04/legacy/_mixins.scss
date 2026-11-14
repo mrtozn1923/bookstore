@@ -1,0 +1,5 @@
+@mixin card-surface {
+    padding: $space;
+    border: 1px solid darken($brand, 10%);
+    border-radius: $radius;
+}

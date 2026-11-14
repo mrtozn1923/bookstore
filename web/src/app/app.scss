@@ -1,4 +1,4 @@
-@use "../styles/breakpoints" as bp;
+@use "abstracts" as *;
 
 .site-header {
     padding: var(--space) calc(var(--space) * 1.5);
@@ -10,11 +10,11 @@
     gap: var(--space);
     padding: calc(var(--space) * 1.5);
 
-    @include bp.from("sm") {
+    @include from("sm") {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    @include bp.from("lg") {
+    @include from("lg") {
         grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 }

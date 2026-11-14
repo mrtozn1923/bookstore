@@ -1,0 +1,8 @@
+// configurable from outside with @use ... with ()
+$brand: #2563eb !default;
+$radius: 2px !default;
+
+.datepicker {
+    border-radius: $radius;
+    border: 1px solid $brand;
+}

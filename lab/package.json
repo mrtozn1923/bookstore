@@ -6,6 +6,7 @@
   "devDependencies": {
     "playwright": "1.65.0",
     "sass": "1.108.2",
-    "sass-embedded": "1.108.2"
+    "sass-embedded": "1.108.2",
+    "sass-migrator": "2.7.0"
   }
 }

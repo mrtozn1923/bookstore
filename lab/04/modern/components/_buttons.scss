@@ -1,0 +1,7 @@
+@use "../abstracts";
+
+.button {
+    padding: abstracts.$space * 0.5 abstracts.$space;
+    background-color: abstracts.$brand;
+    color: #ffffff;
+}

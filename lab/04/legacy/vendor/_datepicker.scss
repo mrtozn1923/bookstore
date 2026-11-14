@@ -1,0 +1,8 @@
+// third-party partial copied into the repo years ago
+$brand: #2563eb;
+$radius: 2px;
+
+.datepicker {
+    border-radius: $radius;
+    border: 1px solid $brand;
+}

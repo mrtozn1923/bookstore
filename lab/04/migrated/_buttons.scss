@@ -1,0 +1,7 @@
+@use "variables";
+
+.button {
+    padding: variables.$space * 0.5 variables.$space;
+    background-color: variables.$brand;
+    color: #ffffff;
+}

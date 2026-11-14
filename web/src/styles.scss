@@ -1,13 +1,7 @@
-@use "styles/utilities";
+@use "abstracts" as *;
+@use "utilities";
 
 // design values live in Sass; the browser gets custom properties
-$color-brand: #b45309;
-$color-border: #d6d3d1;
-$color-text: #1c1917;
-$color-muted: #57534e;
-$radius: 8px;
-$space: 16px;
-
 :root {
     --color-brand: #{$color-brand};
     --color-border: #{$color-border};

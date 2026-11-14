@@ -1,0 +1,20 @@
+@use "sass:color";
+@use "tokens";
+
+// private: starts with -, invisible outside this file
+$-border-shade: -10%;
+
+@function -border-color($color) {
+    @return color.scale($color, $lightness: $-border-shade);
+}
+
+@mixin card-surface {
+    padding: tokens.$space;
+    border: 1px solid -border-color(tokens.$brand);
+    border-radius: tokens.$radius;
+}
+
+// only for debugging layouts, not part of the public API
+@mixin debug-outline {
+    outline: 1px dashed magenta;
+}

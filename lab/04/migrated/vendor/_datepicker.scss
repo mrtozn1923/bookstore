@@ -1,0 +1,10 @@
+@use "../variables";
+
+// third-party partial copied into the repo years ago
+variables.$brand: #2563eb;
+variables.$radius: 2px;
+
+.datepicker {
+    border-radius: variables.$radius;
+    border: 1px solid variables.$brand;
+}

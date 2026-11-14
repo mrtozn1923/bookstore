@@ -1,0 +1,13 @@
+@use "sass:map";
+@use "../abstracts" as *;
+@use "buttons";
+
+$price-colors: (sale: #b91c1c, regular: #1c1917);
+
+.book-card {
+    @include card-surface;
+
+    &__price {
+        color: map.get($price-colors, sale);
+    }
+}

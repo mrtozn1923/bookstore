@@ -1,0 +1,8 @@
+@use "sass:color";
+@use "variables";
+
+@mixin card-surface {
+    padding: variables.$space;
+    border: 1px solid color.adjust(variables.$brand, $lightness: -10%);
+    border-radius: variables.$radius;
+}
