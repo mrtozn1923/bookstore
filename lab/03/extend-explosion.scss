@@ -1,0 +1,22 @@
+.price {
+    font-variant-numeric: tabular-nums;
+}
+
+.book-card .price,
+.cart .price,
+.order-summary .price {
+    font-weight: 700;
+}
+
+.checkout-total .price-label {
+    color: #57534e;
+}
+
+// "a total is a price": extend the class
+.checkout-total {
+    @extend .price;
+}
+
+.order-row__total {
+    @extend .price;
+}

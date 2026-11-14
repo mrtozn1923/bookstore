@@ -1,3 +1,5 @@
+@use "../styles/breakpoints" as bp;
+
 .site-header {
     padding: var(--space) calc(var(--space) * 1.5);
     border-bottom: 1px solid var(--color-border);
@@ -5,7 +7,14 @@
 
 .book-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
     gap: var(--space);
     padding: calc(var(--space) * 1.5);
+
+    @include bp.from("sm") {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @include bp.from("lg") {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
 }

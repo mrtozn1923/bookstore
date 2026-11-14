@@ -1,0 +1,57 @@
+@use "sass:color";
+@use "sass:map";
+
+$spacers: (
+    0: 0,
+    1: 4px,
+    2: 8px,
+    3: 16px,
+    4: 24px,
+);
+
+$sides: (
+    "": null,
+    "t": "block-start",
+    "b": "block-end",
+    "x": "inline",
+    "y": "block",
+);
+
+// .m-0 … .my-4: 5 sizes × 5 sides
+@each $suffix, $side in $sides {
+    @each $key, $size in $spacers {
+        .m#{$suffix}-#{$key} {
+            @if $side {
+                margin-#{$side}: $size;
+            } @else {
+                margin: $size;
+            }
+        }
+    }
+}
+
+// .cols-1 … .cols-4
+@for $i from 1 through 4 {
+    .cols-#{$i} {
+        grid-template-columns: repeat($i, minmax(0, 1fr));
+    }
+}
+
+$stock-states: (
+    "in-stock": #15803d,
+    "low": #fbbf24,
+    "preorder": #1d4ed8,
+    "out": #e7e5e4,
+);
+
+// text color follows the background: dark text on light badges
+@each $state, $bg in $stock-states {
+    .stock-badge--#{$state} {
+        background-color: $bg;
+        @if color.channel($bg, "lightness", $space: oklch) > 70% {
+            color: #1c1917;
+        } @else {
+            color: #ffffff;
+        }
+    }
+}

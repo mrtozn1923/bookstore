@@ -1,3 +1,5 @@
+@use "sass:color";
+
 .book-card {
     padding: var(--space);
     border: 1px solid var(--color-border);
@@ -24,5 +26,30 @@
 
     &__price {
         font-weight: 700;
+    }
+}
+
+$stock-states: (
+    "in-stock": #15803d,
+    "low": #fbbf24,
+    "out": #e7e5e4,
+);
+
+.stock-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+}
+
+// text color follows the background: dark text on light badges
+@each $state, $bg in $stock-states {
+    .stock-badge--#{$state} {
+        background-color: $bg;
+        @if color.channel($bg, "lightness", $space: oklch) > 70% {
+            color: #1c1917;
+        } @else {
+            color: #ffffff;
+        }
     }
 }

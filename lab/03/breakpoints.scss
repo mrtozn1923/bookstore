@@ -1,0 +1,46 @@
+@use "sass:map";
+
+$breakpoints: (
+    "sm": 36rem,
+    "md": 48rem,
+    "lg": 64rem,
+);
+
+@mixin from($name) {
+    @if not map.has-key($breakpoints, $name) {
+        @error "Unknown breakpoint '#{$name}'. Expected one of: #{map.keys($breakpoints)}";
+    }
+    @media (width >= map.get($breakpoints, $name)) {
+        @content;
+    }
+}
+
+// arguments with default values
+@mixin focus-ring($color: var(--color-brand), $offset: 2px) {
+    &:focus-visible {
+        outline: 2px solid $color;
+        outline-offset: $offset;
+    }
+}
+
+.book-list {
+    display: grid;
+    gap: 16px;
+
+    @include from("md") {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include from("lg") {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+    }
+}
+
+.book-card__link {
+    @include focus-ring;
+}
+
+.cart-button {
+    @include focus-ring($offset: 4px);
+}

@@ -1,0 +1,30 @@
+@use "sass:math";
+
+$root-font-size: 16px;
+
+@function rem($px) {
+    @if math.unit($px) != "px" {
+        @error "rem() expects px, got #{$px}";
+    }
+    @return math.div($px, $root-font-size) * 1rem;
+}
+
+.book-card__title {
+    font-size: rem(18px);
+    margin-block-end: rem(6px);
+}
+
+$gap: 12px;
+
+.price-tag {
+    // two literal numbers: Sass keeps the slash
+    padding: 12px / 2;
+    // a variable on one side: division, with a deprecation warning
+    padding-block: $gap / 2;
+    // the modern way
+    margin: math.div(12px, 2);
+    // inside calc() a slash is always division
+    inset-inline-end: calc(100% / 3);
+    // a real CSS slash: aspect-ratio and grid-area
+    aspect-ratio: 2 / 3;
+}

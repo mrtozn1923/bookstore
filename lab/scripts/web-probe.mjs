@@ -24,7 +24,9 @@ await page.goto(`http://127.0.0.1:${server.address().port}/`);
 await page.waitForSelector(selector);
 const rows = await page.$$eval(selector, (els, names) => els.map((el) => {
     const cs = getComputedStyle(el);
-    const label = (el.querySelector("h1, h3") ?? el).textContent.trim().slice(0, 24);
+    const heads = el.querySelectorAll("h1, h3");
+    const text = heads.length > 1 ? "." + el.classList[0] : (heads[0] ?? el).textContent;
+    const label = text.trim().slice(0, 24);
     return `${label.padEnd(24)} ` + names.map((n) => `${n}=${cs.getPropertyValue(n)}`).join(" ");
 }), props.split(","));
 console.log(rows.join("\n"));
