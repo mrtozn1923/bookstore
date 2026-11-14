@@ -1,0 +1,21 @@
+[Unit]
+Description=Bookstore API (ASP.NET Core on Kestrel)
+After=network.target
+
+[Service]
+Type=notify
+User=bookstore
+Group=bookstore
+WorkingDirectory=/opt/bookstore/current
+ExecStart=/usr/bin/dotnet /opt/bookstore/current/Bookstore.Api.dll
+Restart=always
+RestartSec=10
+TimeoutStopSec=30
+SyslogIdentifier=bookstore-api
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=ASPNETCORE_URLS=http://127.0.0.1:5000
+Environment=DOTNET_NOLOGO=true
+EnvironmentFile=/etc/bookstore/secrets.env
+
+[Install]
+WantedBy=multi-user.target

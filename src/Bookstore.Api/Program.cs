@@ -1,4 +1,6 @@
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+builder.Services.AddSystemd();
+
 WebApplication app = builder.Build();
 
 Book[] books =

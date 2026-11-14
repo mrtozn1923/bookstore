@@ -1,0 +1,10 @@
+[Unit]
+Description=Nightly BookstoreDb backup
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=bookstore
+Group=bookstore
+ExecStart=/usr/local/bin/bookstore-db-backup
