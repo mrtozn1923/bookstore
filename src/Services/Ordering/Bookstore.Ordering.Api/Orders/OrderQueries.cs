@@ -15,7 +15,7 @@ public sealed class OrderQueries(OrderingDbContext db)
             .Select(o => new OrderResponse(
                 id, o.Status.ToString(), o.PlacedAtUtc, o.Buyer.Name, o.Buyer.Email,
                 o.Items.Select(i => new OrderLineResponse(i.Isbn, i.Title, i.UnitPrice.Amount, i.Quantity, i.LineTotal.Amount)).ToList(),
-                o.Total.Amount, o.Total.Currency))
+                o.Total.Amount, o.Total.Currency, o.StockReservedUntilUtc))
             .FirstOrDefaultAsync(ct);
     }
 

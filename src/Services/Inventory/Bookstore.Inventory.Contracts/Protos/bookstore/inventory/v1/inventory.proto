@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package bookstore.inventory.v1;
+
+option csharp_namespace = "Bookstore.Inventory.V1";
+
+import "google/protobuf/timestamp.proto";
+
+// The contract from the gRPC and GraphQL series, without the fields Bookstore's
+// microservices don't use. Their numbers stay reserved.
+service InventoryService {
+  rpc GetStock (GetStockRequest) returns (GetStockResponse);
+  rpc ReserveStock (ReserveStockRequest) returns (ReserveStockResponse);
+  rpc ReleaseStock (ReleaseStockRequest) returns (ReleaseStockResponse);
+}
+
+enum StockStatus {
+  STOCK_STATUS_UNSPECIFIED = 0;
+  STOCK_STATUS_IN_STOCK = 1;
+  STOCK_STATUS_LOW = 2;
+  STOCK_STATUS_OUT_OF_STOCK = 3;
+}
+
+// book_id is the ISBN-13.
+message GetStockRequest {
+  string book_id = 1;
+}
+
+message GetStockResponse {
+  reserved 5, 7, 8;
+  reserved "unit_price", "reorder_level", "warehouse_quantities";
+  string book_id = 1;
+  int32 available = 2;
+  int32 reserved_quantity = 3;
+  StockStatus status = 4;
+  google.protobuf.Timestamp updated_at = 6;
+}
+
+message ReservationLine {
+  string book_id = 1;
+  int32 quantity = 2;
+}
+
+// order_id makes the call idempotent: the same order always gets the same reservation.
+message ReserveStockRequest {
+  string order_id = 1;
+  repeated ReservationLine lines = 2;
+}
+
+message ReserveStockResponse {
+  string reservation_id = 1;
+  google.protobuf.Timestamp expires_at = 2;
+}
+
+message ReleaseStockRequest {
+  oneof target {
+    string reservation_id = 1;
+    string order_id = 2;
+  }
+}
+
+message ReleaseStockResponse {
+  int32 released_lines = 1;
+}

@@ -6,7 +6,8 @@ public sealed class SharedCodeRules
     private static readonly string[] AllowedBuildingBlocks = ["Bookstore.Contracts", "Bookstore.ServiceDefaults"];
 
     // A contracts project is a description of messages, not a place for logic or infrastructure.
-    private static readonly string[] AllowedContractPackages = [];
+    // gRPC contracts need the protobuf runtime, the gRPC base types and the code generator; nothing else.
+    private static readonly string[] AllowedContractPackages = ["Google.Protobuf", "Grpc.Core.Api", "Grpc.Tools"];
 
     public static TheoryData<string> ServiceProjectNames() => [.. RepositoryLayout.ServiceProjects().Select(p => p.Name)];
 

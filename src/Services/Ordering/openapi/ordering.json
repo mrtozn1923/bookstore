@@ -51,6 +51,16 @@
                 }
               }
             }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         }
       },
@@ -253,7 +263,8 @@
           "customerEmail",
           "items",
           "total",
-          "currency"
+          "currency",
+          "stockReservedUntilUtc"
         ],
         "type": "object",
         "properties": {
@@ -290,6 +301,13 @@
           },
           "currency": {
             "type": "string"
+          },
+          "stockReservedUntilUtc": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
           }
         }
       },

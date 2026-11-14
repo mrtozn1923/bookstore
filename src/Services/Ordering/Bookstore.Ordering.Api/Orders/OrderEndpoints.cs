@@ -13,7 +13,8 @@ public static class OrderEndpoints
             .MapGroup("/api/v{version:apiVersion}/orders")
             .HasApiVersion(1.0);
 
-        orders.MapPost("/", PlaceOrder).ProducesValidationProblem().ProducesProblem(StatusCodes.Status409Conflict);
+        orders.MapPost("/", PlaceOrder).ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status409Conflict).ProducesProblem(StatusCodes.Status503ServiceUnavailable);
         orders.MapGet("/{orderId:guid}", GetOrder).WithName("GetOrder").ProducesProblem(StatusCodes.Status404NotFound);
         orders.MapGet("/", ListOrders);
         return app;
@@ -44,6 +45,14 @@ public static class OrderEndpoints
                 title: "Prices changed", detail: "Some prices changed since the cart was shown. Confirm the new prices.",
                 statusCode: StatusCodes.Status409Conflict,
                 extensions: new Dictionary<string, object?> { ["changes"] = changed.Changes }),
+            PlaceOrderOutcome.OutOfStock outOfStock => TypedResults.Problem(
+                title: "Out of stock", detail: $"Not enough stock for: {string.Join(", ", outOfStock.Isbns)}.",
+                statusCode: StatusCodes.Status409Conflict),
+            PlaceOrderOutcome.InventoryUnavailable unavailable => TypedResults.Problem(
+                title: "Checkout is temporarily unavailable",
+                detail: "Stock could not be reserved. No order was created; please try again in a moment.",
+                statusCode: StatusCodes.Status503ServiceUnavailable,
+                extensions: new Dictionary<string, object?> { ["grpcStatus"] = unavailable.Status.ToString() }),
             _ => throw new UnreachableException()
         };
     }

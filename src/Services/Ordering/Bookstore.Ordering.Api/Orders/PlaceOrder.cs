@@ -1,6 +1,8 @@
+using Bookstore.Inventory.V1;
 using Bookstore.Ordering.CatalogCopy;
 using Bookstore.Ordering.Data;
 using Bookstore.Ordering.Domain;
+using Grpc.Core;
 using Microsoft.EntityFrameworkCore;
 
 namespace Bookstore.Ordering.Orders;
@@ -10,10 +12,14 @@ public abstract record PlaceOrderOutcome
     public sealed record Placed(Order Order) : PlaceOrderOutcome;
     public sealed record UnknownBooks(IReadOnlyList<string> Isbns) : PlaceOrderOutcome;
     public sealed record PricesChanged(IReadOnlyList<PriceChange> Changes) : PlaceOrderOutcome;
+    public sealed record OutOfStock(IReadOnlyList<string> Isbns) : PlaceOrderOutcome;
+    public sealed record InventoryUnavailable(StatusCode Status) : PlaceOrderOutcome;
 }
 
-// The write side: load what the aggregate needs, let it decide, save. No call to another service.
-public sealed class PlaceOrderHandler(OrderingDbContext db, TimeProvider clock, ILogger<PlaceOrderHandler> logger)
+// The write side: load what the aggregate needs, let it decide, reserve stock synchronously, save.
+public sealed class PlaceOrderHandler(
+    OrderingDbContext db, InventoryService.InventoryServiceClient inventory, IConfiguration configuration,
+    TimeProvider clock, ILogger<PlaceOrderHandler> logger)
 {
     public async Task<PlaceOrderOutcome> HandleAsync(PlaceOrderRequest request, CancellationToken ct)
     {
@@ -45,6 +51,32 @@ public sealed class PlaceOrderHandler(OrderingDbContext db, TimeProvider clock, 
             [.. request.Items.Select(i => new OrderLine(
                 i.Isbn, books[i.Isbn].Title, new Money(books[i.Isbn].Price, books[i.Isbn].Currency), i.Quantity))],
             clock);
+
+        // Sync call with its own deadline: Inventory gets at most this long, then the caller gives up.
+        TimeSpan deadline = configuration.GetValue("Ordering:ReservationDeadline", TimeSpan.FromSeconds(2));
+        try
+        {
+            ReserveStockResponse reserved = await inventory.ReserveStockAsync(
+                new ReserveStockRequest
+                {
+                    OrderId = order.Id.ToString(),
+                    Lines = { order.Items.Select(i => new ReservationLine { BookId = i.Isbn, Quantity = i.Quantity }) }
+                },
+                deadline: clock.GetUtcNow().UtcDateTime + deadline,
+                cancellationToken: ct);
+            order.MarkStockReserved(Guid.Parse(reserved.ReservationId), reserved.ExpiresAt.ToDateTime());
+        }
+        catch (RpcException ex) when (ex.StatusCode == StatusCode.FailedPrecondition)
+        {
+            string unavailable = ex.Trailers.GetValue("unavailable-books") ?? "";
+            return new PlaceOrderOutcome.OutOfStock(unavailable.Split(',', StringSplitOptions.RemoveEmptyEntries));
+        }
+        catch (RpcException ex) when (ex.StatusCode is StatusCode.Unavailable or StatusCode.DeadlineExceeded or StatusCode.Aborted)
+        {
+            // Unknown result: the reservation may exist on Inventory's side. Its TTL releases it.
+            logger.LogWarning("Stock reservation for order {OrderId} failed with {Status}", order.Id, ex.StatusCode);
+            return new PlaceOrderOutcome.InventoryUnavailable(ex.StatusCode);
+        }
 
         db.Orders.Add(order);
         await db.SaveChangesAsync(ct);

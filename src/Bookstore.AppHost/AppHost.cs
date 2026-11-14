@@ -41,6 +41,30 @@ IResourceBuilder<ProjectResource> catalog = builder.AddProject<Projects.Bookstor
     .WaitFor(redis)
     .WithHttpHealthCheck("/health");
 
+IResourceBuilder<ProjectResource> inventoryMigrator = builder
+    .AddProject<Projects.Bookstore_Inventory_Grpc>("inventory-migrator", options => options.ExcludeLaunchProfile = true)
+    .WithArgs("--migrate")
+    .WithEnvironment("Seed__SampleData", "true")
+    .WithReference(inventoryDb)
+    .WaitFor(inventoryDb);
+
+// Two endpoints: "http" from the launch profile (health checks) and "grpc". gRPC without TLS needs
+// a port that speaks only HTTP/2, so Kestrel gets both endpoints, with their protocols, from the AppHost.
+IResourceBuilder<ProjectResource> inventory = builder.AddProject<Projects.Bookstore_Inventory_Grpc>("inventory")
+    .WithHttpEndpoint(name: "grpc")
+    .WithEndpoint("grpc", endpoint => endpoint.Transport = "http2")
+    .WithReference(inventoryDb)
+    .WaitForCompletion(inventoryMigrator)
+    .WithHttpHealthCheck("/health");
+EndpointReference inventoryHttp = inventory.GetEndpoint("http");
+EndpointReference inventoryGrpc = inventory.GetEndpoint("grpc");
+inventory
+    .WithEnvironment("Kestrel__Endpoints__Http__Url",
+        ReferenceExpression.Create($"http://localhost:{inventoryHttp.Property(EndpointProperty.TargetPort)}"))
+    .WithEnvironment("Kestrel__Endpoints__Grpc__Url",
+        ReferenceExpression.Create($"http://localhost:{inventoryGrpc.Property(EndpointProperty.TargetPort)}"))
+    .WithEnvironment("Kestrel__Endpoints__Grpc__Protocols", "Http2");
+
 // Ordering's migrator also fills the local book copy once, from Catalog's API.
 IResourceBuilder<ProjectResource> orderingMigrator = builder
     .AddProject<Projects.Bookstore_Ordering_Api>("ordering-migrator", options => options.ExcludeLaunchProfile = true)
@@ -51,14 +75,11 @@ IResourceBuilder<ProjectResource> orderingMigrator = builder
     .WaitFor(orderingDb)
     .WaitFor(catalog);
 
+// Ordering calls Inventory at runtime, but does not wait for it to start: they start independently.
 builder.AddProject<Projects.Bookstore_Ordering_Api>("ordering")
     .WithReference(orderingDb)
+    .WithReference(inventory)
     .WaitForCompletion(orderingMigrator)
-    .WithHttpHealthCheck("/health");
-
-builder.AddProject<Projects.Bookstore_Inventory_Grpc>("inventory")
-    .WithReference(inventoryDb)
-    .WaitFor(inventoryDb)
     .WithHttpHealthCheck("/health");
 
 builder.AddProject<Projects.Bookstore_Payments_Api>("payments")

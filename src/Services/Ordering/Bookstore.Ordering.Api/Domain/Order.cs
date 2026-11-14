@@ -3,6 +3,7 @@ namespace Bookstore.Ordering.Domain;
 public enum OrderStatus
 {
     Pending,
+    StockReserved,
     Cancelled
 }
 
@@ -26,6 +27,8 @@ public sealed class Order
     public DateTime PlacedAtUtc { get; private set; }
     public OrderStatus Status { get; private set; }
     public string? CancellationReason { get; private set; }
+    public Guid? StockReservationId { get; private set; }
+    public DateTime? StockReservedUntilUtc { get; private set; }
     public Money Total { get; private set; } = null!;
     public IReadOnlyList<OrderItem> Items => _items;
     public IReadOnlyList<object> DomainEvents => _domainEvents;
@@ -56,9 +59,20 @@ public sealed class Order
         return order;
     }
 
-    public void Cancel(string reason, TimeProvider clock)
+    public void MarkStockReserved(Guid reservationId, DateTime reservedUntilUtc)
     {
         if (Status != OrderStatus.Pending)
+        {
+            throw new DomainException("order.not-reservable", $"An order in status {Status} cannot get a stock reservation.");
+        }
+        Status = OrderStatus.StockReserved;
+        StockReservationId = reservationId;
+        StockReservedUntilUtc = reservedUntilUtc;
+    }
+
+    public void Cancel(string reason, TimeProvider clock)
+    {
+        if (Status is not (OrderStatus.Pending or OrderStatus.StockReserved))
         {
             throw new DomainException("order.not-cancellable", $"An order in status {Status} cannot be cancelled.");
         }

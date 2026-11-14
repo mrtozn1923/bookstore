@@ -78,6 +78,12 @@ namespace Bookstore.Ordering.Data.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<Guid?>("StockReservationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("StockReservedUntilUtc")
+                        .HasColumnType("datetime2");
+
                     b.ComplexProperty(typeof(Dictionary<string, object>), "Buyer", "Bookstore.Ordering.Domain.Order.Buyer#Buyer", b1 =>
                         {
                             b1.IsRequired();

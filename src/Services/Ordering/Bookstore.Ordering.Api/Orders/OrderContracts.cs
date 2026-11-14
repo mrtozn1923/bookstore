@@ -17,7 +17,7 @@ public sealed record OrderLineResponse(string Isbn, string Title, decimal UnitPr
 
 public sealed record OrderResponse(
     Guid Id, string Status, DateTime PlacedAtUtc, string CustomerName, string CustomerEmail,
-    IReadOnlyList<OrderLineResponse> Items, decimal Total, string Currency);
+    IReadOnlyList<OrderLineResponse> Items, decimal Total, string Currency, DateTime? StockReservedUntilUtc);
 
 public sealed record OrderSummaryResponse(Guid Id, string Status, DateTime PlacedAtUtc, int ItemCount, decimal Total, string Currency);
 

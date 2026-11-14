@@ -1,4 +1,5 @@
 using Asp.Versioning;
+using Bookstore.Inventory.V1;
 using Bookstore.Ordering.CatalogCopy;
 using Bookstore.Ordering.Data;
 using Bookstore.Ordering.Orders;
@@ -12,6 +13,11 @@ builder.Services.AddScoped<PlaceOrderHandler>();
 builder.Services.AddScoped<OrderQueries>();
 // Used only by the migrator for the initial load; the running service never calls Catalog.
 builder.Services.AddHttpClient<CatalogClient>(client => client.BaseAddress = new Uri("https+http://catalog"));
+// gRPC client through IHttpClientFactory: service discovery and the standard resilience handler apply to it too.
+// "_grpc." picks Inventory's endpoint named grpc. A gRPC channel accepts only http/https addresses,
+// so the "https+http" fallback form cannot be used here.
+builder.Services.AddGrpcClient<InventoryService.InventoryServiceClient>(options =>
+    options.Address = new Uri("http://_grpc.inventory"));
 
 builder.Services.AddProblemDetails();
 builder.Services.AddValidation();
