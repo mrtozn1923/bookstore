@@ -9,9 +9,15 @@ namespace Bookstore.MongoLab;
 
 public static class BookstoreMongo
 {
+    private static int _registered;
+
     // Serialization settings are global: register them once, before the first use of any class
     public static void RegisterSerialization()
     {
+        if (Interlocked.Exchange(ref _registered, 1) == 1)
+        {
+            return;   // tests and hosts may call this more than once
+        }
         ConventionPack conventions =
         [
             new CamelCaseElementNameConvention(),
@@ -38,6 +44,7 @@ public static class BookstoreMongo
         services.AddSingleton(sp => sp.GetRequiredService<IMongoDatabase>().GetCollection<Book>("books"));
         services.AddSingleton(sp => sp.GetRequiredService<IMongoDatabase>().GetCollection<Order>("orders"));
         services.AddSingleton(sp => sp.GetRequiredService<IMongoDatabase>().GetCollection<Review>("reviews"));
+        services.AddSingleton(sp => sp.GetRequiredService<IMongoDatabase>().GetCollection<Author>("authors"));
         return services;
     }
 }

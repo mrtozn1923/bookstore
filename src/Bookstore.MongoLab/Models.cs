@@ -24,6 +24,14 @@ public sealed record AuthorRef(int AuthorId, string Name);
 public sealed record CategoryRef(int CategoryId, string Name);
 public sealed record Stock(int OnHand, int ReorderLevel, DateTime UpdatedAt);
 
+public sealed record Author
+{
+    public int Id { get; init; }
+    public required string FirstName { get; init; }
+    public required string LastName { get; init; }
+    public int? BirthYear { get; init; }
+}
+
 public enum OrderStatus { Pending, Paid, Shipped, Delivered, Cancelled }
 
 public sealed record Order

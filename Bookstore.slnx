@@ -2,4 +2,7 @@
   <Folder Name="/src/">
     <Project Path="src/Bookstore.MongoLab/Bookstore.MongoLab.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Bookstore.MongoLab.Tests/Bookstore.MongoLab.Tests.csproj" />
+  </Folder>
 </Solution>
