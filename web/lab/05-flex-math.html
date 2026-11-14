@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Lab 05: flex-grow and flex-shrink</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        @layer components {
+            .row { display: flex; inline-size: 600px; }
+            .row.narrow { inline-size: 300px; }
+            .row > * { margin: 0; outline: 1px solid #94a3b8; }
+            .cover { flex: 1 1 100px; }
+            .details { flex: 2 1 100px; }
+            .actions { flex: 1 1 200px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="row" id="wide"><p class="cover">cover</p><p class="details">details</p><p class="actions">actions</p></div>
+    <div class="row narrow" id="narrow"><p class="cover">cover</p><p class="details">details</p><p class="actions">actions</p></div>
+    <div id="shorthands">
+        <p style="flex: initial">initial</p>
+        <p style="flex: 1">1</p>
+        <p style="flex: auto">auto</p>
+        <p style="flex: none">none</p>
+        <p style="flex: 12rem">12rem</p>
+    </div>
+</body>
+</html>

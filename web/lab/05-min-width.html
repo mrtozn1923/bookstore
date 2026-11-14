@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Lab 05: min-width auto</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        @layer components {
+            .cart-line { display: flex; gap: 1rem; inline-size: 320px; outline: 1px solid #94a3b8; }
+            .cart-line p { margin: 0; }
+            .cart-line .details { flex: 1; }
+            .cart-line .title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .cart-line .price { flex: none; }
+            .cart-line.fixed .details { min-inline-size: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="cart-line" id="broken">
+        <div class="details">
+            <p class="title">Twenty Thousand Leagues Under the Seas: An Underwater Tour of the World</p>
+            <p class="author">Jules Verne</p>
+        </div>
+        <span class="price">189.00 TRY</span>
+    </div>
+    <div class="cart-line fixed" id="fixed">
+        <div class="details">
+            <p class="title">Twenty Thousand Leagues Under the Seas: An Underwater Tour of the World</p>
+            <p class="author">Jules Verne</p>
+        </div>
+        <span class="price">189.00 TRY</span>
+    </div>
+</body>
+</html>

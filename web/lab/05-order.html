@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Lab 05: order and keyboard</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        @layer components {
+            .card-actions { display: flex; gap: 0.5rem; }
+            .card-actions .add-to-cart { order: -1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="card-actions">
+        <a href="#details">Details</a>
+        <a href="#wishlist">Add to wishlist</a>
+        <button class="btn btn-primary add-to-cart" type="button">Add to cart</button>
+    </div>
+</body>
+</html>

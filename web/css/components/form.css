@@ -21,6 +21,17 @@
     border-color: var(--color-accent);
 }
 
+.input-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* min-inline-size: 0 lets the input shrink below its default width */
+.input-group input {
+    flex: 1;
+    min-inline-size: 0;
+}
+
 .gift-options:open > summary {
     font-weight: 700;
 }
