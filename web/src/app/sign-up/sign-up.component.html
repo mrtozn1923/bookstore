@@ -1,0 +1,26 @@
+<form [formGroup]="signUpForm" (ngSubmit)="onSubmit()">
+  <label>Full name <input formControlName="fullName"></label>
+
+  <label>Email <input formControlName="email"></label>
+  <p class="error" *ngIf="signUpForm.get('email')?.touched && signUpForm.get('email')?.hasError('required')">
+    Email is required.
+  </p>
+  <p class="error" *ngIf="signUpForm.get('email')?.touched && signUpForm.get('email')?.hasError('email')">
+    Please enter a valid email address.
+  </p>
+
+  <label>Username <input formControlName="username"></label>
+  <p *ngIf="signUpForm.get('username')?.pending">Checking...</p>
+  <p class="error" *ngIf="signUpForm.get('username')?.hasError('whitespace')">Username cannot contain spaces.</p>
+  <p class="error" *ngIf="signUpForm.get('username')?.hasError('usernameTaken')">This username is taken.</p>
+
+  <div formArrayName="genres">
+    <div *ngFor="let genre of genres.controls; let i = index">
+      <input [formControlName]="i" placeholder="Genre">
+      <button type="button" (click)="removeGenre(i)">Remove</button>
+    </div>
+  </div>
+  <button type="button" (click)="addGenre()">Add genre</button>
+
+  <button type="submit">Sign up</button>
+</form>

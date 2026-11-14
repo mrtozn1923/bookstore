@@ -1,6 +1,6 @@
 import { LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { AuthInterceptor } from './auth.interceptor';
 import { ErrorInterceptor } from './error.interceptor';
@@ -39,6 +39,8 @@ import { BookReviewsComponent } from './book-reviews/book-reviews.component';
 import { LoginComponent } from './login/login.component';
 import { AddressEditComponent } from './address-edit/address-edit.component';
 import { CheckoutComponent } from './checkout/checkout.component';
+import { NewsletterComponent } from './newsletter/newsletter.component';
+import { SignUpComponent } from './sign-up/sign-up.component';
 
 registerLocaleData(localeTr);
 
@@ -70,12 +72,15 @@ registerLocaleData(localeTr);
     BookReviewsComponent,
     LoginComponent,
     AddressEditComponent,
-    CheckoutComponent
+    CheckoutComponent,
+    NewsletterComponent,
+    SignUpComponent
   ],
   imports: [
     BrowserModule,
     CatalogModule,
     FormsModule,
+    ReactiveFormsModule,
     HttpClientModule,
     AppRoutingModule
   ],

@@ -14,6 +14,7 @@ import { AuthGuard } from './auth.guard';
 import { UnsavedChangesGuard } from './unsaved-changes.guard';
 import { BookResolver } from './book.resolver';
 import { CheckoutComponent } from './checkout/checkout.component';
+import { SignUpComponent } from './sign-up/sign-up.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -32,6 +33,7 @@ const routes: Routes = [
   { path: 'about', component: AboutComponent },
   { path: 'login', component: LoginComponent },
   { path: 'checkout', component: CheckoutComponent },
+  { path: 'sign-up', component: SignUpComponent },
   { path: 'orders', component: OrderListComponent, canActivate: [AuthGuard] },
   { path: 'account/address', component: AddressEditComponent, canDeactivate: [UnsavedChangesGuard] },
   {
