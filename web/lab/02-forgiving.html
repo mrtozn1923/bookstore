@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Lab 02: forgiving selector lists</title>
+    <style>
+        .price, .price:-bookstore-unknown { color: #b91c1c; }
+        :is(.price, .price:-bookstore-unknown) { font-weight: 700; }
+        :where(.price, .price:-bookstore-unknown) { font-style: italic; }
+        .book-card:has(.price, :-bookstore-unknown) { border: 2px solid #b91c1c; }
+    </style>
+</head>
+<body>
+    <div class="book-card">
+        <p class="price">349.00 TRY</p>
+    </div>
+</body>
+</html>

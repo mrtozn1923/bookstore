@@ -1,0 +1,9 @@
+.cart-count:empty {
+    display: none;
+}
+
+/* keyboard users get a strong ring, mouse users do not */
+:where(a, button, input, summary):focus-visible {
+    outline: 3px solid #1d4ed8;
+    outline-offset: 2px;
+}

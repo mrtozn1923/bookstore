@@ -1,0 +1,33 @@
+.book-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.book-card {
+    padding: var(--space);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background-color: var(--color-surface);
+}
+
+/* a card without a cover image gets a tinted background instead */
+.book-card:not(:has(> img)) {
+    background-color: #fef3c7;
+}
+
+/* zebra stripes count only the books that are in stock */
+.book-card:nth-child(even of .in-stock) {
+    border-color: #93c5fd;
+}
+
+.book-card[data-stock="0"] .price {
+    text-decoration: line-through;
+    color: var(--color-muted);
+}
+
+.book-card[data-format~="ebook"] .book-title::after {
+    content: " · e-book";
+    font-size: 0.75em;
+    color: var(--color-muted);
+}

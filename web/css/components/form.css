@@ -1,0 +1,26 @@
+.form-row {
+    margin-block-end: var(--space);
+}
+
+.form-row label {
+    display: block;
+    font-weight: 600;
+}
+
+/* highlight the whole row while the user is inside it */
+.form-row:focus-within label {
+    color: #1d4ed8;
+}
+
+/* only after the user has interacted with the field */
+.form-row:has(> :user-invalid) label {
+    color: var(--color-accent);
+}
+
+.form-row:has(> :user-invalid) input {
+    border-color: var(--color-accent);
+}
+
+.gift-options:open > summary {
+    font-weight: 700;
+}

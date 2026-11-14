@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Lab 02: selector specificity</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        @layer components {
+            .book-card .price { color: #1d4ed8; }
+            li.book-card .price { color: #0f766e; }
+            .book-card:has(> img) .price { color: #7c3aed; }
+            :is(#featured, .book-card) .price { color: #b91c1c; }
+            :where(#featured, .book-card) .price { color: #ca8a04; }
+            .price:not(.sale, #promo) { color: #be185d; }
+        }
+    </style>
+</head>
+<body>
+    <ul class="book-list">
+        <li class="book-card in-stock">
+            <img src="../img/dune.svg" alt="Cover of Dune" width="120" height="180">
+            <h2 class="book-title">Dune</h2>
+            <p class="price">349.00 TRY</p>
+        </li>
+    </ul>
+</body>
+</html>
