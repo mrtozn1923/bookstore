@@ -16,6 +16,7 @@ import { PushNotifications } from './core/push-notifications';
       <strong>Bookstore</strong>
       <nav>
         <a routerLink="/">Catalog</a>
+        <a routerLink="/search">Search</a>
         <a routerLink="/reports/orders">Order report</a>
         <a routerLink="/admin/covers">Covers</a>
         <a routerLink="/orders">

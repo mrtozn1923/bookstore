@@ -7,6 +7,7 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 import { createSecureServer } from "node:http2";
 import { extname, join, normalize, resolve } from "node:path";
 import { books, customers } from "../data/books.ts";
+import { catalog } from "../data/catalog.ts";
 
 const port = Number(process.env.PORT ?? 5281);
 const webRoot = new URL("../web/", import.meta.url).pathname;
@@ -187,6 +188,9 @@ async function handle(req: IncomingMessage, res: ServerResponse) {
     const customer = (req.headers.authorization ?? "").replace("Bearer ", "") || "anonymous";
     if (url.searchParams.get("vary")) res.setHeader("Vary", "Authorization");
     sendJson(req, res, no, { customer, orders: customer === "ada" ? [1042] : [1051] });
+  } else if (req.method === "GET" && url.pathname === "/api/catalog/index") {
+    // 08: the whole catalog for client-side search (5,000 books)
+    sendJson(req, res, no, catalog, "max-age=300");
   } else if (req.method === "GET" && url.pathname === "/api/me/order-updates") {
     sendJson(req, res, no, { unread: unreadOrderUpdates });
   } else if (req.method === "POST" && url.pathname === "/api/me/order-updates/read") {

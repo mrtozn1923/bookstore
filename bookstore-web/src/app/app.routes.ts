@@ -14,6 +14,7 @@ export const routes: Routes = [
     // only this route uses XMLHttpRequest, for upload progress; the rest of the app keeps Fetch
     providers: [provideHttpClient(withXhr())],
   },
+  { path: 'search', loadComponent: () => import('./search/search-page').then((m) => m.SearchPage) },
   { path: 'orders', loadComponent: () => import('./orders/orders-page').then((m) => m.OrdersPage) },
   {
     path: 'settings',
