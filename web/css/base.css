@@ -7,6 +7,11 @@
     --color-surface: #ffffff;
     --color-border: #d1d5db;
     --color-link: #1d4ed8;
+    --color-focus: #1d4ed8;
+    /* elevation scale: a tight contact shadow plus a soft ambient one */
+    --shadow-sm: 0 1px 2px rgb(15 23 42 / 0.08), 0 1px 3px rgb(15 23 42 / 0.06);
+    --shadow-md: 0 2px 4px rgb(15 23 42 / 0.08), 0 4px 12px rgb(15 23 42 / 0.10);
+    --shadow-lg: 0 4px 8px rgb(15 23 42 / 0.08), 0 12px 32px rgb(15 23 42 / 0.14);
     color-scheme: light;
 }
 
@@ -41,6 +46,12 @@ a {
 a:hover {
     /* thicker, not a new color: the box does not move */
     text-decoration-thickness: 2px;
+}
+
+:focus-visible {
+    /* transparent outlines turn visible in forced colors mode */
+    outline: 3px solid var(--color-focus);
+    outline-offset: 2px;
 }
 
 .site-header, main { padding-inline: 1.5rem; }

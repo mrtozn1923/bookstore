@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>05 edges lab</title>
+    <style>
+        body { margin: 0; padding: 24px; font: 16px/1.5 system-ui, sans-serif; background: #ffffff; }
+        .stack > * { margin-block-end: 24px; }
+
+        /* 1) selecting an option: border width vs inset shadow vs outline */
+        .option { inline-size: 240px; padding: 12px; border: 1px solid #d1d5db; border-radius: 12px; }
+        .option.thick-border { border-width: 3px; }
+        .option.inset { box-shadow: inset 0 0 0 3px #1d4ed8; }
+        .option.outlined { outline: 3px solid #1d4ed8; }
+
+        /* 2) the border shorthand resets border-image */
+        .frame { border: 4px solid; border-image: linear-gradient(90deg, #b91c1c, #1d4ed8) 1; }
+        .frame.reset { border: 4px solid #1f2937; }
+
+        /* 3) 50% vs a large length on a 200x40 box */
+        .pill { inline-size: 200px; block-size: 40px; background: #1d4ed8; }
+        .pill.percent { border-radius: 50%; }
+        .pill.length { border-radius: 9999px; }
+
+        /* 4) does the outline follow the radius? */
+        .ring { inline-size: 120px; block-size: 60px; border-radius: 12px; background: #e5e7eb;
+                outline: 3px solid #b91c1c; outline-offset: 4px; }
+
+        /* 5) gradient borders: border-image vs two background layers */
+        .grad { inline-size: 160px; block-size: 60px; border-radius: 16px; }
+        .grad.image { border: 4px solid; border-image: linear-gradient(135deg, #b91c1c, #1d4ed8) 1; }
+        .grad.clip {
+            border: 4px solid transparent;
+            background:
+                linear-gradient(#ffffff, #ffffff) padding-box,
+                linear-gradient(135deg, #b91c1c, #1d4ed8) border-box;
+        }
+
+        /* 6) shadows and the focus ring */
+        .card { inline-size: 200px; padding: 16px; border-radius: 8px;
+                box-shadow: 0 1px 2px rgb(0 0 0 / 0.08), 0 4px 12px rgb(0 0 0 / 0.12); }
+        .field:focus-visible { outline: 3px solid #1d4ed8; outline-offset: 2px; }
+        .no-ring:focus { outline: none; }
+        .shadow-ring:focus-visible { outline: none; box-shadow: 0 0 0 3px #1d4ed8; }
+        .transparent-ring:focus-visible { outline: 3px solid transparent; box-shadow: 0 0 0 3px #1d4ed8; }
+    </style>
+</head>
+<body>
+    <div class="stack">
+        <div class="option" id="plain"><span>Standard shipping</span></div>
+        <div class="option thick-border" id="thick"><span>Standard shipping</span></div>
+        <div class="option inset" id="inset"><span>Standard shipping</span></div>
+        <div class="option outlined" id="outlined"><span>Standard shipping</span></div>
+
+        <div class="frame" id="frame">Gradient frame</div>
+        <div class="frame reset" id="frame-reset">Gradient frame</div>
+
+        <div class="pill percent" id="percent"></div>
+        <div class="pill length" id="length"></div>
+
+        <div class="ring" id="ring"></div>
+
+        <div class="grad image" id="grad-image"></div>
+        <div class="grad clip" id="grad-clip"></div>
+
+        <div class="card" id="card">Dune</div>
+        <input class="field" id="field" value="Ada">
+        <button class="field" id="button">Pay now</button>
+        <input class="no-ring" id="no-ring" value="Alan">
+        <input class="shadow-ring" id="shadow-ring" value="Grace">
+        <input class="transparent-ring" id="transparent-ring" value="Linus">
+    </div>
+</body>
+</html>

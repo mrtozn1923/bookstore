@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Checkout - Bookstore</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <header class="site-header">
+        <a class="logo" href="index.html">Bookstore</a>
+    </header>
+    <main>
+        <h1>Checkout</h1>
+        <form class="checkout-form">
+            <div class="field">
+                <label for="name">Full name</label>
+                <input id="name" name="name" autocomplete="name" value="Ada Lovelace">
+            </div>
+            <div class="field">
+                <label for="email">E-mail</label>
+                <input id="email" name="email" type="email" autocomplete="email" value="ada@example.com">
+            </div>
+            <fieldset class="shipping-options">
+                <legend>Shipping</legend>
+                <label class="shipping-option">
+                    <input type="radio" name="shipping" value="standard" checked>
+                    Standard (3-5 days) <span class="cost">₺49.90</span>
+                </label>
+                <label class="shipping-option">
+                    <input type="radio" name="shipping" value="express">
+                    Express (next day) <span class="cost">₺89.90</span>
+                </label>
+            </fieldset>
+            <button class="pay-button" type="submit">Pay now</button>
+        </form>
+    </main>
+</body>
+</html>
