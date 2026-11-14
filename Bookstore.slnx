@@ -12,5 +12,6 @@
     <Project Path="samples/Cd07.AuditTrail/Cd07.AuditTrail.csproj" />
     <Project Path="samples/Cd08.TemporalData/Cd08.TemporalData.csproj" />
     <Project Path="samples/Cd09.StatusWorkflow/Cd09.StatusWorkflow.csproj" />
+    <Project Path="samples/Cd10.Hierarchy/Cd10.Hierarchy.csproj" />
   </Folder>
 </Solution>
