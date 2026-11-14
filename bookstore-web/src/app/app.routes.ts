@@ -13,4 +13,8 @@ export const routes: Routes = [
     // only this route uses XMLHttpRequest, for upload progress; the rest of the app keeps Fetch
     providers: [provideHttpClient(withXhr())],
   },
+  {
+    path: 'settings',
+    loadComponent: () => import('./settings/settings-page').then((m) => m.SettingsPage),
+  },
 ];
