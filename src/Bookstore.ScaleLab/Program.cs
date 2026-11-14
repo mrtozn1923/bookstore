@@ -1,5 +1,6 @@
 using System.Globalization;
 using Bookstore.ScaleLab;
+using Bookstore.ScaleLab.Drill;
 using Bookstore.ScaleLab.Partitioning;
 using Bookstore.ScaleLab.ReadRouting;
 using Bookstore.ScaleLab.Sharding;
@@ -25,6 +26,7 @@ return args switch
     ["shard-my-orders", .. var rest] => await ShardingCommands.MyOrdersAsync(LabOptions.Parse(rest)),
     ["shard-id-collision", .. var rest] => await ShardingCommands.IdCollisionAsync(LabOptions.Parse(rest)),
     ["shard-best-sellers", .. var rest] => await ShardingCommands.BestSellersAsync(LabOptions.Parse(rest)),
+    ["drill", .. var rest] => await DrillCommand.RunAsync(LabOptions.Parse(rest)),
     _ => Usage()
 };
 
