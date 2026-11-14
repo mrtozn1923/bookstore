@@ -1,0 +1,27 @@
+# Bookstore Redis lab: Redis 8 and Valkey 9 side by side, Redis Insight optional
+name: bookstore-redis-lab
+services:
+  redis:
+    image: redis:8
+    ports:
+      # only reachable from this machine
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis-data:/data
+  valkey:
+    image: valkey/valkey:9
+    ports:
+      - "127.0.0.1:6380:6379"
+    volumes:
+      - valkey-data:/data
+  insight:
+    image: redis/redisinsight:3.8
+    profiles: ["tools"]
+    ports:
+      - "127.0.0.1:5540:5540"
+    volumes:
+      - insight-data:/data
+volumes:
+  redis-data:
+  valkey-data:
+  insight-data:
