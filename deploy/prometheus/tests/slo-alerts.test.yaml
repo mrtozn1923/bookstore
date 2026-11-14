@@ -1,0 +1,69 @@
+# Unit tests for the burn-rate alerts: promtool test rules deploy/prometheus/tests/slo-alerts.test.yaml
+# Checkout traffic is 600 requests a minute in every test; only the share of 502 answers changes.
+# Every scenario starts after three quiet days, so the long windows (6h, 3d) are full as in production.
+rule_files:
+  - ../rules/slo-alerts.yaml
+
+evaluation_interval: 1m
+
+tests:
+  # Three days at 0.1 % errors, then 10 % errors: burn rate 20. The 1h window crosses 14.4 after about 43 minutes.
+  - interval: 1m
+    input_series:
+      - series: 'http_server_request_duration_seconds_count{job="bookstore-api", http_route="/api/orders/", http_request_method="POST", http_response_status_code="201"}'
+        values: '0+599x4320 2588220+540x59'
+      - series: 'http_server_request_duration_seconds_count{job="bookstore-api", http_route="/api/orders/", http_request_method="POST", http_response_status_code="502"}'
+        values: '0+1x4320 4380+60x59'
+    alert_rule_test:
+      - eval_time: 72h40m
+        alertname: CheckoutErrorBudgetBurn
+        exp_alerts: []
+      - eval_time: 72h45m
+        alertname: CheckoutErrorBudgetBurn
+        exp_alerts:
+          - exp_labels:
+              severity: page
+              long_window: 1h
+            exp_annotations:
+              summary: "Checkout is burning its 30-day error budget 14.4 times too fast (1h and 5m windows)"
+
+  # Five minutes in which every checkout fails, after three days without errors: burn rate 200, a page after about 4.3 minutes,
+  # and quiet again a few minutes after it ends.
+  - interval: 1m
+    input_series:
+      - series: 'http_server_request_duration_seconds_count{job="bookstore-api", http_route="/api/orders/", http_request_method="POST", http_response_status_code="201"}'
+        values: '0+600x4320 2592000+0x5 2592000+600x30'
+      - series: 'http_server_request_duration_seconds_count{job="bookstore-api", http_route="/api/orders/", http_request_method="POST", http_response_status_code="502"}'
+        values: '0+0x4320 600+600x4 3000+0x30'
+    alert_rule_test:
+      - eval_time: 72h4m
+        alertname: CheckoutErrorBudgetBurn
+        exp_alerts: []
+      - eval_time: 72h5m
+        alertname: CheckoutErrorBudgetBurn
+        exp_alerts:
+          - exp_labels:
+              severity: page
+              long_window: 1h
+            exp_annotations:
+              summary: "Checkout is burning its 30-day error budget 14.4 times too fast (1h and 5m windows)"
+      - eval_time: 72h15m
+        alertname: CheckoutErrorBudgetBurn
+        exp_alerts: []
+
+  # 0.6 % errors for three days: burn rate 1.2. No page, but a ticket.
+  - interval: 10m
+    input_series:
+      - series: 'http_server_request_duration_seconds_count{job="bookstore-api", http_route="/api/orders/", http_request_method="POST", http_response_status_code="201"}'
+        values: '0+5964x432'
+      - series: 'http_server_request_duration_seconds_count{job="bookstore-api", http_route="/api/orders/", http_request_method="POST", http_response_status_code="502"}'
+        values: '0+36x432'
+    alert_rule_test:
+      - eval_time: 72h
+        alertname: CheckoutErrorBudgetBurn
+        exp_alerts:
+          - exp_labels:
+              severity: ticket
+              long_window: 3d
+            exp_annotations:
+              summary: "Checkout will use up its 30-day error budget at this pace (3d and 6h windows)"

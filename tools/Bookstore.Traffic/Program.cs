@@ -17,11 +17,11 @@ using HttpClient http = new() { BaseAddress = baseUrl, Timeout = TimeSpan.FromSe
 PagedBooks catalog = await http.GetFromJsonAsync<PagedBooks>("/api/books?pageSize=50")
     ?? throw new InvalidOperationException("Catalog is empty.");
 BookRow[] books = [.. catalog.Items];
-int expectedOrders = (int)(rate * minutes * 60);
+// Every book gets enough copies for the whole run (at most 10,000, the limit of one receipt).
+int copies = (int)Math.Min(rate * minutes * 60, 10_000);
 foreach (BookRow book in books)
 {
-    // Back office stock receipt: enough copies for the whole run.
-    (await http.PostAsJsonAsync("/api/inventory/receipts", new { isbn = book.Isbn, quantity = expectedOrders }))
+    (await http.PostAsJsonAsync("/api/inventory/receipts", new { isbn = book.Isbn, quantity = copies }))
         .EnsureSuccessStatusCode();
 }
 

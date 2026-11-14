@@ -1,0 +1,23 @@
+# The same availability SLO as a Sloth spec. Sloth generates the recording rules and burn-rate alerts:
+#   sloth generate -i deploy/slo/checkout.sloth.yaml -o checkout.sloth.rules.yaml
+# We keep our hand-written rules (deploy/prometheus/rules/slo-alerts.yaml); this file is for comparison.
+version: "prometheus/v1"
+service: "bookstore-api"
+labels:
+  owner: "bookstore-team"
+slos:
+  - name: "checkout-availability"
+    objective: 99.5
+    description: "Checkout requests that did not fail on our side."
+    sli:
+      events:
+        error_query: sum(rate(http_server_request_duration_seconds_count{job="bookstore-api",http_route="/api/orders/",http_request_method="POST",http_response_status_code=~"5..|429"}[{{.window}}]))
+        total_query: sum(rate(http_server_request_duration_seconds_count{job="bookstore-api",http_route="/api/orders/",http_request_method="POST",http_response_status_code=~"[235]..|429"}[{{.window}}]))
+    alerting:
+      name: CheckoutAvailabilityBudgetBurn
+      page_alert:
+        labels:
+          severity: page
+      ticket_alert:
+        labels:
+          severity: ticket

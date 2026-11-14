@@ -1,0 +1,60 @@
+# Multiwindow, multi-burn-rate alerts for the checkout availability SLO (99.5 %, error budget 0.005).
+# Burn rate = error ratio / 0.005. Thresholds from the SRE Workbook, "Alerting on SLOs":
+#   page:   1h window and 5m window above 14.4  (2 % of a 30-day budget in one hour)
+#   page:   6h window and 30m window above 6    (5 % of the budget in six hours)
+#   ticket: 3d window and 6h window above 1     (10 % of the budget in three days)
+# The short window (1/12 of the long one) makes the alert stop soon after the problem is gone.
+groups:
+  - name: bookstore-slo-burn
+    rules:
+      - record: slo:checkout_availability:error_ratio_rate5m
+        expr: |
+          1 - sum(rate(http_server_request_duration_seconds_count{job="bookstore-api", http_route="/api/orders/", http_request_method="POST", http_response_status_code=~"[23].."}[5m]))
+            / sum(rate(http_server_request_duration_seconds_count{job="bookstore-api", http_route="/api/orders/", http_request_method="POST", http_response_status_code=~"[235]..|429"}[5m]))
+      - record: slo:checkout_availability:error_ratio_rate30m
+        expr: |
+          1 - sum(rate(http_server_request_duration_seconds_count{job="bookstore-api", http_route="/api/orders/", http_request_method="POST", http_response_status_code=~"[23].."}[30m]))
+            / sum(rate(http_server_request_duration_seconds_count{job="bookstore-api", http_route="/api/orders/", http_request_method="POST", http_response_status_code=~"[235]..|429"}[30m]))
+      - record: slo:checkout_availability:error_ratio_rate1h
+        expr: |
+          1 - sum(rate(http_server_request_duration_seconds_count{job="bookstore-api", http_route="/api/orders/", http_request_method="POST", http_response_status_code=~"[23].."}[1h]))
+            / sum(rate(http_server_request_duration_seconds_count{job="bookstore-api", http_route="/api/orders/", http_request_method="POST", http_response_status_code=~"[235]..|429"}[1h]))
+      - record: slo:checkout_availability:error_ratio_rate6h
+        expr: |
+          1 - sum(rate(http_server_request_duration_seconds_count{job="bookstore-api", http_route="/api/orders/", http_request_method="POST", http_response_status_code=~"[23].."}[6h]))
+            / sum(rate(http_server_request_duration_seconds_count{job="bookstore-api", http_route="/api/orders/", http_request_method="POST", http_response_status_code=~"[235]..|429"}[6h]))
+      - record: slo:checkout_availability:error_ratio_rate3d
+        expr: |
+          1 - sum(rate(http_server_request_duration_seconds_count{job="bookstore-api", http_route="/api/orders/", http_request_method="POST", http_response_status_code=~"[23].."}[3d]))
+            / sum(rate(http_server_request_duration_seconds_count{job="bookstore-api", http_route="/api/orders/", http_request_method="POST", http_response_status_code=~"[235]..|429"}[3d]))
+
+      - alert: CheckoutErrorBudgetBurn
+        expr: |
+          slo:checkout_availability:error_ratio_rate1h > (14.4 * 0.005)
+          and
+          slo:checkout_availability:error_ratio_rate5m > (14.4 * 0.005)
+        labels:
+          severity: page
+          long_window: 1h
+        annotations:
+          summary: "Checkout is burning its 30-day error budget 14.4 times too fast (1h and 5m windows)"
+      - alert: CheckoutErrorBudgetBurn
+        expr: |
+          slo:checkout_availability:error_ratio_rate6h > (6 * 0.005)
+          and
+          slo:checkout_availability:error_ratio_rate30m > (6 * 0.005)
+        labels:
+          severity: page
+          long_window: 6h
+        annotations:
+          summary: "Checkout is burning its 30-day error budget 6 times too fast (6h and 30m windows)"
+      - alert: CheckoutErrorBudgetBurn
+        expr: |
+          slo:checkout_availability:error_ratio_rate3d > (1 * 0.005)
+          and
+          slo:checkout_availability:error_ratio_rate6h > (1 * 0.005)
+        labels:
+          severity: ticket
+          long_window: 3d
+        annotations:
+          summary: "Checkout will use up its 30-day error budget at this pace (3d and 6h windows)"
