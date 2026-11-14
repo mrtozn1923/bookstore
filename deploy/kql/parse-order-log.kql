@@ -1,0 +1,6 @@
+// parse: for logs that only have text (old code, third-party libraries).
+traces
+| where timestamp > ago(1d) and message matches regex @"^Order \d+ placed"
+| parse message with "Order " order_id:long " placed: " items:int " items, " total:real " " currency:string ", took " elapsed_ms:long " ms"
+| extend order_type = iff(items >= 10, "institutional", "retail")
+| summarize orders = count(), avg_total = round(avg(total), 2), p95_ms = percentile(elapsed_ms, 95) by order_type, currency

@@ -1,0 +1,4 @@
+// The checkout metric is not sampled: every checkout is in the histogram's count.
+customMetrics
+| where timestamp > ago(1d) and name == "bookstore.checkout.duration"
+| summarize checkouts = sum(valueCount) by outcome = tostring(customDimensions["bookstore.checkout.outcome"])

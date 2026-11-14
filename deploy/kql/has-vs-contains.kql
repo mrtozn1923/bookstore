@@ -1,0 +1,5 @@
+// has looks for a whole term; contains looks for a substring anywhere in the text.
+traces
+| where timestamp > ago(1d)
+| summarize has_grace = countif(message has "grace"), contains_grace = countif(message contains "grace"),
+    has_grace1 = countif(message has "grace1"), has_example = countif(message has "example")

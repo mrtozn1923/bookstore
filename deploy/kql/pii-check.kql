@@ -1,0 +1,6 @@
+// The KQL version of the PII check from the production post: e-mail addresses in log messages.
+traces
+| where timestamp > ago(1d)
+| extend email = extract(@"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", 0, message)
+| where isnotempty(email)
+| summarize records = count(), distinct_addresses = dcount(email) by category = tostring(customDimensions.CategoryName)

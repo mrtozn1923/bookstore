@@ -1,0 +1,6 @@
+// Exceptions per minute: which type, and who reported it (a log category, or an exception event on a span).
+exceptions
+| where timestamp > ago(1d)
+| extend source = iff(isempty(tostring(customDimensions.CategoryName)), "(span event)", tostring(customDimensions.CategoryName))
+| summarize exceptions = sum(itemCount) by bin(timestamp, 1m), type, source
+| order by timestamp asc, exceptions desc

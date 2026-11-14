@@ -1,0 +1,6 @@
+// Failed outgoing calls: what failed, against which target, with which result code.
+dependencies
+| where timestamp > ago(1d)
+| where success == "False"
+| summarize failures = sum(itemCount), avg_ms = round(avg(duration), 0) by type, target, name, resultCode
+| order by failures desc

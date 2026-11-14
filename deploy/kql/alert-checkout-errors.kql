@@ -1,0 +1,5 @@
+// Log search alert: checkout error rate (5xx) in the window the alert rule gives; fires when error_rate > 2.
+requests
+| where name == "POST /api/orders/"
+| summarize total = sum(itemCount), failed = sum(iff(toint(resultCode) >= 500, itemCount, 0))
+| extend error_rate = round(100.0 * failed / total, 2)

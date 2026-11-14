@@ -1,0 +1,5 @@
+// Rows stored vs requests they represent: count() counts rows, sum(itemCount) estimates the real number.
+requests
+| where timestamp > ago(1d) and name == "POST /api/orders/"
+| summarize rows = count(), estimated = sum(itemCount), p95 = round(percentile(duration, 95), 0),
+    failed_rows = countif(success == "False"), failed_estimated = sum(iff(success == "False", itemCount, 0))

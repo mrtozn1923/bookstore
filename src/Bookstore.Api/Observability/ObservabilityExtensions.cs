@@ -1,4 +1,5 @@
 using System.Reflection;
+using Azure.Monitor.OpenTelemetry.Exporter;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -13,7 +14,7 @@ public static class ObservabilityExtensions
         string version = typeof(ObservabilityExtensions).Assembly
             .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "unknown";
 
-        builder.Services.AddOpenTelemetry()
+        IOpenTelemetryBuilder otel = builder.Services.AddOpenTelemetry()
             // Who is sending: these attributes are attached to every span, metric point and log record.
             // Code gives the defaults; OTEL_SERVICE_NAME / OTEL_RESOURCE_ATTRIBUTES, read last, override them.
             .ConfigureResource(resource => resource
@@ -42,6 +43,25 @@ public static class ObservabilityExtensions
             .WithLogging(configureBuilder: null, configureOptions: options => options.IncludeFormattedMessage = true)
             // One OTLP exporter for all three signals; the endpoint comes from OTEL_EXPORTER_OTLP_ENDPOINT.
             .UseOtlpExporter();
+
+        // Application Insights as a second destination, only when a connection string is configured
+        // (App Service / Key Vault in production; never in the repo).
+        string? appInsights = builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"];
+        if (!string.IsNullOrEmpty(appInsights))
+        {
+            otel.UseAzureMonitorExporter(options =>
+            {
+                options.ConnectionString = appInsights;
+                // A fixed percentage instead of the default 5 traces per second; 1.0 keeps every trace.
+                options.TracesPerSecond = null;
+                options.SamplingRatio = 1.0F;
+                // The exporter keeps a log written inside a trace only if its trace-flags are exactly "sampled" (01);
+                // OpenTelemetry 1.21 also sets the W3C random flag (03), so every such log would be dropped.
+                options.EnableTraceBasedLogsSampler = false;
+                // AzureMonitor:SamplingRatio, AzureMonitor:EnableLiveMetrics… override these from configuration.
+                builder.Configuration.GetSection("AzureMonitor").Bind(options);
+            });
+        }
 
         return builder;
     }

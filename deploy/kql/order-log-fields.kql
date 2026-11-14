@@ -1,0 +1,7 @@
+// Structured fields first: which properties does an "order placed" log record carry?
+traces
+| where timestamp > ago(1d) and message matches regex @"^Order \d+ placed"
+| take 1
+| mv-expand field = customDimensions
+| extend key = tostring(bag_keys(field)[0])
+| project key, field

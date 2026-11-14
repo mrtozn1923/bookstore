@@ -1,0 +1,13 @@
+// The whole story of one operation: the slowest checkout, step by step (SQL calls and HttpClient's own logs left out).
+let slowest = toscalar(
+    requests
+    | where timestamp > ago(1d) and name == "POST /api/orders/"
+    | top 1 by duration desc
+    | project operation_Id);
+union requests, dependencies, traces, exceptions
+| where timestamp > ago(1d) and operation_Id == slowest
+| where not(itemType == "dependency" and type == "SQL")
+| where not(tostring(customDimensions.CategoryName) startswith "System.Net.Http")
+| extend what = substring(case(itemType == "trace", message, itemType == "exception", type, name), 0, 48)
+| project timestamp, itemType, what, duration = round(duration, 0), success
+| order by timestamp asc

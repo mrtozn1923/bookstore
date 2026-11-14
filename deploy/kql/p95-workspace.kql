@@ -1,0 +1,5 @@
+// The same p95 query in a Log Analytics workspace: AppRequests, TimeGenerated, DurationMs, Name, a bool Success.
+AppRequests
+| where TimeGenerated > ago(1d)
+| summarize requests = sum(ItemCount), failed = sum(iff(Success == false, ItemCount, 0)), p95 = round(percentile(DurationMs, 95), 0) by Name
+| order by p95 desc

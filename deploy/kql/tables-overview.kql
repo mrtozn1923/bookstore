@@ -1,0 +1,5 @@
+// What is in the five tables? One row per telemetry type.
+union requests, dependencies, traces, exceptions, customMetrics
+| where timestamp > ago(1d)
+| summarize rows = count(), first_seen = min(timestamp), last_seen = max(timestamp) by itemType
+| order by rows desc

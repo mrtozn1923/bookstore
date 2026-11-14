@@ -131,6 +131,16 @@ Bu branch, mertozen.com'daki Observability serisinin kodudur. Bu tag'e kadar ekl
   ```
 - `docs/telemetry-checklist.md`: yeni bir servis production'a çıkmadan önceki telemetry kontrol listesi.
 - `samples/Net11Observability`: .NET 11 SDK isteyen ayrı örnek (ASP.NET Core'un yerleşik HTTP span'ı, MemoryCache metric'leri, schema URL); `cd samples/Net11Observability; dotnet run`.
+- KQL: `APPLICATIONINSIGHTS_CONNECTION_STRING` verilirse API telemetry'yi Application Insights'a da gönderir (`Azure.Monitor.OpenTelemetry.Exporter` 1.10, `ObservabilityExtensions`). `deploy/kql/`: Bookstore için KQL sorguları (`requests`, `dependencies`, `traces`, `exceptions`, `customMetrics`). `tools/Bookstore.KqlLab` Azure hesabı olmadan denemek için ingestion endpoint'ini taklit eder ve sorguları yerelde KustoLoco ile çalıştırır (`parse` ve çok değerli `percentiles()` bu motorda yok):
+
+  ```powershell
+  dotnet run --project tools/Bookstore.KqlLab -- capture telemetry http://localhost:5096
+  $env:APPLICATIONINSIGHTS_CONNECTION_STRING = "InstrumentationKey=00000000-0000-0000-0000-000000000000;IngestionEndpoint=http://localhost:5096/"
+  $env:AzureMonitor__EnableLiveMetrics = "false"; $env:APPLICATIONINSIGHTS_STATSBEAT_DISABLED = "true"; $env:APPLICATIONINSIGHTS_SDKSTATS_DISABLED = "true"
+  dotnet run --project src/Bookstore.Api
+  dotnet run --project tools/Bookstore.Traffic -- 300 4
+  dotnet run --project tools/Bookstore.KqlLab -- query deploy/kql/p95-by-endpoint.kql telemetry
+  ```
 
 ---
 
@@ -261,3 +271,13 @@ This branch holds the code of the Observability series on mertozen.com. Added up
   ```
 - `docs/telemetry-checklist.md`: the telemetry checklist for a new service before it goes to production.
 - `samples/Net11Observability`: a separate sample that needs the .NET 11 SDK (ASP.NET Core's built-in HTTP span, MemoryCache metrics, schema URLs); `cd samples/Net11Observability; dotnet run`.
+- KQL: when `APPLICATIONINSIGHTS_CONNECTION_STRING` is set, the API also sends its telemetry to Application Insights (`Azure.Monitor.OpenTelemetry.Exporter` 1.10, `ObservabilityExtensions`). `deploy/kql/`: KQL queries for Bookstore (`requests`, `dependencies`, `traces`, `exceptions`, `customMetrics`). `tools/Bookstore.KqlLab` stands in for the ingestion endpoint so you can try them without an Azure account, and runs the queries locally with KustoLoco (this engine has no `parse` and no multi-value `percentiles()`):
+
+  ```powershell
+  dotnet run --project tools/Bookstore.KqlLab -- capture telemetry http://localhost:5096
+  $env:APPLICATIONINSIGHTS_CONNECTION_STRING = "InstrumentationKey=00000000-0000-0000-0000-000000000000;IngestionEndpoint=http://localhost:5096/"
+  $env:AzureMonitor__EnableLiveMetrics = "false"; $env:APPLICATIONINSIGHTS_STATSBEAT_DISABLED = "true"; $env:APPLICATIONINSIGHTS_SDKSTATS_DISABLED = "true"
+  dotnet run --project src/Bookstore.Api
+  dotnet run --project tools/Bookstore.Traffic -- 300 4
+  dotnet run --project tools/Bookstore.KqlLab -- query deploy/kql/p95-by-endpoint.kql telemetry
+  ```

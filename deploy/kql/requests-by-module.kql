@@ -1,0 +1,16 @@
+// lookup: enrich the result with a small dimension table (which module owns which endpoint).
+let owners = datatable(name: string, module: string) [
+    "POST /api/orders/", "Ordering",
+    "POST /api/carts/", "Ordering",
+    "PUT /api/carts/{cartId:guid}/items/{isbn}", "Ordering",
+    "GET /api/books", "Catalog",
+    "GET /api/books/{isbn}", "Catalog",
+    "POST /api/inventory/receipts", "Inventory",
+    "order-confirmations process", "Notifications"
+];
+requests
+| where timestamp > ago(1d)
+| summarize requests = sum(itemCount), p95 = round(percentile(duration, 95), 0) by name
+| lookup kind=leftouter owners on name
+| summarize requests = sum(requests), worst_p95 = max(p95) by module
+| order by requests desc

@@ -1,0 +1,6 @@
+// customMetrics holds pre-aggregated points: sum, count, min, max per export interval; no buckets, so no p95.
+customMetrics
+| where timestamp > ago(1d) and name == "bookstore.checkout.duration"
+| extend outcome = tostring(customDimensions["bookstore.checkout.outcome"]), order_type = tostring(customDimensions["bookstore.order.type"])
+| summarize checkouts = sum(valueCount), avg_s = round(sum(valueSum) / sum(valueCount), 3), max_s = round(max(valueMax), 3) by outcome, order_type
+| order by checkouts desc

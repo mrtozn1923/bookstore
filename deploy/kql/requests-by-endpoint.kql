@@ -1,0 +1,5 @@
+// Requests per endpoint in the last day; sum(itemCount) instead of count() so sampled data is counted right.
+requests
+| where timestamp > ago(1d)
+| summarize requests = sum(itemCount), failed = sumif(itemCount, success == "False") by name
+| order by requests desc

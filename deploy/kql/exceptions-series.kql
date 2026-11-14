@@ -1,0 +1,7 @@
+// The same trend as a series: one array per type, empty minutes filled with 0, ready for a chart.
+let start = bin(ago(1h), 1m);
+exceptions
+| where timestamp > start
+| make-series exceptions = sum(itemCount) default = 0 on timestamp from start to now() step 1m by type
+| project type, exceptions
+| render timechart

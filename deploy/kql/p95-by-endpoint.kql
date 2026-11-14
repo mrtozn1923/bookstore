@@ -1,0 +1,6 @@
+// Latency per endpoint: p50, p95 and p99 of duration (milliseconds).
+requests
+| where timestamp > ago(1d)
+| summarize requests = sum(itemCount), p50 = percentile(duration, 50), p95 = percentile(duration, 95),
+    p99 = percentile(duration, 99) by name
+| order by p95 desc

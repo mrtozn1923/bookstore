@@ -1,0 +1,12 @@
+// How many payment attempts did each checkout need, and what did that cost the customer?
+requests
+| where timestamp > ago(1d) and name == "POST /api/orders/"
+| project operation_Id, order_ms = duration, resultCode
+| join kind=inner (
+    dependencies
+    | where timestamp > ago(1d) and type == "Http" and name == "POST /v1/charges"
+    | summarize attempts = count(), timeouts = countif(success == "False") by operation_Id
+  ) on operation_Id
+| summarize orders = count(), failed_orders = countif(resultCode == "502"), p50_ms = round(percentile(order_ms, 50), 0),
+    max_ms = round(max(order_ms), 0) by attempts
+| order by attempts asc

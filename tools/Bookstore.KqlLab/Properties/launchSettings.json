@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "capture": {
+      "commandName": "Project",
+      "commandLineArgs": "capture telemetry http://localhost:5096"
+    }
+  }
+}

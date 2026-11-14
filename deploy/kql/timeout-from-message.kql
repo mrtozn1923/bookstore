@@ -1,0 +1,5 @@
+// extract: pull the timeout value out of the exception message text.
+exceptions
+| where timestamp > ago(1d) and message has "allowed timeout"
+| extend timeout = extract(@"allowed timeout of '([0-9:.]+)'", 1, message)
+| summarize exceptions = sum(itemCount) by type, timeout, source = tostring(customDimensions.CategoryName)

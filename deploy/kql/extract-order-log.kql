@@ -1,0 +1,9 @@
+// The same with extract (regular expressions): one capture group per value.
+traces
+| where timestamp > ago(1d) and message matches regex @"^Order \d+ placed"
+| extend items = toint(extract(@"placed: (\d+) items", 1, message)),
+    total = todouble(extract(@"items, ([\d.]+) ", 1, message)),
+    currency = extract(@"items, [\d.]+ ([A-Z]{3})", 1, message),
+    elapsed_ms = tolong(extract(@"took (\d+) ms", 1, message))
+| extend order_type = iff(items >= 10, "institutional", "retail")
+| summarize orders = count(), avg_total = round(avg(total), 2), p95_ms = percentile(elapsed_ms, 95) by order_type, currency
