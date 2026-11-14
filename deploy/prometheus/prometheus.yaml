@@ -1,0 +1,14 @@
+# Local Prometheus for the SRE series (development only). Bookstore.Api pushes its metrics over OTLP:
+#   OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:9090/api/v1/otlp  OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+# Installing and running Prometheus is covered in the Observability series; here only the rules matter.
+global:
+  evaluation_interval: 15s
+
+rule_files:
+  - /etc/prometheus/bookstore/rules/*.yaml
+
+otlp:
+  # job="bookstore-api" comes from service.name; these resource attributes become labels too.
+  promote_resource_attributes:
+    - service.version
+    - deployment.environment.name

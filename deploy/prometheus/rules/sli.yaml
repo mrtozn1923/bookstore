@@ -1,0 +1,26 @@
+# SLIs of Bookstore's checkout journey (POST /api/orders), from ASP.NET Core's http.server.request.duration.
+# SLI = good events / valid events. 4xx answers are the client's mistake and are not valid events,
+# except 429: when we throttle a customer, that is our failure.
+groups:
+  - name: bookstore-sli
+    rules:
+      - record: sli:checkout_valid:rate5m
+        expr: |
+          sum(rate(http_server_request_duration_seconds_count{job="bookstore-api", http_route="/api/orders/",
+            http_request_method="POST", http_response_status_code=~"[235]..|429"}[5m]))
+
+      # Availability: valid requests that did not fail on our side.
+      - record: sli:checkout_available:rate5m
+        expr: |
+          sum(rate(http_server_request_duration_seconds_count{job="bookstore-api", http_route="/api/orders/",
+            http_request_method="POST", http_response_status_code=~"[23].."}[5m]))
+      - record: sli:checkout_availability:ratio_rate5m
+        expr: sli:checkout_available:rate5m / sli:checkout_valid:rate5m
+
+      # Latency: valid requests that finished within 1 s (le must be one of the histogram's bucket boundaries).
+      - record: sli:checkout_fast:rate5m
+        expr: |
+          sum(rate(http_server_request_duration_seconds_bucket{job="bookstore-api", http_route="/api/orders/",
+            http_request_method="POST", http_response_status_code=~"[235]..|429", le="1"}[5m]))
+      - record: sli:checkout_latency:ratio_rate5m
+        expr: sli:checkout_fast:rate5m / sli:checkout_valid:rate5m
