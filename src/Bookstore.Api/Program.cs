@@ -14,7 +14,7 @@ string connectionString = builder.Configuration.GetConnectionString("BookstoreDb
     : throw new InvalidOperationException(
         "Connection string 'BookstoreDb' is missing. Set it with user-secrets or the ConnectionStrings__BookstoreDb environment variable (see README.md).");
 
-builder.Services.AddDbContext<BookstoreContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddBookstoreDatabase(connectionString);
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddProblemDetails();
 builder.Services.AddValidation();

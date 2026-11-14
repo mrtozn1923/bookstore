@@ -18,8 +18,17 @@ public abstract record PlaceOrderOutcome
 public sealed class OrderService(
     BookstoreContext db, ICatalogService catalog, IInventoryService inventory, TimeProvider clock)
 {
-    public async Task<PlaceOrderOutcome> PlaceOrderAsync(PlaceOrderRequest request, CancellationToken ct)
+    // The retrying execution strategy re-runs the whole delegate after a transient error,
+    // so everything that belongs to one attempt (reads, transaction, writes) lives inside it.
+    public Task<PlaceOrderOutcome> PlaceOrderAsync(PlaceOrderRequest request, CancellationToken ct) =>
+        db.Database.CreateExecutionStrategy().ExecuteAsync(
+            request, (_, req, token) => PlaceOrderOnceAsync(req, token), verifySucceeded: null, ct);
+
+    private async Task<PlaceOrderOutcome> PlaceOrderOnceAsync(PlaceOrderRequest request, CancellationToken ct)
     {
+        // A failed attempt may have left tracked entities behind
+        db.ChangeTracker.Clear();
+
         Cart? cart = await db.Carts.Include(c => c.Items).FirstOrDefaultAsync(c => c.Id == request.CartId, ct);
         if (cart is null)
         {
