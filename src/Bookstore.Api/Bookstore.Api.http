@@ -1,0 +1,13 @@
+@Api = http://localhost:5180
+
+### Checkout with a card that works
+POST {{Api}}/api/orders/1001/checkout
+Content-Type: application/json
+
+{ "cardToken": "tok_visa" }
+
+### Checkout with a card the provider declines
+POST {{Api}}/api/orders/1001/checkout
+Content-Type: application/json
+
+{ "cardToken": "tok_card_declined" }

@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Bookstore.Api/Bookstore.Api.csproj" />
+    <Project Path="src/Bookstore.FakeProviders/Bookstore.FakeProviders.csproj" />
+  </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/Bookstore.ResilienceLab/Bookstore.ResilienceLab.csproj" />
+  </Folder>
+</Solution>
