@@ -38,6 +38,12 @@ public static class RedisKeys
 
     public static RedisKey VerificationRequests(int customerId) => $"{Prefix}:verify:{customerId}:requests";
 
+    // Book prices in kurus: one hash, field = ISBN
+    public static RedisKey Prices => $"{Prefix}:prices";
+
+    // Pub/sub channel: the ISBN of a book whose price changed
+    public static readonly RedisChannel PriceChanged = RedisChannel.Literal($"{Prefix}:events:price-changed");
+
     public static RedisKey OrderIdSequence => $"{Prefix}:order:id-seq";
 
     public static RedisKey Bestsellers(DateOnly day) => $"{Prefix}:bestsellers:{day:yyyyMMdd}";

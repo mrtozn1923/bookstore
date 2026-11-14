@@ -9,6 +9,8 @@ string redisConnection = builder.Configuration.GetConnectionString("Redis")
 IConnectionMultiplexer redis = await ConnectionMultiplexer.ConnectAsync(redisConnection);
 builder.Services.AddSingleton(redis);
 builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddMemoryCache();
+builder.Services.AddHostedService<PriceInvalidationListener>();
 
 WebApplication app = builder.Build();
 
@@ -22,5 +24,6 @@ app.MapVisitors();
 app.MapBestsellers();
 app.MapWarehouses();
 app.MapInventory();
+app.MapBookPrices();
 
 app.Run();

@@ -1,0 +1,4 @@
+CONFIG SET notify-keyspace-events STh
+HSETEX bookstore:cart:7:price-locks PX 1500 FIELDS 2 9780441013593 29990 9780141439518 18950
+HSET bookstore:cart:7:price-locks 9780451524935 22500
+HDEL bookstore:cart:7:price-locks 9780451524935

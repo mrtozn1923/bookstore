@@ -1,0 +1,3 @@
+SPUBLISH bookstore:events:price-changed:{9780441013593} 27990
+PUBSUB SHARDNUMSUB bookstore:events:price-changed:{9780441013593}
+PUBLISH bookstore:events:price-changed:{9780441013593} 27990
