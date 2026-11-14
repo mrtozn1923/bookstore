@@ -1,0 +1,11 @@
+<header>
+  <a routerLink="/" class="brand"><img [src]="logoUrl" alt="" width="24" height="24"> Bookstore</a>
+  <nav>
+    <a routerLink="/orders">My orders</a>
+    <a routerLink="/cart">Cart ({{ cart.count() }})</a>
+  </nav>
+</header>
+<main>
+  <router-outlet />
+</main>
+<footer>bookstore-web {{ version }}</footer>
