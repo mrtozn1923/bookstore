@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Reflection;
 using System.Text;
 using Asp.Versioning;
 using FluentValidation;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Bookstore.Api.Auth;
 using Bookstore.Api.Data;
 using Bookstore.Api.Filters;
@@ -81,6 +83,49 @@ builder.Services
         options.GroupNameFormat = "'v'VVV";
         options.SubstituteApiVersionInUrl = true;
     });
+
+// also introduces the minimal API endpoints to ApiExplorer
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Bookstore API",
+        Version = "v1",
+        Description = "Books, categories and orders."
+    });
+    // the "v2" group prepared by AddApiExplorer gets its own document
+    options.SwaggerDoc("v2", new OpenApiInfo { Title = "Bookstore API", Version = "v2" });
+
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFile));
+
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        Description = "Paste the token only, without the Bearer prefix."
+    });
+
+    // apply the definition to every operation
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
 builder.Services.AddValidatorsFromAssemblyContaining<CreateOrderRequestValidator>();
 ValidatorOptions.Global.LanguageManager.Culture = new CultureInfo("en");
 builder.Services.AddDbContext<BookstoreContext>(options =>
@@ -180,6 +225,18 @@ var app = builder.Build();
 
 app.UseSerilogRequestLogging();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+if (app.Environment.IsDevelopment())
+{
+    // /swagger/v1/swagger.json, /swagger/v2/swagger.json and the /swagger UI;
+    // before the security headers and authorization: the UI is an HTML page and needs no token
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Bookstore API v1");
+        options.SwaggerEndpoint("/swagger/v2/swagger.json", "Bookstore API v2");
+    });
+}
 
 if (!app.Environment.IsDevelopment())
 {
