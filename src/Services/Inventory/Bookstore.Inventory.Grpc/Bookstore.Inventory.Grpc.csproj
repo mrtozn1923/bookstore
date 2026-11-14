@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aspire.Keycloak.Authentication" />
     <PackageReference Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" />
     <PackageReference Include="Grpc.AspNetCore" />
     <PackageReference Include="WolverineFx.EntityFrameworkCore" />

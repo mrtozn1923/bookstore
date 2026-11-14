@@ -6,7 +6,7 @@ namespace Bookstore.Ordering.Tests;
 public sealed class OrderTests
 {
     private static readonly FakeTimeProvider Clock = new(new DateTimeOffset(2026, 11, 14, 10, 0, 0, TimeSpan.Zero));
-    private static readonly Buyer Ada = new("Ada Lovelace", "ada@example.com");
+    private static readonly Buyer Ada = new("ada-subject", "Ada Lovelace", "ada@example.com");
 
     private static OrderLine Dune(int quantity = 1) => new("9780441172719", "Dune", new Money(459.00m, "TRY"), quantity);
     private static OrderLine Emma(int quantity = 1) => new("9780141439587", "Emma", new Money(249.90m, "TRY"), quantity);

@@ -8,9 +8,8 @@ public sealed record PlaceOrderItemRequest(
     [property: Range(1, 99)] int Quantity,
     [property: Range(typeof(decimal), "0.01", "100000")] decimal UnitPrice);
 
+// Who orders is not part of the request any more: the buyer comes from the access token.
 public sealed record PlaceOrderRequest(
-    [property: Required, StringLength(200)] string CustomerName,
-    [property: Required, EmailAddress, StringLength(256)] string CustomerEmail,
     [property: Required, MinLength(1), MaxLength(50)] List<PlaceOrderItemRequest> Items);
 
 public sealed record OrderLineResponse(string Isbn, string Title, decimal UnitPrice, int Quantity, decimal LineTotal);

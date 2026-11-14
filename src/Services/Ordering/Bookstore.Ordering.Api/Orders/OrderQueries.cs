@@ -7,11 +7,12 @@ namespace Bookstore.Ordering.Orders;
 // The read side: no aggregate, no tracking, only the columns the screen needs.
 public sealed class OrderQueries(OrderingDbContext db)
 {
-    public async Task<OrderResponse?> GetAsync(Guid id, CancellationToken ct)
+    // Only the buyer sees an order: someone else's order id gives the same answer as an id that does not exist.
+    public async Task<OrderResponse?> GetAsync(Guid id, string customerId, CancellationToken ct)
     {
         OrderId orderId = new(id);
         return await db.Orders.AsNoTracking()
-            .Where(o => o.Id == orderId)
+            .Where(o => o.Id == orderId && o.Buyer.Id == customerId)
             .Select(o => new OrderResponse(
                 id, o.Status.ToString(), o.PlacedAtUtc, o.Buyer.Name, o.Buyer.Email,
                 o.Items.Select(i => new OrderLineResponse(i.Isbn, i.Title, i.UnitPrice.Amount, i.Quantity, i.LineTotal.Amount)).ToList(),
@@ -19,11 +20,10 @@ public sealed class OrderQueries(OrderingDbContext db)
             .FirstOrDefaultAsync(ct);
     }
 
-    public async Task<IReadOnlyList<OrderSummaryResponse>> ListByCustomerAsync(string email, int page, int pageSize, CancellationToken ct)
+    public async Task<IReadOnlyList<OrderSummaryResponse>> ListByCustomerAsync(string customerId, int page, int pageSize, CancellationToken ct)
     {
-        string normalized = email.Trim().ToLowerInvariant();
         var rows = await db.Orders.AsNoTracking()
-            .Where(o => o.Buyer.Email == normalized)
+            .Where(o => o.Buyer.Id == customerId)
             .OrderByDescending(o => o.PlacedAtUtc)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)

@@ -26,5 +26,5 @@ public sealed record Money(decimal Amount, string Currency)
             : throw new DomainException("money.currency-mismatch", $"Cannot add {right.Currency} to {left.Currency}.");
 }
 
-// Until post 10 the buyer comes from the request; then it comes from the access token.
-public sealed record Buyer(string Name, string Email);
+// Taken from the access token (post 10): Id is the identity provider's subject ("sub"), never a value from the request body.
+public sealed record Buyer(string Id, string Name, string Email);

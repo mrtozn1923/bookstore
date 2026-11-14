@@ -20,11 +20,11 @@ public sealed class CheckoutSagaTests
 
     public CheckoutSagaTests()
     {
-        order = Order.Place(new Buyer("Ada Lovelace", "ada@example.com"),
+        order = Order.Place(new Buyer("ada-subject", "Ada Lovelace", "ada@example.com"),
             [new OrderLine("9780141439587", "Emma", new Money(249.90m, "TRY"), 2)], Clock);
         orders.Add(order);
         (saga, _) = CheckoutSaga.Start(new StartCheckout(
-            order.Id.Value, [new StockLine("9780141439587", 2)], order.Total.Amount, "TRY", "ada@example.com"));
+            order.Id.Value, [new StockLine("9780141439587", 2)], order.Total.Amount, "TRY", "ada-subject", "ada@example.com"));
     }
 
     private Guid OrderId => order.Id.Value;
@@ -34,7 +34,7 @@ public sealed class CheckoutSagaTests
     public void Start_reserves_the_stock()
     {
         (CheckoutSaga started, ReserveStock reserve) = CheckoutSaga.Start(new StartCheckout(
-            OrderId, [new StockLine("9780141439587", 2)], 499.80m, "TRY", "ada@example.com"));
+            OrderId, [new StockLine("9780141439587", 2)], 499.80m, "TRY", "ada-subject", "ada@example.com"));
 
         Assert.Equal(CheckoutStep.AwaitingStock, started.Step);
         Assert.Equal(OrderId, reserve.OrderId);

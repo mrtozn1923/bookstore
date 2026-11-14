@@ -43,6 +43,20 @@ builder.UseWolverine(opts =>
     opts.Policies.UseDurableOutboxOnAllSendingEndpoints();
 });
 
+// Access tokens from the "bookstore" realm, for the bookstore-api audience. Reading the catalog stays anonymous;
+// changing it needs the store-staff role.
+builder.Services.AddAuthentication()
+    .AddKeycloakJwtBearer("keycloak", realm: "bookstore", options =>
+    {
+        options.Audience = "bookstore-api";
+        options.MapInboundClaims = false;
+        options.TokenValidationParameters.RoleClaimType = "roles";
+        // Keycloak runs on plain HTTP locally; production metadata must come over HTTPS.
+        options.RequireHttpsMetadata = builder.Environment.IsProduction();
+    });
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("store-staff", policy => policy.RequireRole("store-staff"));
+
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddProblemDetails();
 builder.Services.AddValidation();
@@ -74,6 +88,8 @@ if (DatabaseMigration.IsMigrationRun(args))
 
 app.UseExceptionHandler();
 app.UseStatusCodePages();
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseOutputCache();
 
 app.MapDefaultEndpoints();

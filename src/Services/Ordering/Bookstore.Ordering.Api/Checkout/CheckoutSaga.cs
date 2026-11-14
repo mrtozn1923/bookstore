@@ -24,6 +24,7 @@ public sealed class CheckoutSaga : Saga
     public CheckoutStep Step { get; set; }
     public decimal Total { get; set; }
     public string Currency { get; set; } = "";
+    public string CustomerId { get; set; } = "";
     public string CustomerEmail { get; set; } = "";
 
     public static (CheckoutSaga, ReserveStock) Start(StartCheckout command) =>
@@ -34,6 +35,7 @@ public sealed class CheckoutSaga : Saga
             Step = CheckoutStep.AwaitingStock,
             Total = command.Total,
             Currency = command.Currency,
+            CustomerId = command.CustomerId,
             CustomerEmail = command.CustomerEmail
         },
         new ReserveStock(command.OrderId, command.Lines)
@@ -75,7 +77,7 @@ public sealed class CheckoutSaga : Saga
         Order order = await orders.GetAsync(Id, ct);
         order.Confirm();
         MarkCompleted();
-        return new OrderConfirmed(Id, CustomerEmail, clock.GetUtcNow());
+        return new OrderConfirmed(Id, CustomerId, CustomerEmail, clock.GetUtcNow());
     }
 
     public async Task<(ReleaseStock, OrderCancelled)> Handle(
@@ -112,6 +114,6 @@ public sealed class CheckoutSaga : Saga
         Order order = await orders.GetAsync(Id, ct);
         order.Cancel(reason, clock);
         MarkCompleted();
-        return new OrderCancelled(Id, CustomerEmail, reason, clock.GetUtcNow());
+        return new OrderCancelled(Id, CustomerId, CustomerEmail, reason, clock.GetUtcNow());
     }
 }

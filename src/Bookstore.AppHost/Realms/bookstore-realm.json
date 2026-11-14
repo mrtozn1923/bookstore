@@ -1,0 +1,88 @@
+{
+  "realm": "bookstore",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "accessTokenLifespan": 300,
+  "roles": {
+    "realm": [
+      { "name": "customer", "description": "Buys books in the online store" },
+      { "name": "store-staff", "description": "Manages the catalog in the back office" }
+    ]
+  },
+  "users": [
+    {
+      "username": "ada",
+      "enabled": true,
+      "email": "ada@example.com",
+      "emailVerified": true,
+      "firstName": "Ada",
+      "lastName": "Lovelace",
+      "realmRoles": [ "customer" ],
+      "credentials": [ { "type": "password", "value": "${BOOKSTORE_DEMO_PASSWORD}", "temporary": false } ]
+    },
+    {
+      "username": "grace",
+      "enabled": true,
+      "email": "grace@example.com",
+      "emailVerified": true,
+      "firstName": "Grace",
+      "lastName": "Hopper",
+      "realmRoles": [ "customer", "store-staff" ],
+      "credentials": [ { "type": "password", "value": "${BOOKSTORE_DEMO_PASSWORD}", "temporary": false } ]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "bookstore-bff",
+      "name": "Bookstore BFF",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "${BOOKSTORE_BFF_CLIENT_SECRET}",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [ "http://localhost:5100/signin-oidc" ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:5100/signout-callback-oidc"
+      },
+      "protocolMappers": [
+        {
+          "name": "bookstore-api audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": { "included.custom.audience": "bookstore-api", "access.token.claim": "true", "id.token.claim": "false" }
+        },
+        {
+          "name": "realm roles as roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": { "claim.name": "roles", "multivalued": "true", "jsonType.label": "String", "access.token.claim": "true", "id.token.claim": "true" }
+        }
+      ]
+    },
+    {
+      "clientId": "bookstore-bff-service",
+      "name": "Bookstore BFF (service identity)",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "${BOOKSTORE_BFF_SERVICE_SECRET}",
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "protocolMappers": [
+        {
+          "name": "inventory-api audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": { "included.custom.audience": "inventory-api", "access.token.claim": "true", "id.token.claim": "false" }
+        }
+      ]
+    }
+  ]
+}

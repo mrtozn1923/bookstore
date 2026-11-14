@@ -21,7 +21,7 @@ public sealed class PlaceOrderHandler(IDbContextOutbox<OrderingDbContext> outbox
 {
     private readonly OrderingDbContext db = outbox.DbContext;
 
-    public async Task<PlaceOrderOutcome> HandleAsync(PlaceOrderRequest request, CancellationToken ct)
+    public async Task<PlaceOrderOutcome> HandleAsync(PlaceOrderRequest request, Buyer buyer, CancellationToken ct)
     {
         string[] isbns = [.. request.Items.Select(i => i.Isbn).Distinct()];
         Dictionary<string, CatalogBook> books = await db.CatalogBooks.AsNoTracking()
@@ -47,7 +47,7 @@ public sealed class PlaceOrderHandler(IDbContextOutbox<OrderingDbContext> outbox
         }
 
         Order order = Order.Place(
-            new Buyer(request.CustomerName.Trim(), request.CustomerEmail.Trim().ToLowerInvariant()),
+            buyer,
             [.. request.Items.Select(i => new OrderLine(
                 i.Isbn, books[i.Isbn].Title, new Money(books[i.Isbn].Price, books[i.Isbn].Currency), i.Quantity))],
             clock);
@@ -70,6 +70,7 @@ public sealed class PlaceOrderHandler(IDbContextOutbox<OrderingDbContext> outbox
             [.. order.Items.Select(i => new StockLine(i.Isbn, i.Quantity))],
             order.Total.Amount,
             order.Total.Currency,
+            order.Buyer.Id,
             order.Buyer.Email));
 
         // INSERT Orders/OrderItems and both outbox rows in one transaction, then the messages leave.
@@ -80,6 +81,7 @@ public sealed class PlaceOrderHandler(IDbContextOutbox<OrderingDbContext> outbox
 
     private static Contracts.Ordering.OrderPlaced ToIntegrationEvent(Order order) => new(
         order.Id.Value,
+        order.Buyer.Id,
         order.Buyer.Email,
         [.. order.Items.Select(i => new OrderPlacedLine(i.Isbn, i.Quantity, i.UnitPrice.Amount))],
         order.Total.Amount,

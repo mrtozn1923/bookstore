@@ -76,6 +76,12 @@ namespace Bookstore.Ordering.Data.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<string>("CustomerId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(64)");
+
                     b.Property<string>("Step")
                         .IsRequired()
                         .HasMaxLength(30)
@@ -134,6 +140,12 @@ namespace Bookstore.Ordering.Data.Migrations
                                 .IsRequired()
                                 .HasMaxLength(256)
                                 .HasColumnType("nvarchar(256)");
+
+                            b1.Property<string>("Id")
+                                .IsRequired()
+                                .HasMaxLength(64)
+                                .IsUnicode(false)
+                                .HasColumnType("varchar(64)");
 
                             b1.Property<string>("Name")
                                 .IsRequired()

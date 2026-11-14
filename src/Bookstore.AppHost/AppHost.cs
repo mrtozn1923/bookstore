@@ -21,13 +21,22 @@ IResourceBuilder<RabbitMQServerResource> rabbitmq = builder.AddRabbitMQ("rabbitm
     .WithDataVolume("msapp-rabbitmq-data")
     .WithLifetime(ContainerLifetime.Persistent);
 
-// Nothing uses Keycloak before post 10. Explicit start keeps its ~500 MB free until then:
-// start it from the dashboard (or `aspire resource keycloak start`) when you need it.
-builder.AddKeycloak("keycloak", 8180)
+// Generated once, kept in the AppHost's user secrets, never in the repository. The realm file refers to them
+// as ${...} placeholders, which Keycloak fills from its environment during the import.
+IResourceBuilder<ParameterResource> bffClientSecret = AddGeneratedSecret(builder, "bff-client-secret");
+IResourceBuilder<ParameterResource> bffServiceSecret = AddGeneratedSecret(builder, "bff-service-secret");
+IResourceBuilder<ParameterResource> demoPassword = AddGeneratedSecret(builder, "keycloak-demo-password");
+
+// Local identity provider with the "bookstore" realm imported from Realms/. Production uses a managed Keycloak
+// (or another OIDC provider) with its own realm management; the import is for development only.
+IResourceBuilder<KeycloakResource> keycloak = builder.AddKeycloak("keycloak", 8180)
     .WithContainerName("msapp-keycloak")
     .WithDataVolume("msapp-keycloak-data")
     .WithLifetime(ContainerLifetime.Persistent)
-    .WithExplicitStart();
+    .WithRealmImport("./Realms")
+    .WithEnvironment("BOOKSTORE_BFF_CLIENT_SECRET", bffClientSecret)
+    .WithEnvironment("BOOKSTORE_BFF_SERVICE_SECRET", bffServiceSecret)
+    .WithEnvironment("BOOKSTORE_DEMO_PASSWORD", demoPassword);
 
 // The migrator is the Catalog binary started with --migrate; it exits when the schema is up to date.
 IResourceBuilder<ProjectResource> catalogMigrator = builder
@@ -39,6 +48,7 @@ IResourceBuilder<ProjectResource> catalogMigrator = builder
 
 IResourceBuilder<ProjectResource> catalog = builder.AddProject<Projects.Bookstore_Catalog_Api>("catalog")
     .WithReference(catalogDb)
+    .WithReference(keycloak)
     .WithReference(redis)
     .WithReference(rabbitmq)
     .WaitForCompletion(catalogMigrator)
@@ -59,6 +69,7 @@ IResourceBuilder<ProjectResource> inventory = builder.AddProject<Projects.Bookst
     .WithHttpEndpoint(name: "grpc")
     .WithEndpoint("grpc", endpoint => endpoint.Transport = "http2")
     .WithReference(inventoryDb)
+    .WithReference(keycloak)
     .WithReference(rabbitmq)
     .WaitForCompletion(inventoryMigrator)
     .WaitFor(rabbitmq)
@@ -85,6 +96,7 @@ IResourceBuilder<ProjectResource> orderingMigrator = builder
 // Since post 07 Ordering talks to Inventory and Payments only through RabbitMQ.
 IResourceBuilder<ProjectResource> ordering = builder.AddProject<Projects.Bookstore_Ordering_Api>("ordering")
     .WithReference(orderingDb)
+    .WithReference(keycloak)
     .WithReference(rabbitmq)
     .WaitForCompletion(orderingMigrator)
     .WaitFor(rabbitmq)
@@ -92,9 +104,7 @@ IResourceBuilder<ProjectResource> ordering = builder.AddProject<Projects.Booksto
 
 // Shared secret for the provider's webhook signatures (Standard Webhooks: "whsec_" + base64).
 // 32 letters and digits are valid base64 (24 bytes); Aspire generates it once and keeps it in user secrets.
-IResourceBuilder<ParameterResource> webhookSecret = builder.AddResource(ParameterResourceBuilderExtensions.CreateGeneratedParameter(
-    builder, "payment-webhook-secret", secret: true,
-    new GenerateParameterDefault { MinLength = 32, Lower = true, Upper = true, Numeric = true, Special = false }));
+IResourceBuilder<ParameterResource> webhookSecret = AddGeneratedSecret(builder, "payment-webhook-secret");
 
 // Stands in for the external card payment provider. In production this is the provider's URL, not a resource we run.
 IResourceBuilder<ProjectResource> paymentProvider = builder.AddProject<Projects.Bookstore_FakePaymentProvider>("payment-provider")
@@ -132,7 +142,16 @@ builder.AddProject<Projects.Bookstore_Bff>("bff")
     .WithReference(catalog)
     .WithReference(ordering)
     .WithReference(inventory)
+    .WithReference(keycloak)
+    .WithEnvironment("Keycloak__ClientSecret", bffClientSecret)
+    .WithEnvironment("Keycloak__ServiceClientSecret", bffServiceSecret)
+    .WaitFor(keycloak)
     .WithExternalHttpEndpoints()
     .WithHttpHealthCheck("/health");
 
 builder.Build().Run();
+
+static IResourceBuilder<ParameterResource> AddGeneratedSecret(IDistributedApplicationBuilder builder, string name) =>
+    builder.AddResource(ParameterResourceBuilderExtensions.CreateGeneratedParameter(
+        builder, name, secret: true,
+        new GenerateParameterDefault { MinLength = 32, Lower = true, Upper = true, Numeric = true, Special = false }));

@@ -60,14 +60,6 @@
         ],
         "parameters": [
           {
-            "name": "customerEmail",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
             "name": "page",
             "in": "query",
             "schema": {
@@ -381,22 +373,10 @@
       },
       "PlaceOrderRequest": {
         "required": [
-          "customerName",
-          "customerEmail",
           "items"
         ],
         "type": "object",
         "properties": {
-          "customerName": {
-            "maxLength": 200,
-            "minLength": 0,
-            "type": "string"
-          },
-          "customerEmail": {
-            "maxLength": 256,
-            "minLength": 0,
-            "type": "string"
-          },
           "items": {
             "maxItems": 50,
             "minItems": 1,

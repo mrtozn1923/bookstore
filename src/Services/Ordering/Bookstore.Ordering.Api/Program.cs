@@ -89,6 +89,18 @@ builder.UseWolverine(opts =>
     opts.OnException<InvalidOperationException>().MoveToErrorQueue();
 });
 
+// Every order endpoint needs a customer's access token for the bookstore-api audience. The BFF forwards it.
+builder.Services.AddAuthentication()
+    .AddKeycloakJwtBearer("keycloak", realm: "bookstore", options =>
+    {
+        options.Audience = "bookstore-api";
+        options.MapInboundClaims = false;
+        options.TokenValidationParameters.RoleClaimType = "roles";
+        options.RequireHttpsMetadata = builder.Environment.IsProduction();
+    });
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("customer", policy => policy.RequireRole("customer"));
+
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<PlaceOrderHandler>();
 builder.Services.AddScoped<IOrderRepository, EfOrderRepository>();
@@ -126,6 +138,8 @@ if (DatabaseMigration.IsMigrationRun(args))
 
 app.UseExceptionHandler();
 app.UseStatusCodePages();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapDefaultEndpoints();
 app.MapOpenApi().WithDocumentPerVersion();

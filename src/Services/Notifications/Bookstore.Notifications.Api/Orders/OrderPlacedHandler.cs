@@ -6,8 +6,8 @@ namespace Bookstore.Notifications.Orders;
 public static class OrderPlacedHandler
 {
     public static void Handle(OrderPlaced message, ILogger logger) =>
-        logger.LogInformation("Order {OrderId} placed by {CustomerEmail}: {Total} {Currency}, {Lines} line(s)",
-            message.OrderId, message.CustomerEmail, message.Total, message.Currency, message.Lines.Count);
+        logger.LogInformation("Order {OrderId} placed by {CustomerId} ({CustomerEmail}): {Total} {Currency}, {Lines} line(s)",
+            message.OrderId, message.CustomerId, message.CustomerEmail, message.Total, message.Currency, message.Lines.Count);
 
     public static void Handle(OrderConfirmed message, ILogger logger) =>
         logger.LogInformation("Order {OrderId} confirmed for {CustomerEmail}", message.OrderId, message.CustomerEmail);

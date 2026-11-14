@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aspire.Keycloak.Authentication" />
     <PackageReference Include="Grpc.Net.ClientFactory" />
     <PackageReference Include="Microsoft.Extensions.ServiceDiscovery.Yarp" />
     <PackageReference Include="Yarp.ReverseProxy" />

@@ -38,6 +38,16 @@ builder.UseWolverine(opts =>
     opts.OnException<InvalidOperationException>().MoveToErrorQueue();
 });
 
+// gRPC callers are services, not users: a client credentials token for the inventory-api audience.
+builder.Services.AddAuthentication()
+    .AddKeycloakJwtBearer("keycloak", realm: "bookstore", options =>
+    {
+        options.Audience = "inventory-api";
+        options.MapInboundClaims = false;
+        options.RequireHttpsMetadata = builder.Environment.IsProduction();
+    });
+builder.Services.AddAuthorization();
+
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.Configure<ReservationOptions>(builder.Configuration.GetSection("Reservations"));
 builder.Services.AddScoped<StockReservations>();
@@ -58,7 +68,10 @@ if (DatabaseMigration.IsMigrationRun(args))
     return;
 }
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapDefaultEndpoints();
-app.MapGrpcService<InventoryGrpcService>();
+app.MapGrpcService<InventoryGrpcService>().RequireAuthorization();
 
 app.Run();

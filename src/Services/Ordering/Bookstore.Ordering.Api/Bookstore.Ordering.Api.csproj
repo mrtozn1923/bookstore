@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aspire.Keycloak.Authentication" />
     <PackageReference Include="Asp.Versioning.Http" />
     <PackageReference Include="Asp.Versioning.OpenApi" />
     <PackageReference Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" />

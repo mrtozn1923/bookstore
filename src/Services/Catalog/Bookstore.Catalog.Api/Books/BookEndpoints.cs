@@ -19,8 +19,8 @@ public static class BookEndpoints
         v1.MapGet("/books/{isbn}", GetBook).CacheOutput(CachePolicies.Book).ProducesProblem(StatusCodes.Status404NotFound);
         v1.MapGet("/categories", GetCategories).CacheOutput(CachePolicies.Categories);
 
-        // Back-office endpoints; authorization arrives in post 10.
-        RouteGroupBuilder admin = v1.MapGroup("/admin/books");
+        // Back-office endpoints: only store staff may change prices and titles.
+        RouteGroupBuilder admin = v1.MapGroup("/admin/books").RequireAuthorization("store-staff");
         admin.MapPut("/{isbn}/price", ChangePrice).ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status404NotFound).ProducesProblem(StatusCodes.Status409Conflict);
         admin.MapPut("/{isbn}/title", RenameBook).ProducesValidationProblem()

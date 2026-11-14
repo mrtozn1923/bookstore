@@ -26,6 +26,7 @@ public sealed class OrderingDbContext(DbContextOptions<OrderingDbContext> option
             order.Property(o => o.PaymentReference).HasMaxLength(100);
             order.ComplexProperty(o => o.Buyer, buyer =>
             {
+                buyer.Property(b => b.Id).HasMaxLength(64).IsUnicode(false);
                 buyer.Property(b => b.Name).HasMaxLength(200);
                 buyer.Property(b => b.Email).HasMaxLength(256);
             });
@@ -55,6 +56,7 @@ public sealed class OrderingDbContext(DbContextOptions<OrderingDbContext> option
             saga.Property(s => s.Step).HasConversion<string>().HasMaxLength(30);
             saga.Property(s => s.Total).HasPrecision(12, 2);
             saga.Property(s => s.Currency).HasMaxLength(3).IsUnicode(false);
+            saga.Property(s => s.CustomerId).HasMaxLength(64).IsUnicode(false);
             saga.Property(s => s.CustomerEmail).HasMaxLength(256);
             saga.Property(s => s.Version).IsConcurrencyToken();
         });
