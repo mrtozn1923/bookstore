@@ -72,6 +72,25 @@
               "src/test-setup.ts"
             ],
             "providersFile": "src/test-providers.ts",
+            "runnerConfig": "vitest-base.config.mts",
+            "exclude": [
+              "**/*.browser.spec.ts"
+            ]
+          }
+        },
+        "test-browser": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "include": [
+              "**/*.browser.spec.ts"
+            ],
+            "browsers": [
+              "chromiumHeadless"
+            ],
+            "setupFiles": [
+              "src/test-setup.browser.ts"
+            ],
+            "providersFile": "src/test-providers.ts",
             "runnerConfig": "vitest-base.config.mts"
           }
         }

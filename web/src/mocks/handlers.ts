@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw';
 import { Order } from '../app/orders/order';
+import { catalogOf } from '../testing/books';
 
 export const placedOrder: Order = {
   id: 42,
@@ -14,6 +15,8 @@ export const placedOrder: Order = {
 };
 
 export const handlers = [
+  http.get('/api/books', () => HttpResponse.json(catalogOf(30))),
+  http.get('/api/books/:isbn/rating', () => HttpResponse.json({ average: 4.5, count: 12 })),
   http.get('/api/orders/:id', ({ params }) =>
     params['id'] === String(placedOrder.id)
       ? HttpResponse.json(placedOrder)

@@ -37,8 +37,10 @@ yarn-error.log
 /libpeerconnection.log
 testem.log
 /typings
-__screenshots__/
 
 # System files
 .DS_Store
 Thumbs.db
+
+# Vitest browser mode attachments (failure screenshots, actual/diff images)
+/.vitest

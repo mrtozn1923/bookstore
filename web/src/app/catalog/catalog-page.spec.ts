@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { DeferBlockBehavior, TestBed } from '@angular/core/testing';
 import { MatSelectHarness } from '@angular/material/select/testing';
 import { render, screen } from '@testing-library/angular';
-import { dune, emma, hobbit } from '../../testing/books';
+import { catalogOf, dune, emma, hobbit } from '../../testing/books';
 import { CartStore } from '../cart/cart-store';
 import { CatalogPage } from './catalog-page';
 
@@ -85,5 +85,33 @@ describe('CatalogPage sorting', () => {
     expect(await sort.getValueText()).toBe('Price: low to high');
     const titles = screen.getAllByRole('heading', { level: 3 }).map((heading) => heading.textContent);
     expect(titles).toEqual(['Emma', 'The Hobbit', 'Dune']);
+  });
+});
+
+describe('CatalogPage infinite scroll in jsdom', () => {
+  it('shows twelve more books when the end of the list is reached', async () => {
+    let reachEnd = (): void => {};
+    vi.stubGlobal(
+      'IntersectionObserver',
+      class {
+        constructor(callback: IntersectionObserverCallback) {
+          reachEnd = () => callback([{ isIntersecting: true } as IntersectionObserverEntry], this as never);
+        }
+        observe(): void {}
+        unobserve(): void {}
+        disconnect(): void {}
+      },
+    );
+    const { fixture } = await render(CatalogPage, {
+      providers: [provideHttpClientTesting()],
+      deferBlockBehavior: DeferBlockBehavior.Manual,
+    });
+    TestBed.inject(HttpTestingController).expectOne('/api/books').flush(catalogOf(30));
+    expect(await screen.findAllByRole('heading', { level: 3 })).toHaveLength(12);
+
+    reachEnd();
+    await fixture.whenStable();
+
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(24);
   });
 });
