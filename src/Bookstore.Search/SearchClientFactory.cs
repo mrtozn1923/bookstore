@@ -17,6 +17,9 @@ public sealed class ElasticsearchOptions
 
     // Null keeps the client default; the API sets a short timeout (post 10).
     public TimeSpan? RequestTimeout { get; set; }
+
+    // Post 12: SHA-256 fingerprint of the cluster's HTTP CA certificate when the cluster uses a self-signed CA.
+    public string? CertificateFingerprint { get; set; }
 }
 
 public static class SearchClientFactory
@@ -34,6 +37,12 @@ public static class SearchClientFactory
         ElasticsearchClientSettings settings = new ElasticsearchClientSettings(new SingleNodePool(new Uri(options.Url)), CreateSourceSerializer)
             .Authentication(new ApiKey(options.ApiKey))
             .DefaultMappingFor<Book>(m => m.IndexName(BooksIndex).IdProperty(b => b.Isbn));
+
+        if (!string.IsNullOrWhiteSpace(options.CertificateFingerprint))
+        {
+            // Trusts exactly this CA instead of turning certificate validation off.
+            settings.CertificateFingerprint(options.CertificateFingerprint);
+        }
 
         if (options.RequestTimeout is TimeSpan timeout)
         {

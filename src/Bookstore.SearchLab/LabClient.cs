@@ -10,7 +10,8 @@ public static class LabClient
     public static ElasticsearchOptions Options => new()
     {
         Url = Environment.GetEnvironmentVariable("BOOKSTORE_ES_URL") ?? "http://localhost:9200",
-        ApiKey = Environment.GetEnvironmentVariable("BOOKSTORE_ES_API_KEY") ?? ""
+        ApiKey = Environment.GetEnvironmentVariable("BOOKSTORE_ES_API_KEY") ?? "",
+        CertificateFingerprint = Environment.GetEnvironmentVariable("BOOKSTORE_ES_CA_FINGERPRINT")
     };
 
     public static ElasticsearchClient Create() => SearchClientFactory.Create(Options);
@@ -20,7 +21,8 @@ public static class LabClient
     public static ElasticsearchClient CreateAdmin() => SearchClientFactory.Create(new ElasticsearchOptions
     {
         Url = Options.Url,
-        ApiKey = Environment.GetEnvironmentVariable("BOOKSTORE_ES_ADMIN_API_KEY") ?? ""
+        ApiKey = Environment.GetEnvironmentVariable("BOOKSTORE_ES_ADMIN_API_KEY") ?? "",
+        CertificateFingerprint = Options.CertificateFingerprint
     });
 
     // debug: keeps request/response bytes (post 10); onRequestCompleted sees every call.

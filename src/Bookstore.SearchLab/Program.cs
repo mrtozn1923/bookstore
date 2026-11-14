@@ -63,10 +63,16 @@ switch (command)
     case "migrate":
         await IndexMigration.RunAsync(rest);
         break;
+    case "ca-fingerprint":
+        ProductionDemo.CaFingerprint(rest);
+        break;
+    case "tls-check":
+        await ProductionDemo.TlsCheckAsync();
+        break;
     case "seed-sql":
         await SqlSeeder.RunAsync(rest);
         break;
     default:
-        Console.WriteLine("Commands: inverted-index [query], seed-sql [syntheticCount], first-connection, create-index [name], translators [name], search <text>, bulk-compare, bulk-all [count], bulk-errors, refresh, concurrency, export [pageSize], rank-eval [options], syntax, serialization, errors, esql, templates [--replicas n], migrate <new-index> [--rps n]");
+        Console.WriteLine("Commands: inverted-index [query], seed-sql [syntheticCount], first-connection, create-index [name], translators [name], search <text>, bulk-compare, bulk-all [count], bulk-errors, refresh, concurrency, export [pageSize], rank-eval [options], syntax, serialization, errors, esql, templates [--replicas n], migrate <new-index> [--rps n], ca-fingerprint <file>, tls-check");
         break;
 }
