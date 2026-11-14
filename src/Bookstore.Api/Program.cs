@@ -4,8 +4,16 @@ using Microsoft.AspNetCore.Mvc;
 using Bookstore.Api.Options;
 using Bookstore.Api.Services;
 using Bookstore.Api.Validation;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, configuration) => configuration
+    .ReadFrom.Configuration(context.Configuration)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File("logs/bookstore-.log", rollingInterval: RollingInterval.Day));
+
 builder.Services.AddControllers()
     .ConfigureApiBehaviorOptions(options =>
     {
@@ -38,13 +46,7 @@ builder.Host.UseDefaultServiceProvider(options =>
 
 var app = builder.Build();
 
-app.Use(async (context, next) =>
-{
-    var endpoint = context.GetEndpoint();
-    app.Logger.LogInformation("{Path} matched {Endpoint}", context.Request.Path, endpoint?.DisplayName ?? "(none)");
-    await next();
-});
-
+app.UseSerilogRequestLogging();
 app.MapControllers();
 
 app.MapGet("/api/orders/{orderId:guid}", (Guid orderId) => new { orderId, Status = "Pending" });
