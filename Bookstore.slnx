@@ -16,5 +16,6 @@
     <Project Path="samples/Cd11.PolymorphicAssociation/Cd11.PolymorphicAssociation.csproj" />
     <Project Path="samples/Cd12.MultilingualData/Cd12.MultilingualData.csproj" />
     <Project Path="samples/Cd13.MultiTenancy/Cd13.MultiTenancy.csproj" />
+    <Project Path="samples/Cd14.SettingsHierarchy/Cd14.SettingsHierarchy.csproj" />
   </Folder>
 </Solution>
