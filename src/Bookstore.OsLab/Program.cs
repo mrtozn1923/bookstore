@@ -110,7 +110,65 @@ switch (command)
         Console.WriteLine(await ContextDemo.RunAsync());
         break;
 
+    case "cpu-info":
+        Console.WriteLine($"ProcessorCount={Environment.ProcessorCount}");
+        if (File.Exists("/sys/fs/cgroup/cpu.max"))
+        {
+            Console.WriteLine($"cpu.max={File.ReadAllText("/sys/fs/cgroup/cpu.max").Trim()}");
+        }
+        break;
+
+    case "workers":
+    {
+        int count = int.Parse(args[1]);
+        TimeSpan duration = TimeSpan.FromSeconds(int.Parse(args[2]));
+        foreach (WorkerReport r in SchedLab.RunWorkers(count, duration))
+        {
+            Console.WriteLine($"{r.Name}: {r.Iterations / 1_000_000,6:N0} M iterations, " +
+                $"voluntary={r.Voluntary}, nonvoluntary={r.Involuntary}");
+        }
+        break;
+    }
+
+    case "spin":
+    {
+        if (args.Length > 2)
+        {
+            using Process self = Process.GetCurrentProcess();
+            self.PriorityClass = Enum.Parse<ProcessPriorityClass>(args[2]);
+        }
+        long iterations = SchedLab.Spin(TimeSpan.FromSeconds(int.Parse(args[1])));
+        Console.WriteLine($"pid={Environment.ProcessId} {(args.Length > 2 ? args[2] : "Normal"),-11} {iterations / 1_000_000,6:N0} M iterations");
+        break;
+    }
+
+    case "pingpong":
+    {
+        int rounds = int.Parse(args[1]);
+        (TimeSpan elapsed, long voluntary) = SchedLab.PingPong(rounds);
+        Console.WriteLine($"{rounds:N0} round trips in {elapsed.TotalMilliseconds:F0} ms " +
+            $"({elapsed.TotalMicroseconds / rounds:F2} us each), voluntary switches={voluntary:N0}");
+        break;
+    }
+
+    case "nice":
+    {
+        await Task.Run(() => { }); // thread pool thread'leri oluşsun
+        using (Process self = Process.GetCurrentProcess())
+        {
+            self.PriorityClass = ProcessPriorityClass.BelowNormal;
+        }
+        Thread late = new(() => Thread.Sleep(500)) { Name = "created-after" };
+        late.Start();
+        foreach ((string tid, string name, int nice) in SchedLab.ThreadNiceValues())
+        {
+            Console.WriteLine($"{tid,6} {name,-16} nice={nice}");
+        }
+        late.Join();
+        break;
+    }
+
     default:
-        Console.WriteLine("usage: read-catalog | log-naive N | log-buffered N | proc-info S | report-naive N | report N [--fail] | report-timeout | shell-demo TEXT | env-demo | threads S | thread-cost N [stackKB] | task-cost N | context");
+        Console.WriteLine("usage: read-catalog | log-naive N | log-buffered N | proc-info S | report-naive N | report N [--fail] | report-timeout | shell-demo TEXT | env-demo | threads S | thread-cost N [stackKB] | task-cost N | context | cpu-info | workers N S | spin S [PriorityClass] | pingpong N | nice");
         break;
 }
