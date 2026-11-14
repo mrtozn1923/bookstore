@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-newsletter',
@@ -9,5 +9,5 @@ import { FormControl } from '@angular/forms';
   `
 })
 export class NewsletterComponent {
-  email = new FormControl('');
+  email = new UntypedFormControl('');
 }

@@ -43,6 +43,9 @@ import { NewsletterComponent } from './newsletter/newsletter.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
 import { ScrollTopComponent } from './scroll-top/scroll-top.component';
 import { NoticeComponent } from './notice/notice.component';
+import { BookRatingComponent } from './book-rating/book-rating.component';
+import { TitleStrategy } from '@angular/router';
+import { BookstoreTitleStrategy } from './bookstore-title.strategy';
 
 registerLocaleData(localeTr);
 
@@ -86,7 +89,8 @@ registerLocaleData(localeTr);
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    AppRoutingModule
+    AppRoutingModule,
+    BookRatingComponent
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'tr' },
@@ -96,7 +100,8 @@ registerLocaleData(localeTr);
     },
     { provide: APP_CONFIG, useValue: { appName: 'Bookstore', pageSize: 20 } },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+    { provide: TitleStrategy, useClass: BookstoreTitleStrategy }
   ],
   bootstrap: [AppComponent]
 })

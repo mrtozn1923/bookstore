@@ -18,8 +18,8 @@ import { SignUpComponent } from './sign-up/sign-up.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
-  { path: 'home', component: HomeComponent },
-  { path: 'books', component: BookListComponent },
+  { path: 'home', component: HomeComponent, title: 'Home' },
+  { path: 'books', component: BookListComponent, title: 'Books' },
   {
     path: 'books/:isbn',
     component: BookDetailComponent,
@@ -30,11 +30,11 @@ const routes: Routes = [
       { path: 'reviews', component: BookReviewsComponent }
     ]
   },
-  { path: 'about', component: AboutComponent },
+  { path: 'about', component: AboutComponent, title: 'About' },
   { path: 'login', component: LoginComponent },
-  { path: 'checkout', component: CheckoutComponent },
-  { path: 'sign-up', component: SignUpComponent },
-  { path: 'orders', component: OrderListComponent, canActivate: [AuthGuard] },
+  { path: 'checkout', component: CheckoutComponent, title: 'Checkout' },
+  { path: 'sign-up', component: SignUpComponent, title: 'Sign up' },
+  { path: 'orders', component: OrderListComponent, canActivate: [AuthGuard], title: 'My orders' },
   { path: 'account/address', component: AddressEditComponent, canDeactivate: [UnsavedChangesGuard] },
   {
     path: 'admin',

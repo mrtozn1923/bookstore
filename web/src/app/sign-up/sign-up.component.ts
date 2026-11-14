@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, Validators } from '@angular/forms';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { FormArray, FormControl, NonNullableFormBuilder, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { noWhitespace, usernameAvailable } from './sign-up.validators';
@@ -9,19 +9,19 @@ import { noWhitespace, usernameAvailable } from './sign-up.validators';
   templateUrl: './sign-up.component.html'
 })
 export class SignUpComponent implements OnInit, OnDestroy {
+  private readonly fb = inject(NonNullableFormBuilder);
+
   signUpForm = this.fb.group({
     fullName: ['', [Validators.required, Validators.minLength(3)]],
     email: ['', [Validators.required, Validators.email]],
     username: ['', [Validators.required, noWhitespace], [usernameAvailable()]],
-    genres: this.fb.array([])
+    genres: this.fb.array<string>([])
   });
 
   private destroy$ = new Subject<void>();
 
-  constructor(private fb: FormBuilder) { }
-
-  get genres(): FormArray {
-    return this.signUpForm.get('genres') as FormArray;
+  get genres(): FormArray<FormControl<string>> {
+    return this.signUpForm.controls.genres;
   }
 
   ngOnInit(): void {

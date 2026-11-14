@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BookSummaryComponent } from './book-summary.component';
+import { BookRatingComponent } from '../book-rating/book-rating.component';
 
 describe('BookSummaryComponent', () => {
   let component: BookSummaryComponent;
@@ -8,7 +9,8 @@ describe('BookSummaryComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ BookSummaryComponent ]
+      declarations: [ BookSummaryComponent ],
+      imports: [ BookRatingComponent ]
     })
     .compileComponents();
   });
