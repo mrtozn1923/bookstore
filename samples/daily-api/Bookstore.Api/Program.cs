@@ -3,6 +3,7 @@ using Bookstore.Api.Carts;
 using Bookstore.Api.Catalog;
 using Bookstore.Api.Formatters;
 using Bookstore.Api.Institutional;
+using Bookstore.Api.Inventory;
 using Bookstore.Api.Json;
 using Bookstore.Api.Middleware;
 using Bookstore.Api.OpenApi;
@@ -11,8 +12,12 @@ using Bookstore.Api.Shipping;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Http.Headers;
 using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.Mvc;
 using Scalar.AspNetCore;
 
@@ -40,6 +45,31 @@ builder.Services.AddControllers(options =>
     .AddJsonOptions(options => JsonDefaults.Apply(options.JsonSerializerOptions))
     .AddXmlSerializerFormatters();
 
+builder.Services.Configure<ExceptionHandlerOptions>(options =>
+    // Development'ta binding hataları exception olarak gelir; 400'ü 500'e çevirme
+    options.StatusCodeSelector = exception =>
+        exception is BadHttpRequestException badRequest ? badRequest.StatusCode : StatusCodes.Status500InternalServerError);
+builder.Services.AddResponseCompression(options =>
+{
+    // BREACH riskini değerlendirdik: yanıtlarda secret ile kullanıcı girdisi bir arada yok
+    options.EnableForHttps = true;
+    options.Providers.Add<BrotliCompressionProvider>();
+    options.Providers.Add<GzipCompressionProvider>();
+});
+builder.Services.Configure<BrotliCompressionProviderOptions>(options => options.Level = System.IO.Compression.CompressionLevel.Fastest);
+builder.Services.AddRequestDecompression();
+builder.Services.AddRequestTimeouts(options =>
+{
+    options.DefaultPolicy = new RequestTimeoutPolicy { Timeout = TimeSpan.FromSeconds(10) };
+    options.AddPolicy("reports", TimeSpan.FromSeconds(2));
+});
+builder.Services.AddHeaderPropagation(options => options.Headers.Add("X-Correlation-Id"));
+builder.Services.AddHttpClient("inventory", client =>
+        client.BaseAddress = new Uri(builder.Configuration["Inventory:BaseUrl"]!))
+    .AddHeaderPropagation();
+builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
+    policy.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod()));
+
 builder.Services.AddAuthentication().AddJwtBearer();
 builder.Services.AddAuthorization();
 
@@ -59,12 +89,23 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 var app = builder.Build();
 
 app.UseForwardedHeaders();
+app.UseExceptionHandler();
+app.UseStatusCodePages();
+app.UseRewriter(new RewriteOptions()
+    .AddRedirect("^api/v1/books/(.*)$", "api/books/$1", StatusCodes.Status301MovedPermanently)
+    .AddRewrite("^catalog/(.*)$", "api/books/$1", skipRemainingRules: true));
+app.UseResponseCompression();
+app.UseRequestDecompression();
 app.UseMiddleware<ResponseTimeMiddleware>();
 app.UseMiddleware<RequestBodyLoggingMiddleware>();
-app.UseMiddleware<TenantMiddleware>();
+app.UseRouting();
+app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<TenantMiddleware>();
 app.UseAntiforgery();
+app.UseRequestTimeouts();
+app.UseHeaderPropagation();
 
 if (app.Environment.IsDevelopment())
 {
@@ -180,6 +221,7 @@ app.MapPatch("/api/books/{isbn}", BookPatchEndpoint.Patch)
     .RequireAuthorization(policy => policy.RequireRole("StoreStaff"));
 
 app.MapOrderEndpoints();
+app.MapInventoryEndpoints();
 app.MapControllers();
 
 app.Run();
