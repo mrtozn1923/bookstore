@@ -1,5 +1,7 @@
 using System.Linq.Expressions;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Bookstore.Api.Data;
 using Bookstore.Api.Dtos;
 using Bookstore.Api.Exceptions;
@@ -14,10 +16,12 @@ public class BookService : IBookService
         b => new BookDto(b.Id, b.Title, b.Price, b.Category!.Name);
 
     private readonly BookstoreContext _db;
+    private readonly IDistributedCache _cache;
 
-    public BookService(BookstoreContext db)
+    public BookService(BookstoreContext db, IDistributedCache cache)
     {
         _db = db;
+        _cache = cache;
     }
 
     public async Task<List<BookDto>> GetAllAsync(CancellationToken cancellationToken = default)
@@ -87,14 +91,35 @@ public class BookService : IBookService
 
     public async Task<BookDto> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
+        string key = CacheKey(id);
+
+        string? json = await _cache.GetStringAsync(key, cancellationToken);
+        if (json is not null)
+        {
+            return JsonSerializer.Deserialize<BookDto>(json)!;
+        }
+
         BookDto? book = await _db.Books
             .AsNoTracking()
             .Where(b => b.Id == id)
             .Select(ToDto)
             .FirstOrDefaultAsync(cancellationToken);
 
-        return book ?? throw new NotFoundException("Book", id);
+        if (book is null)
+        {
+            throw new NotFoundException("Book", id);
+        }
+
+        await _cache.SetStringAsync(key, JsonSerializer.Serialize(book), new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+        }, cancellationToken);
+
+        return book;
     }
+
+    // the only place that builds the key
+    private static string CacheKey(int id) => $"book:{id}";
 
     public async Task<BookDto> CreateAsync(CreateBookRequest request, CancellationToken cancellationToken = default)
     {
@@ -128,6 +153,9 @@ public class BookService : IBookService
         book.Title = request.Title;
         book.Price = request.Price;
         await _db.SaveChangesAsync(cancellationToken);
+
+        // the data changed, throw away the old copy
+        await _cache.RemoveAsync(CacheKey(id), cancellationToken);
         return true;
     }
 
@@ -141,6 +169,7 @@ public class BookService : IBookService
 
         _db.Books.Remove(book);
         await _db.SaveChangesAsync(cancellationToken);
+        await _cache.RemoveAsync(CacheKey(id), cancellationToken);
         return true;
     }
 }

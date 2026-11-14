@@ -29,9 +29,11 @@ public class BooksController : ControllerBase
     [HttpGet]
     [AllowAnonymous]
     [ServiceFilter(typeof(ExecutionTimeFilter))]
+    [ResponseCache(Duration = 60, VaryByQueryKeys = new[] { "*" })]
     public async Task<ActionResult<PagedResult<BookDto>>> GetAll(
         [FromQuery] BookQueryParameters parameters, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Loading books for page {Page}", parameters.Page);
         return await _bookService.GetPagedAsync(parameters, cancellationToken);
     }
 

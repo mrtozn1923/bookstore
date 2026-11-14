@@ -130,6 +130,12 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateOrderRequestValidator
 ValidatorOptions.Global.LanguageManager.Culture = new CultureInfo("en");
 builder.Services.AddDbContext<BookstoreContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("Bookstore")));
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("Redis");
+    options.InstanceName = "Bookstore:";
+});
+builder.Services.AddResponseCaching();
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<ExecutionTimeFilter>();
 builder.Services.AddSingleton<SingletonOperation>();
@@ -247,6 +253,8 @@ app.UseHttpsRedirection();
 app.UseSecurityHeaders();
 // CORS comes before authentication: a preflight request carries no token
 app.UseCors("Frontend");
+// after CORS, before authentication
+app.UseResponseCaching();
 
 // order matters: first find out who you are, then check what you may do
 app.UseAuthentication();
