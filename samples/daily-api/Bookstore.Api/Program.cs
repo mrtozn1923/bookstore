@@ -3,6 +3,8 @@ using Bookstore.Api.Carts;
 using Bookstore.Api.Catalog;
 using Bookstore.Api.Institutional;
 using Bookstore.Api.Middleware;
+using Bookstore.Api.OpenApi;
+using Bookstore.Api.Ordering;
 using Bookstore.Api.Shipping;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Http.Headers;
@@ -10,6 +12,7 @@ using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +26,16 @@ builder.Services.AddKeyedSingleton<IShippingCalculator, ExpressShipping>("expres
 builder.Services.AddValidation();
 builder.Services.AddProblemDetails();
 builder.Services.AddAntiforgery();
+builder.Services.AddSingleton<OrderStore>();
+
+builder.Services.AddAuthentication().AddJwtBearer();
+builder.Services.AddAuthorization();
+
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+    options.AddOperationTransformer<OrderOperationTransformer>();
+});
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
@@ -37,7 +50,15 @@ app.UseForwardedHeaders();
 app.UseMiddleware<ResponseTimeMiddleware>();
 app.UseMiddleware<RequestBodyLoggingMiddleware>();
 app.UseMiddleware<TenantMiddleware>();
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseAntiforgery();
+
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+    app.MapScalarApiReference();
+}
 
 app.MapGet("/api/debug/request", (HttpRequest request) =>
 {
@@ -56,7 +77,7 @@ app.MapGet("/api/debug/request", (HttpRequest request) =>
         RemoteIp = request.HttpContext.Connection.RemoteIpAddress?.ToString(),
         TraceId = request.HttpContext.TraceIdentifier,
     };
-});
+}).ExcludeFromDescription();
 
 app.MapGet("/api/debug/features", (HttpContext context) =>
 {
@@ -71,7 +92,7 @@ app.MapGet("/api/debug/features", (HttpContext context) =>
         HasStarted = context.Response.HasStarted,
         Authenticated = context.User.Identity?.IsAuthenticated,
     };
-});
+}).ExcludeFromDescription();
 
 const string CartCookie = "bookstore_cart";
 
@@ -138,10 +159,12 @@ app.MapGet("/api/antiforgery/token", (IAntiforgery antiforgery, HttpContext cont
 {
     AntiforgeryTokenSet tokens = antiforgery.GetAndStoreTokens(context);
     return new { tokens.FormFieldName, tokens.RequestToken };
-});
+}).ExcludeFromDescription();
 
 app.MapPost("/api/books/{isbn}/cover", (Isbn isbn, IFormFile file, [FromForm] string? altText) =>
     new { Isbn = isbn.Value, file.FileName, file.ContentType, file.Length, AltText = altText });
+
+app.MapOrderEndpoints();
 
 app.Run();
 

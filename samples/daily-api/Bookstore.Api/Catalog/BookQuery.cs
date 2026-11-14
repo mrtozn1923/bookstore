@@ -14,7 +14,7 @@ public record BookQuery(
     BookCatalog Catalog,
     string? Category,
     [FromQuery(Name = "q")] string? Search,
-    [Range(1, 50)] int PageSize = 10,
+    [property: Range(1, 50)] int PageSize = 10,
     int Page = 1,
     BookSort Sort = BookSort.Title)
 {
