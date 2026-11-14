@@ -1,0 +1,8 @@
+usecase-beta
+actor User("Institution User")
+PlaceOrder("Place Order")
+CheckBudget("Check Budget")
+AttachLetter("Attach Donation Letter")
+User -- PlaceOrder
+PlaceOrder ..> : include CheckBudget
+AttachLetter ..> : extend PlaceOrder

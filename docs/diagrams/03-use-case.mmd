@@ -1,0 +1,31 @@
+usecase-beta
+direction LR
+actor User("Institution User")
+actor PortalAdmin("Portal Admin")
+actor Approver("Approver")
+actor PurchasingManager("Purchasing Manager")
+actor Distributor("Book Distributor")
+systemBoundary ordering["Bookstore - Institutional Ordering"]
+  PlaceOrder("Place Order")
+  Decide("Decide on Order")
+  Cancel("Cancel Order")
+  ViewBudget("View Budget")
+  AdjustBudget("Adjust Budget")
+  ManagePolicies("Manage Budget Policies")
+  CheckBudget("Check Budget")
+  AttachLetter("Attach Donation Letter")
+end
+PurchasingManager --|> Approver
+User -- PlaceOrder
+User -- Cancel
+User -- ViewBudget
+Approver -- Decide
+PortalAdmin -- Cancel
+PortalAdmin -- AdjustBudget
+PortalAdmin -- ManagePolicies
+Decide -- Distributor
+Cancel -- Distributor
+PlaceOrder ..> : include CheckBudget
+Decide ..> : include CheckBudget
+AttachLetter ..> : extend PlaceOrder
+note for AttachLetter "condition: budget category = donation"
