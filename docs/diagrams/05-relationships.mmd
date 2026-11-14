@@ -1,0 +1,23 @@
+classDiagram
+    direction LR
+    InstitutionUnit "1" o-- "0..*" InstitutionUser
+    InstitutionUser "0..*" --> "0..1" InstitutionUser : approver
+    Order "0..*" --> "1" InstitutionUser : placedBy
+    Order "1" *-- "0..*" PurchaseApproval : approvals
+    PurchaseApproval "0..*" --> "1" InstitutionUser : approver
+    Order "1" *-- "0..1" OrderAttachment
+    Order "0..*" --> "1" BudgetCategory
+    OrderEvent <|-- OrderApproved
+    IPriceCalculator <|.. PriceCalculator
+    PriceCalculator ..> DiscountAgreement
+    class PurchaseApproval {
+        +step: ApprovalStep
+        +decidedAt: DateTimeOffset
+        +comment: string [0..1]
+    }
+    class OrderEvent {
+        <<abstract>>
+    }
+    class IPriceCalculator {
+        <<interface>>
+    }
