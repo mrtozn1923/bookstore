@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="Bogus" />
+    <PackageReference Include="AutoFixture" />
+    <PackageReference Include="AutoFixture.Xunit3" />
+    <PackageReference Include="AutoFixture.AutoNSubstitute" />
+    <!-- AutoNSubstitute 4.18.1 declares NSubstitute < 6.0.0; 6.2.0 works here, NU1608 accepted on purpose -->
+    <PackageReference Include="NSubstitute" NoWarn="NU1608" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Bookstore.Catalog\Bookstore.Catalog.csproj" />
+    <ProjectReference Include="..\..\src\Bookstore.Ordering\Bookstore.Ordering.csproj" />
+  </ItemGroup>
+
+</Project>

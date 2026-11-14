@@ -8,6 +8,7 @@
     <Project Path="src/Bookstore.Shipping/Bookstore.Shipping.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/Bookstore.Catalog.Tests/Bookstore.Catalog.Tests.csproj" />
     <Project Path="tests/Bookstore.Ordering.AwesomeAssertions.Tests/Bookstore.Ordering.AwesomeAssertions.Tests.csproj" />
     <Project Path="tests/Bookstore.Ordering.Fakes.Tests/Bookstore.Ordering.Fakes.Tests.csproj" />
     <Project Path="tests/Bookstore.Ordering.Legacy.Tests/Bookstore.Ordering.Legacy.Tests.csproj" />
