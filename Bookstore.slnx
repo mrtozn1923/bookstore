@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Bookstore.Crypto/Bookstore.Crypto.csproj" />
+    <Project Path="src/Bookstore.CryptoLab/Bookstore.CryptoLab.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Bookstore.Crypto.Tests/Bookstore.Crypto.Tests.csproj" />
+  </Folder>
+</Solution>
