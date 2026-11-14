@@ -19,6 +19,7 @@ public sealed class OrderService(
     IDiscountAgreements agreements,
     IDistributorGateway distributor,
     INotificationSender notifications,
+    IIntegrationEventPublisher events,
     TimeProvider clock) : IOrderService
 {
     private const int InstitutionId = 1; // Sample School
@@ -75,25 +76,30 @@ public sealed class OrderService(
 
     public async Task<OrderResult> ApproveAsync(DecideOrderCommand command, CancellationToken ct)
     {
-        Order order = await LoadAsync(command.OrderId, ct);
+        Order order = await orders.FindAsync(command.OrderId, ct)
+            ?? throw new OrderRuleException($"Order {command.OrderId} not found.");
         InstitutionUser approver = await orders.FindUserAsync(command.ApproverId, ct)
             ?? throw new OrderRuleException($"User {command.ApproverId} not found.");
+
         BudgetCategory category = order.BudgetCategory;
         int unitId = order.PlacedBy.InstitutionUnitId;
         int year = order.DeliveryDate.Year;
 
+        // R8: onay anında bütçe yeniden kontrol edilir
         if (category.DeductsFromBudget &&
             !await budgets.HasEnoughBudgetAsync(unitId, category, year, order.Total.Amount, ct))
             throw new OrderRuleException("Budget is no longer sufficient.");
+
+        ApprovalStep step = order.Status == OrderStatus.PendingPurchasingManager
+            ? ApprovalStep.PurchasingManager
+            : ApprovalStep.Approver;
         order.Approve(approver, command.Comment, clock.GetUtcNow());
-        if (order.Status == OrderStatus.Approved)
-        {
-            if (category.DeductsFromBudget)
-                await budgets.DeductAsync(unitId, category, year, order.Total.Amount, ct);
-            await distributor.PlaceOrderAsync(order, ct);
-        }
+
+        if (order.Status == OrderStatus.Approved && category.DeductsFromBudget)
+            await budgets.DeductAsync(unitId, category, year, order.Total.Amount, ct);
+
         await orders.SaveChangesAsync(ct);
-        await notifications.SendAsync(order.PlacedBy.Email, $"Order {order.Id}", order.Status.ToString(), ct);
+        await events.PublishAsync(new OrderApproved(order.Id, step, order.Status), ct);
         return ToResult(order);
     }
 

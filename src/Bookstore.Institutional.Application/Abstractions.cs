@@ -40,6 +40,11 @@ public interface IDistributorGateway
     Task CancelOrderAsync(int orderId, CancellationToken ct);
 }
 
+public interface IIntegrationEventPublisher
+{
+    ValueTask PublishAsync(OrderApproved @event, CancellationToken ct);
+}
+
 public interface INotificationSender
 {
     Task SendAsync(string to, string subject, string body, CancellationToken ct);

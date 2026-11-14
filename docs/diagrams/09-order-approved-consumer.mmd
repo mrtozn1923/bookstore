@@ -1,0 +1,23 @@
+sequenceDiagram
+    participant Bus as :Channel
+    participant C as :OrderApprovedConsumer
+    participant Dist as :IDistributorGateway
+    participant Mail as :INotificationSender
+
+    Bus-)C: OrderApproved(42, PurchasingManager, Approved)
+    activate C
+    par distributor
+        opt NewStatus == Approved
+            C->>Dist: PlaceOrderAsync(order42)
+            Dist-->>C: done
+        end
+    and mail to orderer
+        loop attempt 1..3, until sent
+            C->>Mail: SendAsync(ada@example.com) within 2 s
+            Mail-->>C: sent or timeout
+        end
+    end
+    opt NewStatus == PendingPurchasingManager
+        C->>Mail: SendAsync(grace@example.com)
+    end
+    deactivate C

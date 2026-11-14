@@ -1,0 +1,34 @@
+@startuml approve-order
+participant ":OrderApi" as SPA
+participant ":Bookstore.Api" as Api
+participant ":OrderService" as Svc
+participant ":IOrderRepository" as Repo
+participant "order42 : Order" as Ord
+participant ":IBudgetService" as Bud
+queue ":IIntegrationEventPublisher" as Bus
+
+SPA -> Api : POST /orders/42/approve
+activate Api
+Api -> Svc : ApproveAsync(command)
+activate Svc
+ref over Svc, Repo : Load order and approver
+Svc -> Bud : HasEnoughBudgetAsync(7, classroomSets, 2026, 56700)
+Bud --> Svc : enough
+break enough == false
+  Svc --> Api : OrderRuleException
+  Api --> SPA : 409 Conflict
+end
+Svc -> Ord : Approve(approver, comment, now)
+alt step == Approver and RequiresPurchasingApproval
+  hnote over Ord : PendingPurchasingManager
+else else
+  hnote over Ord : Approved
+  Svc -> Bud : DeductAsync(7, classroomSets, 2026, 56700)
+end
+Svc -> Repo : SaveChangesAsync()
+Svc ->> Bus : PublishAsync(OrderApproved)
+Svc --> Api : result
+deactivate Svc
+Api --> SPA : 200 OK
+deactivate Api
+@enduml

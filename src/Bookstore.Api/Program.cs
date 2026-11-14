@@ -37,8 +37,13 @@ app.MapPost("/orders", async (CreateOrderCommand command, IOrderService service,
 RouteGroupBuilder orders = app.MapGroup("/orders/{id:int}");
 orders.MapPost("/submit", (int id, IOrderService service, CancellationToken ct) =>
     Decide(() => service.SubmitAsync(id, ct)));
-orders.MapPost("/approve", (int id, DecisionBody body, IOrderService service, CancellationToken ct) =>
-    Decide(() => service.ApproveAsync(new DecideOrderCommand(id, body.ApproverId, body.Comment), ct)));
+orders.MapPost("/approve", (int id, DecisionBody body, IOrderService service, ILogger<Program> log,
+    CancellationToken ct) => Decide(async () =>
+    {
+        OrderResult result = await service.ApproveAsync(new DecideOrderCommand(id, body.ApproverId, body.Comment), ct);
+        log.LogInformation("User {ApproverId} approved #{Id} -> {Status}", body.ApproverId, id, result.Status);
+        return result;
+    }));
 orders.MapPost("/reject", (int id, DecisionBody body, IOrderService service, CancellationToken ct) =>
     Decide(() => service.RejectAsync(new DecideOrderCommand(id, body.ApproverId, body.Comment), ct)));
 orders.MapPost("/cancel", (int id, IOrderService service, CancellationToken ct) =>

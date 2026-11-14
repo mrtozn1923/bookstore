@@ -101,6 +101,8 @@ class OrderCancelled <<sealed>> <<record>> {
 OrderEvent <|-- OrderSubmitted
 OrderSubmitted --> "Total" Money
 OrderEvent <|-- OrderApproved
+OrderApproved --> "Step" ApprovalStep
+OrderApproved --> "NewStatus" OrderStatus
 OrderEvent <|-- OrderRejected
 OrderEvent <|-- OrderCancelled
 enum OrderStatus {
