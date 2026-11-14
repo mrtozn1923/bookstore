@@ -16,7 +16,12 @@ public abstract record PlaceOrderOutcome
 }
 
 public sealed class OrderService(
-    BookstoreContext db, ICatalogService catalog, IInventoryService inventory, TimeProvider clock)
+    BookstoreContext db,
+    ICatalogService catalog,
+    IInventoryService inventory,
+    CouponService coupons,
+    TimeProvider clock,
+    ILogger<OrderService> logger)
 {
     public async Task<PlaceOrderOutcome> PlaceOrderAsync(PlaceOrderRequest request, CancellationToken ct)
     {
@@ -50,19 +55,23 @@ public sealed class OrderService(
             PlacedAtUtc = clock.GetUtcNow().UtcDateTime,
             Status = OrderStatus.Placed
         };
-        foreach (CartItem item in cart.Items)
+        CartPrice price = CartPricing.Price(cart.Items, books);
+        foreach (PricedLine line in price.Lines)
         {
-            BookInfo book = books[item.BookId];
             order.Items.Add(new OrderItem
             {
-                BookId = book.Id,
-                Title = book.Title,
-                UnitPrice = book.Price,
-                Quantity = item.Quantity,
-                LineTotal = OrderItem.CalculateLineTotal(book.Price, item.Quantity)
+                BookId = line.Book.Id,
+                Title = line.Book.Title,
+                UnitPrice = line.Book.Price,
+                Quantity = line.Quantity,
+                LineTotal = line.LineTotal
             });
         }
-        order.Total = order.Items.Sum(i => i.LineTotal);
+        Coupon? coupon = cart.CouponCode is null ? null : await coupons.FindValidAsync(cart.CouponCode, price.Subtotal, ct);
+        order.Subtotal = price.Subtotal;
+        order.Discount = coupon is null ? 0m : await coupons.CalculateDiscountAsync(coupon, price, ct);
+        order.Total = order.Subtotal - order.Discount;
+        order.CouponCode = coupon?.Code;
 
         db.Orders.Add(order);
         db.Carts.Remove(cart);
@@ -76,6 +85,9 @@ public sealed class OrderService(
             return new PlaceOrderOutcome.CartChanged();
         }
         await transaction.CommitAsync(ct);
+
+        logger.LogInformation("Order {OrderId} placed by {CustomerEmail} with coupon {CouponCode}, discount {Discount}",
+            order.Id, customer.Email, order.CouponCode, order.Discount);
 
         return new PlaceOrderOutcome.Placed(order);
     }

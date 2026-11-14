@@ -18,7 +18,10 @@ public sealed class Order
     public OrderStatus Status { get; set; } = OrderStatus.Placed;
     public DateTime PlacedAtUtc { get; set; }
     public string Currency { get; set; } = "TRY";
+    public decimal Subtotal { get; set; }
+    public decimal Discount { get; set; }
     public decimal Total { get; set; }
+    public string? CouponCode { get; set; }
     public List<OrderItem> Items { get; } = [];
 }
 

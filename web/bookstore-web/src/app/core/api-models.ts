@@ -36,8 +36,12 @@ export interface CartLine {
 export interface CartView {
   id: string;
   items: CartLine[];
+  subtotal: number;
+  discount: number;
   total: number;
   currency: string;
+  couponCode: string | null;
+  couponDescription: string | null;
 }
 
 export interface OrderView {
@@ -45,6 +49,9 @@ export interface OrderView {
   status: string;
   placedAtUtc: string;
   items: { title: string; unitPrice: number; quantity: number; lineTotal: number }[];
+  subtotal: number;
+  discount: number;
   total: number;
   currency: string;
+  couponCode: string | null;
 }

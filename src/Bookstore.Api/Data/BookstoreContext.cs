@@ -16,6 +16,7 @@ public sealed class BookstoreContext(DbContextOptions<BookstoreContext> options)
     public DbSet<Cart> Carts => Set<Cart>();
     public DbSet<Customer> Customers => Set<Customer>();
     public DbSet<Order> Orders => Set<Order>();
+    public DbSet<Coupon> Coupons => Set<Coupon>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(BookstoreContext).Assembly);

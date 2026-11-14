@@ -1,0 +1,3 @@
+# EF Core migration designer files and the model snapshot are generated; GitHub collapses them in diffs.
+src/Bookstore.Api/Data/Migrations/*.Designer.cs linguist-generated
+src/Bookstore.Api/Data/Migrations/BookstoreContextModelSnapshot.cs linguist-generated

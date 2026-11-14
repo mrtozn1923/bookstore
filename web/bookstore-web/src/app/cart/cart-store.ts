@@ -50,6 +50,20 @@ export class CartStore {
     }
   }
 
+  async applyCoupon(code: string): Promise<void> {
+    const cartId = this.cartState()?.id;
+    if (cartId) {
+      this.cartState.set(await firstValueFrom(this.http.put<CartView>(`/api/carts/${cartId}/coupon`, { code })));
+    }
+  }
+
+  async removeCoupon(): Promise<void> {
+    const cartId = this.cartState()?.id;
+    if (cartId) {
+      this.cartState.set(await firstValueFrom(this.http.delete<CartView>(`/api/carts/${cartId}/coupon`)));
+    }
+  }
+
   async placeOrder(customerName: string, customerEmail: string): Promise<OrderView> {
     const cartId = this.cartState()?.id;
     if (!cartId) {

@@ -632,6 +632,11 @@ namespace Bookstore.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("CouponCode")
+                        .HasMaxLength(32)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(32)");
+
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("datetime2");
 
@@ -670,6 +675,97 @@ namespace Bookstore.Data.Migrations
                     b.ToTable("CartItems", "ordering");
                 });
 
+            modelBuilder.Entity("Bookstore.Ordering.Coupon", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(32)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("ExpiresAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<decimal>("MinSubtotal")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)");
+
+                    b.Property<decimal>("Value")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("Coupons", "ordering");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = "BOOK10",
+                            Description = "<strong>10%</strong> off your whole cart",
+                            ExpiresAtUtc = new DateTime(2026, 12, 31, 20, 59, 59, 0, DateTimeKind.Utc),
+                            Kind = "Percent",
+                            MinSubtotal = 0m,
+                            Value = 10m
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Code = "SAVE50",
+                            Description = "<strong>50 TRY</strong> off orders over 300 TRY",
+                            ExpiresAtUtc = new DateTime(2026, 12, 31, 20, 59, 59, 0, DateTimeKind.Utc),
+                            Kind = "Amount",
+                            MinSubtotal = 300m,
+                            Value = 50m
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CategoryId = 1,
+                            Code = "CLASSIC15",
+                            Description = "<strong>15%</strong> off classics",
+                            ExpiresAtUtc = new DateTime(2026, 12, 31, 20, 59, 59, 0, DateTimeKind.Utc),
+                            Kind = "Percent",
+                            MinSubtotal = 0m,
+                            Value = 15m
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Code = "WELCOME25",
+                            Description = "<strong>25 TRY</strong> off your first order",
+                            ExpiresAtUtc = new DateTime(2026, 12, 31, 20, 59, 59, 0, DateTimeKind.Utc),
+                            Kind = "Amount",
+                            MinSubtotal = 0m,
+                            Value = 25m
+                        });
+                });
+
             modelBuilder.Entity("Bookstore.Ordering.Customer", b =>
                 {
                     b.Property<int>("Id")
@@ -704,6 +800,11 @@ namespace Bookstore.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("CouponCode")
+                        .HasMaxLength(32)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(32)");
+
                     b.Property<string>("Currency")
                         .IsRequired()
                         .HasMaxLength(3)
@@ -713,6 +814,10 @@ namespace Bookstore.Data.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("Discount")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)");
+
                     b.Property<DateTime>("PlacedAtUtc")
                         .HasColumnType("datetime2");
 
@@ -720,6 +825,10 @@ namespace Bookstore.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
+
+                    b.Property<decimal>("Subtotal")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)");
 
                     b.Property<decimal>("Total")
                         .HasPrecision(12, 2)
@@ -812,6 +921,14 @@ namespace Bookstore.Data.Migrations
                         .HasForeignKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Bookstore.Ordering.Coupon", b =>
+                {
+                    b.HasOne("Bookstore.Catalog.Category", null)
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("Bookstore.Ordering.Order", b =>

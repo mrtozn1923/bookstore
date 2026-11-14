@@ -9,6 +9,7 @@ internal sealed class CartConfiguration : IEntityTypeConfiguration<Cart>
     public void Configure(EntityTypeBuilder<Cart> cart)
     {
         cart.ToTable("Carts", "ordering");
+        cart.Property(c => c.CouponCode).HasMaxLength(32).IsUnicode(false);
         cart.HasMany(c => c.Items).WithOne().HasForeignKey(i => i.CartId).OnDelete(DeleteBehavior.Cascade);
     }
 }
@@ -41,7 +42,10 @@ internal sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
         order.ToTable("Orders", "ordering");
         order.Property(o => o.Status).HasConversion<string>().HasMaxLength(20);
         order.Property(o => o.Currency).HasMaxLength(3).IsUnicode(false);
+        order.Property(o => o.Subtotal).HasPrecision(12, 2);
+        order.Property(o => o.Discount).HasPrecision(12, 2);
         order.Property(o => o.Total).HasPrecision(12, 2);
+        order.Property(o => o.CouponCode).HasMaxLength(32).IsUnicode(false);
         order.HasOne(o => o.Customer).WithMany().HasForeignKey(o => o.CustomerId);
         order.HasMany(o => o.Items).WithOne().HasForeignKey(i => i.OrderId).OnDelete(DeleteBehavior.Cascade);
     }
