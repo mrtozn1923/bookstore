@@ -4,3 +4,4 @@ node_modules/
 uploads/
 data/catalog.json
 labs/*/out/
+labs/17/addon/build/
