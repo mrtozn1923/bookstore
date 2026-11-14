@@ -1,31 +1,40 @@
+using Bookstore.Api.Middleware;
+
 var builder = WebApplication.CreateBuilder(args);
-
 builder.Services.AddControllers();
-
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
-
-builder.Host.ConfigureHostOptions(options => options.ShutdownTimeout = TimeSpan.FromSeconds(15));
-
-string catalogName = builder.Configuration["Catalog:Name"] ?? "Bookstore Catalog";
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+if (!app.Environment.IsDevelopment())
 {
-    app.Logger.LogInformation("Development mode: detailed error pages are on");
+    app.UseExceptionHandler("/error");
+    app.UseHsts();
 }
 
-app.MapControllers();
+app.UseRequestTiming();
 
-app.MapGet("/info", (IWebHostEnvironment env) => new
+app.Use(async (context, next) =>
 {
-    Catalog = catalogName,
-    env.ApplicationName,
-    env.EnvironmentName,
-    PageSize = app.Configuration.GetValue<int>("Catalog:PageSize")
+    if (context.Request.Headers.ContainsKey("X-Maintenance"))
+    {
+        context.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
+        await context.Response.WriteAsync("Bookstore is under maintenance");
+        return;
+    }
+
+    await next(context);
 });
 
-app.Lifetime.ApplicationStarted.Register(() => app.Logger.LogInformation("{Catalog} is ready", catalogName));
+app.Map("/ping", branch =>
+{
+    branch.Run(async context => await context.Response.WriteAsync("pong"));
+});
+
+app.UseHttpsRedirection();
+app.UseRouting();
+app.UseAuthorization();
+
+app.MapControllers();
+app.Map("/error", () => Results.Problem());
 
 app.Run();
