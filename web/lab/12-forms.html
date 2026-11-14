@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>12 form controls</title>
+    <style>
+        body { margin: 0; padding: 20px; font: 16px/1.5 system-ui, sans-serif; background: #ffffff; color: #1f2937; }
+        section { margin-block-end: 16px; }
+
+        /* 1) form controls have their own font until you reset it */
+        #reset { font: inherit; }
+
+        /* 2) native controls follow color-scheme */
+        .dark { color-scheme: dark; }
+
+        /* 3) accent-color: the browser keeps the check mark readable */
+        .accent input { inline-size: 40px; block-size: 40px; margin: 4px; accent-color: #b91c1c; }
+        .accent #light-check { accent-color: #fde68a; }
+
+        /* 4) appearance: none — a check mark drawn with a border */
+        .check {
+            appearance: none;
+            display: inline-grid;
+            place-content: center;
+            inline-size: 24px;
+            block-size: 24px;
+            margin: 4px;
+            border: 2px solid #4b5563;
+            border-radius: 4px;
+        }
+        .check:checked { border-color: #1d4ed8; background: #1d4ed8; }
+        .check::before {
+            content: "";
+            inline-size: 12px;
+            block-size: 6px;
+            border: solid transparent;
+            border-width: 0 0 3px 3px;
+            rotate: -45deg;
+            translate: 0 -2px;
+        }
+        /* naive: a transparent mark, made white when checked */
+        .naive:checked::before { border-color: #ffffff; }
+        /* better: no mark at all until the box is checked */
+        .better::before { display: none; }
+        .better:checked::before { display: block; border-color: #ffffff; }
+
+        /* 5) range: the thumb needs a prefixed pseudo-element per engine */
+        #range { appearance: none; inline-size: 200px; block-size: 6px; background: #d1d5db; border-radius: 3px; }
+        #range::-webkit-slider-thumb { appearance: none; inline-size: 20px; block-size: 20px; border-radius: 50%; background: #b91c1c; }
+        #range::-moz-range-thumb { inline-size: 20px; block-size: 20px; border: 0; border-radius: 50%; background: #b91c1c; }
+
+        /* 6) pointer-events: none stops the mouse, not the keyboard */
+        #ghost { pointer-events: none; }
+
+        /* 7) user-select */
+        #unprefixed button { user-select: none; }
+        #both button { -webkit-user-select: none; user-select: none; }
+        #code { -webkit-user-select: all; user-select: all; }
+
+        /* 8) a custom cursor always ends with a keyword fallback */
+        #zoom { cursor: url("../img/heart.svg") 8 8, zoom-in; }
+
+        /* 9) interactivity: inert (Chromium only) */
+        #inert-box { interactivity: inert; }
+    </style>
+</head>
+<body>
+    <section><input id="raw" value="Ada"> <input id="reset" value="Ada"></section>
+    <section class="dark"><input id="dark-input" value="Ada"></section>
+    <section class="accent">
+        <input type="checkbox" id="accent-check" checked>
+        <input type="radio" id="accent-radio" checked>
+        <input type="checkbox" id="light-check" checked>
+    </section>
+    <section>
+        <input type="checkbox" class="check naive" id="naive-on" checked aria-label="Gift wrap">
+        <input type="checkbox" class="check naive" id="naive-off" aria-label="Gift wrap">
+        <input type="checkbox" class="check better" id="better-on" checked aria-label="Gift wrap">
+        <input type="checkbox" class="check better" id="better-off" aria-label="Gift wrap">
+    </section>
+    <section><input type="range" id="range" value="50" aria-label="Price"></section>
+    <section><button type="button" id="ghost">Pay now</button></section>
+    <section>
+        <p id="plain">Quantity <button type="button">−</button> 2 <button type="button">+</button></p>
+        <p id="unprefixed">Quantity <button type="button">−</button> 2 <button type="button">+</button></p>
+        <p id="both">Quantity <button type="button">−</button> 2 <button type="button">+</button></p>
+        <p>Order <code id="code">BK-1042</code></p>
+    </section>
+    <section><img id="zoom" src="../img/cover-dune.webp" alt="Dune" width="60" height="90"></section>
+    <section id="inert-box"><button type="button" id="inert-button">Apply coupon</button></section>
+</body>
+</html>

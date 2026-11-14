@@ -26,6 +26,18 @@
                 <label for="email">E-mail</label>
                 <input id="email" name="email" type="email" autocomplete="email" value="ada@example.com">
             </div>
+            <fieldset class="order-items">
+                <legend>Your order</legend>
+                <div class="order-item">
+                    <span>Middlemarch</span>
+                    <div class="stepper">
+                        <button type="button" data-step="-1" aria-label="One less">−</button>
+                        <input id="quantity" name="quantity" value="1" inputmode="numeric" data-min="1" data-max="10" aria-label="Quantity">
+                        <button type="button" data-step="1" aria-label="One more">+</button>
+                    </div>
+                    <span class="cost">₺385.50</span>
+                </div>
+            </fieldset>
             <fieldset class="shipping-options">
                 <legend>Shipping</legend>
                 <label class="shipping-option">
@@ -37,8 +49,14 @@
                     Express (next day) <span class="cost">₺89.90</span>
                 </label>
             </fieldset>
+            <label class="gift"><input type="checkbox" class="check" name="gift" value="yes"> Gift wrap (₺25.00)</label>
+            <div class="field">
+                <label for="note">Order note</label>
+                <textarea id="note" name="note" rows="3" placeholder="Anything we should know?"></textarea>
+            </div>
             <button class="pay-button" type="submit">Pay now</button>
         </form>
     </main>
+    <script src="js/stepper.js" defer></script>
 </body>
 </html>

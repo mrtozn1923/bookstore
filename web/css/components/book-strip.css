@@ -18,5 +18,19 @@
     /* do not shrink: an img with a percentage max-inline-size gives the item no minimum width */
     flex: none;
     scroll-snap-align: start;
+    position: relative;
 }
 .book-strip img { inline-size: 10rem; border-radius: 0.25rem; }
+/* the badge sits on the cover, but clicks go through it to the link */
+.sale-badge {
+    position: absolute;
+    inset-block-start: 0.5rem;
+    inset-inline-start: 0.5rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: 999px;
+    background: var(--color-accent);
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    pointer-events: none;
+}

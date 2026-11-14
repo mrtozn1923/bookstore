@@ -48,6 +48,9 @@ img, picture, video {
     stroke-linejoin: round;
 }
 
+/* form controls do not take the page font by default (13.33px in Chromium, 11px in WebKit) */
+input, button, select, textarea { font: inherit; }
+
 body {
     margin: 0;
     font-family: var(--font-body);
