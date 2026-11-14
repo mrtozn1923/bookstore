@@ -13,6 +13,17 @@ builder.Services.AddHealthChecks();
 builder.Services.Configure<StoreOptions>(builder.Configuration.GetSection(StoreOptions.SectionName));
 builder.Services.AddSingleton<BookCatalog>();
 
+// ConnectionStrings__Default comes from the environment in containers; without it the catalog stays in memory
+string? connectionString = builder.Configuration.GetConnectionString("Default");
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    builder.Services.AddSingleton<IBookSource, InMemoryBookSource>();
+}
+else
+{
+    builder.Services.AddSingleton<IBookSource>(new SqlBookSource(connectionString));
+}
+
 // bookstore-web is served from another origin (its own container), so the browser needs CORS
 string[] allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
@@ -27,7 +38,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors();
 app.MapHealthChecks("/health");
-app.MapGet("/books", (BookCatalog catalog) => catalog.SortedByTitle());
+app.MapGet("/books", (BookCatalog catalog, CancellationToken cancellationToken) =>
+    catalog.SortedByTitleAsync(cancellationToken));
 app.MapGet("/store/clock", (IOptions<StoreOptions> options) =>
 {
     TimeZoneInfo zone = TimeZoneInfo.FindSystemTimeZoneById(options.Value.TimeZone);
@@ -40,6 +52,9 @@ app.Lifetime.ApplicationStarted.Register(() =>
         app.Environment.EnvironmentName,
         GC.GetGCMemoryInfo().TotalAvailableMemoryBytes / 1024 / 1024,
         Environment.ProcessorCount));
+app.Lifetime.ApplicationStarted.Register(() =>
+    app.Logger.LogInformation("Catalog source: {Source}",
+        app.Services.GetRequiredService<IBookSource>().GetType().Name));
 
 await app.RunAsync();
 return 0;
