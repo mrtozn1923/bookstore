@@ -1,7 +1,12 @@
 using Bookstore.Api;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddCloudflareForwarding(Path.Combine(builder.Environment.ContentRootPath, "cloudflare-ips.txt"));
+builder.Services.AddHttpsRedirection(options => options.HttpsPort = 443);
 var app = builder.Build();
+
+app.UseForwardedHeaders();
+app.UseHttpsRedirection();
 
 var originRequests = 0;
 app.Use(async (context, next) =>
@@ -23,6 +28,9 @@ Book[] catalog =
 ];
 
 var api = app.MapGroup("/api");
+
+api.MapGet("/whoami", (HttpContext http) =>
+    new { ClientIp = http.Connection.RemoteIpAddress?.ToString(), http.Request.Scheme });
 
 api.MapGet("/books", (HttpContext http, int page = 1) =>
 {
