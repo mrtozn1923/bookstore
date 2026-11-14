@@ -85,8 +85,17 @@ switch (args.FirstOrDefault())
     case "otel":
         await NpgsqlDemo.TraceAsync(connectionString);
         break;
+    case "ef-seed":
+        await Bookstore.PgLab.Catalog.CatalogDemo.SeedAsync(connectionString);
+        break;
+    case "ef-query":
+        await Bookstore.PgLab.Catalog.CatalogDemo.QueryAsync(connectionString);
+        break;
+    case "ef-concurrency":
+        await Bookstore.PgLab.Catalog.CatalogDemo.ConcurrencyAsync(connectionString);
+        break;
     default:
         Console.WriteLine("usage: dotnet run -- connections | pool | ef-script | bestsellers | write-skew | queue | advisory | ef-retry\n" +
-            "       defaults | types | enum | copy | prepare | listen | otel");
+            "       defaults | types | enum | copy | prepare | listen | otel | ef-seed | ef-query | ef-concurrency");
         break;
 }
