@@ -760,6 +760,116 @@ paths:
           $ref: '#/components/responses/Problem'
         '404':
           $ref: '#/components/responses/Problem'
+  /institutions/{institutionId}/order-batches:
+    parameters:
+      - $ref: '#/components/parameters/ApiVersion'
+      - $ref: '#/components/parameters/InstitutionId'
+    post:
+      operationId: createOrderBatch
+      summary: Place a bulk order
+      description: >-
+        Up to 500 lines for one unit (ADR-0006). Schema errors reject the whole batch
+        (400, errors keyed by JSON path such as lines[3].quantity). Business rules are
+        checked per line: rejected lines are reported in results and the accepted lines
+        become one Pending order at the institutional price (10% off). With
+        allOrNothing, any rejected line means no order (422 batch-rejected). With
+        Prefer: respond-async the batch runs as a long-running operation (202). Quota:
+        5 batches per minute per institution (RateLimit-Policy "batches").
+      tags: [Institutions]
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - name: Prefer
+          in: header
+          description: respond-async (RFC 7240) to get 202 and a status monitor.
+          schema:
+            type: string
+            examples: [respond-async]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderBatchRequest'
+      responses:
+        '201':
+          description: An order was created from the accepted lines; results lists every line.
+          headers:
+            Location:
+              $ref: '#/components/headers/Location'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimitPolicy'
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderBatchReport'
+        '202':
+          description: Accepted (Prefer respond-async); the report is the operation's resourceLocation.
+          headers:
+            Operation-Location:
+              $ref: '#/components/headers/OperationLocation'
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            Preference-Applied:
+              description: respond-async when the preference was honoured.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+        '400':
+          $ref: '#/components/responses/Problem'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        '429':
+          description: Quota exceeded (quota-exceeded, violatedPolicies).
+          headers:
+            Retry-After:
+              description: Seconds until the quota window resets.
+              schema:
+                type: integer
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+  /institutions/{institutionId}/order-batches/{batchId}:
+    parameters:
+      - $ref: '#/components/parameters/ApiVersion'
+      - $ref: '#/components/parameters/InstitutionId'
+      - name: batchId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: getOrderBatch
+      summary: Get the report of a bulk order
+      description: The line-by-line report of a batch, for the institution's users.
+      tags: [Institutions]
+      responses:
+        '200':
+          description: The batch report.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderBatchReport'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
   /problems:
     parameters:
       - $ref: '#/components/parameters/ApiVersion'
@@ -802,6 +912,56 @@ paths:
                 type: string
         '404':
           $ref: '#/components/responses/Problem'
+webhooks:
+  orderBatchCompleted:
+    post:
+      operationId: orderBatchCompletedWebhook
+      summary: A bulk order finished (planned)
+      description: >-
+        Planned (ADR-0006), not sent yet. Bookstore will POST this event to the URL an
+        institution registers, signed as described in the webhook documentation.
+        Receivers answer 2xx quickly and fetch the report from links.report; until
+        then, poll the operation.
+      tags: [Institutions]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id, type, occurredAt, data]
+              properties:
+                id:
+                  type: string
+                  description: Unique event id; receivers use it to drop duplicates.
+                type:
+                  type: string
+                  const: order-batch.completed
+                occurredAt:
+                  type: string
+                  format: date-time
+                data:
+                  type: object
+                  required: [batchId, institutionId, acceptedLines, rejectedLines, links]
+                  properties:
+                    batchId:
+                      type: string
+                      format: uuid
+                    institutionId:
+                      type: string
+                    acceptedLines:
+                      type: integer
+                    rejectedLines:
+                      type: integer
+                    links:
+                      type: object
+                      properties:
+                        report:
+                          type: string
+                          format: uri-reference
+      responses:
+        '204':
+          description: Received.
 components:
   securitySchemes:
     bearerAuth:
@@ -829,6 +989,18 @@ components:
       description: Seconds to wait before polling the status monitor again.
       schema:
         type: integer
+    RateLimitPolicy:
+      description: >-
+        draft-ietf-httpapi-ratelimit-headers-11 quota policy, e.g. "batches";q=5;w=60
+        (5 requests per 60 seconds). Informative; the draft may still change.
+      schema:
+        type: string
+    RateLimit:
+      description: >-
+        draft-ietf-httpapi-ratelimit-headers-11 remaining quota, e.g. "batches";r=4;t=57
+        (4 requests left for the next 57 seconds).
+      schema:
+        type: string
     NextLink:
       description: RFC 8288 link to the next page, rel="next"; absent on the last page.
       schema:
@@ -1183,6 +1355,68 @@ components:
           description: Present when Succeeded; the resource the operation produced.
         error:
           $ref: '#/components/schemas/Problem'
+    OrderBatchRequest:
+      type: object
+      required: [unitId, lines]
+      properties:
+        unitId:
+          type: string
+          description: The unit that orders; a buyer may only use their own unit.
+        allOrNothing:
+          type: boolean
+          default: false
+          description: true creates no order unless every line is accepted.
+        lines:
+          type: array
+          minItems: 1
+          maxItems: 500
+          items:
+            type: object
+            required: [isbn, quantity]
+            properties:
+              isbn:
+                type: string
+                pattern: '^97[89][0-9]{10}$'
+              quantity:
+                type: integer
+                minimum: 1
+                maximum: 500
+    OrderBatchReport:
+      type: object
+      required: [id, institutionId, unitId, acceptedLines, rejectedLines, results]
+      properties:
+        id:
+          type: string
+          format: uuid
+        institutionId:
+          type: string
+        unitId:
+          type: string
+        orderId:
+          type: string
+          format: uuid
+          description: The order created from the accepted lines; absent when none was created.
+        acceptedLines:
+          type: integer
+        rejectedLines:
+          type: integer
+        results:
+          type: array
+          description: One entry per request line, in request order.
+          items:
+            type: object
+            required: [line, isbn, status]
+            properties:
+              line:
+                type: integer
+                minimum: 1
+              isbn:
+                type: string
+              status:
+                type: string
+                examples: [Accepted, Rejected]
+              problem:
+                $ref: '#/components/schemas/Problem'
     CreateReturnRequest:
       type: object
       required: [reason]

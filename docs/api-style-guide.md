@@ -58,3 +58,12 @@ Each rule has an id. Rules marked [lint] are enforced by .spectral.yaml.
 - BS-62 Same key and body: the first response again. Same key, different body: 422. First request still running: 409. Missing key: 400. Server errors are not stored; the retry runs again.
 - BS-63 Work that may take longer than a few seconds is a long-running operation: 202 Accepted, Operation-Location to GET /operations/{operationId}, Retry-After, status NotStarted/Running/Succeeded/Failed/Canceled, resourceLocation on success and a Problem Details error on failure.
 - BS-64 Status monitors are visible to the caller who started the operation and are kept 24 hours after it ends. Running operations can be cancelled with POST /operations/{operationId}:cancel.
+
+## Bulk operations and quotas
+- BS-70 A bulk endpoint states its maximum size (500 lines for order batches); a larger request is a 400 for the whole request.
+- BS-71 Schema errors reject the whole bulk request (400, errors keyed by JSON path such as lines[3].quantity); business rules are reported per line in results, one entry per request line, with a Problem Details object for each rejected line.
+- BS-72 Partial success is the default and returns 201 with the report; allOrNothing makes any rejected line a 422 batch-rejected without side effects. No 207 Multi-Status.
+- BS-73 Authorization is checked for everything a bulk request touches, not only for the endpoint.
+- BS-74 Bulk requests that may take long accept Prefer: respond-async (RFC 7240) and then behave as a long-running operation (BS-63).
+- BS-75 Quotas are documented per endpoint and announced with RateLimit-Policy and RateLimit (draft-ietf-httpapi-ratelimit-headers-11); a rejected request gets 429 quota-exceeded with Retry-After and violatedPolicies.
+- BS-76 Events that partners may subscribe to are described under webhooks in the contract, even before they are sent.

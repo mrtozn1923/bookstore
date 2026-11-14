@@ -41,6 +41,7 @@ builder.Services.AddSingleton<IdempotencyStore>();
 builder.Services.AddSingleton<OperationStore>();
 builder.Services.AddHostedService<OperationWorker>();
 builder.Services.AddSingleton<InvoiceData>();
+builder.Services.AddSingleton<OrderBatchData>();
 
 WebApplication app = builder.Build();
 
@@ -62,6 +63,9 @@ app.MapInvoiceEndpoints();
 app.MapOperationEndpoints();
 app.MapCartEndpoints();
 app.MapInstitutionEndpoints();
+// draft-ietf-httpapi-ratelimit-headers-11: 5 batches per minute per institution.
+app.MapOrderBatchEndpoints(new QuotaPolicy("batches", 5, TimeSpan.FromMinutes(1),
+    http => http.GetRouteValue("institutionId") as string ?? "", TimeProvider.System));
 app.MapProblemEndpoints();
 app.MapLegacyEndpoints();
 

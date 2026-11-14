@@ -61,6 +61,21 @@ public sealed class OrderData
         return order;
     }
 
+    public Order AddInstitutional(string institutionId, string unitId, IReadOnlyList<OrderItem> items)
+    {
+        Order order = new()
+        {
+            Id = Guid.CreateVersion7(), InstitutionId = institutionId, UnitId = unitId, Status = OrderStatus.Pending,
+            CreatedAt = DateTime.UtcNow, Items = items,
+        };
+        lock (_orders)
+        {
+            _orders.Add(order);
+        }
+
+        return order;
+    }
+
     public OrderReturn AddReturn(Order order, string reason)
     {
         OrderReturn result = new(Guid.CreateVersion7(), order.Id, ReturnStatus.Requested, reason, DateTime.UtcNow);

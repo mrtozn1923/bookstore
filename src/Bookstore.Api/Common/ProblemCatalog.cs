@@ -40,8 +40,8 @@ public static class ProblemCatalog
         "You are not allowed to do this.", "Bu işlem için yetkin yok.");
     public static readonly ProblemType UnitNotAllowed = new("unit-not-allowed", 403,
         "Unit not allowed", "Bu birime erişim yok",
-        "Buyers can only list the orders of their own unit ({0}).",
-        "Alıcılar yalnız kendi birimlerinin ({0}) siparişlerini listeleyebilir.");
+        "Buyers can only see and place the orders of their own unit ({0}).",
+        "Alıcılar yalnız kendi birimlerinin ({0}) siparişlerini görebilir ve verebilir.");
     public static readonly ProblemType NotFound = new("not-found", 404,
         "Not found", "Bulunamadı",
         "Nothing exists at {0}.", "{0} adresinde bir kayıt yok.");
@@ -96,6 +96,14 @@ public static class ProblemCatalog
         "Invoice details missing", "Fatura bilgileri eksik",
         "Institution {0} has no tax number on file; ask your account manager to add it.",
         "{0} kurumunun kayıtlı vergi numarası yok; müşteri temsilcinden eklemesini iste.");
+    public static readonly ProblemType BatchRejected = new("batch-rejected", 422,
+        "Batch rejected", "Toplu sipariş reddedildi",
+        "No order was created: {0} of {1} lines were rejected; see results.",
+        "Sipariş oluşturulmadı: {1} satırın {0} tanesi reddedildi; results'a bak.");
+    public static readonly ProblemType QuotaExceeded = new("quota-exceeded", 429,
+        "Quota exceeded", "Kota aşıldı",
+        "Policy {0} allows {1} requests per {2} seconds; wait for Retry-After seconds.",
+        "{0} politikası {2} saniyede {1} isteğe izin veriyor; Retry-After kadar bekle.");
     public static readonly ProblemType InsufficientStock = new("insufficient-stock", 422,
         "Insufficient stock", "Stok yetersiz",
         "Only {0} copies of {1} are available.", "{1} kitabından yalnızca {0} adet var.");
@@ -113,7 +121,7 @@ public static class ProblemCatalog
         BookAlreadyExists, OrderNotCancellable, OrderNotReturnable, OrderNotInvoiceable, InvoiceAlreadyRequested,
         OperationNotCancellable, IdempotencyKeyMissing, IdempotencyKeyInProgress, IdempotencyKeyReused, PreconditionFailed,
         PreconditionRequired, UnsupportedMediaType, InvoiceDetailsMissing,
-        InsufficientStock, UnsupportedCurrency, InternalError,
+        BatchRejected, QuotaExceeded, InsufficientStock, UnsupportedCurrency, InternalError,
     ];
 
     private static bool Turkish => CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
