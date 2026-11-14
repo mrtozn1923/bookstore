@@ -1,0 +1,9 @@
+{
+  // Example 11 of O13 needs erasableSyntaxOnly: `npx tsc -p O13/erasable-syntax-only` prints its three TS1294 errors.
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "erasableSyntaxOnly": true
+  },
+  "exclude": [],
+  "include": ["example-11.ts"]
+}

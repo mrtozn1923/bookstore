@@ -11,5 +11,6 @@
     "types": []
   },
   // O11 is its own small project (the post's recommended Node tsconfig): check it with `npx tsc -p O11`.
-  "exclude": ["node_modules", "O11"]
+  // O13/erasable-syntax-only turns on erasableSyntaxOnly: `npx tsc -p O13/erasable-syntax-only`.
+  "exclude": ["node_modules", "O11", "O13/erasable-syntax-only"]
 }
