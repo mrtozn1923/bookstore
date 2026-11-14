@@ -1,0 +1,2 @@
+/BKS-\d/auto_callout,no_start_optimize
+BK BKS-7

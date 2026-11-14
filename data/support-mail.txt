@@ -1,0 +1,4 @@
+From: ada@example.com
+Subject: Order BKS-2026-000123 is missing a book
+Hi, order BKS-2026-000123 arrived without Dune (ISBN 978-0-441-17271-9).
+Emma (978-0-141-43958-7) was in the box. My old order BKS-2025-98765 was late too.
