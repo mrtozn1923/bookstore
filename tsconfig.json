@@ -1,0 +1,13 @@
+{
+  // Every example file is checked on its own (moduleDetection: force), as in the posts.
+  // `npx tsc --noEmit` prints the compiler errors the posts show on purpose ("// Error:" lines).
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "nodenext",
+    "strict": true,
+    "noEmit": true,
+    "moduleDetection": "force",
+    "skipLibCheck": true,
+    "types": []
+  }
+}

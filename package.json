@@ -1,0 +1,13 @@
+{
+  "name": "bookstore-typescript-temel",
+  "private": true,
+  "description": "Code from the TypeScript Temel series on mertozen.com (Bookstore examples)",
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "7.0.2"
+  }
+}
