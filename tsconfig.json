@@ -10,5 +10,5 @@
     "skipLibCheck": true,
     "types": []
   },
-  "exclude": ["node_modules", "T07/script-mode", "T13/empty-config", "T13/out-dir", "T13/series-config"]
+  "exclude": ["node_modules", "T07/script-mode", "T13/empty-config", "T13/out-dir", "T13/series-config", "T14/price-calculator"]
 }
