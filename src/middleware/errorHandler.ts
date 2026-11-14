@@ -2,7 +2,7 @@ import type { ErrorRequestHandler, RequestHandler } from "express";
 import { HttpError } from "#http/errors";
 import { RequestValidationError } from "#http/validation";
 import { sendProblem } from "#http/problem";
-import { BookNotFoundError, DomainError, MixedCurrencyError, OrderNotFoundError, UnknownBookError } from "#domain/errors";
+import { BookNotFoundError, DomainError, MixedCurrencyError, OrderNotFoundError, OutOfStockError, UnknownBookError } from "#domain/errors";
 import { currentRequestContext } from "../context/requestContext.ts";
 import { log } from "../diagnostics/log.ts";
 
@@ -12,6 +12,7 @@ const DOMAIN_STATUS = new Map<Function, number>([
     [OrderNotFoundError, 404],
     [UnknownBookError, 422],
     [MixedCurrencyError, 422],
+    [OutOfStockError, 409],
 ]);
 
 // Registered after every route: nothing matched

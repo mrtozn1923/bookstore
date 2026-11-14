@@ -1,10 +1,8 @@
 import type { RequestHandler } from "express";
 import { createGzip } from "node:zlib";
 import { pipeline } from "node:stream/promises";
-import { z } from "zod";
 import type { OrderService } from "#services/orderService";
-import type { BookService } from "#services/bookService";
-import { orderRowStream, csvTransform } from "#services/orderExport";
+import { csvTransform } from "#services/orderExport";
 import { placeOrderBody } from "#schemas/orders";
 import { parseRequest } from "#http/validation";
 import { HttpError } from "#http/errors";
@@ -30,13 +28,9 @@ export function getOrder(orders: OrderService): RequestHandler {
     };
 }
 
-const exportQuery = z.object({ rows: z.coerce.number().int().min(1).max(10_000_000).default(100_000) });
-
-// GET /api/orders/export?rows=N: CSV, gzip-compressed when the client accepts it
-export function exportOrders(books: BookService): RequestHandler {
+// GET /api/orders/export: every order line as CSV, gzip-compressed when the client accepts it
+export function exportOrders(orders: OrderService): RequestHandler {
     return async (req, res) => {
-        const { rows } = parseRequest(exportQuery, req.query);
-        const catalog = (await books.list({ page: 1, pageSize: 50, sort: "title" })).items;
         const gzip = req.acceptsEncodings("gzip", "identity") === "gzip";
         const started = performance.now();
 
@@ -48,9 +42,9 @@ export function exportOrders(books: BookService): RequestHandler {
 
         const stages = gzip ? [csvTransform(), createGzip()] : [csvTransform()];
         try {
-            // pipeline wires backpressure through every stage and destroys all of them on error
-            await pipeline(orderRowStream(rows, catalog), ...stages, res);
-            log("info", "order export finished", { rows, gzip, durationMs: Math.round(performance.now() - started) });
+            // pipeline wires backpressure from the response back to SQL Server and destroys every stage on error
+            await pipeline(orders.exportRows(), ...stages, res);
+            log("info", "order export finished", { gzip, durationMs: Math.round(performance.now() - started) });
         } catch (err) {
             // A client that disconnects mid-download ends up here as ERR_STREAM_PREMATURE_CLOSE
             log("warn", "order export aborted", { error: (err as NodeJS.ErrnoException).code ?? (err as Error).message, durationMs: Math.round(performance.now() - started) });

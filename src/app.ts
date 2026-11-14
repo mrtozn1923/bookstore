@@ -28,7 +28,7 @@ export function createApp(services: AppServices): express.Express {
 
     app.get("/health", health);
     app.use("/api/books", booksRouter(services.books));
-    app.use("/api/orders", ordersRouter(services.orders, services.books));
+    app.use("/api/orders", ordersRouter(services.orders));
     app.use("/api/reports", reportsRouter);
     app.use("/diagnostics", diagnosticsRouter);
 

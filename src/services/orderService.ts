@@ -1,4 +1,5 @@
 import { EventEmitter } from "node:events";
+import type { Readable } from "node:stream";
 import type { Order, OrderItem } from "#domain/order";
 import { MixedCurrencyError, OrderNotFoundError, UnknownBookError } from "#domain/errors";
 import type { BookRepository } from "#repositories/bookRepository";
@@ -54,6 +55,11 @@ export class OrderService extends EventEmitter<OrderEvents> {
         log("info", "order placed", { orderId: order.id, items: items.length });
         this.emit("orderPlaced", order);
         return order;
+    }
+
+    // Object-mode stream of OrderExportRow, straight from the repository
+    exportRows(): Readable {
+        return this.#orders.exportRows();
     }
 
     async get(id: string): Promise<Order> {

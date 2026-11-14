@@ -31,3 +31,13 @@ export class MixedCurrencyError extends DomainError {
         this.name = "MixedCurrencyError";
     }
 }
+
+export class OutOfStockError extends DomainError {
+    readonly isbns: readonly string[];
+
+    constructor(isbns: readonly string[]) {
+        super(`not enough stock for ISBN: ${isbns.join(", ")}`);
+        this.name = "OutOfStockError";
+        this.isbns = isbns;
+    }
+}

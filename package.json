@@ -27,15 +27,19 @@
     "start": "node src/server.ts",
     "dev": "node --watch --env-file-if-exists=.env src/server.ts",
     "typecheck": "tsc",
-    "versions": "node -p process.versions.node"
+    "versions": "node -p process.versions.node",
+    "db:setup": "node --env-file-if-exists=.env scripts/db-setup.ts",
+    "db:load": "node --env-file-if-exists=.env scripts/load-catalog.ts"
   },
   "dependencies": {
     "@bookstore/contracts": "^0.1.0",
     "express": "^5.3.0",
+    "mssql": "^12.7.14",
     "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
+    "@types/mssql": "^12.3.0",
     "@types/node": "^26.6.6",
     "typescript": "^7.0.2"
   }

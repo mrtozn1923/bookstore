@@ -4,6 +4,7 @@ import type { Response } from "express";
 const PROBLEMS: Record<number, { type: string; title: string }> = {
     400: { type: "https://tools.ietf.org/html/rfc9110#section-15.5.1", title: "Bad Request" },
     404: { type: "https://tools.ietf.org/html/rfc9110#section-15.5.5", title: "Not Found" },
+    409: { type: "https://tools.ietf.org/html/rfc9110#section-15.5.10", title: "Conflict" },
     413: { type: "https://tools.ietf.org/html/rfc9110#section-15.5.14", title: "Content Too Large" },
     415: { type: "https://tools.ietf.org/html/rfc9110#section-15.5.16", title: "Unsupported Media Type" },
     422: { type: "https://tools.ietf.org/html/rfc9110#section-15.5.21", title: "Unprocessable Content" },
