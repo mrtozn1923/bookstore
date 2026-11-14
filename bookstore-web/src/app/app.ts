@@ -27,6 +27,7 @@ import { PushNotifications } from './core/push-notifications';
             ({{ badge.unread() }})
           }
         </a>
+        <a routerLink="/institution/delivery">Bulk delivery</a>
         <a routerLink="/settings">Settings</a>
       </nav>
       @if (session.customer(); as customer) {
