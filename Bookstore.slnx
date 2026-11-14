@@ -5,6 +5,7 @@
     <Project Path="src/Bookstore.Notifications/Bookstore.Notifications.csproj" />
     <Project Path="src/Bookstore.Ordering/Bookstore.Ordering.csproj" />
     <Project Path="src/Bookstore.Payments/Bookstore.Payments.csproj" />
+    <Project Path="src/Bookstore.Shipping/Bookstore.Shipping.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Bookstore.Ordering.AwesomeAssertions.Tests/Bookstore.Ordering.AwesomeAssertions.Tests.csproj" />
@@ -13,5 +14,6 @@
     <Project Path="tests/Bookstore.Ordering.Shouldly.Tests/Bookstore.Ordering.Shouldly.Tests.csproj" />
     <Project Path="tests/Bookstore.Ordering.Tests/Bookstore.Ordering.Tests.csproj" />
     <Project Path="tests/Bookstore.Payments.Tests/Bookstore.Payments.Tests.csproj" />
+    <Project Path="tests/Bookstore.Shipping.Tests/Bookstore.Shipping.Tests.csproj" />
   </Folder>
 </Solution>
