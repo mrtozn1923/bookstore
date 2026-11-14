@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bouncing circle</title>
+  <style>canvas { border: 1px solid #ccc; }</style>
+</head>
+<body>
+  <canvas id="canvas" width="400" height="250"></canvas>
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const circle = { x: 50, y: 50, r: 15, vx: 180, vy: 120 }; // speed: pixels/second
+    let lastTime = performance.now();
+
+    function frame(now) {
+      const dt = Math.min((now - lastTime) / 1000, 0.05); // seconds, at most 50 ms
+      lastTime = now;
+
+      // 1. Update
+      circle.x += circle.vx * dt;
+      circle.y += circle.vy * dt;
+      if (circle.x < circle.r || circle.x > canvas.width - circle.r) {
+        circle.vx *= -1;
+        circle.x = Math.min(Math.max(circle.x, circle.r), canvas.width - circle.r);
+      }
+      if (circle.y < circle.r || circle.y > canvas.height - circle.r) {
+        circle.vy *= -1;
+        circle.y = Math.min(Math.max(circle.y, circle.r), canvas.height - circle.r);
+      }
+
+      // 2. Clear, 3. Draw
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.beginPath();
+      ctx.arc(circle.x, circle.y, circle.r, 0, Math.PI * 2);
+      ctx.fillStyle = "tomato";
+      ctx.fill();
+
+      requestAnimationFrame(frame);
+    }
+
+    requestAnimationFrame(frame);
+  </script>
+</body>
+</html>
