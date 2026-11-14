@@ -8,6 +8,8 @@ if (args is ["healthcheck"])
 }
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+// Secrets as files: /run/secrets/ConnectionStrings__Default becomes ConnectionStrings:Default
+builder.Configuration.AddKeyPerFile(directoryPath: "/run/secrets", optional: true);
 builder.Services.AddOpenApi();
 builder.Services.AddHealthChecks();
 builder.Services.Configure<StoreOptions>(builder.Configuration.GetSection(StoreOptions.SectionName));

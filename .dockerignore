@@ -6,3 +6,5 @@ out/
 .vscode/
 *.md
 backup/
+secrets/
+scan/
