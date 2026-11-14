@@ -19,28 +19,28 @@ public class BookService : IBookService
         _db = db;
     }
 
-    public async Task<List<BookDto>> GetAllAsync()
+    public async Task<List<BookDto>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await _db.Books
             .AsNoTracking()
             .OrderBy(b => b.Id)
             .Select(ToDto)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<BookDto?> GetByIdAsync(int id)
+    public async Task<BookDto?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         return await _db.Books
             .AsNoTracking()
             .Where(b => b.Id == id)
             .Select(ToDto)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<BookDto?> CreateAsync(CreateBookRequest request)
+    public async Task<BookDto?> CreateAsync(CreateBookRequest request, CancellationToken cancellationToken = default)
     {
         // business rule: no two books may share a title
-        bool titleTaken = await _db.Books.AnyAsync(b => b.Title == request.Title);
+        bool titleTaken = await _db.Books.AnyAsync(b => b.Title == request.Title, cancellationToken);
         if (titleTaken)
         {
             return null;
@@ -54,14 +54,14 @@ public class BookService : IBookService
         };
 
         _db.Books.Add(book);
-        await _db.SaveChangesAsync();
+        await _db.SaveChangesAsync(cancellationToken);
 
-        return await GetByIdAsync(book.Id);
+        return await GetByIdAsync(book.Id, cancellationToken);
     }
 
-    public async Task<bool> UpdateAsync(int id, UpdateBookRequest request)
+    public async Task<bool> UpdateAsync(int id, UpdateBookRequest request, CancellationToken cancellationToken = default)
     {
-        Book? book = await _db.Books.FindAsync(id);
+        Book? book = await _db.Books.FindAsync(new object[] { id }, cancellationToken);
         if (book is null)
         {
             return false;
@@ -69,20 +69,20 @@ public class BookService : IBookService
 
         book.Title = request.Title;
         book.Price = request.Price;
-        await _db.SaveChangesAsync();
+        await _db.SaveChangesAsync(cancellationToken);
         return true;
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public async Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default)
     {
-        Book? book = await _db.Books.FindAsync(id);
+        Book? book = await _db.Books.FindAsync(new object[] { id }, cancellationToken);
         if (book is null)
         {
             return false;
         }
 
         _db.Books.Remove(book);
-        await _db.SaveChangesAsync();
+        await _db.SaveChangesAsync(cancellationToken);
         return true;
     }
 }
