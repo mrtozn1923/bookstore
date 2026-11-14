@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Lab 04: formatting contexts and display</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        @layer components {
+            .review { border: 2px solid #94a3b8; padding: 8px; margin-block-end: 24px; }
+            .review img { float: inline-start; margin-inline-end: 12px; }
+            .review.flow-root { display: flow-root; }
+        }
+    </style>
+</head>
+<body>
+    <article class="review" id="plain">
+        <img src="../img/dune.svg" alt="" width="60" height="90">
+        <p>Ada: A classic. Slow start, great ending.</p>
+    </article>
+    <article class="review flow-root" id="contained">
+        <img src="../img/dune.svg" alt="" width="60" height="90">
+        <p>Ada: A classic. Slow start, great ending.</p>
+    </article>
+    <div id="probes">
+        <span style="display: block flow">block flow</span>
+        <span style="display: block flow-root">block flow-root</span>
+        <span style="display: inline flow-root">inline flow-root</span>
+        <span style="display: inline flex">inline flex</span>
+        <span style="display: block grid">block grid</span>
+    </div>
+</body>
+</html>

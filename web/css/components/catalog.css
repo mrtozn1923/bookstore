@@ -1,0 +1,13 @@
+/* clip, not hidden: hidden would turn .catalog into a scroll container and break sticky */
+.catalog {
+    overflow-x: clip;
+    padding-inline: var(--space);
+}
+
+.catalog-toolbar {
+    position: sticky;
+    inset-block-start: 3.5rem;
+    z-index: 5;
+    padding-block: 0.5rem;
+    background-color: var(--color-surface);
+}

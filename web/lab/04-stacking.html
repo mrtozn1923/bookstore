@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Lab 04: stacking contexts</title>
+    <style>
+        /* self-contained: this lab does not load main.css */
+        body { margin: 0; }
+        ul { list-style: none; margin: 0; padding: 0; }
+        .site-header { position: sticky; inset-block-start: 0; z-index: 10; block-size: 56px; background: #1f2937; }
+        .book-card { position: relative; block-size: 240px; }
+        .badge { position: absolute; inset-block-start: 8px; inset-inline-end: 8px; z-index: 50; background: #b91c1c; color: #fff; }
+    </style>
+</head>
+<body>
+    <header class="site-header"></header>
+    <main class="catalog">
+        <ul class="book-list">
+            <li class="book-card">Dune <span class="badge">Bestseller</span></li>
+            <li class="book-card">Middlemarch</li>
+            <li class="book-card">Emma</li>
+            <li class="book-card">The Hobbit</li>
+        </ul>
+    </main>
+    <dialog id="quick-view"><p>Dune, Frank Herbert</p></dialog>
+</body>
+</html>
