@@ -1,4 +1,5 @@
 using Bookstore.Infrastructure;
+using Bookstore.Notifications;
 using Bookstore.Ordering;
 using Bookstore.Payments;
 using Bookstore.Payments.ExchangeRates;
@@ -6,6 +7,7 @@ using Bookstore.Shipping;
 using Bookstore.Shipping.LegacyCarrier;
 using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Options;
+using Polly;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,11 +46,45 @@ builder.Services.AddHttpClient(CarrierTokenProvider.AuthClientName, (sp, client)
 var carrier = builder.Services.AddHttpClient(LegacyCarrierClient.ClientName, (sp, client) =>
         client.BaseAddress = sp.GetRequiredService<IOptions<LegacyCarrierOptions>>().Value.BaseUrl)
     .AddAsKeyed();
-carrier.AddStandardResilienceHandler()
-    .Configure(builder.Configuration.GetSection("Resilience:LegacyCarrier"));
+// Our own pipeline instead of the standard one: we need the breaker's state and manual control.
+builder.Services.AddSingleton<CarrierCircuit>();
+carrier.AddResilienceHandler("carrier", (pipeline, context) =>
+{
+    var circuit = context.ServiceProvider.GetRequiredService<CarrierCircuit>();
+    pipeline
+        .AddTimeout(TimeSpan.FromSeconds(6))
+        .AddRetry(new HttpRetryStrategyOptions
+        {
+            MaxRetryAttempts = 2,
+            BackoffType = DelayBackoffType.Exponential,
+            UseJitter = true,
+            Delay = TimeSpan.FromMilliseconds(200),
+            // MaxDelay does not cap Retry-After, so a long Retry-After (maintenance) is not retried at all.
+            ShouldHandle = args => ValueTask.FromResult(
+                HttpClientResiliencePredicates.IsTransient(args.Outcome) &&
+                !(args.Outcome.Result?.Headers.RetryAfter?.Delta > TimeSpan.FromSeconds(3)))
+        })
+        .AddCircuitBreaker(new HttpCircuitBreakerStrategyOptions
+        {
+            FailureRatio = 0.5,
+            MinimumThroughput = 10,
+            SamplingDuration = TimeSpan.FromSeconds(30),
+            BreakDuration = TimeSpan.FromSeconds(15),
+            ManualControl = circuit.ManualControl,
+            StateProvider = circuit.StateProvider
+        })
+        .AddTimeout(TimeSpan.FromSeconds(2));
+});
 // Added after (inside) the resilience handler: every retry asks for the current token.
 carrier.AddHttpMessageHandler<CarrierAuthHandler>();
-builder.Services.AddScoped<IShippingCarrier, LegacyCarrierClient>();
+builder.Services.AddKeyedScoped<IShippingCarrier, LegacyCarrierClient>(ResilientShippingCarrier.InnerKey);
+builder.Services.AddScoped<IShippingCarrier, ResilientShippingCarrier>();
+builder.Services.AddResiliencePipeline<string, ShippingQuote>(ResilientShippingCarrier.PipelineName, (pipeline, context) =>
+    ResilientShippingCarrier.Configure(pipeline,
+        context.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ResilientShippingCarrier>()));
+builder.Services.AddHealthChecks().AddCheck<CarrierCircuitHealthCheck>("legacy-carrier");
+
+builder.Services.AddNotifications(builder.Configuration);
 
 // Exchange rates: read-only GET served from two regions, so hedging instead of plain retries.
 var rateEndpoints = builder.Configuration.GetSection("ExchangeRates:Endpoints").Get<string[]>()!;
@@ -73,6 +109,20 @@ app.MapPost("/api/orders/{id:int}/checkout", async (int id, CheckoutRequest requ
     await checkout.CheckoutAsync(id, request.CardToken, ct) is { } result
         ? Results.Ok(result)
         : Results.NotFound());
+
+app.MapHealthChecks("/health");
+
+// Maintenance window: hold the carrier circuit open, then close it again.
+app.MapPost("/admin/carrier-circuit/isolate", async (CarrierCircuit circuit) =>
+{
+    await circuit.ManualControl.IsolateAsync();
+    return Results.NoContent();
+});
+app.MapPost("/admin/carrier-circuit/close", async (CarrierCircuit circuit) =>
+{
+    await circuit.ManualControl.CloseAsync();
+    return Results.NoContent();
+});
 
 app.MapGet("/api/exchange-rates/{pair}", async (string pair, ExchangeRateClient rates, CancellationToken ct) =>
     Results.Ok(await rates.GetAsync(pair, ct)));

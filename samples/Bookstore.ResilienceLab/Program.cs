@@ -23,7 +23,13 @@ var demos = new Dictionary<string, Func<Task>>
     ["standard-validation"] = StandardPipelineDemos.ValidationAsync,
     ["client-timeout"] = StandardPipelineDemos.ClientTimeoutAsync,
     ["stacked"] = StandardPipelineDemos.StackedAsync,
-    ["hedging"] = StandardPipelineDemos.HedgingAsync
+    ["hedging"] = StandardPipelineDemos.HedgingAsync,
+    ["order"] = PollyDemos.OrderAsync,
+    ["optimistic-timeout"] = PollyDemos.OptimisticTimeoutAsync,
+    ["retry-after"] = PollyDemos.RetryAfterAsync,
+    ["circuit-breaker"] = PollyDemos.CircuitBreakerAsync,
+    ["context"] = PollyDemos.ContextAsync,
+    ["bulkhead"] = PollyDemos.BulkheadAsync
 };
 
 if (args.Length == 0 || !demos.TryGetValue(args[0], out var demo))

@@ -7,7 +7,11 @@ public interface IShippingCarrier
 
 public sealed record ShippingQuoteRequest(string FromPostalCode, string ToPostalCode, int WeightGrams);
 
-public sealed record ShippingQuote(string CarrierQuoteId, decimal Price, string Currency, int EstimatedDays);
+public sealed record ShippingQuote(string CarrierQuoteId, decimal Price, string Currency, int EstimatedDays)
+{
+    // True when the carrier could not be reached and a flat tariff was used instead.
+    public bool IsFlatRate { get; init; }
+}
 
 public enum ShippingFailureKind
 {

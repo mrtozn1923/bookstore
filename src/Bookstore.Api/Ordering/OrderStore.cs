@@ -14,6 +14,7 @@ public sealed class Order
 {
     public required int Id { get; init; }
     public required string CustomerName { get; init; }
+    public required string CustomerEmail { get; init; }
     public required string ShipToPostalCode { get; init; }
     public required decimal ItemsTotal { get; init; }
     public required int WeightGrams { get; init; }
@@ -28,8 +29,8 @@ public sealed class OrderStore
 {
     private readonly ConcurrentDictionary<int, Order> _orders = new()
     {
-        [1001] = new Order { Id = 1001, CustomerName = "Ada", ShipToPostalCode = "06100", ItemsTotal = 459.00m, WeightGrams = 850 },
-        [1002] = new Order { Id = 1002, CustomerName = "Alan", ShipToPostalCode = "35210", ItemsTotal = 312.50m, WeightGrams = 600 }
+        [1001] = new Order { Id = 1001, CustomerName = "Ada", CustomerEmail = "ada@example.com", ShipToPostalCode = "06100", ItemsTotal = 459.00m, WeightGrams = 850 },
+        [1002] = new Order { Id = 1002, CustomerName = "Alan", CustomerEmail = "alan@example.com", ShipToPostalCode = "35210", ItemsTotal = 312.50m, WeightGrams = 600 }
     };
 
     public Order? Find(int id) => _orders.GetValueOrDefault(id);
