@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Theme sync</title>
+  <style>
+    body.dark { background: #222; color: #eee; }
+  </style>
+</head>
+<body>
+  <button id="toggle">Toggle theme</button>
+  <script>
+    function applyTheme(theme) {
+      document.body.classList.toggle("dark", theme === "dark");
+    }
+
+    applyTheme(localStorage.getItem("theme"));
+
+    document.querySelector("#toggle").addEventListener("click", () => {
+      const next = localStorage.getItem("theme") === "dark" ? "light" : "dark";
+      localStorage.setItem("theme", next);
+      applyTheme(next); // no storage event in this tab, so we apply it ourselves
+    });
+
+    window.addEventListener("storage", (event) => {
+      console.log(event.key, event.oldValue, "→", event.newValue, event.url);
+      if (event.key === "theme" || event.key === null) {
+        applyTheme(localStorage.getItem("theme"));
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Review draft</title>
+</head>
+<body>
+  <form id="review">
+    <p><input name="title" placeholder="Review title"></p>
+    <p><textarea name="body" rows="6" cols="40" placeholder="What did you think of Dune?"></textarea></p>
+    <button>Post review</button>
+    <span id="saved"></span>
+  </form>
+  <script>
+    const KEY = "draft:review:dune";
+    const form = document.querySelector("#review");
+    const savedLabel = document.querySelector("#saved");
+
+    // Restore the draft when the page opens
+    try {
+      const draft = JSON.parse(localStorage.getItem(KEY)) ?? {};
+      for (const [name, value] of Object.entries(draft)) {
+        if (form.elements[name]) form.elements[name].value = value;
+      }
+    } catch {
+      localStorage.removeItem(KEY);
+    }
+
+    // Save on every change
+    form.addEventListener("input", () => {
+      const data = Object.fromEntries(new FormData(form));
+      localStorage.setItem(KEY, JSON.stringify(data));
+      savedLabel.textContent = `Draft saved (${new Date().toLocaleTimeString("en-US")})`;
+    });
+
+    // Clear the draft on submit
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      console.log("Posted:", Object.fromEntries(new FormData(form)));
+      localStorage.removeItem(KEY);
+      form.reset();
+      savedLabel.textContent = "";
+    });
+  </script>
+</body>
+</html>
