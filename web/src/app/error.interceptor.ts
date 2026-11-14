@@ -15,7 +15,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       } else if (error.status >= 500) {
         console.error('Something is wrong on the server.');
       }
-      return throwError(error);
+      return throwError(() => error);
     })
   );
 };

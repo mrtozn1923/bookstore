@@ -15,9 +15,9 @@ export class CustomerListComponent {
   sort = signal<'asc' | 'desc'>('asc');
 
   customersResource = rxResource({
-    request: () => ({ sort: this.sort() }),
-    loader: ({ request }) =>
-      this.http.get<Customer[]>(`${environment.apiUrl}/customers`, { params: { _sort: 'name', _order: request.sort } })
+    params: () => ({ sort: this.sort() }),
+    stream: ({ params }) =>
+      this.http.get<Customer[]>(`${environment.apiUrl}/customers`, { params: { _sort: 'name', _order: params.sort } })
   });
 
   addCustomer(): void {

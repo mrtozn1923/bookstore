@@ -27,7 +27,7 @@ export class CustomerService {
       retry(2),
       catchError((error: HttpErrorResponse) => {
         console.error('Could not load customers:', error.status, error.message);
-        return throwError(error);
+        return throwError(() => error);
       })
     );
   }

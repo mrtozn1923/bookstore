@@ -33,7 +33,8 @@
   }
 </ul>
 
-<button (click)="showTracking = !showTracking">Track order 1042</button>
+<button (click)="showTracking = !showTracking">Track order</button>
+<button (click)="trackedId.set(trackedId() + 1)">Next order</button>
 @defer (when showTracking) {
-  <app-order-tracking [orderId]="1042" />
+  <app-order-tracking [orderId]="trackedId()" />
 }

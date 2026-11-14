@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { HighlightDirective } from '../highlight.directive';
 import { OrderTrackingComponent } from '../order-tracking/order-tracking.component';
 import { NgClass, NgStyle } from '@angular/common';
@@ -19,6 +19,7 @@ export interface Order {
 export class OrderListComponent {
   isLoading = false;
   showTracking = false;
+  trackedId = signal(1042);
   orders: Order[] = [
     { id: 1040, books: 'The Hobbit', status: 'delivered', shipping: 'standard' },
     { id: 1041, books: 'Middlemarch', status: 'shipped', shipping: 'express' },
