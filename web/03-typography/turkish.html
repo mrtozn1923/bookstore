@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Turkish characters - Bookstore</title>
+  <link rel="stylesheet" href="/web/styles/base.css">
+  <style>
+    /* only the latin subset, no latin-ext */
+    @font-face {
+      font-family: "Inter Latin Only";
+      font-weight: 100 900;
+      src: url("/node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2") format("woff2");
+    }
+    body { padding: 24px; color: #222; font-size: 22px; }
+    .latin-only { font-family: "Inter Latin Only", serif; }
+    .full { font-family: "Inter", serif; }
+    .label { text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
+    p { margin: 6px 0; }
+  </style>
+</head>
+<body>
+  <p class="latin-only" id="a1" lang="tr">Çalıkuşu · İnce Memed · Ağrı Dağı Efsanesi · Kürk Mantolu Madonna · ₺420.00</p>
+  <p class="full" id="a2" lang="tr">Çalıkuşu · İnce Memed · Ağrı Dağı Efsanesi · Kürk Mantolu Madonna · ₺420.00</p>
+  <p class="full label" id="b1" lang="en">bilim kurgu · şiir · çizgi roman</p>
+  <p class="full label" id="b2" lang="tr">bilim kurgu · şiir · çizgi roman</p>
+</body>
+</html>
