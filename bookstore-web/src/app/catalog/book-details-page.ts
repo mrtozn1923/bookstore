@@ -1,17 +1,19 @@
 import { HttpClient, httpResource } from '@angular/common/http';
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, RouterOutlet } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { apiUrl } from '../api';
 import type { Book, BookPage, Review } from '../models';
 
 @Component({
   selector: 'app-book-details-page',
-  imports: [RouterLink],
+  imports: [RouterLink, RouterOutlet],
   template: `
     @if (book.hasValue()) {
       <h1>{{ book.value().title }}</h1>
       <p class="book">{{ book.value().author }} - {{ book.value().price }} TRY</p>
+      <a class="share-link" routerLink="share">Share</a>
+      <router-outlet />
     } @else if (book.error()) {
       <p class="book-error">Could not load this book.</p>
     } @else {
