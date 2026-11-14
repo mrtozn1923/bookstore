@@ -1,0 +1,32 @@
+import { defineConfig, normalizePath, type Plugin } from "vite";
+
+// Runs with "npx vite build --mode graph": prints the module graph and what ended up in each chunk
+function moduleGraphReport(): Plugin {
+    return {
+        name: "module-graph-report",
+        apply: "build",
+        generateBundle(_options, bundle) {
+            const root = normalizePath(process.cwd()) + "/";
+            const short = (id: string) => id.replace(root, "");
+            const graph = [...this.getModuleIds()];
+            const fromLodash = graph.filter(id => id.includes("/lodash-es/")).length;
+            console.log(`\nmodule graph: ${graph.length} modules (${fromLodash} from lodash-es)`);
+            for (const id of graph.filter(id => id.includes("/src/"))) {
+                const imports = this.getModuleInfo(id)?.importedIds ?? [];
+                console.log(`  ${short(id)} -> ${imports.map(short).join(", ") || "(none)"}`);
+            }
+            for (const output of Object.values(bundle)) {
+                if (output.type !== "chunk") {
+                    continue;
+                }
+                const rendered = Object.entries(output.modules).filter(([, m]) => m.renderedLength > 0);
+                const lodash = rendered.filter(([id]) => id.includes("/lodash-es/")).length;
+                console.log(`chunk ${output.fileName}: ${rendered.length} modules rendered (${lodash} from lodash-es)`);
+            }
+        },
+    };
+}
+
+export default defineConfig(({ mode }) => ({
+    plugins: mode === "graph" ? [moduleGraphReport()] : [],
+}));

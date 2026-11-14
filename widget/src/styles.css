@@ -1,0 +1,21 @@
+#book-finder {
+    max-width: 32rem;
+    font-family: system-ui, sans-serif;
+
+    .finder-input {
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #94a3b8;
+        border-radius: 0.375rem;
+    }
+
+    .finder-results {
+        list-style: none;
+        padding: 0;
+
+        li {
+            padding: 0.375rem 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+    }
+}
