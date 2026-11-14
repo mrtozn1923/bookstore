@@ -385,7 +385,28 @@ switch (command)
         Environment.ExitCode = await IoLab.WaitForShutdownAsync(TimeSpan.FromSeconds(int.Parse(args[1])));
         break;
 
+    case "container-info":
+    {
+        Console.WriteLine($"runtime              = {System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription}");
+        Console.WriteLine($"/proc/self/cgroup    = {File.ReadAllText("/proc/self/cgroup").Trim()}");
+        Console.WriteLine($"memory.max           = {MemLab.CgroupValue("memory.max")}");
+        Console.WriteLine($"cpu.max              = {MemLab.CgroupValue("cpu.max")}");
+        Console.WriteLine($"pids.max             = {MemLab.CgroupValue("pids.max")}");
+        Console.WriteLine($"ProcessorCount       = {Environment.ProcessorCount}");
+        Console.WriteLine($"GC available memory  = {GC.GetGCMemoryInfo().TotalAvailableMemoryBytes >> 20} MB");
+        try
+        {
+            using Process self = Process.GetCurrentProcess();
+            Console.WriteLine($"Process.MaxWorkingSet = {(long)self.MaxWorkingSet >> 20} MB");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Process.MaxWorkingSet threw {ex.GetType().Name}: {ex.Message}");
+        }
+        break;
+    }
+
     default:
-        Console.WriteLine("usage: read-catalog | log-naive N | log-buffered N | proc-info S | report-naive N | report N [--fail] | report-timeout | shell-demo TEXT | env-demo | threads S | thread-cost N [stackKB] | task-cost N | context | cpu-info | workers N S | spin S [PriorityClass] | pingpong N | nice | paging MB | mem-info | overcommit GB | oom MB | gc-config | gc-limits | fill MB | churn MB | map-share FILE MB S | cow FILE MB | layout | big-maps MB | wx | flush N | fd-limit DIR | open-delete FILE | lock FILE S | open FILE | case-check | atomic-save FILE TEXT | connections N async|blocking [--names] | uds PATH | named-pipe NAME | serve CLEANUP_S");
+        Console.WriteLine("usage: read-catalog | log-naive N | log-buffered N | proc-info S | report-naive N | report N [--fail] | report-timeout | shell-demo TEXT | env-demo | threads S | thread-cost N [stackKB] | task-cost N | context | cpu-info | workers N S | spin S [PriorityClass] | pingpong N | nice | paging MB | mem-info | overcommit GB | oom MB | gc-config | gc-limits | fill MB | churn MB | map-share FILE MB S | cow FILE MB | layout | big-maps MB | wx | flush N | fd-limit DIR | open-delete FILE | lock FILE S | open FILE | case-check | atomic-save FILE TEXT | connections N async|blocking [--names] | uds PATH | named-pipe NAME | serve CLEANUP_S | container-info");
         break;
 }
