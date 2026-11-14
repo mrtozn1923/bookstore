@@ -1,0 +1,5 @@
+# /etc/apt/preferences.d/dotnet-microsoft
+# .NET comes from the Ubuntu feed; never take it from packages.microsoft.com
+Package: dotnet* aspnet* netstandard*
+Pin: origin "packages.microsoft.com"
+Pin-Priority: -10
