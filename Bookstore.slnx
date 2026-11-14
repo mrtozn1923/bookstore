@@ -4,6 +4,7 @@
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Bookstore.Api/Bookstore.Api.csproj" />
+    <Project Path="src/Bookstore.IO.Csv/Bookstore.IO.Csv.csproj" />
     <Project Path="src/Bookstore.IO.Files/Bookstore.IO.Files.csproj" />
     <Project Path="src/Bookstore.IO.Json/Bookstore.IO.Json.csproj" />
     <Project Path="src/Bookstore.IO.Pipelines/Bookstore.IO.Pipelines.csproj" />

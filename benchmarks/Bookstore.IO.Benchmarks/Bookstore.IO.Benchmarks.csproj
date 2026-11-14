@@ -7,11 +7,14 @@
 
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.15.8" />
+    <PackageReference Include="Sep" Version="0.18.0" />
+    <PackageReference Include="Sylvan.Data.Csv" Version="1.4.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Bookstore.IO.Pipelines\Bookstore.IO.Pipelines.csproj" />
     <ProjectReference Include="..\..\src\Bookstore.IO.Json\Bookstore.IO.Json.csproj" />
+    <ProjectReference Include="..\..\src\Bookstore.IO.Csv\Bookstore.IO.Csv.csproj" />
   </ItemGroup>
 
 </Project>
