@@ -3,7 +3,6 @@ import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 @Component({
     selector: 'app-scroll-top',
     template: `@if (visible) {<button (click)="scrollTop()">Back to top</button>}`,
-    standalone: true,
 })
 export class ScrollTopComponent implements OnInit, OnDestroy {
   visible = false;

@@ -5,7 +5,6 @@ import { BookRatingComponent } from '../book-rating/book-rating.component';
     selector: 'app-book-summary',
     templateUrl: './book-summary.component.html',
     styleUrls: ['./book-summary.component.css'],
-    standalone: true,
     imports: [BookRatingComponent]
 })
 export class BookSummaryComponent implements OnInit {

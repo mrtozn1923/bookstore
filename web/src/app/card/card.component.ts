@@ -4,7 +4,6 @@ import { AfterContentInit, Component, ContentChild, ElementRef } from '@angular/
     selector: 'app-card',
     templateUrl: './card.component.html',
     styleUrls: ['./card.component.css'],
-    standalone: true
 })
 export class CardComponent implements AfterContentInit {
   @ContentChild('cardTitle') cardTitle?: ElementRef;

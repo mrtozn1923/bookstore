@@ -12,7 +12,6 @@ import { BookSearchComponent } from '../../book-search/book-search.component';
     selector: 'app-book-list',
     templateUrl: './book-list.component.html',
     styleUrls: ['./book-list.component.css'],
-    standalone: true,
     imports: [RouterLink, BookItemComponent, InStockPipe, BookSearchComponent]
 })
 export class BookListComponent implements OnInit {

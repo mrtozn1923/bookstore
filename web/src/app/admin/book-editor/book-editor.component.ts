@@ -3,7 +3,6 @@ import { Book } from '../../book';
 
 @Component({
   selector: 'app-book-editor',
-  standalone: true,
   template: `
     <input #title [value]="book().title" />
     <button (click)="save(title.value)">Save</button>

@@ -6,7 +6,6 @@ import { ButtonComponent } from '../button/button.component';
     selector: 'app-address-edit',
     templateUrl: './address-edit.component.html',
     styleUrls: ['./address-edit.component.css'],
-    standalone: true,
     imports: [ButtonComponent]
 })
 export class AddressEditComponent {

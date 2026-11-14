@@ -8,7 +8,6 @@ import { CartBadgeComponent } from './cart-badge/cart-badge.component';
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.css'],
-    standalone: true,
     imports: [SaleCountdownComponent, RouterLink, RouterLinkActive, RouterOutlet, ScrollTopComponent, CartBadgeComponent]
 })
 export class AppComponent {

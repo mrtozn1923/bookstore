@@ -2,7 +2,6 @@ import { Component, booleanAttribute, computed, input, model, output } from '@an
 
 @Component({
   selector: 'app-book-rating',
-  standalone: true,
   template: `
     @for (star of stars(); track star) {
       <button (click)="rate(star)" [class.filled]="star <= value()" [class.compact]="compact()">★</button>

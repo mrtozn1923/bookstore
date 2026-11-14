@@ -10,7 +10,6 @@ import { NgOptimizedImage } from '@angular/common';
     selector: 'app-book-detail',
     templateUrl: './book-detail.component.html',
     styleUrls: ['./book-detail.component.css'],
-    standalone: true,
     imports: [NgOptimizedImage, RouterLink, RouterLinkActive, RouterOutlet, FormsModule, QuantityPickerComponent, PriceTagComponent]
 })
 export class BookDetailComponent {

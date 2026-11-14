@@ -7,7 +7,6 @@ import { SearchBoxComponent } from '../search-box/search-box.component';
     selector: 'app-home',
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.css'],
-    standalone: true,
     imports: [NgOptimizedImage, NewsletterComponent, SearchBoxComponent]
 })
 export class HomeComponent implements OnInit {

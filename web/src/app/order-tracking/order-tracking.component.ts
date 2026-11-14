@@ -3,7 +3,6 @@ import { Component, Input, OnInit } from '@angular/core';
 @Component({
     selector: 'app-order-tracking',
     template: `<p>{{ statusText }}</p>`,
-    standalone: true
 })
 export class OrderTrackingComponent implements OnInit {
   @Input() orderId = 0;

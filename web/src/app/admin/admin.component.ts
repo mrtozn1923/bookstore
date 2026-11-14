@@ -9,7 +9,6 @@ import { SalesChartComponent } from './sales-chart/sales-chart.component';
     selector: 'app-admin',
     templateUrl: './admin.component.html',
     styleUrls: ['./admin.component.css'],
-    standalone: true,
     imports: [RouterLink, SalesChartComponent, BookEditorComponent]
 })
 export class AdminComponent {

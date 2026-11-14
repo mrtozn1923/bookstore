@@ -4,7 +4,6 @@ import { Component, model } from '@angular/core';
     selector: 'app-quantity-picker',
     templateUrl: './quantity-picker.component.html',
     styleUrls: ['./quantity-picker.component.css'],
-    standalone: true
 })
 export class QuantityPickerComponent {
   quantity = model(1);

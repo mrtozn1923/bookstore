@@ -13,7 +13,6 @@ import { AsyncPipe } from '@angular/common';
       <p>{{ item.title }}</p>
     }
   `,
-    standalone: true,
     imports: [AsyncPipe]
 })
 export class CartBadgeComponent {

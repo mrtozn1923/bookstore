@@ -6,7 +6,6 @@ import {
 @Component({
     selector: 'app-lifecycle-demo',
     template: `<p>Count: {{ count }}</p>`,
-    standalone: true
 })
 export class LifecycleDemoComponent implements OnChanges, OnInit, DoCheck,
   AfterContentInit, AfterContentChecked, AfterViewInit, AfterViewChecked, OnDestroy {

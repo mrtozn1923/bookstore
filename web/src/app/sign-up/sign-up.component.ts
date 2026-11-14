@@ -8,7 +8,6 @@ import { noWhitespace, usernameAvailable } from './sign-up.validators';
 @Component({
     selector: 'app-sign-up',
     templateUrl: './sign-up.component.html',
-    standalone: true,
     imports: [FormsModule, ReactiveFormsModule]
 })
 export class SignUpComponent {

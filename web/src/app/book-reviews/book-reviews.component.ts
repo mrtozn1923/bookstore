@@ -6,7 +6,6 @@ import { BookRatingComponent } from '../book-rating/book-rating.component';
     selector: 'app-book-reviews',
     templateUrl: './book-reviews.component.html',
     styleUrls: ['./book-reviews.component.css'],
-    standalone: true,
     imports: [BookRatingComponent]
 })
 export class BookReviewsComponent implements OnInit {

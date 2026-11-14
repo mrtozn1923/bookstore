@@ -35,6 +35,9 @@
     <p>Please check your address details.</p>
   }
 
+  <label><input type="checkbox" [checked]="abroad()" (change)="abroad.set(!abroad())"> Ship abroad</label>
+  <app-shipping-picker [options]="shippingOptions()" />
+
   <button type="submit" [disabled]="f.invalid">Place order</button>
 </form>
 

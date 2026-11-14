@@ -1,9 +1,14 @@
-@if (errorMessage) {
-  <p>{{ errorMessage }}</p>
+<button (click)="sort.set('asc')">A-Z</button>
+<button (click)="sort.set('desc')">Z-A</button>
+@if (customersResource.isLoading()) {
+  <p>Loading...</p>
+} @else if (customersResource.error()) {
+  <p>The list cannot be loaded right now, please try again shortly.</p>
+} @else {
+  <ul>
+    @for (customer of customersResource.value(); track customer.id) {
+      <li>{{ customer.name }} - {{ customer.email }}</li>
+    }
+  </ul>
 }
-<ul>
-  @for (customer of customers; track customer.id) {
-    <li>{{ customer.name }} - {{ customer.email }}</li>
-  }
-</ul>
 <button (click)="addCustomer()">Add customer</button>

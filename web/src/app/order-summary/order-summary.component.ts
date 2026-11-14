@@ -15,7 +15,6 @@ import { LowerCasePipe, DecimalPipe, PercentPipe, CurrencyPipe, DatePipe } from 
     <p>{{ total | currency }}</p>
     <p>{{ orderDate | date:'MMMM' | lowercase }}</p>
   `,
-    standalone: true,
     imports: [LowerCasePipe, DecimalPipe, PercentPipe, CurrencyPipe, DatePipe]
 })
 export class OrderSummaryComponent {

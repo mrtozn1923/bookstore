@@ -5,7 +5,6 @@ import { BookService } from '../book.service';
 
 @Component({
   selector: 'app-book-search',
-  standalone: true,
   template: `
     <input (input)="query.set($any($event.target).value)" placeholder="Search books...">
     @for (title of results(); track title) {

@@ -3,7 +3,6 @@ import { Book } from '../book';
 
 @Pipe({
     name: 'inStock',
-    standalone: true
 })
 export class InStockPipe implements PipeTransform {
   transform(books: Book[]): Book[] {

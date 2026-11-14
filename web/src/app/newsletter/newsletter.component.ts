@@ -3,13 +3,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, StatusChangeEvent, TouchedChangeEvent, ValueChangeEvent, Validators } from '@angular/forms';
 
 @Component({
-  selector: 'app-newsletter',
-  template: `
+    selector: 'app-newsletter',
+    template: `
     <input type="email" [formControl]="email">
     <p>Newsletter will be sent to: {{ email.value }}</p>
   `,
-  standalone: true,
-  imports: [ReactiveFormsModule]
+    imports: [ReactiveFormsModule]
 })
 export class NewsletterComponent {
   email = new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.email] });

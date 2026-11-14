@@ -2,7 +2,6 @@ import { Component, computed, input } from '@angular/core';
 
 @Component({
   selector: 'app-price-tag',
-  standalone: true,
   template: `<span>{{ finalPrice() }} {{ currency() }}</span>`
 })
 export class PriceTagComponent {

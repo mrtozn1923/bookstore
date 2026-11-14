@@ -8,7 +8,6 @@ import { RouterLink } from '@angular/router';
     templateUrl: './book-item.component.html',
     styleUrls: ['./book-item.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
     imports: [RouterLink, TruncatePipe]
 })
 export class BookItemComponent {

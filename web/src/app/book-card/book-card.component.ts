@@ -1,17 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { CurrencyPipe } from '@angular/common';
 
 @Component({
-    selector: 'app-book-card',
-    templateUrl: './book-card.component.html',
-    styleUrls: ['./book-card.component.css'],
-    standalone: true
+  selector: 'app-book-card',
+  imports: [CurrencyPipe],
+  template: `
+    <h3>{{ title }}</h3>
+    <p>{{ price | currency:'TRY' }}</p>
+  `,
+  styleUrl: './book-card.component.css'
 })
-export class BookCardComponent implements OnInit {
+export class BookCardComponent {
   title = 'Dune';
   price = 450;
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
 }
