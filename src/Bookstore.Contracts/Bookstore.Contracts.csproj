@@ -6,6 +6,25 @@
     <MinVerTagPrefix>contracts/v</MinVerTagPrefix>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PackageId>Bookstore.Contracts</PackageId>
+    <Description>Shared DTOs of the Bookstore API (books, prices) for .NET clients.</Description>
+    <Authors>Bookstore Team</Authors>
+    <PackageTags>bookstore;dto;contracts</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://github.com/example/bookstore</PackageProjectUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EnablePackageValidation>true</EnablePackageValidation>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="MinVer" Version="8.0.0" PrivateAssets="all" />
   </ItemGroup>

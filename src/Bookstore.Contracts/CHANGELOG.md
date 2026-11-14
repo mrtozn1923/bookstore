@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.1.0](https://github.com/example/bookstore/compare/contracts/v2.0.0...contracts/v2.1.0) (2026-11-14)
+
+### Features
+
+* **contracts:** add BookDto.Publisher ([c2a6386](https://github.com/example/bookstore/commit/c2a63864c5c6c8f8c611939cea3b953e5c4f0e15))
+
 ## [2.0.0](https://github.com/example/bookstore/compare/contracts/v1.1.0...contracts/v2.0.0) (2026-11-14)
 
 ### ⚠ BREAKING CHANGES
