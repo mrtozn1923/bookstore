@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cart - Bookstore</title>
+  <link rel="stylesheet" href="/web/styles/base.css">
+  <link rel="stylesheet" href="/web/styles/tokens.css">
+  <link rel="stylesheet" href="after.css">
+</head>
+<body>
+  <header class="top">
+    <span class="logo">Bookstore</span>
+    <form id="search" class="search" role="search">
+      <label for="q" class="visually-hidden">Search books</label>
+      <input id="q" name="q" placeholder="Title or author">
+      <button class="btn btn-secondary">Search</button>
+    </form>
+  </header>
+  <main>
+    <h1>Your cart</h1>
+    <div id="results"></div>
+    <div id="cart" aria-busy="true">
+      <!-- skeleton: the same shape as two cart rows, delivery and the summary -->
+      <div class="skeleton-row"><div class="bone"></div><div class="bone short"></div></div>
+      <div class="skeleton-row"><div class="bone"></div><div class="bone short"></div></div>
+      <div class="bone delivery-bone"></div>
+      <div class="bone summary-bone"></div>
+    </div>
+    <section class="promo">
+      <h2>Free delivery over ₺500</h2>
+      <p>Orders are shipped from our Istanbul warehouse within one working day.</p>
+    </section>
+  </main>
+  <div id="toast" class="toast" role="status"></div>
+  <script src="api.js"></script>
+  <script src="after.js"></script>
+</body>
+</html>

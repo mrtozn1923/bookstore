@@ -133,3 +133,24 @@
   --space-12: 3rem;   /* 48px */
   --radius-md: 8px;
 }
+
+/* 07: focus ring and motion */
+:root {
+  --color-focus: var(--blue-600);
+  --focus-ring: 2px solid var(--color-focus);
+  --focus-offset: 2px;
+  --duration-fast: 120ms;  /* hover, press */
+  --duration-base: 200ms;  /* toast, panel */
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-focus: var(--blue-300);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-base: 0ms;
+  }
+}

@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cart - Bookstore</title>
+  <link rel="stylesheet" href="/web/styles/base.css">
+  <link rel="stylesheet" href="/web/styles/tokens.css">
+  <link rel="stylesheet" href="before.css">
+</head>
+<body>
+  <header class="top">
+    <span class="logo">Bookstore</span>
+    <form id="search" class="search">
+      <input name="q" placeholder="Search" aria-label="Search books">
+      <button>Go</button>
+    </form>
+  </header>
+  <main>
+    <h1>Your cart</h1>
+    <div id="results"></div>
+    <div id="cart"></div>
+    <section class="promo">
+      <h2>Free delivery over ₺500</h2>
+      <p>Orders are shipped from our Istanbul warehouse within one working day.</p>
+    </section>
+  </main>
+  <div id="overlay" class="overlay"><div class="spinner"></div></div>
+  <script src="api.js"></script>
+  <script src="before.js"></script>
+</body>
+</html>

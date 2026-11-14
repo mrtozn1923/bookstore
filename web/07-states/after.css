@@ -1,0 +1,59 @@
+body { background: var(--color-bg); color: var(--color-text); font-family: var(--font-sans); line-height: var(--leading-normal); }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.top { display: flex; justify-content: space-between; align-items: center; gap: var(--space-4); padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--color-border); }
+.logo { font-weight: var(--weight-bold); }
+.search { display: flex; gap: var(--space-2); }
+.search input { min-height: 40px; padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border-strong); border-radius: 6px; font: inherit; background: var(--color-bg); color: var(--color-text); }
+main { max-width: 40rem; margin: 0 auto; padding: var(--space-6) var(--space-4); }
+h1 { font-size: var(--text-xl); margin: 0 0 var(--space-4); }
+
+/* every interactive element: default, hover, focus-visible, active, disabled */
+.btn { display: inline-flex; align-items: center; min-height: 40px; padding: var(--space-2) var(--space-4); border: 1px solid transparent; border-radius: 6px; font: inherit; font-weight: var(--weight-semibold); text-decoration: none; cursor: pointer;
+  background: var(--color-action); color: var(--color-on-action); transition: background-color var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out); }
+.btn:hover { background: var(--color-action-hover); }
+.btn:active { transform: translateY(1px); }
+.btn-secondary { background: transparent; color: var(--color-link); border-color: var(--color-border-strong); }
+.btn-secondary:hover { background: var(--color-surface); }
+.btn-link { min-height: 32px; padding: 0 var(--space-2); background: transparent; color: var(--color-link); text-decoration: underline; }
+.btn-link:hover { background: var(--color-surface); }
+/* not opacity: it would dim the focus ring too */
+.btn[aria-disabled="true"], .btn[aria-disabled="true"]:hover { background: transparent; color: var(--color-text-muted); border-color: var(--color-border); cursor: not-allowed; }
+:is(.btn, input, a):focus-visible { outline: var(--focus-ring); outline-offset: var(--focus-offset); }
+
+.item { display: grid; grid-template-columns: 1fr auto auto; gap: var(--space-3); align-items: center; padding: var(--space-3) 0; border-bottom: 1px solid var(--color-border); }
+.item .author { color: var(--color-text-muted); font-size: var(--text-sm); }
+.stepper { display: flex; align-items: center; gap: var(--space-1); }
+.stepper .btn { width: 32px; min-height: 32px; padding: 0; }
+.stepper output { min-width: 2ch; text-align: center; font-variant-numeric: tabular-nums; }
+.line-price { min-width: 6rem; text-align: right; font-variant-numeric: tabular-nums; }
+.item-error { grid-column: 1 / -1; margin: 0; color: var(--color-danger-text); font-weight: var(--weight-semibold); }
+.summary { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--space-4); margin-top: var(--space-4); }
+.total { font-size: var(--text-lg); font-weight: var(--weight-bold); margin: 0; font-variant-numeric: tabular-nums; }
+fieldset { border: 0; padding: 0; margin: var(--space-4) 0 0; }
+legend { font-weight: var(--weight-semibold); padding: 0; }
+.option { display: flex; gap: var(--space-2); align-items: center; min-height: 32px; }
+
+/* empty, no results and error states: what happened + what to do next */
+.state { padding: var(--space-6); background: var(--color-surface); border-radius: var(--radius-md); }
+.state h2 { font-size: var(--text-lg); margin: 0 0 var(--space-2); }
+.state p { margin: 0 0 var(--space-4); color: var(--color-text-muted); }
+.state .actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+.state-error { border-left: 4px solid var(--color-danger-text); }
+
+/* skeleton: same box sizes as the real rows, so nothing jumps when data arrives */
+.skeleton-row { display: grid; grid-template-columns: 1fr 9rem; gap: var(--space-3); padding: var(--space-3) 0; border-bottom: 1px solid var(--color-border); }
+.bone { height: 43.5px; border-radius: 4px; background: var(--color-surface); animation: pulse 1.2s ease-in-out infinite; }
+.bone.short { height: 32px; align-self: center; }
+.delivery-bone { height: 88px; margin-top: var(--space-4); }
+.summary-bone { height: 42px; margin-top: var(--space-4); }
+@keyframes pulse { 50% { opacity: 0.5; } }
+@media (prefers-reduced-motion: reduce) { .bone { animation: none; } }
+
+.promo { margin-top: var(--space-6); padding: var(--space-4); background: var(--color-surface); border-radius: var(--radius-md); }
+.promo h2 { font-size: var(--text-lg); margin: 0; }
+
+.toast { position: fixed; left: 50%; bottom: var(--space-6); display: flex; gap: var(--space-3); align-items: center; padding: var(--space-3) var(--space-4); border-radius: var(--radius-md);
+  background: var(--color-text); color: var(--color-bg); transform: translate(-50%, 0); transition: opacity var(--duration-base) var(--ease-out), transform var(--duration-base) var(--ease-out); }
+.toast:empty { opacity: 0; transform: translate(-50%, var(--space-4)); pointer-events: none; }
+.toast .btn-link { color: inherit; }
+.toast .btn-link:focus-visible { outline-color: currentColor; }
