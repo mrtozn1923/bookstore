@@ -1,0 +1,12 @@
+{
+  // Example 11 of T07 is a script (no import/export), so its Comment interface merges with the DOM's global Comment.
+  // The root tsconfig forces module mode (and nodenext + "type": "module" makes every .ts file a module), so this folder
+  // has its own config: `npx tsc -p T07/script-mode` prints TS2740.
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "module": "preserve",
+    "moduleDetection": "auto"
+  },
+  "exclude": [],
+  "include": ["example-11.ts"]
+}

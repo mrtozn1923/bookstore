@@ -9,5 +9,6 @@
     "moduleDetection": "force",
     "skipLibCheck": true,
     "types": []
-  }
+  },
+  "exclude": ["node_modules", "T07/script-mode"]
 }
