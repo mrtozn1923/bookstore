@@ -26,6 +26,7 @@ public static class CatalogModule
         catalog.MapGet("/books", SearchBooks);
         catalog.MapGet("/books/{isbn}", GetBook);
         catalog.MapGet("/books/featured", GetFeatured);
+        catalog.MapGet("/books/{isbn}/similar", GetSimilar);
         catalog.MapGet("/categories", GetCategories);
         return app;
     }
@@ -86,6 +87,43 @@ public static class CatalogModule
             .ToArrayAsync(ct);
         Random.Shared.Shuffle(books);
         return TypedResults.Ok(books[..Math.Min(4, books.Length)]);
+    }
+
+    // Up to four in-stock books by the same author or in the same category.
+    private static async Task<Results<Ok<List<BookSummary>>, NotFound>> GetSimilar(
+        string isbn, BookstoreContext db, IInventoryService inventory, CancellationToken ct)
+    {
+        var book = await db.Books.AsNoTracking()
+            .Where(b => b.Isbn == isbn)
+            .Select(b => new { b.Id, b.AuthorId, b.CategoryId })
+            .FirstOrDefaultAsync(ct);
+        if (book is null)
+        {
+            return TypedResults.NotFound();
+        }
+
+        List<Book> candidates = await db.Books.AsNoTracking()
+            .Include(b => b.Author)
+            .Include(b => b.Category)
+            .Where(b => b.Id != book.Id && (b.AuthorId == book.AuthorId || b.CategoryId == book.CategoryId))
+            .OrderBy(b => b.AuthorId == book.AuthorId ? 0 : 1)
+            .ThenBy(b => b.Title)
+            .ToListAsync(ct);
+
+        List<BookSummary> similar = [];
+        foreach (Book candidate in candidates)
+        {
+            if (similar.Count == 4)
+            {
+                break;
+            }
+            if (await inventory.GetAvailableAsync(candidate.Id, ct) > 0)
+            {
+                similar.Add(new BookSummary(candidate.Isbn, candidate.Title, candidate.Author.Name,
+                    candidate.Category.Name, candidate.Price, candidate.PublishedYear));
+            }
+        }
+        return TypedResults.Ok(similar);
     }
 
     private static async Task<Ok<List<CategoryView>>> GetCategories(BookstoreContext db, CancellationToken ct) =>

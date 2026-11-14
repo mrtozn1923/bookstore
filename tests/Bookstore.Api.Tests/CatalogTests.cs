@@ -30,6 +30,28 @@ public sealed class CatalogTests(BookstoreApiFactory factory)
     }
 
     [Fact]
+    public async Task Similar_books_share_the_author_or_the_category()
+    {
+        // Emma (Jane Austen, Classics): Pride and Prejudice comes first because of the author.
+        List<BookSummary>? similar = await client.GetFromJsonAsync<List<BookSummary>>(
+            "/api/books/9780141439587/similar", TestContext.Current.CancellationToken);
+
+        Assert.NotNull(similar);
+        Assert.InRange(similar.Count, 1, 4);
+        Assert.Equal("Pride and Prejudice", similar[0].Title);
+        Assert.All(similar, b => Assert.True(b.Author == "Jane Austen" || b.Category == "Classics"));
+    }
+
+    [Fact]
+    public async Task Similar_books_for_an_unknown_isbn_returns_404()
+    {
+        HttpResponseMessage response = await client.GetAsync(
+            "/api/books/9780000000000/similar", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
     public async Task Unknown_isbn_returns_404()
     {
         HttpResponseMessage response = await client.GetAsync("/api/books/9780000000000", TestContext.Current.CancellationToken);
