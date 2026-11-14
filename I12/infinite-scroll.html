@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Infinite scroll</title>
+  <style>
+    li { padding: 24px; border-bottom: 1px solid #ccc; }
+    #sentinel { padding: 16px; text-align: center; }
+  </style>
+</head>
+<body>
+  <ul id="list"></ul>
+  <div id="sentinel">Loading...</div>
+  <script>
+    const list = document.getElementById("list");
+    const sentinel = document.getElementById("sentinel");
+    let page = 0;
+    let loading = false;
+
+    async function nextPage() {
+      loading = true;
+      await new Promise((resolve) => setTimeout(resolve, 500)); // fake network delay
+      for (let i = 1; i <= 20; i++) {
+        const li = document.createElement("li");
+        li.textContent = `Book ${page * 20 + i}`;
+        list.append(li);
+      }
+      page++;
+      loading = false;
+
+      if (page === 5) {
+        observer.disconnect();
+        sentinel.textContent = "That's all.";
+      }
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && !loading) nextPage();
+    });
+
+    observer.observe(sentinel);
+  </script>
+</body>
+</html>

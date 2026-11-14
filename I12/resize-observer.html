@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ResizeObserver</title>
+  <style>
+    #card { width: 400px; height: 150px; padding: 12px; border: 2px solid #333; resize: both; overflow: auto; }
+    #card.narrow { background: #fde68a; }
+  </style>
+</head>
+<body>
+  <div id="card">Dune by Frank Herbert. Grab the bottom-right corner to resize.</div>
+  <p id="info"></p>
+  <script>
+    const card = document.getElementById("card");
+    const info = document.getElementById("info");
+
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const content = entry.contentBoxSize[0].inlineSize;
+        const withBorder = entry.borderBoxSize[0].inlineSize;
+        info.textContent = `Content: ${Math.round(content)}px, with border: ${Math.round(withBorder)}px`;
+        entry.target.classList.toggle("narrow", content < 300);
+      }
+    });
+
+    observer.observe(card);
+  </script>
+</body>
+</html>

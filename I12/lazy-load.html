@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Lazy load</title>
+  <style>
+    .spacer { height: 150vh; }
+    img { display: block; width: 300px; height: 200px; margin: 24px auto; background: #ddd; }
+  </style>
+</head>
+<body>
+  <p>Scroll down.</p>
+  <div class="spacer"></div>
+  <img data-src="dune.jpg" alt="Dune cover">
+  <img data-src="emma.jpg" alt="Emma cover">
+  <script>
+    const observer = new IntersectionObserver((entries, obs) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const img = entry.target;
+        img.src = img.dataset.src;
+        obs.unobserve(img);
+        console.log("Loaded:", img.alt);
+      }
+    }, { rootMargin: "200px" });
+
+    document.querySelectorAll("img[data-src]").forEach((img) => observer.observe(img));
+  </script>
+</body>
+</html>
