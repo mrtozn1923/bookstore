@@ -1,0 +1,6 @@
+$bps: ("md": 48rem);
+@each $name, $size in $bps {
+    @media (width >= $size) {
+        .#{$name}:d-block { display: block; }
+    }
+}

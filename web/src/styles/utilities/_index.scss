@@ -1,1 +1,23 @@
-@use "spacing";
+@use "sass:list";
+@use "sass:map";
+@use "../abstracts" as *;
+
+// spacing utilities take their values from the space() scale: .m-0 … .m-5
+$spacers: ();
+@for $step from 0 through list.length($space-scale) - 1 {
+    $spacers: map.set($spacers, $step, space($step));
+}
+
+$utilities: (
+    "m": (property: margin, values: $spacers),
+    "mt": (property: margin-block-start, values: $spacers),
+    "mb": (property: margin-block-end, values: $spacers),
+    "mx": (property: margin-inline, values: $spacers),
+    "my": (property: margin-block, values: $spacers),
+    "gap": (property: gap, values: $spacers, responsive: true),
+    "d": (property: display, values: (none: none, block: block, flex: flex, grid: grid), responsive: true),
+    "text": (property: color, values: ("muted": var(--color-muted), "brand": var(--color-brand))),
+);
+
+// responsive variants (.md\:d-none) only for display and gap, only at md and lg
+@include generate-utilities($utilities, ("md", "lg"));

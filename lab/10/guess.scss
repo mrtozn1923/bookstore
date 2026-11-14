@@ -1,0 +1,13 @@
+// the old way: max-width for "below md", min-width for "md and up"
+.book-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+
+    @media (min-width: 48rem) {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    @media (max-width: 48rem) {
+        grid-template-columns: 1fr;
+    }
+}

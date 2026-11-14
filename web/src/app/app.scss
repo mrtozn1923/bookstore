@@ -13,11 +13,11 @@
     gap: var(--space);
     padding: calc(var(--space) * 1.5);
 
-    @include from("sm") {
+    @include up("sm") {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    @include from("lg") {
+    @include up("lg") {
         grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 }

@@ -1,0 +1,11 @@
+@use "breakpoints" as bp;
+
+$columns: (2, 4);
+
+@include bp.each-breakpoint using ($name, $prefix) {
+    @each $n in $columns {
+        .#{$prefix}cols-#{$n} {
+            grid-template-columns: repeat($n, minmax(0, 1fr));
+        }
+    }
+}

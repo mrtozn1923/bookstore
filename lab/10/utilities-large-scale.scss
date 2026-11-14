@@ -1,0 +1,23 @@
+@use "sass:map";
+@use "utility-generator" as gen;
+
+// a 35-step spacing scale and 14 spacing properties, every one responsive
+$steps: (0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60, 64, 72, 80, 96, 112);
+$scale: ();
+@each $step in $steps {
+    $scale: map.set($scale, "#{$step * 10}", $step * 0.25rem);
+}
+
+$properties: (
+    "m": margin, "mt": margin-top, "mr": margin-right, "mb": margin-bottom, "ml": margin-left,
+    "mx": margin-inline, "my": margin-block,
+    "p": padding, "pt": padding-top, "pr": padding-right, "pb": padding-bottom, "pl": padding-left,
+    "px": padding-inline, "py": padding-block,
+);
+
+$utilities: ();
+@each $name, $property in $properties {
+    $utilities: map.set($utilities, $name, (property: $property, values: $scale, responsive: true));
+}
+
+@include gen.generate($utilities, ("sm", "md", "lg", "xl"));

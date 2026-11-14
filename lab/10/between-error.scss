@@ -1,0 +1,7 @@
+@use "breakpoints" as bp;
+
+.x {
+    @include bp.between("lg", "md") {
+        color: red;
+    }
+}

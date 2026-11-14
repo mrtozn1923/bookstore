@@ -1,0 +1,11 @@
+@use "sass:map";
+@use "utility-data" as data;
+@use "utility-generator" as gen;
+
+// every utility responsive, at every breakpoint
+$all: ();
+@each $name, $utility in data.$utilities {
+    $all: map.set($all, $name, map.set($utility, responsive, true));
+}
+
+@include gen.generate($all, ("sm", "md", "lg", "xl"));

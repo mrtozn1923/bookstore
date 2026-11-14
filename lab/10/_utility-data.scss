@@ -1,0 +1,14 @@
+$spacers: (0: 0, 1: 4px, 2: 8px, 3: 16px, 4: 24px, 5: 32px);
+
+$utilities: (
+    "m": (property: margin, values: $spacers),
+    "mt": (property: margin-block-start, values: $spacers),
+    "mb": (property: margin-block-end, values: $spacers),
+    "mx": (property: margin-inline, values: $spacers),
+    "p": (property: padding, values: $spacers),
+    "px": (property: padding-inline, values: $spacers),
+    "py": (property: padding-block, values: $spacers),
+    "gap": (property: gap, values: $spacers, responsive: true),
+    "d": (property: display, values: (none: none, block: block, flex: flex, grid: grid), responsive: true),
+    "text": (property: color, values: ("muted": var(--color-muted), "brand": var(--color-brand))),
+);

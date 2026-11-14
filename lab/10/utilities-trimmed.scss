@@ -1,0 +1,5 @@
+@use "utility-data" as data;
+@use "utility-generator" as gen;
+
+// only display and gap get variants, only for md and lg
+@include gen.generate(data.$utilities, ("md", "lg"));

@@ -1,0 +1,87 @@
+@use "sass:list";
+@use "sass:map";
+@use "sass:meta";
+
+$breakpoints: (
+    "sm": 36rem,
+    "md": 48rem,
+    "lg": 64rem,
+    "xl": 80rem,
+) !default;
+
+// a breakpoint name from the map, or a size given directly (for containers)
+@function -size($name) {
+    @if meta.type-of($name) == number {
+        @return $name;
+    }
+    @if not map.has-key($breakpoints, $name) {
+        @error "Unknown breakpoint '#{$name}'. Expected one of: #{map.keys($breakpoints)}";
+    }
+    @return map.get($breakpoints, $name);
+}
+
+// the next breakpoint's name, or null after the last one
+@function -next($name) {
+    $names: map.keys($breakpoints);
+    $i: list.index($names, $name);
+    @if $i == list.length($names) {
+        @return null;
+    }
+    @return list.nth($names, $i + 1);
+}
+
+// a media query by default; with $container, a query on that named container
+@mixin -query($condition, $container) {
+    @if $container {
+        @container #{$container} #{$condition} {
+            @content;
+        }
+    } @else {
+        @media #{$condition} {
+            @content;
+        }
+    }
+}
+
+@mixin up($name, $container: null) {
+    @include -query("(width >= #{-size($name)})", $container) {
+        @content;
+    }
+}
+
+@mixin down($name, $container: null) {
+    @include -query("(width < #{-size($name)})", $container) {
+        @content;
+    }
+}
+
+@mixin between($min, $max, $container: null) {
+    @if -size($min) >= -size($max) {
+        @error "between(): '#{$min}' must be smaller than '#{$max}'";
+    }
+    @include -query("(#{-size($min)} <= width < #{-size($max)})", $container) {
+        @content;
+    }
+}
+
+@mixin only($name, $container: null) {
+    $next: -next($name);
+    @if $next {
+        @include between($name, $next, $container) {
+            @content;
+        }
+    } @else {
+        @include up($name, $container) {
+            @content;
+        }
+    }
+}
+
+// runs the content block once per breakpoint and passes its name and class prefix
+@mixin each-breakpoint {
+    @each $name, $size in $breakpoints {
+        @include up($name) {
+            @content($name, "#{$name}\\:");
+        }
+    }
+}

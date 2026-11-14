@@ -1,0 +1,35 @@
+@use "breakpoints" as bp;
+
+.book-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+
+    @include bp.down("md") {
+        grid-template-columns: 1fr;
+    }
+
+    @include bp.up("md") {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    @include bp.only("lg") {
+        gap: 24px;
+    }
+
+    @include bp.between("sm", "lg") {
+        padding-inline: 16px;
+    }
+
+    @include bp.only("xl") {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+.book-card__add {
+    width: 100%;
+
+    // the card's own width decides, not the viewport
+    @include bp.up(20rem, $container: book-card) {
+        width: auto;
+    }
+}

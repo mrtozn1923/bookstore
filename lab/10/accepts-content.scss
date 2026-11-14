@@ -1,0 +1,15 @@
+@use "sass:meta";
+@use "breakpoints" as bp;
+
+@mixin visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+}
+
+.check {
+    up: meta.accepts-content(meta.get-mixin("up", "bp"));
+    visually-hidden: meta.accepts-content(meta.get-mixin("visually-hidden"));
+}

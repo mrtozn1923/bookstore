@@ -5,7 +5,7 @@
     max-width: 80rem;
     margin-inline: auto;
 
-    @include from("lg") {
+    @include up("lg") {
         padding-inline: $space;
     }
 }

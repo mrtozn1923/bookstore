@@ -1,0 +1,27 @@
+@use "sass:list";
+@use "sass:map";
+@use "breakpoints" as bp;
+
+// one rule per value; $prefix is "" or an escaped "md\:"
+@mixin -rules($utilities, $prefix, $responsive-only) {
+    @each $name, $utility in $utilities {
+        @if not $responsive-only or map.get($utility, responsive) {
+            @each $key, $value in map.get($utility, values) {
+                .#{$prefix}#{$name}-#{$key} {
+                    #{map.get($utility, property)}: $value;
+                }
+            }
+        }
+    }
+}
+
+// base classes for every utility, responsive variants only for those marked
+// responsive and only for the breakpoints listed in $variants
+@mixin generate($utilities, $variants) {
+    @include -rules($utilities, "", false);
+    @include bp.each-breakpoint using ($name, $prefix) {
+        @if list.index($variants, $name) {
+            @include -rules($utilities, $prefix, true);
+        }
+    }
+}
