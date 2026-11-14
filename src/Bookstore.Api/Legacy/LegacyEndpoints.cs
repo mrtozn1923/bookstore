@@ -13,6 +13,19 @@ public static class LegacyEndpoints
     {
         app.MapPost("/legacy/rpc", (RpcRequest request, CatalogData catalog) =>
         {
+            if (request.Method == "GetBooks")
+            {
+                try
+                {
+                    int page = int.Parse(request.Params?["page"].GetString() ?? "");
+                    return Results.Ok(new { success = true, data = catalog.All.Skip((page - 1) * 10).Take(10) });
+                }
+                catch (Exception ex)
+                {
+                    return Results.Ok(new { success = false, error = ex.ToString() });
+                }
+            }
+
             if (request.Method != "GetBook")
             {
                 return Results.Ok(new { success = false, error = $"Unknown method {request.Method}" });

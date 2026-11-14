@@ -22,7 +22,7 @@ public static class MiniValidation
         {
             foreach (string member in result.MemberNames)
             {
-                errors[prefix + JsonNamingPolicy.CamelCase.ConvertName(member)] = [result.ErrorMessage ?? "Invalid value."];
+                errors[prefix + JsonNamingPolicy.CamelCase.ConvertName(member)] = [result.ErrorMessage ?? "invalid"];
             }
         }
 

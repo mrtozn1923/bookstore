@@ -27,7 +27,12 @@ Each rule has an id. Rules marked [lint] are enforced by .spectral.yaml.
 - BS-46 GET and HEAD never change state.
 
 ## Errors
-- BS-20 Every 4xx and 5xx response is application/problem+json (RFC 9457).
+- BS-20 [lint] Every 4xx and 5xx response is application/problem+json (RFC 9457).
+- BS-21 type is an absolute URI under https://api.example.com/problems/ and resolves to a documentation page; its last segment is the catalog code (GET /problems). A type never changes meaning; new types may be added.
+- BS-22 title is the same for every occurrence of a type and detail describes this occurrence; both are for humans, localized by Accept-Language (en, tr), never parsed by clients.
+- BS-23 Validation errors (validation-failed): errors map, keys are JSON paths of the request (price.amount), values are rule codes (required, out-of-range, invalid-length, invalid-format, read-only).
+- BS-24 instance is the request path and traceId is always present; no exception messages, stack traces or internal names.
+- BS-25 Localized problems carry Content-Language and Vary: Accept-Language.
 
 ## Collections
 - BS-30 Every list endpoint is paginated from its first version: pageSize, pageToken, nextPageToken.

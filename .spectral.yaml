@@ -28,3 +28,11 @@ rules:
       function: pattern
       functionOptions:
         notMatch: "(\\{[^}]+\\}.*){3,}"
+  bookstore-errors-are-problem-details:
+    description: Every 4xx and 5xx response with a body is application/problem+json (BS-20).
+    message: "{{path}} must use application/problem+json"
+    severity: error
+    given: $.paths[*][?(@property != 'head' && @property != 'parameters')].responses[?(@property.match(/^[45]/))]
+    then:
+      field: content.application/problem+json
+      function: truthy

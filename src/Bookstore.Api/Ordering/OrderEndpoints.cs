@@ -46,8 +46,7 @@ public static class OrderEndpoints
 
         if (order.Status is not (OrderStatus.Pending or OrderStatus.Confirmed))
         {
-            return TypedResults.Problem(statusCode: 409, title: "Order cannot be cancelled",
-                detail: $"Order {orderId} is {order.Status}; only Pending or Confirmed orders can be cancelled.");
+            return ProblemCatalog.Create(ProblemCatalog.OrderNotCancellable, [orderId, order.Status]);
         }
 
         order.Status = OrderStatus.Cancelled;
@@ -64,8 +63,7 @@ public static class OrderEndpoints
 
         if (order.Status != OrderStatus.Delivered)
         {
-            return TypedResults.Problem(statusCode: 409, title: "Order cannot be returned",
-                detail: $"Order {orderId} is {order.Status}; only Delivered orders can be returned.");
+            return ProblemCatalog.Create(ProblemCatalog.OrderNotReturnable, [orderId, order.Status]);
         }
 
         OrderReturn created = data.AddReturn(order, request.Reason);
@@ -76,13 +74,12 @@ public static class OrderEndpoints
         Guid orderId, Guid returnId, ClaimsPrincipal principal, OrderData data) =>
         Visible(orderId, principal, data) is not null && data.FindReturn(orderId, returnId) is { } found
             ? TypedResults.Ok(found)
-            : TypedResults.Problem(statusCode: 404, title: "Return not found",
-                detail: $"No return {returnId} exists for order {orderId}.");
+            : ProblemCatalog.Create(ProblemCatalog.NotFound, [$"/orders/{orderId}/returns/{returnId}"]);
 
     private static Order? Visible(Guid orderId, ClaimsPrincipal principal, OrderData data) =>
         data.Find(orderId) is { } order && OrderData.CanSee(principal.Current(), order) ? order : null;
 
     // Invisible and missing orders get the same answer, so ids cannot be probed.
     private static ProblemHttpResult OrderNotFound(Guid orderId) =>
-        TypedResults.Problem(statusCode: 404, title: "Order not found", detail: $"No order {orderId} exists.");
+        ProblemCatalog.Create(ProblemCatalog.NotFound, [$"/orders/{orderId}"]);
 }

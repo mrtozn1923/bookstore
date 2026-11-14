@@ -18,8 +18,8 @@ public static class Paging
         int size = Math.Min(pageSize ?? DefaultPageSize, MaxPageSize);
         if (size < 1)
         {
-            return TypedResults.Problem(statusCode: 400, title: "Invalid page size",
-                detail: $"pageSize must be between 1 and {MaxPageSize}.");
+            return TypedResults.Problem(new HttpValidationProblemDetails(
+                new Dictionary<string, string[]> { ["pageSize"] = ["out-of-range"] }) { Status = 400 });
         }
 
         int offset = 0;

@@ -13,3 +13,8 @@ npm run lint:contract                       # Redocly CLI + Spectral
 - contract/bookstore.openapi.yaml: the API contract (OpenAPI 3.2), written before the code.
 - docs/api-style-guide.md and docs/adr/: design rules and decisions.
 - src/Bookstore.Api/Legacy: the old RPC-style endpoint kept as a counterexample.
+- clients/angular-snippets: the bookstore-web error interceptor (Angular 22.2, TypeScript 6.0);
+  `cd clients/angular-snippets && npm ci && npm run typecheck`.
+
+Demo authentication: `Authorization: Bearer <name>` signs in as one of the demo users
+(ada, nevin, alan, linus, grace, ayse) defined in src/Bookstore.Api/Identity/DemoAuthentication.cs.

@@ -35,8 +35,7 @@ public static class InstitutionEndpoints
         DemoUser user = principal.Current();
         if (user.Role == "InstitutionBuyer" && unitId is not null && unitId != user.UnitId)
         {
-            return TypedResults.Problem(statusCode: 403, title: "Unit not allowed",
-                detail: $"Buyers can only list the orders of their own unit ({user.UnitId}).");
+            return ProblemCatalog.Create(ProblemCatalog.UnitNotAllowed, [user.UnitId]);
         }
 
         List<OrderResponse> items =
@@ -57,6 +56,5 @@ public static class InstitutionEndpoints
     }
 
     private static ProblemHttpResult InstitutionNotFound(string institutionId) =>
-        TypedResults.Problem(statusCode: 404, title: "Institution not found",
-            detail: $"No institution {institutionId} exists.");
+        ProblemCatalog.Create(ProblemCatalog.NotFound, [$"/institutions/{institutionId}"]);
 }

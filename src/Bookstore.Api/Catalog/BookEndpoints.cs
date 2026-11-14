@@ -47,8 +47,7 @@ public static class BookEndpoints
     {
         if (catalog.Find(request.Isbn) is not null)
         {
-            return TypedResults.Problem(statusCode: 409, title: "Book already exists",
-                detail: $"A book with ISBN {request.Isbn} already exists. Use PUT /books/{request.Isbn} to replace it.");
+            return ProblemCatalog.Create(ProblemCatalog.BookAlreadyExists, [request.Isbn]);
         }
 
         if (UnsupportedCurrency(request.Price) is { } problem)
@@ -63,13 +62,12 @@ public static class BookEndpoints
         return TypedResults.Created($"/books/{book.Isbn}", BookResponse.From(book));
     }
 
-    private static Results<Ok<BookResponse>, Created<BookResponse>, ProblemHttpResult> ReplaceBook(
+    private static Results<Ok<BookResponse>, Created<BookResponse>, ProblemHttpResult, ValidationProblem> ReplaceBook(
         string isbn, BookFields fields, CatalogData catalog, HttpRequest request, HttpResponse response)
     {
         if (!System.Text.RegularExpressions.Regex.IsMatch(isbn, "^97[89][0-9]{10}$"))
         {
-            return TypedResults.Problem(statusCode: 400, title: "Invalid ISBN",
-                detail: $"{isbn} is not an ISBN-13 without dashes.");
+            return TypedResults.ValidationProblem(new Dictionary<string, string[]> { ["isbn"] = ["invalid-format"] });
         }
 
         if (UnsupportedCurrency(fields.Price) is { } currencyProblem)
@@ -109,8 +107,7 @@ public static class BookEndpoints
         if (request.ContentType?.Split(';')[0].Trim() != MergePatch)
         {
             response.Headers["Accept-Patch"] = MergePatch;
-            return TypedResults.Problem(statusCode: 415, title: "Unsupported patch format",
-                detail: $"PATCH /books/{{isbn}} accepts {MergePatch} only.");
+            return ProblemCatalog.Create(ProblemCatalog.UnsupportedMediaType, [MergePatch]);
         }
 
         if (catalog.Find(isbn) is not { } current)
@@ -123,16 +120,24 @@ public static class BookEndpoints
             return preconditionProblem;
         }
 
-        if (await JsonNode.ParseAsync(request.Body) is not JsonObject patch)
+        JsonNode? document;
+        try
         {
-            return TypedResults.Problem(statusCode: 400, title: "Invalid patch document",
-                detail: "A merge patch for a book must be a JSON object.");
+            document = await JsonNode.ParseAsync(request.Body);
+        }
+        catch (JsonException)
+        {
+            return ProblemCatalog.Create(ProblemCatalog.MalformedRequest);
+        }
+
+        if (document is not JsonObject patch)
+        {
+            return ProblemCatalog.Create(ProblemCatalog.MalformedRequest);
         }
 
         if (patch.Select(p => p.Key).FirstOrDefault(k => !WritableFields.Contains(k)) is { } readOnly)
         {
-            return TypedResults.Problem(statusCode: 400, title: "Field cannot be changed",
-                detail: $"'{readOnly}' is read-only or unknown; writable fields: {string.Join(", ", WritableFields)}.");
+            return TypedResults.ValidationProblem(new Dictionary<string, string[]> { [readOnly] = ["read-only"] });
         }
 
         JsonSerializerOptions options = jsonOptions.Value.SerializerOptions;
@@ -184,17 +189,14 @@ public static class BookEndpoints
         string? ifMatch = request.Headers.IfMatch;
         return ifMatch is null || ifMatch == "*" || ifMatch == current.ETag
             ? null
-            : TypedResults.Problem(statusCode: 412, title: "Precondition failed",
-                detail: $"If-Match {ifMatch} does not match the current ETag {current.ETag}.");
+            : ProblemCatalog.Create(ProblemCatalog.PreconditionFailed, [ifMatch, current.ETag]);
     }
 
     private static ProblemHttpResult? UnsupportedCurrency(Money price) =>
         price.Currency == "TRY"
             ? null
-            : TypedResults.Problem(statusCode: 422, title: "Unsupported currency",
-                detail: $"Catalog prices are in TRY; {price.Currency} is not accepted.");
+            : ProblemCatalog.Create(ProblemCatalog.UnsupportedCurrency, [price.Currency]);
 
     private static ProblemHttpResult BookNotFound(string isbn) =>
-        TypedResults.Problem(statusCode: 404, title: "Book not found",
-            detail: $"No book with ISBN {isbn} exists in the catalog.");
+        ProblemCatalog.Create(ProblemCatalog.NotFound, [$"/books/{isbn}"]);
 }

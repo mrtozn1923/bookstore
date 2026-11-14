@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using Bookstore.Api.Catalog;
+using Bookstore.Api.Common;
 using Bookstore.Api.Identity;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -10,7 +11,7 @@ public sealed record CartItemResponse(string Isbn, string Title, int Quantity, M
 
 public sealed record CartResponse(string CustomerId, IReadOnlyList<CartItemResponse> Items, Money Total);
 
-public sealed record SetCartItemRequest([property: Range(1, 99)] int Quantity);
+public sealed record SetCartItemRequest([property: Range(1, 99, ErrorMessage = "out-of-range")] int Quantity);
 
 public sealed class CartData
 {
@@ -59,15 +60,13 @@ public static class CartEndpoints
 
         if (catalog.Find(isbn) is not { } book)
         {
-            return TypedResults.Problem(statusCode: 404, title: "Book not found",
-                detail: $"No book with ISBN {isbn} exists in the catalog.");
+            return ProblemCatalog.Create(ProblemCatalog.NotFound, [$"/books/{isbn}"]);
         }
 
         if (request.Quantity > book.StockQuantity)
         {
-            return TypedResults.Problem(statusCode: 422, title: "Insufficient stock",
-                detail: $"Only {book.StockQuantity} copies of {book.Title} are available.",
-                extensions: new Dictionary<string, object?> { ["availableQuantity"] = book.StockQuantity });
+            return ProblemCatalog.Create(ProblemCatalog.InsufficientStock, [book.StockQuantity, book.Title],
+                new Dictionary<string, object?> { ["isbn"] = isbn, ["availableQuantity"] = book.StockQuantity });
         }
 
         Dictionary<string, int> cart = carts.For(id);
@@ -89,8 +88,7 @@ public static class CartEndpoints
 
         return carts.For(id).Remove(isbn)
             ? TypedResults.NoContent()
-            : TypedResults.Problem(statusCode: 404, title: "Cart item not found",
-                detail: $"The cart has no line for ISBN {isbn}.");
+            : ProblemCatalog.Create(ProblemCatalog.NotFound, [$"/customers/{customerId}/cart/items/{isbn}"]);
     }
 
     internal static string? ResolveCustomer(string customerId, ClaimsPrincipal principal)
@@ -111,5 +109,5 @@ public static class CartEndpoints
     }
 
     internal static ProblemHttpResult CustomerNotFound(string customerId) =>
-        TypedResults.Problem(statusCode: 404, title: "Customer not found", detail: $"No customer {customerId} exists.");
+        ProblemCatalog.Create(ProblemCatalog.NotFound, [$"/customers/{customerId}"]);
 }

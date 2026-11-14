@@ -1,0 +1,15 @@
+{
+  "name": "bookstore-web-snippets",
+  "private": true,
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@angular/common": "22.2.6",
+    "@angular/core": "22.2.6",
+    "rxjs": "7.8.2"
+  },
+  "devDependencies": {
+    "typescript": "6.0.3"
+  }
+}

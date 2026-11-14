@@ -18,6 +18,8 @@ servers:
 security:
   - bearerAuth: []
 tags:
+  - name: Problems
+    description: The catalog of error types.
   - name: Books
     description: Catalog books.
   - name: Orders
@@ -470,6 +472,44 @@ paths:
           $ref: '#/components/responses/Problem'
         '404':
           $ref: '#/components/responses/Problem'
+  /problems:
+    get:
+      operationId: listProblemTypes
+      summary: List problem types
+      description: Every problem type the API can return, with its localized title.
+      tags: [Problems]
+      security: []
+      responses:
+        '200':
+          description: The catalog.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProblemType'
+  /problems/{code}:
+    get:
+      operationId: getProblemType
+      summary: Describe a problem type
+      description: Human-readable page that a problem's type URI resolves to.
+      tags: [Problems]
+      security: []
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Documentation page.
+          content:
+            text/html:
+              schema:
+                type: string
+        '404':
+          $ref: '#/components/responses/Problem'
 components:
   securitySchemes:
     bearerAuth:
@@ -538,11 +578,43 @@ components:
         type: string
   responses:
     Problem:
-      description: An error in RFC 9457 Problem Details format.
+      description: >-
+        An error in RFC 9457 Problem Details format. The type URI identifies the
+        problem; see GET /problems for the catalog. title and detail follow
+        Accept-Language (en, tr).
+      headers:
+        Content-Language:
+          description: Language of title and detail.
+          schema:
+            type: string
       content:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/Problem'
+          examples:
+            insufficientStock:
+              summary: A business rule rejected a valid request
+              value:
+                type: https://api.example.com/problems/insufficient-stock
+                title: Insufficient stock
+                status: 422
+                detail: Only 14 copies of Dune are available.
+                instance: /customers/me/cart/items/9780441172719
+                isbn: '9780441172719'
+                availableQuantity: 14
+                traceId: 00-baf1eea3e5d68af55c3632c25fea81d8-cba2b7f347a994e8-00
+            validationFailed:
+              summary: Fields that break the schema
+              value:
+                type: https://api.example.com/problems/validation-failed
+                title: Some fields are invalid
+                status: 400
+                detail: Fix the fields listed in errors.
+                instance: /books/9780441172719
+                errors:
+                  author: [required]
+                  price.amount: [out-of-range]
+                traceId: 00-47c489d08213092adc27b061c1eecdc9-15479e1362053da4-00
   schemas:
     Money:
       type: object
@@ -767,16 +839,49 @@ components:
             $ref: '#/components/schemas/InstitutionUnit'
     Problem:
       type: object
+      required: [type, title, status, traceId]
       properties:
         type:
           type: string
-          format: uri-reference
+          format: uri
+          description: Stable identifier; the last segment is the catalog code.
+          examples: [https://api.example.com/problems/insufficient-stock]
         title:
           type: string
+          description: Same for every occurrence of the type; localized.
         status:
           type: integer
         detail:
           type: string
+          description: This occurrence, for humans; clients must not parse it.
         instance:
           type: string
           format: uri-reference
+          description: Path of the request that failed.
+        traceId:
+          type: string
+          description: Quote it when contacting support.
+        errors:
+          type: object
+          description: >-
+            Only for validation-failed. Keys are JSON paths of the request (price.amount),
+            values are rule codes.
+          additionalProperties:
+            type: array
+            items:
+              type: string
+              examples: [required, out-of-range, invalid-length, invalid-format, read-only]
+      additionalProperties: true
+    ProblemType:
+      type: object
+      required: [type, code, status, title]
+      properties:
+        type:
+          type: string
+          format: uri
+        code:
+          type: string
+        status:
+          type: integer
+        title:
+          type: string
