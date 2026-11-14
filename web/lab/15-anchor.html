@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Lab 15: anchor positioning</title>
+    <style>
+        /* self-contained: this lab does not load main.css */
+        body { margin: 0; font: 16px/1.5 system-ui, sans-serif; }
+        .anchor { position: absolute; inline-size: 120px; block-size: 40px; }
+        .tip { position: absolute; inline-size: 160px; block-size: 60px; margin: 0; }
+
+        /* 1) anchor() and anchor-size(): the tip's top edge on the anchor's bottom edge, at least as wide as the anchor */
+        #a1 { anchor-name: --a1; inset-block-start: 100px; inset-inline-start: 100px; }
+        #t1 {
+            position-anchor: --a1;
+            inset-block-start: anchor(bottom);
+            inset-inline-start: anchor(left);
+            min-inline-size: anchor-size(width);
+            inline-size: auto;
+        }
+
+        /* 2) position-area: a 3x3 grid around the anchor; span-inline-end = start at the anchor, run to the right */
+        #a2 { anchor-name: --a2; inset-block-start: 100px; inset-inline-start: 400px; }
+        #t2 { position-anchor: --a2; position-area: block-end span-inline-end; }
+
+        /* 3) not enough room below: flip-block tries the mirror position above the anchor */
+        #a3 { anchor-name: --a3; inset-block-start: 520px; inset-inline-start: 100px; }
+        #t3 { position-anchor: --a3; position-area: block-end; position-try-fallbacks: flip-block; }
+        #t3-none { position-anchor: --a3; position-area: block-end; }
+    </style>
+</head>
+<body>
+    <div class="anchor" id="a1">anchor 1</div>
+    <div class="tip" id="t1">tip 1</div>
+    <div class="anchor" id="a2">anchor 2</div>
+    <div class="tip" id="t2">tip 2</div>
+    <div class="anchor" id="a3">anchor 3</div>
+    <div class="tip" id="t3">tip 3</div>
+    <div class="tip" id="t3-none">tip 3, no fallback</div>
+</body>
+</html>

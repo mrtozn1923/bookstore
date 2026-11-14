@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Lab 15: anchor positioning pitfalls</title>
+    <style>
+        /* self-contained: this lab does not load main.css */
+        body { margin: 0; font: 16px/1.5 system-ui, sans-serif; }
+        ul { display: flex; gap: 20px; margin: 0; padding: 20px; list-style: none; }
+        /* the list items are not positioned: every tip's containing block is the viewport */
+        li { inline-size: 100px; block-size: 60px; }
+        .tip { position: absolute; inline-size: 100px; block-size: 30px; margin: 0; }
+
+        /* 1) the same anchor-name in every list item: every tip finds the last one */
+        .cover { anchor-name: --cover; block-size: 40px; }
+        .tip { position-anchor: --cover; position-area: block-end; }
+        /* 2) anchor-scope: a name is looked up only inside its own list item */
+        .scoped li { anchor-scope: --cover; }
+
+        /* 3) a tip whose containing block (.box) does not contain the anchor: anchor() has no anchor */
+        .box { position: relative; margin: 20px; inline-size: 300px; block-size: 80px; }
+        #outside { anchor-name: --outside; position: absolute; inset-block-start: 400px; inset-inline-start: 400px; inline-size: 50px; block-size: 20px; }
+        #lost { position: absolute; inline-size: 50px; block-size: 20px; inset-block-start: anchor(--outside bottom, 7px); inset-inline-start: anchor(--outside left, 7px); }
+
+        /* 4) the anchor scrolls inside a scroller; the tip outside follows it, and can hide when the anchor is gone */
+        .scroller { position: relative; overflow-y: scroll; margin: 20px; inline-size: 200px; block-size: 100px; }
+        #scrolled { anchor-name: --scrolled; margin-block-start: 50px; block-size: 20px; }
+        #follow {
+            position: absolute; position-anchor: --scrolled; position-area: inline-end; inline-size: 80px; block-size: 20px;
+            /* hide the tip when its anchor has scrolled out of view; Firefox only knows the older plural spelling */
+            position-visibility: anchors-visible;
+            position-visibility: anchor-visible;
+        }
+    </style>
+</head>
+<body>
+    <ul class="plain">
+        <li><div class="cover">Dune</div><div class="tip">tip</div></li>
+        <li><div class="cover">Emma</div><div class="tip">tip</div></li>
+        <li><div class="cover">Middlemarch</div><div class="tip">tip</div></li>
+    </ul>
+    <ul class="scoped">
+        <li><div class="cover">Dune</div><div class="tip">tip</div></li>
+        <li><div class="cover">Emma</div><div class="tip">tip</div></li>
+        <li><div class="cover">Middlemarch</div><div class="tip">tip</div></li>
+    </ul>
+    <div class="box"><div id="lost">lost</div></div>
+    <div id="outside">anchor</div>
+    <div class="scroller" id="scroller">
+        <div id="scrolled">The Hobbit</div>
+        <div style="block-size: 400px"></div>
+    </div>
+    <div id="follow">tip</div>
+</body>
+</html>

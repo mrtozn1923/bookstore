@@ -14,5 +14,6 @@
 @import url("components/dialog.css") layer(components);
 @import url("components/guide.css") layer(components);
 @import url("components/view-transitions.css") layer(components);
+@import url("components/popover.css") layer(components);
 @import url("components/preferences.css") layer(components);
 @import url("utilities.css") layer(utilities);

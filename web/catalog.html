@@ -23,6 +23,14 @@
                 <input type="search" name="q" placeholder="Search books" aria-label="Search books">
             </form>
             <button class="cart-link btn" type="button" commandfor="cart-dialog" command="show-modal">Cart <span class="cart-count">1</span></button>
+            <button class="user-button btn" type="button" commandfor="user-menu" command="toggle-popover">Ada</button>
+            <div id="user-menu" class="user-menu" popover>
+                <ul>
+                    <li><a href="orders.html">My orders</a></li>
+                    <li><a href="account.html">Account settings</a></li>
+                    <li><a href="sign-out.html">Sign out</a></li>
+                </ul>
+            </div>
         </header>
         <aside class="filters" aria-labelledby="filters-title">
             <h2 id="filters-title">Filters</h2>
@@ -67,13 +75,21 @@
             <ul class="book-list">
                 <li class="book-card in-stock" data-format="hardcover ebook">
                     <img src="img/dune.svg" alt="Cover of Dune" width="120" height="180">
-                    <h2 class="book-title">Dune</h2>
+                    <h2 class="book-title"><button class="preview-button" type="button" commandfor="preview-dune" command="toggle-popover">Dune</button></h2>
+                    <div id="preview-dune" class="book-preview" popover>
+                        <p>A noble family takes over the desert planet Arrakis, the only source of the most valuable substance in the universe.</p>
+                        <a href="book.html">Open the book page</a>
+                    </div>
                     <span class="badge">Bestseller</span>
                     <p class="book-author">Frank Herbert</p>
                     <p class="price">349.00 TRY</p>
                 </li>
                 <li class="book-card" data-stock="0" data-format="paperback">
-                    <h2 class="book-title">Middlemarch</h2>
+                    <h2 class="book-title"><button class="preview-button" type="button" commandfor="preview-middlemarch" command="toggle-popover">Middlemarch</button></h2>
+                    <div id="preview-middlemarch" class="book-preview" popover>
+                        <p>Life in a small English town in the 1830s, told through the hopes and marriages of its people.</p>
+                        <a href="book.html">Open the book page</a>
+                    </div>
                     <p class="book-author">George Eliot</p>
                     <p class="price">289.00 TRY</p>
                 </li>
