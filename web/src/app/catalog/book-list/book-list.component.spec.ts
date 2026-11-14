@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 
 import { BookListComponent } from './book-list.component';
 import { BookItemComponent } from '../book-item/book-item.component';
@@ -12,6 +13,7 @@ describe('BookListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [RouterTestingModule],
       declarations: [ BookListComponent, BookItemComponent, InStockPipe, TruncatePipe ],
       providers: [{ provide: APP_CONFIG, useValue: { appName: 'Bookstore', pageSize: 20 } }]
     })

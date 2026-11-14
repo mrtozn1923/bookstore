@@ -30,6 +30,12 @@ import { ReservationTimerComponent } from './reservation-timer/reservation-timer
 import { BookSearchComponent } from './book-search/book-search.component';
 import { CartNotifierComponent } from './cart-notifier/cart-notifier.component';
 import { CustomerListComponent } from './customer-list/customer-list.component';
+import { AppRoutingModule } from './app-routing.module';
+import { HomeComponent } from './home/home.component';
+import { AboutComponent } from './about/about.component';
+import { NotFoundComponent } from './not-found/not-found.component';
+import { BookSummaryComponent } from './book-summary/book-summary.component';
+import { BookReviewsComponent } from './book-reviews/book-reviews.component';
 
 registerLocaleData(localeTr);
 
@@ -53,13 +59,19 @@ registerLocaleData(localeTr);
     ReservationTimerComponent,
     BookSearchComponent,
     CartNotifierComponent,
-    CustomerListComponent
+    CustomerListComponent,
+    HomeComponent,
+    AboutComponent,
+    NotFoundComponent,
+    BookSummaryComponent,
+    BookReviewsComponent
   ],
   imports: [
     BrowserModule,
     CatalogModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    AppRoutingModule
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'tr' },

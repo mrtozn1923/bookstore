@@ -1,34 +1,12 @@
-<h1>{{ title }}</h1>
-<app-cart-badge></app-cart-badge>
-<app-cart-notifier></app-cart-notifier>
-<app-book-search></app-book-search>
-<app-book-card></app-book-card>
-<app-book-card></app-book-card>
-<app-book-list></app-book-list>
-<app-book-detail></app-book-detail>
-<app-order-list></app-order-list>
-<app-card>
-  <h3 card-title>Dune</h3>
-  <p>Frank Herbert's science fiction classic.</p>
-  <div class="card-actions">
-    <button>Add to cart</button>
-  </div>
-</app-card>
-<app-card>
-  <h3 #cardTitle>Order Summary</h3>
-</app-card>
-<app-order-tracking [orderId]="1042"></app-order-tracking>
-<app-price-tag [price]="price"></app-price-tag>
-<button (click)="price = price + 20">Raise price</button>
-<button (click)="price = price - 20">Lower price</button>
-<app-search-box></app-search-box>
-<button (click)="showSale = !showSale">Show/Hide sale</button>
-<app-sale-countdown *ngIf="showSale"></app-sale-countdown>
-<button (click)="count = count + 1">Increment</button>
-<button (click)="visible = !visible">Show/Hide</button>
-<app-lifecycle-demo *ngIf="visible" [count]="count"></app-lifecycle-demo>
-<app-customer-card></app-customer-card>
-<app-order-summary></app-order-summary>
-<p *ngFor="let r of reservations">{{ r }}: <app-reservation-timer></app-reservation-timer></p>
-<button (click)="reservations.push('The Hobbit')">Reserve The Hobbit</button>
-<app-customer-list></app-customer-list>
+<header>
+  <h1>Bookstore</h1>
+  <nav>
+    <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+    <a routerLink="/books" routerLinkActive="active">Books</a>
+    <a routerLink="/about" routerLinkActive="active">About</a>
+  </nav>
+</header>
+
+<router-outlet></router-outlet>
+
+<footer>Free shipping on orders over 500 TRY.</footer>

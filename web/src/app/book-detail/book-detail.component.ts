@@ -1,4 +1,9 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
+import { Book } from '../book';
+import { BookService } from '../book.service';
 import { QuantityPickerComponent } from '../quantity-picker/quantity-picker.component';
 
 @Component({
@@ -6,7 +11,7 @@ import { QuantityPickerComponent } from '../quantity-picker/quantity-picker.comp
   templateUrl: './book-detail.component.html',
   styleUrls: ['./book-detail.component.css']
 })
-export class BookDetailComponent {
+export class BookDetailComponent implements OnInit {
   @ViewChild(QuantityPickerComponent) picker!: QuantityPickerComponent;
 
   title = 'Dune';
@@ -18,6 +23,20 @@ export class BookDetailComponent {
   coupon = '';
   giftNote = '';
   amount = 1;
+  isbn = '';
+  book$!: Observable<Book | undefined>;
+
+  constructor(private route: ActivatedRoute, private bookService: BookService) { }
+
+  ngOnInit(): void {
+    this.route.paramMap.subscribe(params => {
+      this.isbn = params.get('isbn') ?? '';
+    });
+
+    this.book$ = this.route.paramMap.pipe(
+      switchMap(params => this.bookService.getBook(params.get('isbn') ?? ''))
+    );
+  }
 
   addToCart(): void {
     this.inCart++;

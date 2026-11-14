@@ -1,5 +1,5 @@
 <div class="book">
-  <h4>{{ book.title }}</h4>
+  <h4><a [routerLink]="['/books', book.isbn]">{{ book.title }}</a></h4>
   <p>{{ book.price }} TRY</p>
   <p>{{ book.description | truncate:40 }}</p>
   <p>{{ book.description | truncate:40:' →' }}</p>

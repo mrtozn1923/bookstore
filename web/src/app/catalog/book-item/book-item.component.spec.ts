@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 
 import { BookItemComponent } from './book-item.component';
 import { TruncatePipe } from '../truncate.pipe';
@@ -9,6 +10,7 @@ describe('BookItemComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [RouterTestingModule],
       declarations: [ BookItemComponent, TruncatePipe ]
     })
     .compileComponents();

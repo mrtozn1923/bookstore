@@ -1,3 +1,11 @@
+<h2>Book {{ isbn }}</h2>
+<p *ngIf="book$ | async as book">{{ book.title }}: {{ book.price }} TRY</p>
+<nav>
+  <a routerLink="summary" routerLinkActive="active">Summary</a>
+  <a routerLink="reviews" routerLinkActive="active">Reviews</a>
+</nav>
+<router-outlet></router-outlet>
+
 <h3>{{ title }}</h3>
 <p>{{ author }} · {{ inCart }} in cart</p>
 <p>Status: {{ inStock ? 'In stock' : 'Out of stock' }}</p>

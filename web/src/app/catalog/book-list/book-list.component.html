@@ -1,6 +1,10 @@
+<a routerLink="/books" [queryParams]="{ sort: 'price', page: 2 }">Sort by price</a>
+<p>Sort: {{ sort }} · Page: {{ page }}</p>
 <app-book-item
   *ngFor="let b of books | inStock"
   [book]="b"
   (addToCart)="addToCart($event)">
 </app-book-item>
 <button (click)="addBook()">Add a new book</button>
+<button (click)="goToPage(page + 1)">Next page</button>
+<button (click)="openBook('9780441172719')">Book of the week: Dune</button>
