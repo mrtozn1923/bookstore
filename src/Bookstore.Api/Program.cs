@@ -19,5 +19,6 @@ app.MapCart();
 app.MapRecentlyViewed();
 app.MapTags();
 app.MapVisitors();
+app.MapBestsellers();
 
 app.Run();

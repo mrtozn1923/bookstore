@@ -1,0 +1,7 @@
+ZUNIONSTORE tmp:sold 7 bookstore:bestsellers:20261108 bookstore:bestsellers:20261109 bookstore:bestsellers:20261110 bookstore:bestsellers:20261111 bookstore:bestsellers:20261112 bookstore:bestsellers:20261113 bookstore:bestsellers:20261114
+ZRANGE tmp:sold 0 2 REV WITHSCORES
+ZUNIONSTORE tmp:days 7 bookstore:bestsellers:20261108 bookstore:bestsellers:20261109 bookstore:bestsellers:20261110 bookstore:bestsellers:20261111 bookstore:bestsellers:20261112 bookstore:bestsellers:20261113 bookstore:bestsellers:20261114 AGGREGATE COUNT
+ZMSCORE tmp:days 9780451524935 9780441013593
+ZUNIONSTORE tmp:ranked 2 tmp:sold tmp:days WEIGHTS 10 1
+ZRANGE tmp:ranked 0 2 REV WITHSCORES
+DEL tmp:sold tmp:days tmp:ranked

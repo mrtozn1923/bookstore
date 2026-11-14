@@ -74,11 +74,29 @@ switch (command)
     case "big-set":
         await ListSetDemo.BigSetAsync(connectionString);
         break;
+    case "bestsellers":
+        await SortedSetDemo.BestsellersAsync(connectionString);
+        break;
+    case "seed-week":
+        await SortedSetDemo.SeedWeekAsync(connectionString);
+        break;
+    case "zset-encoding":
+        await SortedSetDemo.EncodingAsync(connectionString);
+        break;
+    case "score-precision":
+        await SortedSetDemo.ScorePrecisionAsync(connectionString);
+        break;
+    case "page-drift":
+        await SortedSetDemo.PageDriftAsync(connectionString);
+        break;
+    case "recent-orders":
+        await SortedSetDemo.RecentOrdersAsync(connectionString);
+        break;
     case "sync-over-async":
         await SyncOverAsyncDemo.RunAsync(connectionString);
         break;
     default:
         Console.WriteLine("commands: seed-keys <n> | keys-vs-ping | incr | rtt | mux-per-request [--leak] | mux-singleton | " +
-                          "pipeline | pubsub-connection | scan-vs-ping | server-info | key-names | sync-over-async | lost-update | active-expire | ttl-reset | cart-storage | hash-encoding | big-hash | compact-hash | queue-crash | blpop | visitors | big-set");
+                          "pipeline | pubsub-connection | scan-vs-ping | server-info | key-names | sync-over-async | lost-update | active-expire | ttl-reset | cart-storage | hash-encoding | big-hash | compact-hash | queue-crash | blpop | visitors | big-set | bestsellers | seed-week | zset-encoding | score-precision | page-drift | recent-orders");
         break;
 }

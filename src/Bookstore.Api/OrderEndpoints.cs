@@ -14,7 +14,7 @@ public static class OrderEndpoints
     {
         app.MapPost("/orders", async (CreateOrderRequest request,
             [FromHeader(Name = "Idempotency-Key")] string? idempotencyKey,
-            IConnectionMultiplexer redis) =>
+            IConnectionMultiplexer redis, TimeProvider clock) =>
         {
             if (string.IsNullOrWhiteSpace(idempotencyKey))
             {
@@ -39,6 +39,7 @@ public static class OrderEndpoints
                 long orderId = await db.StringIncrementAsync(RedisKeys.OrderIdSequence); // stands in for the real order insert
                 // SET key <orderId> IFEQ processing KEEPTTL: record the result only if we still own the key
                 await db.StringSetAsync(key, orderId, Expiration.KeepTtl, ValueCondition.Equal(Processing));
+                await RecordSaleAsync(db, request, orderId, clock.GetUtcNow());
                 return Results.Created($"/orders/{orderId}", new { orderId, replayed = false });
             }
             catch
@@ -50,5 +51,15 @@ public static class OrderEndpoints
         });
 
         return app;
+    }
+
+    // Daily bestsellers (ZINCRBY) and the time-ordered recent orders (timestamp as score)
+    private static async Task RecordSaleAsync(IDatabase db, CreateOrderRequest request, long orderId, DateTimeOffset now)
+    {
+        RedisKey daily = RedisKeys.Bestsellers(DateOnly.FromDateTime(now.UtcDateTime));
+        await Task.WhenAll(
+            db.SortedSetIncrementAsync(daily, request.Isbn, request.Quantity),                       // ZINCRBY
+            db.KeyExpireAsync(daily, TimeSpan.FromDays(8), ExpireWhen.HasNoExpiry),                  // EXPIRE ... NX
+            db.SortedSetAddAsync(RedisKeys.RecentOrders, orderId, now.ToUnixTimeMilliseconds()));    // ZADD
     }
 }

@@ -26,4 +26,14 @@ public static class RedisKeys
     public static RedisKey DailyVisitors(DateOnly day) => $"{Prefix}:visitors:{day:yyyyMMdd}";
 
     public static RedisKey OrderIdSequence => $"{Prefix}:order:id-seq";
+
+    public static RedisKey Bestsellers(DateOnly day) => $"{Prefix}:bestsellers:{day:yyyyMMdd}";
+
+    public static RedisKey BestsellersWeek(DateOnly lastDay) => $"{Prefix}:bestsellers:week:{lastDay:yyyyMMdd}";
+
+    // Temporary input of one snapshot build, e.g. bookstore:bestsellers:week:20261114:sold:3f2a...
+    public static RedisKey BestsellersWeekPart(DateOnly lastDay, string part, string buildId) =>
+        $"{Prefix}:bestsellers:week:{lastDay:yyyyMMdd}:{part}:{buildId}";
+
+    public static RedisKey RecentOrders => $"{Prefix}:orders:recent";
 }

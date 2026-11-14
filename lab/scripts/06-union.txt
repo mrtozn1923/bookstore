@@ -1,0 +1,10 @@
+ZADD bookstore:bestsellers:20261102 40 9780441013593 5 9780451524935
+ZADD bookstore:bestsellers:20261103 6 9780451524935 4 9780141439518
+ZADD bookstore:bestsellers:20261104 7 9780451524935 9 9780141439518
+ZUNIONSTORE bookstore:bestsellers:3days 3 bookstore:bestsellers:20261102 bookstore:bestsellers:20261103 bookstore:bestsellers:20261104
+ZRANGE bookstore:bestsellers:3days 0 -1 REV WITHSCORES
+ZUNION 3 bookstore:bestsellers:20261102 bookstore:bestsellers:20261103 bookstore:bestsellers:20261104 AGGREGATE COUNT WITHSCORES
+ZUNION 3 bookstore:bestsellers:20261102 bookstore:bestsellers:20261103 bookstore:bestsellers:20261104 WEIGHTS 1 2 3 AGGREGATE COUNT WITHSCORES
+ZUNION 3 bookstore:bestsellers:20261102 bookstore:bestsellers:20261103 bookstore:bestsellers:20261104 WEIGHTS 0.25 0.5 1 WITHSCORES
+ZINTER 3 bookstore:bestsellers:20261102 bookstore:bestsellers:20261103 bookstore:bestsellers:20261104 AGGREGATE MIN WITHSCORES
+ZRANGESTORE bookstore:bestsellers:3days:top2 bookstore:bestsellers:3days 0 1 REV
