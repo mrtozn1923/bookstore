@@ -1,0 +1,27 @@
+@use "sass:string";
+
+$block: "stock-badge--low";
+
+.string-demo {
+    a: string.index($block, "--");
+    b: string.slice($block, 1, string.index($block, "--") - 1);
+    c: string.slice($block, -3);
+    d: string.insert("book-card", "__title", -1);
+    e: string.split("Inter, Segoe UI, system-ui", ", ");
+    f: string.split("catalog.book-card.title", ".", 1);
+    g: string.to-upper-case("isbn");
+    h: string.unquote("Segoe UI") string.quote(Inter);
+    i: string.length("Dune");
+}
+
+$fade: string.unique-id();
+
+@keyframes #{$fade} {
+    from {
+        opacity: 0;
+    }
+}
+
+.book-card--new {
+    animation: $fade 200ms ease-out;
+}

@@ -1,0 +1,12 @@
+@use "sass:math";
+
+$fractions: (2, 3);
+
+@each $d in $fractions {
+    @for $n from 1 to $d {
+        // a slash is not allowed in a class name: escape it
+        .w-#{$n}\/#{$d} {
+            width: math.percentage(math.div($n, $d));
+        }
+    }
+}

@@ -1,0 +1,18 @@
+@use "sass:list";
+
+$space-scale: 0 4px 8px 16px 24px 32px;
+$fonts: "Inter", "Segoe UI", system-ui;
+
+.list-demo {
+    a: list.nth($space-scale, 1);
+    b: list.nth($space-scale, -1);
+    c: list.length($space-scale);
+    d: list.index($space-scale, 16px);
+    e: list.separator($space-scale) list.separator($fonts);
+    f: list.append($fonts, sans-serif);
+    g: list.join($fonts, (Arial, sans-serif));
+    h: list.join(4px 8px, 16px 24px, $separator: comma);
+    i: list.separator(16px) list.separator((16px,));
+    j: list.zip(color background-color, 150ms 300ms);
+    k: list.slash(1, -1);
+}

@@ -1,6 +1,8 @@
+@use "../abstracts" as *;
+
 body {
     margin: 0;
-    font-family: system-ui, sans-serif;
+    font-family: font-stack();
     line-height: 1.5;
     background-color: var(--color-surface);
     color: var(--color-text);
@@ -9,5 +11,6 @@ body {
 h1,
 h2,
 h3 {
+    font-family: font-stack("Iowan Old Style", Georgia);
     line-height: 1.2;
 }

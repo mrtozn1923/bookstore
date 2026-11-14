@@ -1,0 +1,6 @@
+$space-scale: 0 4px 8px 16px;
+
+.order-summary {
+    padding: nth($space-scale, 3);
+    width: percentage(0.25);
+}

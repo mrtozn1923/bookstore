@@ -1,0 +1,26 @@
+@use "sass:list";
+@use "sass:math";
+
+// modular scale: each step is the previous one times 1.25
+$ratio: 1.25;
+$steps: (-1, 0, 1, 2, 3);
+
+@function round-to($number, $digits: 3) {
+    $factor: math.pow(10, $digits);
+    @return math.div(math.round($number * $factor), $factor);
+}
+
+$type-scale: ();
+@each $step in $steps {
+    $type-scale: list.append($type-scale, round-to(math.pow($ratio, $step)) * 1rem);
+}
+
+@for $i from 1 through list.length($type-scale) {
+    .text-#{$i} {
+        font-size: list.nth($type-scale, $i);
+    }
+}
+
+.raw {
+    font-size: math.pow($ratio, 3) * 1rem;
+}

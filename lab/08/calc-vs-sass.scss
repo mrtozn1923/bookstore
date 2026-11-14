@@ -1,0 +1,12 @@
+@use "units" as *;
+
+$header-height: 64px;
+
+.catalog {
+    // everything is known at compile time: Sass computes it
+    padding-block-start: calc($header-height + 16px);
+    // 100vh is only known in the browser: Sass keeps calc()
+    min-height: calc(100vh - $header-height);
+    // fluid type: rem and vw mixed, the browser decides
+    font-size: clamp(rem(16px), 0.875rem + 0.5vw, rem(20px));
+}

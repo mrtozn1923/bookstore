@@ -1,0 +1,14 @@
+@use "sass:math";
+
+$root-font-size: 16px !default;
+
+// px (or a unit convertible to px) -> rem; a unitless number counts as px
+@function rem($value) {
+    @if math.is-unitless($value) {
+        $value: $value * 1px;
+    }
+    @if not math.compatible($value, 1px) {
+        @error "rem() expects px or a unitless number, got #{$value}";
+    }
+    @return math.div($value, $root-font-size) * 1rem;
+}

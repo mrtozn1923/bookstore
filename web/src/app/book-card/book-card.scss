@@ -15,11 +15,12 @@
     }
 
     &__title {
-        margin: 0 0 4px;
+        margin: 0 0 space(1);
+        font-size: rem(18px);
         color: var(--color-brand);
 
         @include from("lg") {
-            font-size: 1.25rem;
+            font-size: rem(20px);
         }
     }
 
@@ -34,5 +35,5 @@
 }
 
 .book-card__add {
-    margin-block-start: 8px;
+    margin-block-start: space(2);
 }
