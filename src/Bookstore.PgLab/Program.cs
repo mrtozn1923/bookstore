@@ -12,7 +12,10 @@ switch (args.FirstOrDefault())
     case "pool":
         await ConnectionDemo.RunThroughPoolAsync(connectionString, maxPoolSize: 20, requests: 200);
         break;
+    case "ef-script":
+        EfDefaults.PrintCreateScript(connectionString);
+        break;
     default:
-        Console.WriteLine("usage: dotnet run -- connections | pool");
+        Console.WriteLine("usage: dotnet run -- connections | pool | ef-script");
         break;
 }
