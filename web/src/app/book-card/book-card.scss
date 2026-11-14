@@ -1,20 +1,28 @@
-$brand: #b45309;
-
 .book-card {
-    padding: 16px;
-    border: 1px solid #d6d3d1;
-    border-radius: 8px;
+    padding: var(--space);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
 
     &:hover {
-        border-color: $brand;
+        border-color: var(--color-brand);
     }
-}
 
-.book-card__title {
-    margin: 0 0 4px;
-    color: $brand;
-}
+    &--featured {
+        border-width: 2px;
+        border-color: var(--color-brand);
+    }
 
-.book-card__price {
-    font-weight: 700;
+    &__title {
+        margin: 0 0 4px;
+        color: var(--color-brand);
+    }
+
+    &__author {
+        margin: 0;
+        color: var(--color-muted);
+    }
+
+    &__price {
+        font-weight: 700;
+    }
 }

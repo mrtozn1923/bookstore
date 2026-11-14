@@ -1,0 +1,26 @@
+.checkout {
+    .order-summary {
+        .order-summary__items {
+            li {
+                display: flex;
+                justify-content: space-between;
+
+                .title {
+                    font-weight: 600;
+
+                    a {
+                        color: inherit;
+
+                        &:hover {
+                            text-decoration: underline;
+                        }
+                    }
+                }
+
+                .price {
+                    font-variant-numeric: tabular-nums;
+                }
+            }
+        }
+    }
+}

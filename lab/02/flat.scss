@@ -1,0 +1,20 @@
+.order-summary__item {
+    display: flex;
+    justify-content: space-between;
+}
+
+.order-summary__title {
+    font-weight: 600;
+}
+
+.order-summary__link {
+    color: inherit;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.order-summary__price {
+    font-variant-numeric: tabular-nums;
+}

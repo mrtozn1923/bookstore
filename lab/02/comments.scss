@@ -1,0 +1,6 @@
+// silent comment: never in the output
+/* loud comment: in expanded output, removed by compressed */
+/*! preserved comment: survives compressed output too */
+.book-card__price::before {
+    content: "₺"; // trailing silent comment
+}

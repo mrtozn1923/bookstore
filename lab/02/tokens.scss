@@ -1,0 +1,16 @@
+$brand: #b45309;
+$radius: 8px;
+$gutter: 16px;
+
+:root {
+    // without #{} the value is copied as written
+    --color-brand-raw: $brand;
+    --color-brand: #{$brand};
+    --radius: #{$radius};
+}
+
+.book-list {
+    // Sass knows calc(): no interpolation needed
+    width: calc(100% - $gutter * 2);
+    padding-inline: $gutter;
+}

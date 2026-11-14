@@ -1,5 +1,22 @@
+// design values live in Sass; the browser gets custom properties
+$color-brand: #b45309;
+$color-border: #d6d3d1;
+$color-text: #1c1917;
+$color-muted: #57534e;
+$radius: 8px;
+$space: 16px;
+
+:root {
+    --color-brand: #{$color-brand};
+    --color-border: #{$color-border};
+    --color-text: #{$color-text};
+    --color-muted: #{$color-muted};
+    --radius: #{$radius};
+    --space: #{$space};
+}
+
 body {
     margin: 0;
     font-family: system-ui, sans-serif;
-    color: #1c1917;
+    color: var(--color-text);
 }

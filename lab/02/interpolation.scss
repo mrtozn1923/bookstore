@@ -1,0 +1,20 @@
+$block: "order-summary";
+$edge: "inline-start";
+$asset-base: "/assets/covers";
+
+.#{$block} {
+    border-#{$edge}: 4px solid #b45309;
+
+    &__row {
+        display: flex;
+    }
+}
+
+.book-cover--placeholder {
+    background-image: url("#{$asset-base}/placeholder.webp");
+}
+
+// works inside a quoted string too
+.debug::after {
+    content: "#{$block}";
+}

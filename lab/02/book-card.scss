@@ -1,0 +1,35 @@
+.book-card {
+    padding: var(--space, 16px);
+    border: 1px solid #d6d3d1;
+
+    // BEM element: .book-card__title
+    &__title {
+        margin: 0;
+        font-size: 1.125rem;
+    }
+
+    // BEM modifier: .book-card--featured
+    &--featured {
+        border-color: var(--color-brand);
+
+        // inside a modifier, & is .book-card--featured
+        .book-card__title {
+            color: var(--color-brand);
+        }
+    }
+
+    &:hover,
+    &:focus-within {
+        border-color: #a8a29e;
+    }
+
+    // & at the end: the context comes first
+    .catalog--compact & {
+        padding: 8px;
+    }
+
+    // sibling cards
+    & + & {
+        margin-top: 0;
+    }
+}

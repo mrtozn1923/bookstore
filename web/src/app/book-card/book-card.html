@@ -1,6 +1,6 @@
-<article class="book-card">
+<article class="book-card" [class.book-card--featured]="book().featured">
   <h3 class="book-card__title">{{ book().title }}</h3>
   <p class="book-card__author">{{ book().author }}</p>
-  <p class="book-card__price">{{ book().price | currency: 'TRY' }}</p>
+  <p class="book-card__price">{{ book().price | currency: 'TRY' : 'symbol-narrow' }}</p>
   <span class="stock-badge" [class]="'stock-badge--' + stockState()">{{ stockState() }}</span>
 </article>
