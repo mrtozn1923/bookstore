@@ -10,6 +10,10 @@
     <Using Include="Xunit" />
   </ItemGroup>
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/Bookstore.Api/Bookstore.Api.csproj" />
     <ProjectReference Include="../../src/Bookstore.Crypto/Bookstore.Crypto.csproj" />
     <ProjectReference Include="../../src/Bookstore.Customers/Bookstore.Customers.csproj" />
   </ItemGroup>

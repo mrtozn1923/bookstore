@@ -24,6 +24,11 @@ switch (command)
     case "signatures": SignatureCommands.Formats(); break;
     case "public-key-sign": SignatureCommands.PublicKeyCannotSign(); break;
     case "license": SignatureCommands.LicenseDemo(); break;
+    case "pki-init": PkiCommands.Init(); break;
+    case "cert-info": PkiCommands.Info(); break;
+    case "chain": PkiCommands.Chain(); break;
+    case "pfx-export": PkiCommands.ExportPfx(); break;
+    case "mtls-call": await PkiCommands.CallAsync(args); break;
     default: Console.Error.WriteLine($"Unknown command: {command}"); return 1;
 }
 return 0;

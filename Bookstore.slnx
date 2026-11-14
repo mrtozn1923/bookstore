@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/Bookstore.Api/Bookstore.Api.csproj" />
     <Project Path="src/Bookstore.Crypto/Bookstore.Crypto.csproj" />
     <Project Path="src/Bookstore.CryptoLab/Bookstore.CryptoLab.csproj" />
     <Project Path="src/Bookstore.Customers/Bookstore.Customers.csproj" />
