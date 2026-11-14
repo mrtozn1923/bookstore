@@ -1,0 +1,284 @@
+[
+  {
+    "additions": 150,
+    "author": {
+      "login": "ayse"
+    },
+    "createdAt": "2026-10-22T08:30:00Z",
+    "deletions": 30,
+    "mergedAt": "2026-10-22T13:45:00Z",
+    "number": 113,
+    "reviews": [
+      {
+        "author": {
+          "login": "emre"
+        },
+        "state": "APPROVED",
+        "submittedAt": "2026-10-22T12:10:00Z"
+      }
+    ]
+  },
+  {
+    "additions": 70,
+    "author": {
+      "login": "emre"
+    },
+    "createdAt": "2026-10-21T09:20:00Z",
+    "deletions": 9,
+    "mergedAt": "2026-10-21T16:00:00Z",
+    "number": 112,
+    "reviews": [
+      {
+        "author": {
+          "login": "ayse"
+        },
+        "state": "APPROVED",
+        "submittedAt": "2026-10-21T10:05:00Z"
+      }
+    ]
+  },
+  {
+    "additions": 40,
+    "author": {
+      "login": "dependabot[bot]"
+    },
+    "createdAt": "2026-10-21T03:00:00Z",
+    "deletions": 40,
+    "mergedAt": "2026-10-21T08:20:00Z",
+    "number": 111,
+    "reviews": [
+      {
+        "author": {
+          "login": "emre"
+        },
+        "state": "APPROVED",
+        "submittedAt": "2026-10-21T08:10:00Z"
+      }
+    ]
+  },
+  {
+    "additions": 95,
+    "author": {
+      "login": "ayse"
+    },
+    "createdAt": "2026-10-20T10:00:00Z",
+    "deletions": 22,
+    "mergedAt": "2026-10-20T15:30:00Z",
+    "number": 110,
+    "reviews": [
+      {
+        "author": {
+          "login": "emre"
+        },
+        "state": "COMMENTED",
+        "submittedAt": "2026-10-20T11:15:00Z"
+      },
+      {
+        "author": {
+          "login": "emre"
+        },
+        "state": "APPROVED",
+        "submittedAt": "2026-10-20T14:40:00Z"
+      }
+    ]
+  },
+  {
+    "additions": 520,
+    "author": {
+      "login": "emre"
+    },
+    "createdAt": "2026-10-16T14:00:00Z",
+    "deletions": 130,
+    "mergedAt": "2026-10-20T08:45:00Z",
+    "number": 109,
+    "reviews": [
+      {
+        "author": {
+          "login": "ayse"
+        },
+        "state": "APPROVED",
+        "submittedAt": "2026-10-19T09:10:00Z"
+      }
+    ]
+  },
+  {
+    "additions": 12,
+    "author": {
+      "login": "emre"
+    },
+    "createdAt": "2026-10-14T08:15:00Z",
+    "deletions": 3,
+    "mergedAt": "2026-10-14T09:30:00Z",
+    "number": 108,
+    "reviews": [
+      {
+        "author": {
+          "login": "ayse"
+        },
+        "state": "APPROVED",
+        "submittedAt": "2026-10-14T08:50:00Z"
+      }
+    ]
+  },
+  {
+    "additions": 260,
+    "author": {
+      "login": "ayse"
+    },
+    "createdAt": "2026-10-13T13:00:00Z",
+    "deletions": 75,
+    "mergedAt": "2026-10-14T11:00:00Z",
+    "number": 107,
+    "reviews": [
+      {
+        "author": {
+          "login": "emre"
+        },
+        "state": "CHANGES_REQUESTED",
+        "submittedAt": "2026-10-13T16:20:00Z"
+      },
+      {
+        "author": {
+          "login": "emre"
+        },
+        "state": "APPROVED",
+        "submittedAt": "2026-10-14T10:30:00Z"
+      }
+    ]
+  },
+  {
+    "additions": 64,
+    "author": {
+      "login": "emre"
+    },
+    "createdAt": "2026-10-12T07:30:00Z",
+    "deletions": 18,
+    "mergedAt": "2026-10-12T10:05:00Z",
+    "number": 106,
+    "reviews": [
+      {
+        "author": {
+          "login": "ayse"
+        },
+        "state": "APPROVED",
+        "submittedAt": "2026-10-12T08:40:00Z"
+      }
+    ]
+  },
+  {
+    "additions": 38,
+    "author": {
+      "login": "ayse"
+    },
+    "createdAt": "2026-10-08T09:45:00Z",
+    "deletions": 4,
+    "mergedAt": "2026-10-08T12:10:00Z",
+    "number": 105,
+    "reviews": [
+      {
+        "author": {
+          "login": "emre"
+        },
+        "state": "APPROVED",
+        "submittedAt": "2026-10-08T10:20:00Z"
+      }
+    ]
+  },
+  {
+    "additions": 1180,
+    "author": {
+      "login": "emre"
+    },
+    "createdAt": "2026-10-07T08:00:00Z",
+    "deletions": 236,
+    "mergedAt": "2026-10-09T14:20:00Z",
+    "number": 104,
+    "reviews": [
+      {
+        "author": {
+          "login": "ayse"
+        },
+        "state": "COMMENTED",
+        "submittedAt": "2026-10-08T16:45:00Z"
+      },
+      {
+        "author": {
+          "login": "ayse"
+        },
+        "state": "CHANGES_REQUESTED",
+        "submittedAt": "2026-10-09T09:30:00Z"
+      },
+      {
+        "author": {
+          "login": "ayse"
+        },
+        "state": "APPROVED",
+        "submittedAt": "2026-10-09T13:55:00Z"
+      }
+    ]
+  },
+  {
+    "additions": 6,
+    "author": {
+      "login": "dependabot[bot]"
+    },
+    "createdAt": "2026-10-06T03:00:00Z",
+    "deletions": 6,
+    "mergedAt": "2026-10-06T09:00:00Z",
+    "number": 103,
+    "reviews": [
+      {
+        "author": {
+          "login": "ayse"
+        },
+        "state": "APPROVED",
+        "submittedAt": "2026-10-06T08:58:00Z"
+      }
+    ]
+  },
+  {
+    "additions": 142,
+    "author": {
+      "login": "ayse"
+    },
+    "createdAt": "2026-10-05T11:30:00Z",
+    "deletions": 40,
+    "mergedAt": "2026-10-06T08:15:00Z",
+    "number": 102,
+    "reviews": [
+      {
+        "author": {
+          "login": "emre"
+        },
+        "state": "CHANGES_REQUESTED",
+        "submittedAt": "2026-10-05T15:10:00Z"
+      },
+      {
+        "author": {
+          "login": "emre"
+        },
+        "state": "APPROVED",
+        "submittedAt": "2026-10-06T07:50:00Z"
+      }
+    ]
+  },
+  {
+    "additions": 86,
+    "author": {
+      "login": "emre"
+    },
+    "createdAt": "2026-10-05T07:12:00Z",
+    "deletions": 12,
+    "mergedAt": "2026-10-05T13:40:00Z",
+    "number": 101,
+    "reviews": [
+      {
+        "author": {
+          "login": "ayse"
+        },
+        "state": "APPROVED",
+        "submittedAt": "2026-10-05T09:02:00Z"
+      }
+    ]
+  }
+]
