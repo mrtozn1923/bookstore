@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>FormData</title>
+</head>
+<body>
+  <form id="order">
+    <input name="name" value="Ada">
+    <input type="checkbox" name="extra" value="gift-wrap" checked>
+    <input type="checkbox" name="extra" value="bookmark" checked>
+    <input name="coupon" value="SPRING10" disabled>
+    <input value="field without a name">
+  </form>
+  <script>
+    const data = new FormData(document.querySelector("#order"));
+
+    console.log(data.get("name"));        // "Ada"
+    console.log(data.get("extra"));       // "gift-wrap" (only the first)
+    console.log(data.getAll("extra"));    // ["gift-wrap", "bookmark"]
+    console.log(data.has("coupon"));      // false
+
+    for (const [key, value] of data) {
+      console.log(key, value);
+    }
+
+    data.set("name", "Ada Lovelace");      // replaces if present
+    data.append("source", "web");         // adds a new one
+    console.log(Object.fromEntries(data)); // { name: "Ada Lovelace", extra: "bookmark", source: "web" }
+  </script>
+</body>
+</html>

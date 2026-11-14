@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>form.elements</title>
+</head>
+<body>
+  <form id="checkout">
+    <input name="email" type="email">
+    <input type="radio" name="shipping" value="standard" checked> Standard
+    <input type="radio" name="shipping" value="express"> Express
+  </form>
+  <script>
+    const form = document.querySelector("#checkout");
+    console.log(form.elements.email.value);    // ""
+    console.log(form.elements.shipping.value); // "standard"
+    console.log(form.elements.length);         // 3
+  </script>
+</body>
+</html>

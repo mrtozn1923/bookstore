@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Sign-up form</title>
+  <style>
+    .error { color: crimson; font-size: 0.9em; }
+    input:user-invalid { border-color: crimson; }
+  </style>
+</head>
+<body>
+  <form id="signup" novalidate>
+    <p><input name="email" type="email" required placeholder="Email">
+       <span class="error" data-for="email"></span></p>
+    <p><input name="password" type="password" required minlength="8" placeholder="Password">
+       <span class="error" data-for="password"></span></p>
+    <p><input name="confirm" type="password" required placeholder="Repeat password">
+       <span class="error" data-for="confirm"></span></p>
+    <button>Sign up</button>
+    <p id="status"></p>
+  </form>
+  <script>
+    const form = document.querySelector("#signup");
+    const password = form.elements.password;
+    const confirmField = form.elements.confirm;
+    const status = document.querySelector("#status");
+
+    function showError(field) {
+      const slot = form.querySelector(`[data-for="${field.name}"]`);
+      if (slot) slot.textContent = field.validationMessage;
+    }
+
+    function checkMatch() {
+      confirmField.setCustomValidity(confirmField.value === password.value ? "" : "Passwords don't match");
+    }
+
+    password.addEventListener("input", checkMatch);
+    confirmField.addEventListener("input", checkMatch);
+
+    // invalid doesn't bubble, so one capturing listener is enough
+    form.addEventListener("invalid", (event) => showError(event.target), { capture: true });
+    // Refresh the message of fields showing an error as the user types
+    form.addEventListener("input", () => {
+      for (const field of form.elements) {
+        const slot = form.querySelector(`[data-for="${field.name}"]`);
+        if (slot?.textContent) showError(field);
+      }
+    });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      checkMatch();
+      if (!form.checkValidity()) return;
+
+      const button = form.querySelector("button");
+      button.disabled = true;
+      status.textContent = "Sending...";
+
+      try {
+        const response = await fetch("https://httpbin.org/post", {
+          method: "POST",
+          body: new FormData(form)
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const result = await response.json();
+        console.log("Fields that reached the server:", result.form);
+        status.textContent = "Sign-up received.";
+        form.reset();
+      } catch (error) {
+        status.textContent = `Could not send: ${error.message}`;
+      } finally {
+        button.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
