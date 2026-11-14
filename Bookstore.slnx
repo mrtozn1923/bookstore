@@ -14,5 +14,6 @@
     <Project Path="samples/Cd09.StatusWorkflow/Cd09.StatusWorkflow.csproj" />
     <Project Path="samples/Cd10.Hierarchy/Cd10.Hierarchy.csproj" />
     <Project Path="samples/Cd11.PolymorphicAssociation/Cd11.PolymorphicAssociation.csproj" />
+    <Project Path="samples/Cd12.MultilingualData/Cd12.MultilingualData.csproj" />
   </Folder>
 </Solution>
