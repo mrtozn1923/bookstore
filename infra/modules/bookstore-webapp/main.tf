@@ -41,6 +41,7 @@ resource "azurerm_linux_web_app" "this" {
 
   site_config {
     minimum_tls_version               = "1.2"
+    http2_enabled                     = true
     health_check_path                 = var.health_check_path
     health_check_eviction_time_in_min = 5
     ip_restriction_default_action     = length(var.allowed_ip_ranges) > 0 ? "Deny" : "Allow"

@@ -12,6 +12,10 @@ resource "azurerm_storage_account" "bookstore" {
   account_replication_type = var.environment == "prod" ? "ZRS" : "LRS"
   min_tls_version          = "TLS1_2"
   tags                     = local.tags
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "azurerm_storage_container" "bookstore" {
@@ -20,6 +24,10 @@ resource "azurerm_storage_container" "bookstore" {
   name                  = each.key
   storage_account_id    = azurerm_storage_account.bookstore.id
   container_access_type = "private"
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 data "azurerm_key_vault" "shared" {
@@ -54,6 +62,10 @@ resource "azurerm_mssql_server" "bookstore" {
   # Write-only: sent to Azure only when the version changes, never stored in state or plan
   administrator_login_password_wo         = ephemeral.random_password.sql_admin.result
   administrator_login_password_wo_version = var.sql_admin_password_version
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "azurerm_mssql_database" "bookstore" {

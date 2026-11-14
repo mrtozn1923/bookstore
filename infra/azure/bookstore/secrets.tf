@@ -10,6 +10,7 @@ ephemeral "random_password" "sql_admin" {
 }
 
 # Break-glass copy for people; the app connects with its managed identity, not this password
+# tflint-ignore: azurerm_resources_missing_prevent_destroy # rotation replaces the value, not the secret
 resource "azurerm_key_vault_secret" "sql_admin_password" {
   name             = "bookstore-sql-admin-password"
   key_vault_id     = data.azurerm_key_vault.shared.id
