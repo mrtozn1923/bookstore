@@ -9,9 +9,11 @@ obj/
 *.tfstate
 *.tfstate.*
 
-# Saved plans and crash logs
+# Saved plans, their text output and crash logs
 tfplan
 *.tfplan
+plan.txt
+drift.txt
 crash.log
 crash.*.log
 
