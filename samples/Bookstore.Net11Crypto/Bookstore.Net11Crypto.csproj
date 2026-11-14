@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <!-- The rest of the repository stays on .NET 10 (LTS); this sample needs the .NET 11 SDK -->
+    <TargetFramework>net11.0</TargetFramework>
+  </PropertyGroup>
+</Project>

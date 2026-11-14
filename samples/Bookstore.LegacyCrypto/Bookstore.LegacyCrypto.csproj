@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <!-- This sample shows the obsolete APIs on purpose: keep their warnings visible, not errors -->
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/Bookstore.Crypto/Bookstore.Crypto.csproj" />
+  </ItemGroup>
+</Project>
