@@ -28,7 +28,8 @@ public static class BookstoreMongo
         BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
     }
 
-    public static IServiceCollection AddBookstoreMongo(this IServiceCollection services, string connectionString)
+    public static IServiceCollection AddBookstoreMongo(this IServiceCollection services, string connectionString,
+        Action<MongoClientSettings>? configure = null)
     {
         // One MongoClient for the whole application: it owns the connection pools and server monitoring
         services.AddSingleton<IMongoClient>(_ =>
@@ -38,6 +39,7 @@ public static class BookstoreMongo
             settings.ServerSelectionTimeout = TimeSpan.FromSeconds(5);
             settings.ConnectTimeout = TimeSpan.FromSeconds(5);
             settings.MaxConnectionPoolSize = 100;
+            configure?.Invoke(settings);
             return new MongoClient(settings);
         });
         services.AddSingleton(sp => sp.GetRequiredService<IMongoClient>().GetDatabase("bookstore"));

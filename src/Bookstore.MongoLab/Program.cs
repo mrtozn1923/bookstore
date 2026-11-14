@@ -1,5 +1,6 @@
 using System.Globalization;
 using Bookstore.MongoLab;
+using Bookstore.MongoLab.EfCore;
 using Microsoft.Extensions.DependencyInjection;
 
 CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
@@ -29,6 +30,17 @@ switch (command)
         BookstoreMongo.RegisterSerialization();
         await AdvancedLab.WatchAsync(connectionString);
         break;
+    case "ef-save" or "ef-query" or "ef-concurrency":
+        await using (ServiceProvider services = EfLab.BuildServices(connectionString))
+        {
+            await (command switch
+            {
+                "ef-save" => EfLab.SaveAsync(services),
+                "ef-query" => EfLab.QueryAsync(services),
+                _ => EfLab.ConcurrencyAsync(services)
+            });
+        }
+        break;
     case "mapping" or "query" or "editions" or "legacy-guid" or "aggregate" or "bulk" or "transaction":
         BookstoreMongo.RegisterSerialization();
         await using (ServiceProvider services = new ServiceCollection().AddBookstoreMongo(connectionString).BuildServiceProvider())
@@ -46,6 +58,6 @@ switch (command)
         }
         break;
     default:
-        Console.WriteLine("Usage: dotnet run --project src/Bookstore.MongoLab -- <bson|objectid|ping|stock-race|guid-no-setup|mapping|query|editions|legacy-guid|aggregate|bulk|transaction|watch>");
+        Console.WriteLine("Usage: dotnet run --project src/Bookstore.MongoLab -- <bson|objectid|ping|stock-race|guid-no-setup|mapping|query|editions|legacy-guid|aggregate|bulk|transaction|watch|ef-save|ef-query|ef-concurrency>");
         break;
 }
