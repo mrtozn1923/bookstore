@@ -1,0 +1,22 @@
+# Bookstore terminal series: ~/.config/starship.toml
+add_newline = false
+format = "$directory$git_branch$git_status$dotnet$nodejs$cmd_duration$line_break$character"
+
+[directory]
+truncation_length = 3
+
+[git_branch]
+format = "[$symbol$branch]($style) "
+symbol = "git:"
+
+[dotnet]
+format = "[.NET $version]($style) "
+version_format = "${raw}"
+
+[nodejs]
+format = "[node $version]($style) "
+version_format = "${raw}"
+
+[cmd_duration]
+min_time = 2000
+format = "[took $duration]($style) "

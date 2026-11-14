@@ -24,3 +24,21 @@ fi
 if command -v ng >/dev/null; then
     source <(SHELL=/bin/bash ng completion script)
 fi
+
+# --- Aliases and functions (post 03) ---
+alias dt='dotnet test'
+alias db='dotnet build'
+alias dw='dotnet watch --project src/Bookstore.Api'
+alias gs='git status -sb'
+alias ngs='ng serve'
+
+dtf() {
+    dotnet test --filter "FullyQualifiedName~${1:?usage: dtf <TestClassOrMethod>}" "${@:2}"
+}
+
+# --- Prompt (post 03) ---
+if command -v starship >/dev/null; then
+    eval "$(starship init bash)"
+else
+    PS1='\W $(git branch --show-current 2>/dev/null)\$ '
+fi
