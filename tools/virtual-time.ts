@@ -5,10 +5,15 @@ import { TestScheduler } from "rxjs/testing";
 
 let scheduler: TestScheduler | undefined;
 
-export function runInVirtualTime(title: string, scenario: () => void): void {
+// maxMs stops the virtual clock, so a stream that never completes (interval…) cannot loop forever
+export function runInVirtualTime(title: string, scenario: () => void, maxMs = 60_000): void {
   console.log(`--- ${title}`);
-  scheduler = new TestScheduler(() => {});
-  scheduler.run(() => scenario());
+  const current = new TestScheduler(() => {});
+  scheduler = current;
+  current.run(() => {
+    current.maxFrames = maxMs;
+    scenario();
+  });
   scheduler = undefined;
 }
 
