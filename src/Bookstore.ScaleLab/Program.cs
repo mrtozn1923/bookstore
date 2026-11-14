@@ -2,6 +2,7 @@ using System.Globalization;
 using Bookstore.ScaleLab;
 using Bookstore.ScaleLab.Partitioning;
 using Bookstore.ScaleLab.ReadRouting;
+using Bookstore.ScaleLab.Sharding;
 
 CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
 CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
@@ -21,6 +22,9 @@ return args switch
     ["sql-intent", .. var rest] => await ReadRoutingCommands.SqlIntentAsync(LabOptions.Parse(rest)),
     ["partition-maintain", .. var rest] => await PartitionCommands.MaintainAsync(LabOptions.Parse(rest)),
     ["sql-elimination", .. var rest] => await SqlPartitionCommands.EliminationAsync(LabOptions.Parse(rest)),
+    ["shard-my-orders", .. var rest] => await ShardingCommands.MyOrdersAsync(LabOptions.Parse(rest)),
+    ["shard-id-collision", .. var rest] => await ShardingCommands.IdCollisionAsync(LabOptions.Parse(rest)),
+    ["shard-best-sellers", .. var rest] => await ShardingCommands.BestSellersAsync(LabOptions.Parse(rest)),
     _ => Usage()
 };
 
