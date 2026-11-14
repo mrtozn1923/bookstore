@@ -9,6 +9,7 @@
     "#routes/*": "./src/routes/*.ts",
     "#services/*": "./src/services/*.ts",
     "#domain/*": "./src/domain/*.ts",
+    "#storage/*": "./src/storage/*.ts",
     "#db/*": "./src/db/*"
   },
   "workspaces": [

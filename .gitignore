@@ -1,3 +1,6 @@
 node_modules/
 .env
 *.log
+uploads/
+data/catalog.json
+labs/*/out/
