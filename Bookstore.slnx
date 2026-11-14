@@ -31,7 +31,12 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Bookstore.ArchitectureTests/Bookstore.ArchitectureTests.csproj" />
+    <Project Path="tests/Bookstore.Bff.ContractTests/Bookstore.Bff.ContractTests.csproj" />
+    <Project Path="tests/Bookstore.Catalog.ContractTests/Bookstore.Catalog.ContractTests.csproj" />
+    <Project Path="tests/Bookstore.Contracts.Tests/Bookstore.Contracts.Tests.csproj" />
+    <Project Path="tests/Bookstore.EndToEndTests/Bookstore.EndToEndTests.csproj" />
     <Project Path="tests/Bookstore.Notifications.Tests/Bookstore.Notifications.Tests.csproj" />
+    <Project Path="tests/Bookstore.Ordering.IntegrationTests/Bookstore.Ordering.IntegrationTests.csproj" />
     <Project Path="tests/Bookstore.Ordering.Tests/Bookstore.Ordering.Tests.csproj" />
     <Project Path="tests/Bookstore.Payments.Tests/Bookstore.Payments.Tests.csproj" />
   </Folder>

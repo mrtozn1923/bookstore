@@ -1,0 +1,41 @@
+{
+  "type": [
+    "object",
+    "null"
+  ],
+  "properties": {
+    "orderId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "lines": {
+      "type": "array",
+      "items": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "isbn": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": [
+              "string",
+              "integer"
+            ],
+            "pattern": "^-?(?:0|[1-9]\\d*)$"
+          }
+        },
+        "required": [
+          "isbn",
+          "quantity"
+        ]
+      }
+    }
+  },
+  "required": [
+    "orderId",
+    "lines"
+  ]
+}

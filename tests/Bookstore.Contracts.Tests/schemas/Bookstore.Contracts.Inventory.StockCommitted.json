@@ -1,0 +1,15 @@
+{
+  "type": [
+    "object",
+    "null"
+  ],
+  "properties": {
+    "orderId": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [
+    "orderId"
+  ]
+}

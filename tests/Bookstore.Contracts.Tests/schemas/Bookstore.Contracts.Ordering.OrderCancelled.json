@@ -1,0 +1,32 @@
+{
+  "type": [
+    "object",
+    "null"
+  ],
+  "properties": {
+    "orderId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "customerId": {
+      "type": "string"
+    },
+    "customerEmail": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "string"
+    },
+    "cancelledAtUtc": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "orderId",
+    "customerId",
+    "customerEmail",
+    "reason",
+    "cancelledAtUtc"
+  ]
+}

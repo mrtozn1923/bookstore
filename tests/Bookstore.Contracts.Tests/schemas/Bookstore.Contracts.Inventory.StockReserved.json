@@ -1,0 +1,25 @@
+{
+  "type": [
+    "object",
+    "null"
+  ],
+  "properties": {
+    "orderId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "reservationId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "expiresAtUtc": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "orderId",
+    "reservationId",
+    "expiresAtUtc"
+  ]
+}

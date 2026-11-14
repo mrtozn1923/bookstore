@@ -1,0 +1,35 @@
+{
+  "type": [
+    "object",
+    "null"
+  ],
+  "properties": {
+    "isbn": {
+      "type": "string"
+    },
+    "oldTitle": {
+      "type": "string"
+    },
+    "newTitle": {
+      "type": "string"
+    },
+    "version": {
+      "type": [
+        "string",
+        "integer"
+      ],
+      "pattern": "^-?(?:0|[1-9]\\d*)$"
+    },
+    "occurredAtUtc": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "isbn",
+    "oldTitle",
+    "newTitle",
+    "version",
+    "occurredAtUtc"
+  ]
+}

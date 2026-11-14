@@ -1,0 +1,28 @@
+{
+  "type": [
+    "object",
+    "null"
+  ],
+  "properties": {
+    "orderId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "customerId": {
+      "type": "string"
+    },
+    "customerEmail": {
+      "type": "string"
+    },
+    "confirmedAtUtc": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "orderId",
+    "customerId",
+    "customerEmail",
+    "confirmedAtUtc"
+  ]
+}

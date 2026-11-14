@@ -1,0 +1,47 @@
+{
+  "type": [
+    "object",
+    "null"
+  ],
+  "properties": {
+    "isbn": {
+      "type": "string"
+    },
+    "oldPrice": {
+      "type": [
+        "string",
+        "number"
+      ],
+      "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$"
+    },
+    "newPrice": {
+      "type": [
+        "string",
+        "number"
+      ],
+      "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$"
+    },
+    "currency": {
+      "type": "string"
+    },
+    "version": {
+      "type": [
+        "string",
+        "integer"
+      ],
+      "pattern": "^-?(?:0|[1-9]\\d*)$"
+    },
+    "occurredAtUtc": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "isbn",
+    "oldPrice",
+    "newPrice",
+    "currency",
+    "version",
+    "occurredAtUtc"
+  ]
+}

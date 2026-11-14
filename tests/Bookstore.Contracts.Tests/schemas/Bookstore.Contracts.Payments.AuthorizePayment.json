@@ -1,0 +1,31 @@
+{
+  "type": [
+    "object",
+    "null"
+  ],
+  "properties": {
+    "orderId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "amount": {
+      "type": [
+        "string",
+        "number"
+      ],
+      "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$"
+    },
+    "currency": {
+      "type": "string"
+    },
+    "customerEmail": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "orderId",
+    "amount",
+    "currency",
+    "customerEmail"
+  ]
+}

@@ -1,0 +1,133 @@
+{
+  "consumer": {
+    "name": "Bookstore.Bff"
+  },
+  "interactions": [
+    {
+      "description": "a request for a book that does not exist",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "the book 9780000000000 does not exist"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/api/v1/books/9780000000000"
+      },
+      "response": {
+        "status": 404
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "a request for an existing book",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "the book 9780141439587 exists"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/api/v1/books/9780141439587"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "author": "Jane Austen",
+            "category": "Classics",
+            "currency": "TRY",
+            "description": "A young woman in a small English village keeps arranging other people's marriages.",
+            "isbn": "9780141439587",
+            "price": 249.9,
+            "publishedYear": 1815,
+            "title": "Emma"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$.author": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.category": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.currency": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Z]{3}$"
+                }
+              ]
+            },
+            "$.description": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.price": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "decimal"
+                }
+              ]
+            },
+            "$.publishedYear": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            },
+            "$.title": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      },
+      "type": "Synchronous/HTTP"
+    }
+  ],
+  "metadata": {
+    "pactRust": {
+      "ffi": "0.4.27",
+      "models": "1.2.8"
+    },
+    "pactSpecification": {
+      "version": "4.0"
+    }
+  },
+  "provider": {
+    "name": "Bookstore.Catalog"
+  }
+}

@@ -12,6 +12,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- The Pact consumer test calls CatalogApi, which is internal to the BFF -->
+    <InternalsVisibleTo Include="Bookstore.Bff.ContractTests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\Bookstore.ServiceDefaults\Bookstore.ServiceDefaults.csproj" />
     <ProjectReference Include="..\..\Inventory\Bookstore.Inventory.Contracts\Bookstore.Inventory.Contracts.csproj" />
   </ItemGroup>

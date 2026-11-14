@@ -1,0 +1,22 @@
+{
+  "type": [
+    "object",
+    "null"
+  ],
+  "properties": {
+    "isbn": {
+      "type": "string"
+    },
+    "quantity": {
+      "type": [
+        "string",
+        "integer"
+      ],
+      "pattern": "^-?(?:0|[1-9]\\d*)$"
+    }
+  },
+  "required": [
+    "isbn",
+    "quantity"
+  ]
+}
