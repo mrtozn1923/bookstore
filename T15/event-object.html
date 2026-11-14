@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Event Object</title>
+</head>
+<body>
+  <button class="format">Paperback</button>
+  <button class="format">Hardcover</button>
+  <button class="format">E-book</button>
+  <p id="choice">No format chosen yet.</p>
+  <script>
+    const choice = document.getElementById("choice");
+
+    function pickFormat(event) {
+      console.log(event.type);   // "click"
+      console.log(event.target); // the clicked button
+      choice.textContent = "You picked: " + event.target.textContent;
+    }
+
+    document.querySelectorAll(".format").forEach((button) => {
+      button.addEventListener("click", pickFormat);
+    });
+  </script>
+</body>
+</html>

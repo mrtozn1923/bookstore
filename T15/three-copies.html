@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Three Copies</title>
+</head>
+<body>
+  <p>Spring sale: Dune, at most 3 copies per customer</p>
+  <button id="reserve">Reserve a copy</button>
+  <script>
+    const reserveButton = document.getElementById("reserve");
+    let reserved = 0;
+
+    function reserve() {
+      reserved = reserved + 1;
+      console.log("Reserved:", reserved);
+      if (reserved === 3) {
+        reserveButton.removeEventListener("click", reserve);
+        reserveButton.textContent = "Limit reached";
+      }
+    }
+
+    reserveButton.addEventListener("click", reserve);
+  </script>
+</body>
+</html>

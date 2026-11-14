@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>preventDefault</title>
+</head>
+<body>
+  <a id="link" href="/books/dune">Dune details</a>
+  <form id="search">
+    <input id="query" placeholder="Search books">
+    <button>Search</button>
+  </form>
+  <p id="result"></p>
+  <script>
+    document.getElementById("link").addEventListener("click", (event) => {
+      event.preventDefault();
+      console.log("The link was clicked but the page didn't change.");
+    });
+
+    document.getElementById("search").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const query = document.getElementById("query").value;
+      document.getElementById("result").textContent = "Searching for: " + query;
+    });
+  </script>
+</body>
+</html>

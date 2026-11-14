@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gift Note</title>
+</head>
+<body>
+  <input id="gift-note" placeholder="Write a gift note...">
+  <p id="preview"></p>
+  <p id="counter">0 / 50</p>
+  <script>
+    const giftNote = document.getElementById("gift-note");
+    const preview = document.getElementById("preview");
+    const counter = document.getElementById("counter");
+
+    giftNote.addEventListener("input", (event) => {
+      const text = event.target.value;
+      preview.textContent = text;
+      counter.textContent = text.length + " / 50";
+    });
+
+    giftNote.addEventListener("keydown", (event) => {
+      console.log("Key pressed:", event.key);
+      if (event.key === "Escape") {
+        giftNote.value = "";
+        preview.textContent = "";
+        counter.textContent = "0 / 50";
+      }
+    });
+  </script>
+</body>
+</html>
