@@ -1,0 +1,22 @@
+# Bookstore terminal series: $PROFILE (PowerShell 7.6)
+
+# --- History (post 02) ---
+Set-PSReadLineOption -HistoryNoDuplicates -MaximumHistoryCount 20000
+Set-PSReadLineOption -AddToHistoryHandler {
+    param([string]$line)
+    if ($line -match 'Authorization:|Bearer\s') {
+        return $false
+    }
+    return [Microsoft.PowerShell.PSConsoleReadLine]::GetDefaultAddToHistoryOption($line)
+}
+
+# --- Line editing and predictions (post 02) ---
+Set-PSReadLineOption -PredictionSource History -PredictionViewStyle ListView
+Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete
+Set-PSReadLineKeyHandler -Key UpArrow -Function HistorySearchBackward
+Set-PSReadLineKeyHandler -Key DownArrow -Function HistorySearchForward
+
+# --- Completion (post 02) ---
+if (Get-Command dotnet -ErrorAction Ignore) {
+    dotnet completions script pwsh 2>$null | Out-String | Invoke-Expression
+}
