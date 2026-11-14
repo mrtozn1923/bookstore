@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Simplified, UBL-like basic components. Not the official UBL 2.1 or UBL-TR schema. -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+           xmlns="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+           elementFormDefault="qualified">
+  <xs:complexType name="AmountType">
+    <xs:simpleContent>
+      <xs:extension base="xs:decimal">
+        <xs:attribute name="currencyID" type="xs:string" use="required" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="QuantityType">
+    <xs:simpleContent>
+      <xs:extension base="xs:decimal">
+        <xs:attribute name="unitCode" type="xs:string" use="required" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:element name="UBLVersionID" type="xs:string" />
+  <xs:element name="ID" type="xs:string" />
+  <xs:element name="IssueDate" type="xs:date" />
+  <xs:element name="DocumentCurrencyCode" type="xs:string" />
+  <xs:element name="Name" type="xs:string" />
+  <xs:element name="InvoicedQuantity" type="QuantityType" />
+  <xs:element name="LineExtensionAmount" type="AmountType" />
+  <xs:element name="PriceAmount" type="AmountType" />
+  <xs:element name="PayableAmount" type="AmountType" />
+</xs:schema>

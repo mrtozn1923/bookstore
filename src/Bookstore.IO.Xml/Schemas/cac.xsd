@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Simplified, UBL-like aggregate components. Not the official UBL 2.1 or UBL-TR schema. -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+           xmlns="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+           xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+           elementFormDefault="qualified">
+  <xs:import namespace="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" schemaLocation="cbc.xsd" />
+  <xs:element name="AccountingCustomerParty">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Party">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="PartyName">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element ref="cbc:Name" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="InvoiceLine">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="cbc:ID" />
+        <xs:element ref="cbc:InvoicedQuantity" />
+        <xs:element ref="cbc:LineExtensionAmount" />
+        <xs:element name="Item">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="cbc:Name" />
+              <xs:element name="StandardItemIdentification">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element ref="cbc:ID" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Price">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="cbc:PriceAmount" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="LegalMonetaryTotal">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="cbc:PayableAmount" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Bookstore.IO.Xml</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Bookstore.Ordering\Bookstore.Ordering.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Schemas\*.xsd" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

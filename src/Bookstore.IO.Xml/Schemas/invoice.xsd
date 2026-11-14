@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Simplified, UBL-like invoice. Not the official UBL 2.1 or UBL-TR schema. -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
+           xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+           xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+           elementFormDefault="qualified">
+  <xs:import namespace="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" schemaLocation="cbc.xsd" />
+  <xs:import namespace="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" schemaLocation="cac.xsd" />
+  <xs:element name="Invoice">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="cbc:UBLVersionID" />
+        <xs:element ref="cbc:ID" />
+        <xs:element ref="cbc:IssueDate" />
+        <xs:element ref="cbc:DocumentCurrencyCode" />
+        <xs:element ref="cac:AccountingCustomerParty" />
+        <xs:element ref="cac:InvoiceLine" maxOccurs="unbounded" />
+        <xs:element ref="cac:LegalMonetaryTotal" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
