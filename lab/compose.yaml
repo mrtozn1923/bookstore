@@ -17,10 +17,13 @@ services:
       - xpack.security.enabled=true
       - xpack.security.http.ssl.enabled=false
       - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      # Post 11: shared file system snapshot repository (in production: S3, Azure Blob, GCS or an NFS share).
+      - path.repo=/usr/share/elasticsearch/snapshots
     ports:
       - "127.0.0.1:9200:9200"
     volumes:
       - es-data:/usr/share/elasticsearch/data
+      - es-snapshots:/usr/share/elasticsearch/snapshots
     healthcheck:
       test: ["CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' -u elastic:$$ELASTIC_PASSWORD http://localhost:9200 | grep -q 200"]
       interval: 5s
@@ -41,3 +44,4 @@ services:
 
 volumes:
   es-data:
+  es-snapshots:

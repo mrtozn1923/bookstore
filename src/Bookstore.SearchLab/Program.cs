@@ -57,10 +57,16 @@ switch (command)
     case "esql":
         await ClientDemo.EsqlAsync();
         break;
+    case "templates":
+        await IndexTemplates.RunAsync(rest);
+        break;
+    case "migrate":
+        await IndexMigration.RunAsync(rest);
+        break;
     case "seed-sql":
         await SqlSeeder.RunAsync(rest);
         break;
     default:
-        Console.WriteLine("Commands: inverted-index [query], seed-sql [syntheticCount], first-connection, create-index [name], translators [name], search <text>, bulk-compare, bulk-all [count], bulk-errors, refresh, concurrency, export [pageSize], rank-eval [options], syntax, serialization, errors, esql");
+        Console.WriteLine("Commands: inverted-index [query], seed-sql [syntheticCount], first-connection, create-index [name], translators [name], search <text>, bulk-compare, bulk-all [count], bulk-errors, refresh, concurrency, export [pageSize], rank-eval [options], syntax, serialization, errors, esql, templates [--replicas n], migrate <new-index> [--rps n]");
         break;
 }

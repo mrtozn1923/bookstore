@@ -15,6 +15,14 @@ public static class LabClient
 
     public static ElasticsearchClient Create() => SearchClientFactory.Create(Options);
 
+    // Post 11: index templates, reindex and alias swaps run with a separate admin key (BOOKSTORE_ES_ADMIN_API_KEY);
+    // the application's key cannot manage aliases or delete indices.
+    public static ElasticsearchClient CreateAdmin() => SearchClientFactory.Create(new ElasticsearchOptions
+    {
+        Url = Options.Url,
+        ApiKey = Environment.GetEnvironmentVariable("BOOKSTORE_ES_ADMIN_API_KEY") ?? ""
+    });
+
     // debug: keeps request/response bytes (post 10); onRequestCompleted sees every call.
     public static ElasticsearchClient Create(bool debug, Action<ApiCallDetails>? onRequestCompleted = null)
     {

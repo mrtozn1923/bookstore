@@ -18,6 +18,10 @@ public static class RankEvalDemo
         List<Judgment> judgments = JsonSerializer.Deserialize<List<Judgment>>(
             await File.ReadAllTextAsync(Path.Combine("search", "relevance", "judgments.json")), BookCatalog.JsonOptions) ?? [];
 
+        ElasticsearchClient client = LabClient.Create();
+        // Hits report the concrete index (books-v2), not the alias: the ratings must name the same index (post 11).
+        string index = (await client.Indices.GetAsync(SearchClientFactory.BooksIndex)).Indices.Keys.Single();
+
         RankEvalRequest request = new()
         {
             Indices = SearchClientFactory.BooksIndex,
@@ -26,11 +30,11 @@ public static class RankEvalDemo
             {
                 Id = j.Query,
                 Request = new RankEvalQuery { Query = BookSearchQuery.Build(new BookSearchFilter(j.Query), tuning), Size = 5 },
-                Ratings = j.Ratings.Select(r => new DocumentRating { Index = SearchClientFactory.BooksIndex, Id = r.Key, Rating = r.Value }).ToList()
+                Ratings = j.Ratings.Select(r => new DocumentRating { Index = index, Id = r.Key, Rating = r.Value }).ToList()
             }).ToList()
         };
 
-        RankEvalResponse response = await LabClient.Create().RankEvalAsync(request);
+        RankEvalResponse response = await client.RankEvalAsync(request);
         if (!response.IsValidResponse)
         {
             Console.WriteLine($"rank_eval failed: {response.ElasticsearchServerError?.Error?.Reason ?? response.DebugInformation}");

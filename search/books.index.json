@@ -47,9 +47,7 @@
           "en": { "type": "text", "analyzer": "english" },
           "folded": { "type": "text", "analyzer": "tr_folded" },
           "sort": { "type": "icu_collation_keyword", "language": "tr" },
-          "autocomplete": { "type": "text", "analyzer": "tr_autocomplete", "search_analyzer": "tr_folded" },
-          "sayt": { "type": "search_as_you_type", "analyzer": "tr_folded" },
-          "complete": { "type": "completion", "analyzer": "tr_folded" }
+          "autocomplete": { "type": "text", "analyzer": "tr_autocomplete", "search_analyzer": "tr_folded" }
         }
       },
       "authors": {

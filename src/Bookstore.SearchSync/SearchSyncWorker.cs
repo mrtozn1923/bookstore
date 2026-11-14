@@ -63,6 +63,9 @@ public sealed class SearchSyncWorker(
     {
         BulkRequest request = new(SearchClientFactory.BooksIndex)
         {
+            // Post 11: "books" must be an alias. Without this, a write after a mistaken DELETE would
+            // auto-create a plain "books" index with a dynamic mapping.
+            RequireAlias = true,
             Operations = [.. batch.Changes.Select(ToOperation)]
         };
 
