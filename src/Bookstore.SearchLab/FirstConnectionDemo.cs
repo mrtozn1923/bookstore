@@ -7,12 +7,7 @@ public static class FirstConnectionDemo
 {
     public static async Task RunAsync()
     {
-        ElasticsearchOptions options = new()
-        {
-            Url = Environment.GetEnvironmentVariable("BOOKSTORE_ES_URL") ?? "http://localhost:9200",
-            ApiKey = Environment.GetEnvironmentVariable("BOOKSTORE_ES_API_KEY") ?? ""
-        };
-        ElasticsearchClient client = SearchClientFactory.Create(options);
+        ElasticsearchClient client = LabClient.Create();
 
         InfoResponse info = await client.InfoAsync();
         Console.WriteLine(info.IsValidResponse

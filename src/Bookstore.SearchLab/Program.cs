@@ -15,10 +15,16 @@ switch (command)
     case "first-connection":
         await FirstConnectionDemo.RunAsync();
         break;
+    case "create-index":
+        await IndexSetup.RunAsync(rest);
+        break;
+    case "translators":
+        await MappingDemo.TranslatorsAsync(rest);
+        break;
     case "seed-sql":
         await SqlSeeder.RunAsync(rest);
         break;
     default:
-        Console.WriteLine("Commands: inverted-index [query], seed-sql [syntheticCount], first-connection");
+        Console.WriteLine("Commands: inverted-index [query], seed-sql [syntheticCount], first-connection, create-index [name], translators [name]");
         break;
 }

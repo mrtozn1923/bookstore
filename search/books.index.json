@@ -1,0 +1,51 @@
+{
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0,
+    "analysis": {
+      "analyzer": {
+        "folded": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": ["lowercase", "asciifolding"]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "dynamic": "strict",
+    "properties": {
+      "isbn": { "type": "keyword" },
+      "title": {
+        "type": "text",
+        "fields": {
+          "keyword": { "type": "keyword", "ignore_above": 256 },
+          "folded": { "type": "text", "analyzer": "folded" }
+        }
+      },
+      "authors": {
+        "type": "nested",
+        "properties": {
+          "name": {
+            "type": "text",
+            "fields": { "keyword": { "type": "keyword", "ignore_above": 256 } }
+          },
+          "role": { "type": "keyword" }
+        }
+      },
+      "categories": { "type": "keyword" },
+      "language": { "type": "keyword" },
+      "price": { "type": "scaled_float", "scaling_factor": 100 },
+      "currency": { "type": "keyword" },
+      "stockQuantity": { "type": "integer" },
+      "publishedOn": { "type": "date", "format": "yyyy-MM-dd" },
+      "averageRating": { "type": "half_float" },
+      "description": {
+        "type": "text",
+        "fields": {
+          "folded": { "type": "text", "analyzer": "folded" }
+        }
+      }
+    }
+  }
+}
