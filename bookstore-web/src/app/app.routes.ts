@@ -1,10 +1,12 @@
 import { Routes } from '@angular/router';
-import { BookPage } from './catalog/book-page';
-import { CatalogPage } from './catalog/catalog-page';
 import { HomePage } from './home/home-page';
 
 export const routes: Routes = [
+  // The home page (LCP page, prerendered) stays in the initial bundle
   { path: '', component: HomePage, title: 'Bookstore' },
-  { path: 'books', component: CatalogPage, title: 'Catalog - Bookstore' },
-  { path: 'books/:isbn', component: BookPage, title: 'Book - Bookstore' },
+  // Lazy routes: each page and what only it imports (the CDK for the catalog) get their own chunk
+  { path: 'books', loadComponent: () => import('./catalog/catalog-page').then((m) => m.CatalogPage), title: 'Catalog - Bookstore' },
+  { path: 'books/:isbn', loadComponent: () => import('./catalog/book-page').then((m) => m.BookPage), title: 'Book - Bookstore' },
+  // Back office: a few staff users, none of its code (or chart.js) belongs to a customer's first load
+  { path: 'admin/reports', loadComponent: () => import('./admin/reports-page').then((m) => m.ReportsPage), title: 'Reports - Bookstore' },
 ];
