@@ -1,0 +1,38 @@
+# A local cluster (kind): Catalog plus throwaway SQL Server, Redis and RabbitMQ in the same namespace.
+# In production these three are managed services and this overlay's dependencies.yaml does not exist.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: bookstore
+resources:
+  - namespace.yaml
+  - dependencies.yaml
+  - ../../base/catalog
+images:
+  - name: bookstore-catalog
+    newTag: "14"
+patches:
+  # One replica is enough on a laptop; sample data for the demo
+  - target:
+      kind: Deployment
+      name: catalog
+    patch: |
+      - op: replace
+        path: /spec/replicas
+        value: 1
+  - target:
+      kind: Job
+      name: catalog-migrate
+    patch: |
+      - op: replace
+        path: /spec/template/spec/containers/0/env/0/value
+        value: "true"
+secretGenerator:
+  # Both files are created by make-secrets.sh and ignored by git
+  - name: catalog-connections
+    envs:
+      - catalog.env
+  - name: dependencies
+    envs:
+      - dependencies.env
+generatorOptions:
+  disableNameSuffixHash: true

@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
+    <ContainerRepository>bookstore-inventory</ContainerRepository>
     <RootNamespace>Bookstore.Inventory</RootNamespace>
   </PropertyGroup>
 

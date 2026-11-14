@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
+    <ContainerRepository>bookstore-ordering</ContainerRepository>
     <RootNamespace>Bookstore.Ordering</RootNamespace>
     <OpenApiDocumentsDirectory>$(MSBuildProjectDirectory)/../openapi</OpenApiDocumentsDirectory>
     <OpenApiGenerateDocumentsOptions>--file-name ordering</OpenApiGenerateDocumentsOptions>

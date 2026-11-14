@@ -1,5 +1,8 @@
 IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(args);
 
+// `aspire publish` writes a Helm chart for this environment (post 14). `aspire run` ignores it.
+builder.AddKubernetesEnvironment("k8s");
+
 // One SQL Server container locally, one database per service.
 IResourceBuilder<SqlServerServerResource> sql = builder.AddSqlServer("sql")
     .WithImageTag("2025-latest")
@@ -36,12 +39,17 @@ IResourceBuilder<KeycloakResource> keycloak = builder.AddKeycloak("keycloak", 81
     .WithContainerName("msapp-keycloak")
     .WithDataVolume("msapp-keycloak-data")
     .WithLifetime(ContainerLifetime.Persistent)
-    .WithRealmImport("./Realms")
     // Keycloak's JVM takes a share of all the memory it sees by default; a fixed heap is enough locally.
     .WithEnvironment("JAVA_OPTS_KC_HEAP", "-Xms128m -Xmx512m")
     .WithEnvironment("BOOKSTORE_BFF_CLIENT_SECRET", bffClientSecret)
     .WithEnvironment("BOOKSTORE_BFF_SERVICE_SECRET", bffServiceSecret)
     .WithEnvironment("BOOKSTORE_DEMO_PASSWORD", demoPassword);
+// The realm import is a bind mount of Realms/; the Kubernetes publisher does not support bind mounts,
+// and production manages its realm elsewhere anyway (post 10).
+if (builder.ExecutionContext.IsRunMode)
+{
+    keycloak.WithRealmImport("./Realms");
+}
 
 // The migrator is the Catalog binary started with --migrate; it exits when the schema is up to date.
 IResourceBuilder<ProjectResource> catalogMigrator = builder

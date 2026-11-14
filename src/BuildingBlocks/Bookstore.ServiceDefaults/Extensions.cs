@@ -108,19 +108,15 @@ public static class Extensions
 
     public static WebApplication MapDefaultEndpoints(this WebApplication app)
     {
-        // Adding health checks endpoints to applications in non-development environments has security implications.
-        // See https://aka.ms/aspire/healthchecks for details before enabling these endpoints in non-development environments.
-        if (app.Environment.IsDevelopment())
+        // Kubernetes probes them in every environment (post 14): /health for readiness (all checks, including the
+        // database Aspire's EF Core integration registers), /alive for liveness (only "live": the process answers).
+        // The answers carry no details. Only the BFF is reachable from outside the cluster; its ingress should not
+        // route these paths.
+        app.MapHealthChecks(HealthEndpointPath);
+        app.MapHealthChecks(AlivenessEndpointPath, new HealthCheckOptions
         {
-            // All health checks must pass for app to be considered ready to accept traffic after starting
-            app.MapHealthChecks(HealthEndpointPath);
-
-            // Only health checks tagged with the "live" tag must pass for app to be considered alive
-            app.MapHealthChecks(AlivenessEndpointPath, new HealthCheckOptions
-            {
-                Predicate = r => r.Tags.Contains("live")
-            });
-        }
+            Predicate = r => r.Tags.Contains("live")
+        });
 
         return app;
     }

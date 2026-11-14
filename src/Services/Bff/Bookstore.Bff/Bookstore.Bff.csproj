@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
+    <ContainerRepository>bookstore-bff</ContainerRepository>
     <RootNamespace>Bookstore.Bff</RootNamespace>
   </PropertyGroup>
 
@@ -20,5 +21,35 @@
     <ProjectReference Include="..\..\..\BuildingBlocks\Bookstore.ServiceDefaults\Bookstore.ServiceDefaults.csproj" />
     <ProjectReference Include="..\..\Inventory\Bookstore.Inventory.Contracts\Bookstore.Inventory.Contracts.csproj" />
   </ItemGroup>
+
+  <!-- Publishing the BFF builds the Angular application into wwwroot and takes the files into the publish
+       output, so the image serves the SPA and the API from one origin (post 11). SkipAngularBuild=true skips it
+       when the build output is already there (a CI job that built Angular in an earlier step). -->
+  <PropertyGroup>
+    <!-- wwwroot is build output, rewritten by Angular during publish. The SDK's static web assets pipeline (and its
+         precompression) would work on the files it saw when the project was evaluated, so it stays off here;
+         UseStaticFiles serves the files (Program.cs). -->
+    <StaticWebAssetsEnabled>false</StaticWebAssetsEnabled>
+    <AngularRoot>$(MSBuildProjectDirectory)/../../../../web/bookstore-web</AngularRoot>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot/**" />
+  </ItemGroup>
+
+  <Target Name="BuildAngular" BeforeTargets="ComputeResolvedFilesToPublishList" Condition="'$(SkipAngularBuild)' != 'true'">
+    <Exec Command="npm ci --no-audit --no-fund" WorkingDirectory="$(AngularRoot)" />
+    <Exec Command="npm run build" WorkingDirectory="$(AngularRoot)" />
+  </Target>
+
+  <Target Name="PublishAngular" AfterTargets="ComputeResolvedFilesToPublishList">
+    <ItemGroup>
+      <AngularFiles Include="wwwroot/**" />
+      <ResolvedFileToPublish Include="@(AngularFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+        <RelativePath>wwwroot/%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
 
 </Project>

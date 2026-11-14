@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
+    <ContainerRepository>bookstore-catalog</ContainerRepository>
     <RootNamespace>Bookstore.Catalog</RootNamespace>
     <!-- The OpenAPI document is generated on every build and committed: it is the contract consumers read. -->
     <OpenApiDocumentsDirectory>$(MSBuildProjectDirectory)/../openapi</OpenApiDocumentsDirectory>

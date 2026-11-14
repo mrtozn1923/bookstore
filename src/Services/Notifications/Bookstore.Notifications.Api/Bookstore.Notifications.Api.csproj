@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
+    <ContainerRepository>bookstore-notifications</ContainerRepository>
     <RootNamespace>Bookstore.Notifications</RootNamespace>
   </PropertyGroup>
 

@@ -483,3 +483,6 @@ $RECYCLE.BIN/
 
 # Angular build output (web/bookstore-web builds into the BFF)
 src/Services/Bff/Bookstore.Bff/wwwroot/
+
+# Local Kubernetes secrets (deploy/k8s/overlays/local/make-secrets.sh)
+deploy/k8s/overlays/local/*.env

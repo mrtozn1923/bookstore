@@ -1,0 +1,47 @@
+# The migrator from post 02 as a Job: the same image with --migrate, run to completion before the new version
+# of the Deployment rolls out. A Deployment would restart it forever after it exits.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: catalog-migrate
+  labels:
+    app.kubernetes.io/name: catalog-migrate
+    app.kubernetes.io/part-of: bookstore
+spec:
+  backoffLimit: 4
+  # A migration that hangs (a database that is not answering) fails the deploy instead of blocking it forever
+  activeDeadlineSeconds: 600
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      restartPolicy: OnFailure
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1654
+      containers:
+        - name: migrate
+          image: bookstore-catalog
+          args: ["--migrate"]
+          envFrom:
+            - secretRef:
+                name: catalog-connections
+          env:
+            - name: Seed__SampleData
+              value: "false"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}

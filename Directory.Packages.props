@@ -5,6 +5,8 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup Label="Aspire">
+    <!-- Kubernetes publishing (aspire publish) is still a preview package -->
+    <PackageVersion Include="Aspire.Hosting.Kubernetes" Version="13.6.5-preview.1.26559.7" />
     <PackageVersion Include="Aspire.Hosting.Keycloak" Version="13.6.5-preview.1.26559.7" />
     <PackageVersion Include="Aspire.Keycloak.Authentication" Version="13.6.5-preview.1.26559.7" />
     <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="13.6.5" />
