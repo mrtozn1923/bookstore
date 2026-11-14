@@ -1,7 +1,21 @@
 $TTL 3600
-@       IN SOA  ns1.dnshost.example. hostmaster.bookstore.example. 2026111401 7200 3600 1209600 300
-@       IN NS   ns1.dnshost.example.
-@       IN A    203.0.113.10
-@       IN AAAA 2001:db8:10::10
-www     IN CNAME bookstore.example.
-api     IN A    203.0.113.20
+@               IN SOA   ns1.dnshost.example. hostmaster.bookstore.example. 2026111402 7200 3600 1209600 300
+@               IN NS    ns1.dnshost.example.
+
+@               IN A     203.0.113.10
+@               IN AAAA  2001:db8:10::10
+www             IN CNAME bookstore.example.
+staging         IN A     203.0.113.11
+
+api             IN CNAME bookstore-api.azurewebsites.net.
+asuid.api       IN TXT   "9ABEB8D35A69D8E0F4A0BFF18E629B9F43A21C43C122B267F86E53CCD94D5DDD"
+staging-api     IN CNAME bookstore-api-staging.azurewebsites.net.
+asuid.staging-api IN TXT "E0569773CCBDE09F6A6E5713B605DB0178702CB5C816155CD142437EF63CE573"
+
+@               IN CAA   0 issue "letsencrypt.org"
+@               IN CAA   0 issue "digicert.com"
+@               IN CAA   0 issuewild ";"
+@               IN CAA   0 iodef "mailto:security@bookstore.example"
+@               IN TXT   "google-site-verification=pX3c9QeLr0vT2mWb8yKdN5hJ7sFa1uZo4iGyE6"
+
+promo           IN CNAME bookstore-promo-2025.azurewebsites.net.
