@@ -1,0 +1,24 @@
+<Project Sdk="Aspire.AppHost.Sdk/13.6.5">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AspireUseCliBundle>true</AspireUseCliBundle>
+    <UserSecretsId>bookstore-apphost</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.Keycloak" />
+    <PackageReference Include="Aspire.Hosting.RabbitMQ" />
+    <PackageReference Include="Aspire.Hosting.Redis" />
+    <PackageReference Include="Aspire.Hosting.SqlServer" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Services\Catalog\Bookstore.Catalog.Api\Bookstore.Catalog.Api.csproj" />
+    <ProjectReference Include="..\Services\Inventory\Bookstore.Inventory.Grpc\Bookstore.Inventory.Grpc.csproj" />
+    <ProjectReference Include="..\Services\Notifications\Bookstore.Notifications.Api\Bookstore.Notifications.Api.csproj" />
+    <ProjectReference Include="..\Services\Ordering\Bookstore.Ordering.Api\Bookstore.Ordering.Api.csproj" />
+    <ProjectReference Include="..\Services\Payments\Bookstore.Payments.Api\Bookstore.Payments.Api.csproj" />
+  </ItemGroup>
+
+</Project>

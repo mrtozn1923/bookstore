@@ -1,7 +1,10 @@
 <Solution>
-  <Folder Name="/src/" />
+  <Folder Name="/src/">
+    <Project Path="src/Bookstore.AppHost/Bookstore.AppHost.csproj" />
+  </Folder>
   <Folder Name="/src/BuildingBlocks/">
     <Project Path="src/BuildingBlocks/Bookstore.Contracts/Bookstore.Contracts.csproj" />
+    <Project Path="src/BuildingBlocks/Bookstore.ServiceDefaults/Bookstore.ServiceDefaults.csproj" />
   </Folder>
   <Folder Name="/src/Services/" />
   <Folder Name="/src/Services/Catalog/">
