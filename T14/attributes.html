@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Attributes and classList</title>
+  <style>
+    .box { padding: 16px; border: 2px solid gray; }
+    .active { border-color: green; background: honeydew; }
+  </style>
+</head>
+<body>
+  <div id="card" class="box">Dune</div>
+  <a id="link" href="/books/dune">Details</a>
+  <script>
+    const card = document.getElementById("card");
+    const link = document.getElementById("link");
+
+    console.log(link.getAttribute("href")); // "/books/dune"
+    console.log(link.href);                 // the full address
+    link.setAttribute("title", "Dune by Frank Herbert");
+
+    card.classList.add("active");
+    console.log(card.classList.contains("active")); // true
+    card.classList.toggle("active"); // removes it if present, adds it if not
+    card.classList.toggle("active");
+
+    card.style.color = "darkred";
+    card.style.fontSize = "20px";
+  </script>
+</body>
+</html>

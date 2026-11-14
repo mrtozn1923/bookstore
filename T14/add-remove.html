@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Add and Remove</title>
+</head>
+<body>
+  <ul id="list">
+    <li>Dune</li>
+    <li id="emma">Emma</li>
+  </ul>
+  <script>
+    const list = document.getElementById("list");
+
+    const newItem = document.createElement("li");
+    newItem.textContent = "The Hobbit";
+    list.append(newItem);   // adds to the end
+
+    const first = document.createElement("li");
+    first.textContent = "Middlemarch";
+    list.prepend(first);    // adds to the start
+
+    document.getElementById("emma").remove();
+
+    const titles = ["Frankenstein", "Pride and Prejudice"];
+    for (const title of titles) {
+      const li = document.createElement("li");
+      li.textContent = title;
+      list.append(li);
+    }
+  </script>
+</body>
+</html>

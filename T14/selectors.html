@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Selectors</title>
+</head>
+<body>
+  <h1 id="title">Bestsellers</h1>
+  <ul class="list">
+    <li class="item">Dune</li>
+    <li class="item on-sale">Emma</li>
+    <li class="item">The Hobbit</li>
+  </ul>
+  <script>
+    const title = document.getElementById("title");
+    const firstItem = document.querySelector(".item");
+    const onSale = document.querySelector("li.on-sale");
+    const allItems = document.querySelectorAll(".list .item");
+
+    console.log(title.textContent);     // "Bestsellers"
+    console.log(firstItem.textContent); // "Dune"
+    console.log(onSale.textContent);    // "Emma"
+    console.log(allItems.length);       // 3
+
+    allItems.forEach((item) => console.log(item.textContent));
+  </script>
+</body>
+</html>
