@@ -1,11 +1,9 @@
-import { NgModule } from '@angular/core';
-import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { BookListComponent } from './catalog/book-list/book-list.component';
 import { BookDetailComponent } from './book-detail/book-detail.component';
 import { BookSummaryComponent } from './book-summary/book-summary.component';
 import { BookReviewsComponent } from './book-reviews/book-reviews.component';
-import { AboutComponent } from './about/about.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { OrderListComponent } from './order-list/order-list.component';
 import { LoginComponent } from './login/login.component';
@@ -16,7 +14,7 @@ import { BookResolver } from './book.resolver';
 import { CheckoutComponent } from './checkout/checkout.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
 
-const routes: Routes = [
+export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent, title: 'Home' },
   { path: 'books', component: BookListComponent, title: 'Books' },
@@ -30,7 +28,11 @@ const routes: Routes = [
       { path: 'reviews', component: BookReviewsComponent }
     ]
   },
-  { path: 'about', component: AboutComponent, title: 'About' },
+  {
+    path: 'about',
+    loadComponent: () => import('./about/about.component').then(m => m.AboutComponent),
+    title: 'About'
+  },
   { path: 'login', component: LoginComponent },
   { path: 'checkout', component: CheckoutComponent, title: 'Checkout' },
   { path: 'sign-up', component: SignUpComponent, title: 'Sign up' },
@@ -38,15 +40,9 @@ const routes: Routes = [
   { path: 'account/address', component: AddressEditComponent, canDeactivate: [UnsavedChangesGuard] },
   {
     path: 'admin',
-    loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule),
+    loadChildren: () => import('./admin/admin.routes').then(m => m.ADMIN_ROUTES),
     canLoad: [AuthGuard],
     canActivate: [AuthGuard]
   },
   { path: '**', component: NotFoundComponent }
 ];
-
-@NgModule({
-  imports: [RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })],
-  exports: [RouterModule]
-})
-export class AppRoutingModule { }

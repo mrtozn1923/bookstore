@@ -8,8 +8,8 @@ describe('ReservationTimerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ReservationTimerComponent ]
-    })
+    imports: [ReservationTimerComponent]
+})
     .compileComponents();
   });
 

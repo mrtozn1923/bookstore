@@ -1,8 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-sale-countdown',
-  template: `<p>Sale ends in {{ secondsLeft }} s</p>`
+    selector: 'app-sale-countdown',
+    template: `<p>Sale ends in {{ secondsLeft }} s</p>`,
+    standalone: true
 })
 export class SaleCountdownComponent implements OnInit, OnDestroy {
   secondsLeft = 3600;

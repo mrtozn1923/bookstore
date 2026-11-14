@@ -1,8 +1,11 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { NgIf } from '@angular/common';
 
 @Component({
-  selector: 'app-price-tag',
-  template: `<p>{{ price }} TRY <span *ngIf="trend">{{ trend }}</span></p>`
+    selector: 'app-price-tag',
+    template: `<p>{{ price }} TRY <span *ngIf="trend">{{ trend }}</span></p>`,
+    standalone: true,
+    imports: [NgIf]
 })
 export class PriceTagComponent implements OnChanges {
   @Input() price = 0;

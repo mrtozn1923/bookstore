@@ -4,8 +4,9 @@ import { takeUntil } from 'rxjs/operators';
 import { CartService } from '../cart.service';
 
 @Component({
-  selector: 'app-cart-notifier',
-  template: `<p>{{ message }}</p>`
+    selector: 'app-cart-notifier',
+    template: `<p>{{ message }}</p>`,
+    standalone: true
 })
 export class CartNotifierComponent implements OnInit, OnDestroy {
   message = '';

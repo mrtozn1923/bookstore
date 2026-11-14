@@ -9,9 +9,8 @@ describe('SignUpComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule],
-      declarations: [ SignUpComponent ]
-    })
+    imports: [ReactiveFormsModule, SignUpComponent]
+})
     .compileComponents();
   });
 

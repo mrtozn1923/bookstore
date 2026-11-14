@@ -1,8 +1,9 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 
 @Component({
-  selector: 'app-search-box',
-  template: `<input #searchInput placeholder="Search books...">`
+    selector: 'app-search-box',
+    template: `<input #searchInput placeholder="Search books...">`,
+    standalone: true
 })
 export class SearchBoxComponent implements OnInit, AfterViewInit {
   @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;

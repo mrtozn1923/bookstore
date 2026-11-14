@@ -9,9 +9,8 @@ describe('LoginComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
-      declarations: [ LoginComponent ]
-    })
+    imports: [RouterTestingModule, LoginComponent]
+})
     .compileComponents();
   });
 

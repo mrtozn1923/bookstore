@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
+import { LowerCasePipe, DecimalPipe, PercentPipe, CurrencyPipe, DatePipe } from '@angular/common';
 
 @Component({
-  selector: 'app-order-summary',
-  template: `
+    selector: 'app-order-summary',
+    template: `
     <p>{{ orderDate | date }}</p>
     <p>{{ orderDate | date:'dd.MM.yyyy HH:mm' }}</p>
     <p>{{ orderDate | date:'d MMMM y, EEEE' }}</p>
@@ -13,7 +14,9 @@ import { Component } from '@angular/core';
     <p>{{ total | currency:'TRY':'symbol-narrow' }}</p>
     <p>{{ total | currency }}</p>
     <p>{{ orderDate | date:'MMMM' | lowercase }}</p>
-  `
+  `,
+    standalone: true,
+    imports: [LowerCasePipe, DecimalPipe, PercentPipe, CurrencyPipe, DatePipe]
 })
 export class OrderSummaryComponent {
   orderDate = new Date(2021, 4, 12, 14, 30);

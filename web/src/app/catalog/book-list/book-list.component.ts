@@ -1,14 +1,19 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AppConfig, APP_CONFIG } from '../../app-config';
 import { Book } from '../../book';
 import { CartService } from '../../cart.service';
 import { LoggerService } from '../../logger.service';
+import { InStockPipe } from '../in-stock.pipe';
+import { BookItemComponent } from '../book-item/book-item.component';
+import { NgFor } from '@angular/common';
 
 @Component({
-  selector: 'app-book-list',
-  templateUrl: './book-list.component.html',
-  styleUrls: ['./book-list.component.css']
+    selector: 'app-book-list',
+    templateUrl: './book-list.component.html',
+    styleUrls: ['./book-list.component.css'],
+    standalone: true,
+    imports: [RouterLink, NgFor, BookItemComponent, InStockPipe]
 })
 export class BookListComponent implements OnInit {
   books: Book[] = [

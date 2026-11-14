@@ -1,12 +1,15 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { FormArray, FormControl, NonNullableFormBuilder, Validators } from '@angular/forms';
+import { FormArray, FormControl, NonNullableFormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { noWhitespace, usernameAvailable } from './sign-up.validators';
+import { NgIf, NgFor } from '@angular/common';
 
 @Component({
-  selector: 'app-sign-up',
-  templateUrl: './sign-up.component.html'
+    selector: 'app-sign-up',
+    templateUrl: './sign-up.component.html',
+    standalone: true,
+    imports: [FormsModule, ReactiveFormsModule, NgIf, NgFor]
 })
 export class SignUpComponent implements OnInit, OnDestroy {
   private readonly fb = inject(NonNullableFormBuilder);

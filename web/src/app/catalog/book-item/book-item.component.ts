@@ -1,11 +1,15 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { Book } from '../../book';
+import { TruncatePipe } from '../truncate.pipe';
+import { RouterLink } from '@angular/router';
 
 @Component({
-  selector: 'app-book-item',
-  templateUrl: './book-item.component.html',
-  styleUrls: ['./book-item.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-book-item',
+    templateUrl: './book-item.component.html',
+    styleUrls: ['./book-item.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [RouterLink, TruncatePipe]
 })
 export class BookItemComponent {
   @Input() book!: Book;

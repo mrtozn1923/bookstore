@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { HighlightDirective } from '../highlight.directive';
+import { NgIf, NgFor, NgClass, NgStyle, NgSwitch, NgSwitchCase, NgSwitchDefault } from '@angular/common';
 
 export interface Order {
   id: number;
@@ -8,9 +10,11 @@ export interface Order {
 }
 
 @Component({
-  selector: 'app-order-list',
-  templateUrl: './order-list.component.html',
-  styleUrls: ['./order-list.component.css']
+    selector: 'app-order-list',
+    templateUrl: './order-list.component.html',
+    styleUrls: ['./order-list.component.css'],
+    standalone: true,
+    imports: [NgIf, NgFor, HighlightDirective, NgClass, NgStyle, NgSwitch, NgSwitchCase, NgSwitchDefault]
 })
 export class OrderListComponent {
   isLoading = false;

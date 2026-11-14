@@ -9,9 +9,8 @@ describe('BookSummaryComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ BookSummaryComponent ],
-      imports: [ BookRatingComponent ]
-    })
+    imports: [BookRatingComponent, BookSummaryComponent]
+})
     .compileComponents();
   });
 

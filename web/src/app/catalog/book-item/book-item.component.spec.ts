@@ -10,9 +10,8 @@ describe('BookItemComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
-      declarations: [ BookItemComponent, TruncatePipe ]
-    })
+    imports: [RouterTestingModule, BookItemComponent, TruncatePipe]
+})
     .compileComponents();
   });
 

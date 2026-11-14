@@ -8,8 +8,8 @@ describe('PriceTagComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PriceTagComponent ]
-    })
+    imports: [PriceTagComponent]
+})
     .compileComponents();
   });
 

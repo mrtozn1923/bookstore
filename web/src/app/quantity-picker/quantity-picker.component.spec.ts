@@ -8,8 +8,8 @@ describe('QuantityPickerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ QuantityPickerComponent ]
-    })
+    imports: [QuantityPickerComponent]
+})
     .compileComponents();
   });
 

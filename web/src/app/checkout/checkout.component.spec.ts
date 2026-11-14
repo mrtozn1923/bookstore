@@ -9,9 +9,8 @@ describe('CheckoutComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FormsModule],
-      declarations: [ CheckoutComponent ]
-    })
+    imports: [FormsModule, CheckoutComponent]
+})
     .compileComponents();
   });
 

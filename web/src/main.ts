@@ -1,12 +1,37 @@
-import { enableProdMode } from '@angular/core';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { LOCALE_ID, enableProdMode } from '@angular/core';
+import { registerLocaleData } from '@angular/common';
+import localeTr from '@angular/common/locales/tr';
+import { bootstrapApplication } from '@angular/platform-browser';
+import { PreloadAllModules, TitleStrategy, provideRouter, withPreloading } from '@angular/router';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
-import { AppModule } from './app/app.module';
+import { AppComponent } from './app/app.component';
+import { routes } from './app/app.routes';
+import { APP_CONFIG } from './app/app-config';
+import { AuthInterceptor } from './app/auth.interceptor';
+import { ErrorInterceptor } from './app/error.interceptor';
+import { BookstoreTitleStrategy } from './app/bookstore-title.strategy';
+import { LoggerService, SilentLoggerService } from './app/logger.service';
 import { environment } from './environments/environment';
 
 if (environment.production) {
   enableProdMode();
 }
 
-platformBrowserDynamic().bootstrapModule(AppModule)
-  .catch(err => console.error(err));
+registerLocaleData(localeTr);
+
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideRouter(routes, withPreloading(PreloadAllModules)),
+    provideHttpClient(withInterceptorsFromDi()),
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+    { provide: LOCALE_ID, useValue: 'tr' },
+    {
+      provide: LoggerService,
+      useFactory: () => environment.production ? new SilentLoggerService() : new LoggerService()
+    },
+    { provide: APP_CONFIG, useValue: { appName: 'Bookstore', pageSize: 20 } },
+    { provide: TitleStrategy, useClass: BookstoreTitleStrategy }
+  ]
+}).catch(err => console.error(err));

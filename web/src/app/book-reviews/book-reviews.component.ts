@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-book-reviews',
-  templateUrl: './book-reviews.component.html',
-  styleUrls: ['./book-reviews.component.css']
+    selector: 'app-book-reviews',
+    templateUrl: './book-reviews.component.html',
+    styleUrls: ['./book-reviews.component.css'],
+    standalone: true
 })
 export class BookReviewsComponent implements OnInit {
   isbn = '';

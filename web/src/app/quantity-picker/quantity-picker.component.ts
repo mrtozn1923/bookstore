@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
-  selector: 'app-quantity-picker',
-  templateUrl: './quantity-picker.component.html',
-  styleUrls: ['./quantity-picker.component.css']
+    selector: 'app-quantity-picker',
+    templateUrl: './quantity-picker.component.html',
+    styleUrls: ['./quantity-picker.component.css'],
+    standalone: true
 })
 export class QuantityPickerComponent {
   @Input() quantity = 1;

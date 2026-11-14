@@ -13,10 +13,9 @@ describe('BookListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
-      declarations: [ BookListComponent, BookItemComponent, InStockPipe, TruncatePipe ],
-      providers: [{ provide: APP_CONFIG, useValue: { appName: 'Bookstore', pageSize: 20 } }]
-    })
+    imports: [RouterTestingModule, BookListComponent, BookItemComponent, InStockPipe, TruncatePipe],
+    providers: [{ provide: APP_CONFIG, useValue: { appName: 'Bookstore', pageSize: 20 } }]
+})
     .compileComponents();
   });
 
