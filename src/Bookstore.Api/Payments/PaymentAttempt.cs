@@ -80,6 +80,14 @@ public sealed class PaymentAttemptStore(TimeProvider time)
         }
     }
 
+    public PaymentAttempt? FindByReference(string reference)
+    {
+        lock (_attempts)
+        {
+            return _attempts.SingleOrDefault(a => a.Reference == reference);
+        }
+    }
+
     public IReadOnlyList<PaymentAttempt> ForOrder(int orderId)
     {
         lock (_attempts)

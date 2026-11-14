@@ -1,6 +1,6 @@
 using Bookstore.FakeProviders;
 
-// Usage: dotnet run --project src/Bookstore.FakeProviders -- [--payments Normal] [--payments-delay 5] [--carrier Normal] [--rates-delay 0.05] [--smtp Normal] [--receiver Normal]
+// Usage: dotnet run --project src/Bookstore.FakeProviders -- [--payments Normal] [--payments-delay 5] [--payments-webhook <url>] [--webhook-copies 1] [--carrier Normal] [--rates-delay 0.05] [--smtp Normal] [--receiver Normal]
 var payments = ReadMode(args, "--payments");
 var carrier = ReadMode(args, "--carrier");
 var smtp = ReadMode(args, "--smtp");
@@ -9,7 +9,9 @@ var receiver = ReadMode(args, "--receiver");
 using var paymentServer = FakePaymentProvider.Start(9091, new FakePaymentSettings
 {
     Mode = payments,
-    Delay = TimeSpan.FromSeconds(ReadSeconds(args, "--payments-delay", 5))
+    Delay = TimeSpan.FromSeconds(ReadSeconds(args, "--payments-delay", 5)),
+    WebhookUrl = ReadValue(args, "--payments-webhook") is { } webhook ? new Uri(webhook) : null,
+    WebhookCopies = (int)ReadSeconds(args, "--webhook-copies", 1)
 });
 using var carrierServer = FakeLegacyCarrier.Start(9092, carrier);
 using var ratesPrimary = FakeExchangeRates.Start(9093, "primary", TimeSpan.FromSeconds(ReadSeconds(args, "--rates-delay", 0.05)));
@@ -33,6 +35,12 @@ static double ReadSeconds(string[] args, string name, double defaultValue)
 {
     var index = Array.IndexOf(args, name);
     return index >= 0 && index + 1 < args.Length ? double.Parse(args[index + 1], System.Globalization.CultureInfo.InvariantCulture) : defaultValue;
+}
+
+static string? ReadValue(string[] args, string name)
+{
+    var index = Array.IndexOf(args, name);
+    return index >= 0 && index + 1 < args.Length ? args[index + 1] : null;
 }
 
 static FakeMode ReadMode(string[] args, string name)

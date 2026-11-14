@@ -3,6 +3,7 @@ using Bookstore.Notifications;
 using Bookstore.Ordering;
 using Bookstore.Payments;
 using Bookstore.Payments.ExchangeRates;
+using Bookstore.Payments.Webhooks;
 using Bookstore.Shipping;
 using Bookstore.Shipping.LegacyCarrier;
 using Bookstore.Webhooks;
@@ -45,6 +46,10 @@ builder.Services.AddScoped<IPaymentGateway, ProviderPaymentGateway>();
 builder.Services.AddSingleton<PaymentAttemptStore>();
 builder.Services.Configure<PaymentReconciliationOptions>(builder.Configuration.GetSection("Payments:Reconciliation"));
 builder.Services.AddHostedService<PaymentReconciliationJob>();
+// Incoming payment webhooks: verify, store, acknowledge; processing happens in the background.
+builder.Services.Configure<PaymentWebhookOptions>(builder.Configuration.GetSection("Payments:Provider:Webhooks"));
+builder.Services.AddSingleton<PaymentWebhookInbox>();
+builder.Services.AddHostedService<PaymentWebhookProcessor>();
 
 // Shipping: OAuth token handler on the API client, a separate client for the token endpoint.
 builder.Services.AddOptions<LegacyCarrierOptions>()
@@ -239,6 +244,9 @@ app.MapPost("/admin/webhooks/messages/{id}/resend", (string id, WebhookOutbox ou
     message.NextAttemptAt = time.GetUtcNow();
     return Results.Accepted();
 });
+
+// Anonymous by design: the signature, not a user, proves who is calling.
+app.MapPost("/webhooks/payment-provider", PaymentWebhookEndpoint.ReceiveAsync);
 
 app.MapHealthChecks("/health");
 

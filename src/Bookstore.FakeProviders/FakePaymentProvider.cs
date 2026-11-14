@@ -23,12 +23,23 @@ public sealed class FakePaymentSettings
     public double FailureRate { get; init; }
 
     public int Seed { get; init; } = 42;
+
+    // When set, every successful charge is announced with a signed payment.succeeded webhook.
+    public Uri? WebhookUrl { get; init; }
+
+    public string WebhookSecret { get; init; } = FakePaymentProvider.DefaultWebhookSecret;
+
+    // How many times the same event is delivered (providers deliver at least once).
+    public int WebhookCopies { get; init; } = 1;
 }
 
 // A fake card payment provider: snake_case JSON, amounts in minor units (kuruş),
 // Idempotency-Key support and a lookup endpoint for reconciliation.
 public static class FakePaymentProvider
 {
+    // A fake example secret; Bookstore.Api's appsettings.json has the same value.
+    public const string DefaultWebhookSecret = "whsec_Ym9va3N0b3JlLWZha2Utd2ViaG9vay1zZWNyZXQtMDAwMA==";
+
     public static WireMockServer Start(int? port = null, FakeMode mode = FakeMode.Normal) =>
         Start(port, new FakePaymentSettings { Mode = mode });
 
@@ -157,6 +168,11 @@ public static class FakePaymentProvider
             lock (_charges)
             {
                 _charges.Add(created);
+            }
+
+            if (settings.WebhookUrl is not null)
+            {
+                _ = FakeWebhookSender.SendAsync(settings.WebhookUrl, settings.WebhookSecret, settings.WebhookCopies, "payment.succeeded", created);
             }
 
             return (201, created.ToJsonString());
