@@ -7,11 +7,11 @@ variable "REGISTRY" {
 }
 
 group "default" {
-  targets = ["tools", "api"]
+  targets = ["tools", "api", "web"]
 }
 
 group "ci" {
-  targets = ["lint", "test", "tools", "api"]
+  targets = ["lint", "test", "tools", "api", "web"]
 }
 
 target "tools" {
@@ -34,6 +34,12 @@ target "api" {
   tags = ["dockerseries-bookstore-api:${TAG}"]
 }
 
+target "web" {
+  context = "web"
+  target  = "final"
+  tags    = ["dockerseries-bookstore-web:${TAG}"]
+}
+
 target "test" {
   context    = "."
   dockerfile = "src/Bookstore.Tools/Dockerfile"
@@ -43,7 +49,7 @@ target "test" {
 
 target "lint" {
   name     = "lint-${app}"
-  matrix   = { app = ["tools", "api"] }
+  matrix   = { app = ["tools", "api", "web"] }
   inherits = [app]
   call     = "check"
 }

@@ -13,6 +13,11 @@ builder.Services.AddHealthChecks();
 builder.Services.Configure<StoreOptions>(builder.Configuration.GetSection(StoreOptions.SectionName));
 builder.Services.AddSingleton<BookCatalog>();
 
+// bookstore-web is served from another origin (its own container), so the browser needs CORS
+string[] allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
+    policy.WithOrigins(allowedOrigins).WithMethods("GET").AllowAnyHeader()));
+
 WebApplication app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -20,6 +25,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.UseCors();
 app.MapHealthChecks("/health");
 app.MapGet("/books", (BookCatalog catalog) => catalog.SortedByTitle());
 app.MapGet("/store/clock", (IOptions<StoreOptions> options) =>
