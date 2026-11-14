@@ -1,6 +1,7 @@
 using System.Globalization;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using Bookstore.Api.Services;
 using Bookstore.Api.Validation;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,19 @@ builder.Services.AddControllers()
     });
 builder.Services.AddValidatorsFromAssemblyContaining<CreateOrderRequestValidator>();
 ValidatorOptions.Global.LanguageManager.Culture = new CultureInfo("en");
+builder.Services.AddSingleton<IBookCatalog, InMemoryBookCatalog>();
+builder.Services.AddSingleton<SingletonOperation>();
+builder.Services.AddScoped<ScopedOperation>();
+builder.Services.AddTransient<TransientOperation>();
+builder.Services.AddTransient<OperationReporter>();
+builder.Services.AddSingleton<INotifier, EmailNotifier>();
+builder.Services.AddSingleton<INotifier, SmsNotifier>();
+
+builder.Host.UseDefaultServiceProvider(options =>
+{
+    options.ValidateScopes = true;
+    options.ValidateOnBuild = true;
+});
 
 var app = builder.Build();
 
@@ -28,6 +42,8 @@ app.Use(async (context, next) =>
 app.MapControllers();
 
 app.MapGet("/api/orders/{orderId:guid}", (Guid orderId) => new { orderId, Status = "Pending" });
+
+app.MapGet("/api/minimal/reporter", (OperationReporter reporter) => reporter.Report());
 
 app.MapGet("/debug/routes", (IEnumerable<EndpointDataSource> sources) =>
     sources.SelectMany(s => s.Endpoints)
