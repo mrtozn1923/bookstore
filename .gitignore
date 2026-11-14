@@ -487,3 +487,7 @@ web/bookstore-web/dist/
 
 # Uploaded files (development storage)
 App_Data/
+
+# HTTP client secrets and reports (Rider / ijhttp)
+http-client.private.env.json
+tests/http/reports/

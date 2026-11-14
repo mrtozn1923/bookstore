@@ -1,0 +1,55 @@
+# Bookstore.Api: login -> books -> cart -> order -> read the order
+# Visual Studio and VS Code (REST Client) syntax. Environment: http-client.env.json.
+# The password comes from .env (BOOKSTORE_PASSWORD=...), which is not committed; see .env.example.
+
+# @name login
+POST {{HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{Email}}",
+  "password": "{{$dotenv BOOKSTORE_PASSWORD}}"
+}
+
+###
+
+# @name books
+GET {{HostAddress}}/api/books?page=1&search=Hobbit
+Accept: application/json
+
+###
+
+# @name cart
+POST {{HostAddress}}/api/carts
+Authorization: Bearer {{login.response.body.$.accessToken}}
+
+###
+
+PUT {{HostAddress}}/api/carts/{{cart.response.body.$.id}}/items/{{books.response.body.$.items[0].isbn}}
+Authorization: Bearer {{login.response.body.$.accessToken}}
+Content-Type: application/json
+
+{
+  "quantity": 2
+}
+
+###
+
+# @name order
+POST {{HostAddress}}/api/orders
+Authorization: Bearer {{login.response.body.$.accessToken}}
+Content-Type: application/json
+X-Request-Id: {{$guid}}
+
+{
+  "cartId": "{{cart.response.body.$.id}}",
+  "customerName": "Ada Lovelace",
+  "customerEmail": "{{Email}}"
+}
+
+###
+
+GET {{order.response.headers.Location}}
+Authorization: Bearer {{login.response.body.$.accessToken}}
+
+###

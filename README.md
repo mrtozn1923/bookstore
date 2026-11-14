@@ -77,6 +77,11 @@ Anlatım: "Bookstore: Sitedeki Örnek Uygulama" serisi.
 Uçtan uca smoke test (bash, curl 8.3+ ve jq; Windows'ta Git Bash ya da WSL):
 `BOOKSTORE_PASSWORD=Bookstore-Demo-1 ./scripts/smoke.sh`
 
+`.http` dosyaları: `src/Bookstore.Api/Bookstore.Api.http` Visual Studio ve VS Code REST Client için (şifre
+`src/Bookstore.Api/.env`'den, örnek `.env.example`); `tests/http/bookstore-flow.http` Rider ve `ijhttp` için
+(şifre `tests/http/http-client.private.env.json`'dan):
+`docker run --rm -v "$PWD/tests/http:/workdir" jetbrains/intellij-http-client -D -e dev -v http-client.env.json -p http-client.private.env.json bookstore-flow.http --report`
+
 Migration'ları elle yönetmek istersen: `dotnet tool restore` sonra
 `dotnet ef database update --project src/Bookstore.Api`.
 
@@ -172,6 +177,11 @@ It is explained in the series "Bookstore: The Site's Example Application".
 
 End-to-end smoke test (bash, curl 8.3+ and jq; on Windows use Git Bash or WSL):
 `BOOKSTORE_PASSWORD=Bookstore-Demo-1 ./scripts/smoke.sh`
+
+`.http` files: `src/Bookstore.Api/Bookstore.Api.http` for Visual Studio and the VS Code REST Client (password from
+`src/Bookstore.Api/.env`, see `.env.example`); `tests/http/bookstore-flow.http` for Rider and `ijhttp`
+(password from `tests/http/http-client.private.env.json`):
+`docker run --rm -v "$PWD/tests/http:/workdir" jetbrains/intellij-http-client -D -e dev -v http-client.env.json -p http-client.private.env.json bookstore-flow.http --report`
 
 To manage migrations by hand: `dotnet tool restore`, then
 `dotnet ef database update --project src/Bookstore.Api`.

@@ -1,0 +1,14 @@
+{
+  "rest-client.environmentVariables": {
+    "$shared": {
+      "Email": "ada@example.com"
+    },
+    "dev": {
+      "HostAddress": "http://localhost:5080"
+    },
+    "staff": {
+      "HostAddress": "http://localhost:5080",
+      "Email": "grace@example.com"
+    }
+  }
+}

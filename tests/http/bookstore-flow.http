@@ -1,0 +1,80 @@
+# Bookstore flow for the JetBrains HTTP Client (Rider, IntelliJ, ijhttp CLI).
+# Password: http-client.private.env.json (not committed) or ijhttp -P Password=...
+
+### Login
+POST {{HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{Email}}",
+  "password": "{{Password}}"
+}
+
+> {%
+    client.test("login returns a bearer token", () => {
+        client.assert(response.status === 200, "status " + response.status);
+        client.assert(response.body.tokenType === "Bearer", "tokenType " + response.body.tokenType);
+    });
+    client.global.set("token", response.body.accessToken);
+%}
+
+### Books
+GET {{HostAddress}}/api/books?page=1&search=Hobbit
+Accept: application/json
+
+> {%
+    client.test("The Hobbit is in the catalog", () => {
+        client.assert(response.body.items.length === 1, "items " + response.body.items.length);
+    });
+    client.global.set("isbn", response.body.items[0].isbn);
+%}
+
+### Create cart
+POST {{HostAddress}}/api/carts
+Authorization: Bearer {{token}}
+
+> {%
+    client.test("cart is created", () => client.assert(response.status === 201, "status " + response.status));
+    client.global.set("cartId", response.body.id);
+%}
+
+### Add two copies
+PUT {{HostAddress}}/api/carts/{{cartId}}/items/{{isbn}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "quantity": 2
+}
+
+> {%
+    client.test("total is two copies", () => client.assert(response.body.total === 659.8, "total " + response.body.total));
+%}
+
+### Place order
+POST {{HostAddress}}/api/orders
+Authorization: Bearer {{token}}
+Content-Type: application/json
+X-Request-Id: {{$uuid}}
+
+{
+  "cartId": "{{cartId}}",
+  "customerName": "Ada Lovelace",
+  "customerEmail": "{{Email}}"
+}
+
+> {%
+    client.test("order is created with a Location", () => {
+        client.assert(response.status === 201, "status " + response.status);
+        client.assert(response.headers.valueOf("Location") !== null, "no Location header");
+    });
+    client.global.set("orderUrl", response.headers.valueOf("Location"));
+%}
+
+### Read order
+GET {{orderUrl}}
+Authorization: Bearer {{token}}
+
+> {%
+    client.test("order is placed", () => client.assert(response.body.status === "Placed", "status " + response.body.status));
+%}
