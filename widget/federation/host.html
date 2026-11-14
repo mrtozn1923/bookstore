@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Federation host</title>
+    <script src="./remoteEntry.js"></script>
+</head>
+<body>
+    <div id="book-finder"></div>
+    <script type="module">
+        await bookFinder.init({});
+        const factory = await bookFinder.get("./finder");
+        const { mountBookFinder } = factory();
+        mountBookFinder(document.querySelector("#book-finder"), [
+            { isbn: "9780441172719", title: "Dune", author: "Frank Herbert", price: 450 },
+            { isbn: "9780141439587", title: "Emma", author: "Jane Austen", price: 210 },
+        ]);
+    </script>
+</body>
+</html>
