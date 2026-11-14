@@ -55,7 +55,38 @@ switch (args.FirstOrDefault())
     case "ef-retry":
         await TxDemo.EfRetryAsync(connectionString);
         break;
+    case "defaults":
+        await NpgsqlDemo.DefaultsAsync(connectionString);
+        break;
+    case "types":
+        await using (NpgsqlDataSource dataSource = NpgsqlDataSource.Create(connectionString))
+        {
+            await NpgsqlDemo.TypesAsync(dataSource);
+        }
+        break;
+    case "enum":
+        await NpgsqlDemo.EnumAsync(connectionString);
+        break;
+    case "copy":
+        await using (NpgsqlDataSource dataSource = NpgsqlDataSource.Create(connectionString))
+        {
+            await NpgsqlDemo.CopyAsync(dataSource, rows: 100_000);
+        }
+        break;
+    case "prepare":
+        await NpgsqlDemo.PrepareAsync(connectionString, executions: 5_000);
+        break;
+    case "listen":
+        await using (NpgsqlDataSource dataSource = NpgsqlDataSource.Create(connectionString))
+        {
+            await NpgsqlDemo.ListenAsync(dataSource);
+        }
+        break;
+    case "otel":
+        await NpgsqlDemo.TraceAsync(connectionString);
+        break;
     default:
-        Console.WriteLine("usage: dotnet run -- connections | pool | ef-script | bestsellers | write-skew | queue | advisory | ef-retry");
+        Console.WriteLine("usage: dotnet run -- connections | pool | ef-script | bestsellers | write-skew | queue | advisory | ef-retry\n" +
+            "       defaults | types | enum | copy | prepare | listen | otel");
         break;
 }
