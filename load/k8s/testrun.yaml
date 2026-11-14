@@ -1,0 +1,18 @@
+# Distributed run with the k6 Operator: the same test split across 2 runner pods.
+# The archive fixes the options (scenarios, rates, duration), so pass -e values that shape them here:
+#   k6 archive -e DURATION=1m -e SCALE=0.5 load/k6/bookstore.ts -O archive.tar
+#   kubectl create configmap bookstore-load --from-file=archive.tar
+apiVersion: k6.io/v1alpha1
+kind: TestRun
+metadata:
+  name: bookstore-load
+spec:
+  parallelism: 2
+  script:
+    configMap:
+      name: bookstore-load
+      file: archive.tar
+  # Read at run time by the script itself (not by the options).
+  arguments: -e BASE_URL=http://host.docker.internal:5080
+  runner:
+    image: grafana/k6:2.4.0
