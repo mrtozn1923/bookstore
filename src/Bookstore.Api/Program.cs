@@ -1,40 +1,22 @@
-using Bookstore.Api.Middleware;
-
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/error");
-    app.UseHsts();
-}
-
-app.UseRequestTiming();
-
 app.Use(async (context, next) =>
 {
-    if (context.Request.Headers.ContainsKey("X-Maintenance"))
-    {
-        context.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
-        await context.Response.WriteAsync("Bookstore is under maintenance");
-        return;
-    }
-
-    await next(context);
+    var endpoint = context.GetEndpoint();
+    app.Logger.LogInformation("{Path} matched {Endpoint}", context.Request.Path, endpoint?.DisplayName ?? "(none)");
+    await next();
 });
-
-app.Map("/ping", branch =>
-{
-    branch.Run(async context => await context.Response.WriteAsync("pong"));
-});
-
-app.UseHttpsRedirection();
-app.UseRouting();
-app.UseAuthorization();
 
 app.MapControllers();
-app.Map("/error", () => Results.Problem());
+
+app.MapGet("/api/orders/{orderId:guid}", (Guid orderId) => new { orderId, Status = "Pending" });
+
+app.MapGet("/debug/routes", (IEnumerable<EndpointDataSource> sources) =>
+    sources.SelectMany(s => s.Endpoints)
+           .OfType<RouteEndpoint>()
+           .Select(e => e.RoutePattern.RawText));
 
 app.Run();
