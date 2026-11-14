@@ -1,9 +1,12 @@
 terraform {
   required_version = "~> 1.17"
 
-  # Partial configuration: the rest comes from -backend-config=backend/<environment>.azurerm.tfbackend
   backend "azurerm" {
-    use_azuread_auth = true
+    resource_group_name  = "rg-bookstore-tfstate-weu"
+    storage_account_name = "stbookstoretfstateweu"
+    container_name       = "tfstate"
+    key                  = "bookstore/prod.tfstate"
+    use_azuread_auth     = true
   }
 
   required_providers {

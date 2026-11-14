@@ -1,5 +1,3 @@
-provider "docker" {}
-
 data "docker_network" "shared" {
   name = var.shared_network_name
 
@@ -24,7 +22,7 @@ resource "docker_network" "bookstore" {
 }
 
 module "api" {
-  source = "../modules/bookstore-service"
+  source = "../../modules/bookstore-service"
 
   name          = "${local.name_prefix}-api"
   volume_prefix = local.name_prefix

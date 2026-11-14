@@ -28,7 +28,7 @@ data "azurerm_key_vault" "shared" {
 }
 
 module "api" {
-  source = "../modules/bookstore-webapp"
+  source = "../../modules/bookstore-webapp"
 
   name_suffix         = local.suffix
   resource_group_name = azurerm_resource_group.bookstore.name
