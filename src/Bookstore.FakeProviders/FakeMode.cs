@@ -7,5 +7,7 @@ public enum FakeMode
     Error,
     Throttle,
     Maintenance,
-    SchemaChanged
+    SchemaChanged,
+    // Payments only: the request never reaches the provider's logic.
+    Drop
 }

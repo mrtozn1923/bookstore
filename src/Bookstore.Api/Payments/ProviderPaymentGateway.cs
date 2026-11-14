@@ -2,6 +2,8 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.Http.Resilience;
+using Polly;
 using Polly.CircuitBreaker;
 using Polly.Timeout;
 
@@ -13,6 +15,7 @@ public sealed class ProviderPaymentGateway(
     ILogger<ProviderPaymentGateway> logger) : IPaymentGateway
 {
     public const string ClientName = "payment-provider";
+    public const string IdempotencyKeyHeader = "Idempotency-Key";
 
     private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web)
     {
@@ -25,12 +28,20 @@ public sealed class ProviderPaymentGateway(
             Amount: ToMinorUnits(request.Amount),
             Currency: request.Currency,
             Source: request.CardToken,
-            Description: $"Bookstore order {request.OrderId}");
+            Description: $"Bookstore order {request.OrderId}",
+            MerchantReference: request.Reference);
+
+        using var message = new HttpRequestMessage(HttpMethod.Post, "v1/charges")
+        {
+            Content = JsonContent.Create(body, options: Json)
+        };
+        // Same key on every attempt for this payment; the draft defines the value as a quoted string.
+        message.Headers.Add(IdempotencyKeyHeader, $"\"{request.IdempotencyKey}\"");
 
         HttpResponseMessage response;
         try
         {
-            response = await httpClient.PostAsJsonAsync("v1/charges", body, Json, cancellationToken);
+            response = await httpClient.SendAsync(message, cancellationToken);
         }
         catch (HttpRequestException ex)
         {
@@ -56,9 +67,20 @@ public sealed class ProviderPaymentGateway(
 
         using (response)
         {
+            if (response.Headers.Contains("Idempotent-Replayed"))
+            {
+                logger.LogInformation("Provider replayed the stored response for key {IdempotencyKey}", request.IdempotencyKey);
+            }
+
             return response.StatusCode switch
             {
                 HttpStatusCode.Created or HttpStatusCode.OK => await ReadApprovedAsync(response, cancellationToken),
+                // The first request with this key is still running at the provider.
+                HttpStatusCode.Conflict => throw new PaymentGatewayException(
+                    PaymentFailureKind.UnknownOutcome, "Payment with this key is still being processed."),
+                // Same key, different body: a bug on our side, never retry.
+                HttpStatusCode.UnprocessableEntity => throw new PaymentGatewayException(
+                    PaymentFailureKind.ContractViolation, "Idempotency-Key was reused with a different request."),
                 HttpStatusCode.PaymentRequired => await ReadDeclinedAsync(response, cancellationToken),
                 HttpStatusCode.TooManyRequests => throw new PaymentGatewayException(
                     PaymentFailureKind.Transient, "Payment provider is throttling us.")
@@ -72,6 +94,27 @@ public sealed class ProviderPaymentGateway(
                     PaymentFailureKind.ContractViolation, $"Unexpected status {(int)response.StatusCode} from payment provider.")
             };
         }
+    }
+
+    public async Task<PaymentResult.Approved?> FindChargeAsync(string reference, CancellationToken cancellationToken)
+    {
+        // GET is safe: the pipeline retries it like any other read.
+        var list = await httpClient.GetFromJsonAsync<ProviderChargeList>(
+            $"v1/charges?merchant_reference={Uri.EscapeDataString(reference)}", Json, cancellationToken);
+        var charge = list?.Data.FirstOrDefault(c => c.Status == "succeeded");
+        return charge is null ? null : new PaymentResult.Approved(charge.Id);
+    }
+
+    // Retry POST only when it carries an Idempotency-Key; a 409 means "still running, ask again later".
+    public static bool ShouldRetry(Outcome<HttpResponseMessage> outcome, HttpRequestMessage? request)
+    {
+        if (request is null || (request.Method == HttpMethod.Post && !request.Headers.Contains(IdempotencyKeyHeader)))
+        {
+            return false;
+        }
+
+        return HttpClientResiliencePredicates.IsTransient(outcome)
+            || outcome.Result?.StatusCode == HttpStatusCode.Conflict;
     }
 
     private async Task<PaymentResult> ReadApprovedAsync(HttpResponseMessage response, CancellationToken cancellationToken)
@@ -102,9 +145,11 @@ public sealed class ProviderPaymentGateway(
     private static long ToMinorUnits(decimal amount) => (long)decimal.Round(amount * 100m, 0, MidpointRounding.AwayFromZero);
 
     // Provider contract: kept internal so it never leaks into the domain.
-    private sealed record ProviderChargeRequest(long Amount, string Currency, string Source, string Description);
+    private sealed record ProviderChargeRequest(long Amount, string Currency, string Source, string Description, string MerchantReference);
 
     private sealed record ProviderCharge(string Id, string Status, long Amount, string Currency);
+
+    private sealed record ProviderChargeList(List<ProviderCharge> Data);
 
     private sealed record ProviderErrorEnvelope(ProviderError Error);
 

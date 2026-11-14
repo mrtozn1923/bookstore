@@ -11,3 +11,12 @@ POST {{Api}}/api/orders/1001/checkout
 Content-Type: application/json
 
 { "cardToken": "tok_card_declined" }
+
+### Same order, a different card while the first payment is still open
+POST {{Api}}/api/orders/1001/checkout
+Content-Type: application/json
+
+{ "cardToken": "tok_mastercard" }
+
+### Order status and its payment attempts (after a 202 Accepted)
+GET {{Api}}/api/orders/1001

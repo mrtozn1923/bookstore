@@ -29,7 +29,7 @@ builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddTransient<CorrelationIdHandler>();
 builder.Services.ConfigureHttpClientDefaults(http => http.AddHttpMessageHandler<CorrelationIdHandler>());
 
-// Payments: POST is not idempotent yet (post 06), so no retries; short timeouts from appsettings.
+// Payments: every charge carries an Idempotency-Key, so POST may be retried; timeouts from appsettings.
 var payments = builder.Services.AddHttpClient(ProviderPaymentGateway.ClientName, client =>
     {
         client.BaseAddress = new Uri(builder.Configuration["Payments:Provider:BaseUrl"]!);
@@ -38,8 +38,12 @@ var payments = builder.Services.AddHttpClient(ProviderPaymentGateway.ClientName,
     .AddAsKeyed();
 payments.AddStandardResilienceHandler()
     .Configure(builder.Configuration.GetSection("Resilience:PaymentProvider"))
-    .Configure(options => options.Retry.DisableForUnsafeHttpMethods());
+    .Configure(options => options.Retry.ShouldHandle = args =>
+        ValueTask.FromResult(ProviderPaymentGateway.ShouldRetry(args.Outcome, args.Context.GetRequestMessage())));
 builder.Services.AddScoped<IPaymentGateway, ProviderPaymentGateway>();
+builder.Services.AddSingleton<PaymentAttemptStore>();
+builder.Services.Configure<PaymentReconciliationOptions>(builder.Configuration.GetSection("Payments:Reconciliation"));
+builder.Services.AddHostedService<PaymentReconciliationJob>();
 
 // Shipping: OAuth token handler on the API client, a separate client for the token endpoint.
 builder.Services.AddOptions<LegacyCarrierOptions>()
@@ -145,8 +149,23 @@ var app = builder.Build();
 app.UseExceptionHandler();
 
 app.MapPost("/api/orders/{id:int}/checkout", async (int id, CheckoutRequest request, CheckoutService checkout, CancellationToken ct) =>
-    await checkout.CheckoutAsync(id, request.CardToken, ct) is { } result
-        ? Results.Ok(result)
+    await checkout.CheckoutAsync(id, request.CardToken, ct) switch
+    {
+        null => Results.NotFound(),
+        // Outcome unknown: the client polls the order instead of paying again.
+        { Status: OrderStatus.PaymentPending } pending => Results.Accepted($"/api/orders/{id}", pending),
+        var result => Results.Ok(result)
+    });
+
+app.MapGet("/api/orders/{id:int}", (int id, OrderStore orders, PaymentAttemptStore attempts) =>
+    orders.Find(id) is { } order
+        ? Results.Ok(new
+        {
+            order.Id,
+            order.Status,
+            order.ProviderPaymentId,
+            Attempts = attempts.ForOrder(id).Select(a => new { a.IdempotencyKey, a.Status })
+        })
         : Results.NotFound());
 
 app.MapHealthChecks("/health");

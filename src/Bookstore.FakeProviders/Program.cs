@@ -1,13 +1,17 @@
 using Bookstore.FakeProviders;
 
-// Usage: dotnet run --project src/Bookstore.FakeProviders -- [--payments Normal] [--carrier Normal] [--rates-delay 0.05] [--smtp Normal]
+// Usage: dotnet run --project src/Bookstore.FakeProviders -- [--payments Normal] [--payments-delay 5] [--carrier Normal] [--rates-delay 0.05] [--smtp Normal]
 var payments = ReadMode(args, "--payments");
 var carrier = ReadMode(args, "--carrier");
 var smtp = ReadMode(args, "--smtp");
 
-using var paymentServer = FakePaymentProvider.Start(9091, payments);
+using var paymentServer = FakePaymentProvider.Start(9091, new FakePaymentSettings
+{
+    Mode = payments,
+    Delay = TimeSpan.FromSeconds(ReadSeconds(args, "--payments-delay", 5))
+});
 using var carrierServer = FakeLegacyCarrier.Start(9092, carrier);
-using var ratesPrimary = FakeExchangeRates.Start(9093, "primary", TimeSpan.FromSeconds(ReadSeconds(args, "--rates-delay")));
+using var ratesPrimary = FakeExchangeRates.Start(9093, "primary", TimeSpan.FromSeconds(ReadSeconds(args, "--rates-delay", 0.05)));
 using var ratesSecondary = FakeExchangeRates.Start(9094, "secondary", TimeSpan.FromMilliseconds(50));
 // --smtp Error: no SMTP server at all (connection refused).
 await using var smtpServer = smtp == FakeMode.Error ? null : new FakeSmtpServer(2525, smtp);
@@ -22,10 +26,10 @@ var stop = new TaskCompletionSource();
 Console.CancelKeyPress += (_, e) => { e.Cancel = true; stop.TrySetResult(); };
 await stop.Task;
 
-static double ReadSeconds(string[] args, string name)
+static double ReadSeconds(string[] args, string name, double defaultValue)
 {
     var index = Array.IndexOf(args, name);
-    return index >= 0 && index + 1 < args.Length ? double.Parse(args[index + 1], System.Globalization.CultureInfo.InvariantCulture) : 0.05;
+    return index >= 0 && index + 1 < args.Length ? double.Parse(args[index + 1], System.Globalization.CultureInfo.InvariantCulture) : defaultValue;
 }
 
 static FakeMode ReadMode(string[] args, string name)

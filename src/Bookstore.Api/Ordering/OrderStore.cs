@@ -34,4 +34,6 @@ public sealed class OrderStore
     };
 
     public Order? Find(int id) => _orders.GetValueOrDefault(id);
+
+    public void Add(Order order) => _orders[order.Id] = order;
 }

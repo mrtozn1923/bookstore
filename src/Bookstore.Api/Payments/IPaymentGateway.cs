@@ -4,9 +4,13 @@ namespace Bookstore.Payments;
 public interface IPaymentGateway
 {
     Task<PaymentResult> ChargeAsync(PaymentRequest request, CancellationToken cancellationToken);
+
+    // Reconciliation: what does the provider know about this reference? null = no charge.
+    Task<PaymentResult.Approved?> FindChargeAsync(string reference, CancellationToken cancellationToken);
 }
 
-public sealed record PaymentRequest(int OrderId, decimal Amount, string Currency, string CardToken);
+public sealed record PaymentRequest(
+    int OrderId, decimal Amount, string Currency, string CardToken, string IdempotencyKey, string Reference);
 
 public abstract record PaymentResult
 {

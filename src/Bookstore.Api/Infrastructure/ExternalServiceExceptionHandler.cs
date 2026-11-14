@@ -12,6 +12,8 @@ public sealed class ExternalServiceExceptionHandler(IProblemDetailsService probl
     {
         (int status, string title)? mapped = exception switch
         {
+            PaymentAttemptConflictException =>
+                (StatusCodes.Status409Conflict, "A previous payment for this order is still being verified."),
             PaymentGatewayException { Kind: PaymentFailureKind.UnknownOutcome } =>
                 (StatusCodes.Status202Accepted, "Payment is being verified."),
             PaymentGatewayException { Kind: PaymentFailureKind.Transient or PaymentFailureKind.Unavailable } =>
