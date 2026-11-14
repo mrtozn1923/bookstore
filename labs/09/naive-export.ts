@@ -1,12 +1,14 @@
 import { gzipSync } from "node:zlib";
 import { generateOrderRows, toCsvLine } from "#services/orderExport";
+import type { Book } from "#domain/book";
+import books from "#db/books.json" with { type: "json" };
 
 // The "simple" way: build the whole CSV in memory, then compress it in one go
 const rows = Number(process.argv[2] ?? 5_300_000);
 const started = performance.now();
 let peakRss = 0;
 const lines: string[] = [];
-for (const row of generateOrderRows(rows)) {
+for (const row of generateOrderRows(rows, (books as Book[]).slice(0, 4))) {
     lines.push(toCsvLine(row));
     if (lines.length % 100_000 === 0) {
         peakRss = Math.max(peakRss, process.memoryUsage().rss);

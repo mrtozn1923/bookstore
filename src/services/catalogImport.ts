@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { isValidIsbn13 } from "@bookstore/contracts";
 import type { Book, Currency } from "#domain/book";
+import { parseMinorUnits } from "#domain/money";
 
 export interface CatalogImportResult {
     books: Book[];
@@ -31,15 +32,21 @@ export function parseCatalogCsv(text: string): CatalogImportResult {
             return;
         }
         const [isbn, title, author, priceText, currency] = fields;
-        const price = Number(priceText.replace(",", "."));
+        let priceMinor = 0;
+        try {
+            priceMinor = parseMinorUnits(priceText);
+        } catch {
+            errors.push(`line ${lineNo}: invalid price ${priceText}`);
+            return;
+        }
         if (!isValidIsbn13(isbn)) {
             errors.push(`line ${lineNo}: invalid ISBN-13 ${isbn}`);
-        } else if (!Number.isFinite(price) || price <= 0) {
+        } else if (priceMinor <= 0) {
             errors.push(`line ${lineNo}: invalid price ${priceText}`);
         } else if (!CURRENCIES.includes(currency)) {
             errors.push(`line ${lineNo}: unknown currency ${currency}`);
         } else {
-            books.push({ isbn, title, author, price, currency: currency as Currency });
+            books.push({ isbn, title, author, priceMinor, currency: currency as Currency });
         }
     });
     return { books, errors };

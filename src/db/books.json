@@ -1,6 +1,14 @@
 [
-  { "isbn": "9780441172719", "title": "Dune", "author": "Frank Herbert", "price": 349.9, "currency": "TRY" },
-  { "isbn": "9780547928227", "title": "The Hobbit", "author": "J.R.R. Tolkien", "price": 289.5, "currency": "TRY" },
-  { "isbn": "9780141439600", "title": "Middlemarch", "author": "George Eliot", "price": 310.0, "currency": "TRY" },
-  { "isbn": "9780141439587", "title": "Emma", "author": "Jane Austen", "price": 245.0, "currency": "TRY" }
+  {"isbn": "9780441172719", "title": "Dune", "author": "Frank Herbert", "priceMinor": 34990, "currency": "TRY"},
+  {"isbn": "9780547928227", "title": "The Hobbit", "author": "J.R.R. Tolkien", "priceMinor": 28950, "currency": "TRY"},
+  {"isbn": "9780141439600", "title": "Middlemarch", "author": "George Eliot", "priceMinor": 31000, "currency": "TRY"},
+  {"isbn": "9780141439587", "title": "Emma", "author": "Jane Austen", "priceMinor": 24500, "currency": "TRY"},
+  {"isbn": "9780141439518", "title": "Pride and Prejudice", "author": "Jane Austen", "priceMinor": 21500, "currency": "TRY"},
+  {"isbn": "9780141439686", "title": "Persuasion", "author": "Jane Austen", "priceMinor": 19900, "currency": "TRY"},
+  {"isbn": "9780141441146", "title": "Jane Eyre", "author": "Charlotte Bronte", "priceMinor": 26500, "currency": "TRY"},
+  {"isbn": "9780141439556", "title": "Wuthering Heights", "author": "Emily Bronte", "priceMinor": 23900, "currency": "TRY"},
+  {"isbn": "9780141439563", "title": "Great Expectations", "author": "Charles Dickens", "priceMinor": 27900, "currency": "TRY"},
+  {"isbn": "9780142437247", "title": "Moby-Dick", "author": "Herman Melville", "priceMinor": 32500, "currency": "TRY"},
+  {"isbn": "9780140447934", "title": "War and Peace", "author": "Leo Tolstoy", "priceMinor": 54900, "currency": "TRY"},
+  {"isbn": "9780143035008", "title": "Anna Karenina", "author": "Leo Tolstoy", "priceMinor": 41900, "currency": "TRY"}
 ]

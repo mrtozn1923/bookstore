@@ -16,10 +16,11 @@ export function isValidIsbn13(isbn: string): boolean {
     return sum % 10 === 0;
 }
 
-export function toBookSummary(book: { isbn: string; title: string; price: number; currency: string }): BookSummary {
+// priceMinor is an integer number of minor units (kuruş): 34990 -> { amount: 349.9 }
+export function toBookSummary(book: { isbn: string; title: string; priceMinor: number; currency: string }): BookSummary {
     return {
         isbn: book.isbn,
         title: book.title,
-        price: { amount: book.price, currency: book.currency },
+        price: { amount: book.priceMinor / 100, currency: book.currency },
     };
 }

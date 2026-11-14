@@ -7,9 +7,16 @@ import { ordersRouter } from "#routes/orders";
 import { reportsRouter } from "#routes/reports";
 import { diagnosticsRouter } from "#routes/diagnostics";
 import { coversRoot } from "#storage/coverStorage";
+import type { BookService } from "#services/bookService";
+import type { OrderService } from "#services/orderService";
 
-// Builds the Express app without listening, so tests can use it without a port (post 16)
-export function createApp(): express.Express {
+export interface AppServices {
+    books: BookService;
+    orders: OrderService;
+}
+
+// Builds the Express app without listening; services come in from outside (constructor injection, no container)
+export function createApp(services: AppServices): express.Express {
     const app = express();
 
     // Global middleware runs for every request, in this order
@@ -20,8 +27,8 @@ export function createApp(): express.Express {
     app.use("/covers", express.static(coversRoot, { maxAge: "1d", index: false }));
 
     app.get("/health", health);
-    app.use("/api/books", booksRouter);
-    app.use("/api/orders", ordersRouter);
+    app.use("/api/books", booksRouter(services.books));
+    app.use("/api/orders", ordersRouter(services.orders, services.books));
     app.use("/api/reports", reportsRouter);
     app.use("/diagnostics", diagnosticsRouter);
 

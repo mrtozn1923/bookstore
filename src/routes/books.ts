@@ -1,20 +1,8 @@
 import { Router } from "express";
-import { toBookSummary } from "@bookstore/contracts";
-import { listBooks, findBook } from "#services/bookService";
-import { HttpError } from "#http/errors";
+import type { BookService } from "#services/bookService";
+import { listBooks, getBook } from "#handlers/booksHandlers";
 
-export const booksRouter = Router();
-
-// GET /api/books
-booksRouter.get("/", (req, res) => {
-    res.json(listBooks().map(toBookSummary));
-});
-
-// GET /api/books/:isbn
-booksRouter.get("/:isbn", (req, res) => {
-    const book = findBook(req.params.isbn);
-    if (!book) {
-        throw new HttpError(404, `book ${req.params.isbn} not found`);
-    }
-    res.json(toBookSummary(book));
-});
+// Routes only: which path goes to which handler
+export function booksRouter(books: BookService): Router {
+    return Router().get("/", listBooks(books)).get("/:isbn", getBook(books));
+}

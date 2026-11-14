@@ -1,14 +1,11 @@
 import { createApp } from "./app.ts";
-import { orderService } from "#services/orderService";
-import { registerOrderNotifications } from "#services/notificationService";
+import { createServices } from "./composition.ts";
 
 const port: number = Number(process.env.PORT ?? 3000);
 // Loopback only by default; containers set HOST=0.0.0.0
 const host: string = process.env.HOST ?? "127.0.0.1";
 
-registerOrderNotifications(orderService);
-
-const app = createApp();
+const app = createApp(createServices());
 // Express 5 passes listen errors (EADDRINUSE...) to this callback instead of throwing them
 const server = app.listen(port, host, (err?: Error) => {
     if (err) {

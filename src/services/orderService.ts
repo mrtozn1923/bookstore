@@ -1,6 +1,8 @@
 import { EventEmitter } from "node:events";
 import type { Order, OrderItem } from "#domain/order";
-import { findBook } from "#services/bookService";
+import { MixedCurrencyError, OrderNotFoundError, UnknownBookError } from "#domain/errors";
+import type { BookRepository } from "#repositories/bookRepository";
+import type { OrderRepository } from "#repositories/orderRepository";
 import { log } from "../diagnostics/log.ts";
 
 export interface OrderLine {
@@ -13,53 +15,52 @@ interface OrderEvents {
     error: [err: Error];
 }
 
-export class UnknownBookError extends Error {
-    readonly isbn: string;
-
-    constructor(isbn: string) {
-        super(`unknown ISBN ${isbn}`);
-        this.isbn = isbn;
-        this.name = "UnknownBookError";
-    }
-}
-
-// Places orders in memory and announces them; listeners (notifications, reports) stay decoupled
+// Places orders and announces them; listeners (notifications, reports) stay decoupled
 export class OrderService extends EventEmitter<OrderEvents> {
-    #orders = new Map<string, Order>();
-    #nextNumber = 1001;
+    readonly #books: BookRepository;
+    readonly #orders: OrderRepository;
 
-    constructor() {
+    constructor(books: BookRepository, orders: OrderRepository) {
         // Rejections from async listeners go to the 'error' event instead of crashing the process
         super({ captureRejections: true });
+        this.#books = books;
+        this.#orders = orders;
         this.on("error", (err) => {
             log("error", "orderPlaced listener failed", { error: `${err.name}: ${err.message}`, cause: (err.cause as Error | undefined)?.name });
         });
     }
 
-    placeOrder(customerId: string, lines: readonly OrderLine[]): Order {
-        const items: OrderItem[] = lines.map((line) => {
-            const book = findBook(line.isbn);
-            if (!book) {
-                throw new UnknownBookError(line.isbn);
-            }
-            return { isbn: book.isbn, quantity: line.quantity, unitPrice: book.price };
-        });
+    async placeOrder(customerId: string, lines: readonly OrderLine[]): Promise<Order> {
+        const books = await this.#books.findManyByIsbn(lines.map((l) => l.isbn));
+        const unknown = lines.filter((l) => !books.has(l.isbn)).map((l) => l.isbn);
+        if (unknown.length > 0) {
+            throw new UnknownBookError(unknown);
+        }
+        const currencies = new Set(lines.map((l) => books.get(l.isbn)!.currency));
+        if (currencies.size > 1) {
+            throw new MixedCurrencyError();
+        }
+        // The price is taken from the catalog, never from the request
+        const items: OrderItem[] = lines.map((l) => ({ isbn: l.isbn, quantity: l.quantity, unitPriceMinor: books.get(l.isbn)!.priceMinor }));
         const order: Order = {
-            id: `ORD-${this.#nextNumber++}`,
+            id: await this.#orders.nextId(),
             customerId,
             status: "Pending",
+            currency: [...currencies][0],
             items,
             createdAtUtc: new Date().toISOString(),
         };
-        this.#orders.set(order.id, order);
+        await this.#orders.add(order);
         log("info", "order placed", { orderId: order.id, items: items.length });
         this.emit("orderPlaced", order);
         return order;
     }
 
-    findOrder(id: string): Order | undefined {
-        return this.#orders.get(id);
+    async get(id: string): Promise<Order> {
+        const order = await this.#orders.findById(id);
+        if (!order) {
+            throw new OrderNotFoundError(id);
+        }
+        return order;
     }
 }
-
-export const orderService = new OrderService();

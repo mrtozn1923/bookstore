@@ -1,5 +1,6 @@
 import { Readable, Transform } from "node:stream";
-import { listBooks } from "#services/bookService";
+import type { Book } from "#domain/book";
+import { formatAmount } from "#domain/money";
 import { ORDER_STATUSES } from "@bookstore/contracts";
 
 export interface OrderExportRow {
@@ -9,7 +10,7 @@ export interface OrderExportRow {
     isbn: string;
     title: string;
     quantity: number;
-    unitPrice: number;
+    unitPriceMinor: number;
     currency: string;
     status: string;
 }
@@ -18,8 +19,7 @@ const HEADER = "orderId,createdAtUtc,customerId,isbn,title,quantity,unitPrice,cu
 const START = Date.UTC(2026, 0, 1);
 
 // Synthetic order lines until the SQL Server post; generated lazily, one row at a time
-export function* generateOrderRows(count: number): Generator<OrderExportRow> {
-    const books = listBooks();
+export function* generateOrderRows(count: number, books: readonly Book[]): Generator<OrderExportRow> {
     for (let i = 0; i < count; i++) {
         const book = books[i % books.length];
         yield {
@@ -29,7 +29,7 @@ export function* generateOrderRows(count: number): Generator<OrderExportRow> {
             isbn: book.isbn,
             title: book.title,
             quantity: (i % 3) + 1,
-            unitPrice: book.price,
+            unitPriceMinor: book.priceMinor,
             currency: book.currency,
             status: ORDER_STATUSES[i % ORDER_STATUSES.length],
         };
@@ -43,7 +43,7 @@ function csvField(value: string | number): string {
 }
 
 export function toCsvLine(row: OrderExportRow): string {
-    return [row.orderId, row.createdAtUtc, row.customerId, row.isbn, row.title, row.quantity, row.unitPrice.toFixed(2), row.currency, row.status]
+    return [row.orderId, row.createdAtUtc, row.customerId, row.isbn, row.title, row.quantity, formatAmount(row.unitPriceMinor), row.currency, row.status]
         .map(csvField)
         .join(",") + "\n";
 }
@@ -69,6 +69,6 @@ export function csvTransform(batchSize = 200): Transform {
     });
 }
 
-export function orderRowStream(count: number): Readable {
-    return Readable.from(generateOrderRows(count));
+export function orderRowStream(count: number, books: readonly Book[]): Readable {
+    return Readable.from(generateOrderRows(count, books));
 }

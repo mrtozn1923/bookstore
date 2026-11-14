@@ -9,7 +9,10 @@
     "#http/*": "./src/http/*.ts",
     "#middleware/*": "./src/middleware/*.ts",
     "#routes/*": "./src/routes/*.ts",
+    "#handlers/*": "./src/handlers/*.ts",
+    "#schemas/*": "./src/schemas/*.ts",
     "#services/*": "./src/services/*.ts",
+    "#repositories/*": "./src/repositories/*.ts",
     "#domain/*": "./src/domain/*.ts",
     "#storage/*": "./src/storage/*.ts",
     "#db/*": "./src/db/*"
@@ -28,7 +31,8 @@
   },
   "dependencies": {
     "@bookstore/contracts": "^0.1.0",
-    "express": "^5.3.0"
+    "express": "^5.3.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",

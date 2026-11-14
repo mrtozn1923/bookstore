@@ -1,20 +1,23 @@
 import type { OrderStatus } from "@bookstore/contracts";
 import type { Book } from "./book.ts";
+import type { Currency } from "./money.ts";
 
 export interface OrderItem {
     isbn: Book["isbn"];
     quantity: number;
-    unitPrice: number;
+    unitPriceMinor: number;
 }
 
 export interface Order {
     id: string;
     customerId: string;
     status: OrderStatus;
+    currency: Currency;
     items: OrderItem[];
     createdAtUtc: string;
 }
 
-export function orderTotal(order: Order): number {
-    return order.items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
+// Integer arithmetic: exact as long as totals stay below Number.MAX_SAFE_INTEGER kuruş
+export function orderTotalMinor(order: Order): number {
+    return order.items.reduce((sum, item) => sum + item.quantity * item.unitPriceMinor, 0);
 }
