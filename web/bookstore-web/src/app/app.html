@@ -1,0 +1,10 @@
+<main>
+  <h1>Bookstore</h1>
+  <ul>
+    @for (book of books(); track book.isbn) {
+      <li>{{ book.title }} by {{ book.author }} ({{ book.price | currency: book.currency }})</li>
+    } @empty {
+      <li>No books yet.</li>
+    }
+  </ul>
+</main>
