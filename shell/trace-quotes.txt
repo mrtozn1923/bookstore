@@ -1,0 +1,8 @@
+/".*"/auto_callout
+"GET /" 200
+
+/".*?"/auto_callout
+"GET /" 200
+
+/"[^"]*"/auto_callout
+"GET /" 200
