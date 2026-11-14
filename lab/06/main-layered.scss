@@ -1,0 +1,11 @@
+@use "sass:meta";
+
+@layer vendors, components;
+
+@layer vendors {
+    @include meta.load-css("vendors/datepicker");
+}
+
+@layer components {
+    @include meta.load-css("components/calendar-day");
+}

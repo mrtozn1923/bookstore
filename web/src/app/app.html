@@ -2,7 +2,7 @@
   <h1 class="m-0">Bookstore</h1>
   <app-theme-toggle />
 </header>
-<main>
+<main class="page">
   <section class="book-list">
     @for (book of books; track book.isbn) {
       <app-book-card [book]="book" />

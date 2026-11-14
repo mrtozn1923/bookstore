@@ -1,0 +1,35 @@
+@use "@angular/material" as mat;
+@use "../abstracts" as *;
+@use "theme-colors" as brand;
+
+html {
+    // follows the OS by default; .light / .dark pin it
+    color-scheme: light dark;
+
+    @include mat.theme((
+        color: (
+            primary: brand.$primary-palette,
+            tertiary: brand.$tertiary-palette,
+        ),
+        typography: system-ui,
+        density: 0,
+    ));
+    @include color-tokens($themes);
+
+    // Material buttons use Bookstore's corner radius instead of the pill shape
+    @include mat.button-overrides((
+        filled-container-shape: $radius,
+        outlined-container-shape: $radius,
+    ));
+
+    --radius: #{$radius};
+    --space: #{$space};
+
+    &.light {
+        color-scheme: light;
+    }
+
+    &.dark {
+        color-scheme: dark;
+    }
+}

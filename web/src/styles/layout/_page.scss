@@ -1,0 +1,11 @@
+@use "../abstracts" as *;
+
+// the page column: full width on phones, centered on wide screens
+.page {
+    max-width: 80rem;
+    margin-inline: auto;
+
+    @include from("lg") {
+        padding-inline: $space;
+    }
+}
