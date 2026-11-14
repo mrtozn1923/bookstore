@@ -1,0 +1,27 @@
+<a routerLink="/">← Back to catalog</a>
+
+@if (book.error()) {
+  <p class="error">Book not found.</p>
+} @else if (book.value(); as b) {
+  <article class="book-detail">
+    <h1>{{ b.title }}</h1>
+    <p class="muted">{{ b.author }} · {{ b.publishedYear }} · {{ b.category }}</p>
+    <p>{{ b.description }}</p>
+    <p class="muted">ISBN {{ b.isbn }}</p>
+    <p><strong>{{ b.price | currency: 'TRY' : 'symbol-narrow' }}</strong></p>
+
+    @if (b.available > 0) {
+      <p class="muted" data-testid="stock">{{ b.available }} in stock</p>
+      <label>
+        Quantity
+        <input #qty type="number" min="1" [max]="b.available" value="1" />
+      </label>
+      <button type="button" (click)="addToCart(qty.valueAsNumber)">Add to cart</button>
+      @if (added()) {
+        <p class="success">Added. <a routerLink="/cart">Go to cart</a></p>
+      }
+    } @else {
+      <p class="error" data-testid="stock">Out of stock</p>
+    }
+  </article>
+}
