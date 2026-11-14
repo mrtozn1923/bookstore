@@ -37,7 +37,9 @@ public static class ObservabilityExtensions
                 .SetExemplarFilter(ExemplarFilterType.TraceBased)
                 // GET /metrics for a Prometheus that scrapes (pull); OTLP below still pushes the same metrics.
                 .AddPrometheusExporter())
-            .WithLogging()
+            // The log body is the rendered message ("Payment for order 3826 failed"), not only the template;
+            // the template's values still travel as attributes (OrderId=3826).
+            .WithLogging(configureBuilder: null, configureOptions: options => options.IncludeFormattedMessage = true)
             // One OTLP exporter for all three signals; the endpoint comes from OTEL_EXPORTER_OTLP_ENDPOINT.
             .UseOtlpExporter();
 
