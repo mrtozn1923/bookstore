@@ -24,10 +24,25 @@ switch (command)
     case "search":
         await SearchDemo.RunAsync(rest);
         break;
+    case "bulk-compare":
+        await BulkDemo.CompareAsync();
+        break;
+    case "bulk-all":
+        BulkDemo.LoadAll(rest);
+        break;
+    case "bulk-errors":
+        await BulkDemo.ErrorsAsync();
+        break;
+    case "refresh":
+        await BulkDemo.RefreshAsync();
+        break;
+    case "concurrency":
+        await BulkDemo.ConcurrencyAsync();
+        break;
     case "seed-sql":
         await SqlSeeder.RunAsync(rest);
         break;
     default:
-        Console.WriteLine("Commands: inverted-index [query], seed-sql [syntheticCount], first-connection, create-index [name], translators [name], search <text>");
+        Console.WriteLine("Commands: inverted-index [query], seed-sql [syntheticCount], first-connection, create-index [name], translators [name], search <text>, bulk-compare, bulk-all [count], bulk-errors, refresh, concurrency");
         break;
 }

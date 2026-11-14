@@ -10,7 +10,8 @@ public static class IndexSetup
 {
     public static async Task RunAsync(string[] args)
     {
-        string indexName = args.Length > 0 ? args[0] : SearchClientFactory.BooksIndex;
+        string indexName = args.FirstOrDefault(a => !a.StartsWith("--")) ?? SearchClientFactory.BooksIndex;
+        bool loadData = !args.Contains("--no-data");
         ElasticsearchClient client = LabClient.Create();
 
         bool exists = (await client.Indices.ExistsAsync(indexName)).Exists;
@@ -25,7 +26,7 @@ public static class IndexSetup
         StringResponse created = await client.Transport.RequestAsync<StringResponse>(
             HttpMethod.PUT, $"/{indexName}", PostData.String(definition));
         Console.WriteLine($"PUT /{indexName}: HTTP {created.ApiCallDetails.HttpStatusCode} {created.Body}");
-        if (!created.ApiCallDetails.HasSuccessfulStatusCode)
+        if (!created.ApiCallDetails.HasSuccessfulStatusCode || !loadData)
         {
             return;
         }

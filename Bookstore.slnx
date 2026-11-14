@@ -3,5 +3,6 @@
     <Project Path="src/Bookstore.Api/Bookstore.Api.csproj" />
     <Project Path="src/Bookstore.Search/Bookstore.Search.csproj" />
     <Project Path="src/Bookstore.SearchLab/Bookstore.SearchLab.csproj" />
+    <Project Path="src/Bookstore.SearchSync/Bookstore.SearchSync.csproj" />
   </Folder>
 </Solution>

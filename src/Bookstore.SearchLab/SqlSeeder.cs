@@ -8,22 +8,6 @@ namespace Bookstore.SearchLab;
 // Creates dbo.Books / dbo.BookAuthors and fills them: data/books.json plus synthetic rows.
 public static class SqlSeeder
 {
-    private static readonly string[] Adjectives =
-    [
-        "Silent", "Hidden", "Last", "Broken", "Golden", "Forgotten", "Distant", "Secret", "Burning", "Quiet",
-        "Endless", "Lost", "Northern", "Winter", "Glass", "Iron", "Paper", "Shadow", "Wild", "Little"
-    ];
-
-    private static readonly string[] Nouns =
-    [
-        "River", "Garden", "House", "Road", "Letter", "City", "Island", "Mountain", "Library", "Station",
-        "Harbour", "Forest", "Window", "Bridge", "Promise", "Kingdom", "Map", "Season", "Voyage", "Clock"
-    ];
-
-    private static readonly string[] FirstNames = ["Ada", "Alan", "Grace", "Linus", "Barbara", "Edsger", "Margaret", "Donald", "Frances", "Ken"];
-    private static readonly string[] LastNames = ["Walker", "Hughes", "Turner", "Parker", "Bennett", "Foster", "Hayes", "Morgan", "Reed", "Wells"];
-    private static readonly string[] Genres = ["Fiction", "Mystery", "Science Fiction", "Fantasy", "History", "Travel"];
-
     public static async Task RunAsync(string[] args)
     {
         int syntheticCount = args.Length > 0 ? int.Parse(args[0]) : 200_000;
@@ -42,7 +26,7 @@ public static class SqlSeeder
         }
 
         IReadOnlyList<Book> curated = await BookCatalog.LoadAsync(Path.Combine("data", "books.json"));
-        List<Book> all = [.. curated, .. Synthetic(syntheticCount)];
+        List<Book> all = [.. curated, .. SyntheticBooks.Generate(syntheticCount)];
 
         DataTable books = new();
         books.Columns.Add("BookId", typeof(int));
@@ -90,49 +74,5 @@ public static class SqlSeeder
         }
 
         Console.WriteLine($"Inserted {books.Rows.Count:N0} books ({curated.Count} curated + {syntheticCount:N0} synthetic) and {authors.Rows.Count:N0} author rows in {watch.Elapsed.TotalSeconds:F1} s");
-    }
-
-    // Deterministic synthetic catalog: same seed, same rows on every machine.
-    private static IEnumerable<Book> Synthetic(int count)
-    {
-        Random random = new(2026);
-        for (int i = 0; i < count; i++)
-        {
-            string title = random.Next(3) switch
-            {
-                0 => $"The {Pick(random, Adjectives)} {Pick(random, Nouns)}",
-                1 => $"{Pick(random, Nouns)} of the {Pick(random, Adjectives)} {Pick(random, Nouns)}",
-                _ => $"A {Pick(random, Nouns)} in {Pick(random, Nouns)} {random.Next(1, 100)}"
-            };
-            string author = $"{Pick(random, FirstNames)} {Pick(random, LastNames)}";
-            string genre = Pick(random, Genres);
-            decimal price = random.Next(90, 900) + 0.90m;
-            yield return new Book(
-                Isbn: SyntheticIsbn(i),
-                Title: title,
-                Authors: [new BookAuthor(author, "author")],
-                Categories: [genre],
-                Language: "en",
-                Price: price,
-                Currency: "TRY",
-                StockQuantity: random.Next(0, 200),
-                PublishedOn: new DateOnly(2000, 1, 1).AddDays(random.Next(0, 9_400)),
-                AverageRating: Math.Round(2.5m + (decimal)random.NextDouble() * 2.5m, 1),
-                Description: $"A {genre.ToLowerInvariant()} book by {author} about a {Pick(random, Adjectives).ToLowerInvariant()} {Pick(random, Nouns).ToLowerInvariant()}.");
-        }
-    }
-
-    private static string Pick(Random random, string[] values) => values[random.Next(values.Length)];
-
-    // 9782 + 8-digit counter + ISBN-13 check digit.
-    private static string SyntheticIsbn(int counter)
-    {
-        string body = $"9782{counter:D8}";
-        int sum = 0;
-        for (int i = 0; i < 12; i++)
-        {
-            sum += (body[i] - '0') * (i % 2 == 0 ? 1 : 3);
-        }
-        return body + ((10 - sum % 10) % 10);
     }
 }
