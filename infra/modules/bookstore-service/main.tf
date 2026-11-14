@@ -28,6 +28,9 @@ resource "docker_volume" "data" {
 
   lifecycle {
     prevent_destroy = true
+
+    # Docker cannot change a volume's labels in place; never replace a data volume for a label
+    ignore_changes = [labels]
   }
 }
 
