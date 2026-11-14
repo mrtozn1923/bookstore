@@ -7,5 +7,6 @@
     <Project Path="samples/Cd02.VirtualRoot/Cd02.VirtualRoot.csproj" />
     <Project Path="samples/Cd03.SentinelValues/Cd03.SentinelValues.csproj" />
     <Project Path="samples/Cd04.PublicId/Cd04.PublicId.csproj" />
+    <Project Path="samples/Cd05.ReferenceData/Cd05.ReferenceData.csproj" />
   </Folder>
 </Solution>
