@@ -21,6 +21,9 @@ switch (command)
     case "rsa-limit": AsymmetricCommands.RsaLimit(); break;
     case "purchase-order": AsymmetricCommands.PurchaseOrderDemo(); break;
     case "rsa-certificate": AsymmetricCommands.RsaFromCertificate(); break;
+    case "signatures": SignatureCommands.Formats(); break;
+    case "public-key-sign": SignatureCommands.PublicKeyCannotSign(); break;
+    case "license": SignatureCommands.LicenseDemo(); break;
     default: Console.Error.WriteLine($"Unknown command: {command}"); return 1;
 }
 return 0;
