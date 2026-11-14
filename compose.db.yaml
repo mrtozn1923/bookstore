@@ -3,6 +3,9 @@
 services:
   db:
     image: mcr.microsoft.com/mssql/server:2025-latest
+    # The image's entrypoint is a bash script that does not pass SIGTERM on to sqlservr: docker stop waited
+    # for the timeout and killed it (exit 137). As PID 1, sqlservr shuts down cleanly in under a second.
+    entrypoint: ["/opt/mssql/bin/sqlservr"]
     environment:
       ACCEPT_EULA: "Y"
       # Not in the documented variable list, but SQL Server 2025 reads the sa password from this file

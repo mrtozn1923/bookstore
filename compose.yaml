@@ -10,6 +10,10 @@ services:
     build:
       context: .
       dockerfile: src/Bookstore.Api/Dockerfile
+      args:
+        APP_VERSION: ${TAG:-0.0.0-dev}
+    # build + image: the built image gets this name, so CI can push it (docker compose push api web)
+    image: ${REGISTRY:-localhost:5000}/bookstore/api:${TAG:-dev}
     env_file: config/api.env
     environment:
       Store__TimeZone: ${STORE_TIMEZONE:-Europe/Istanbul}
@@ -33,6 +37,7 @@ services:
 
   web:
     build: ./web
+    image: ${REGISTRY:-localhost:5000}/bookstore/web:${TAG:-dev}
     environment:
       API_BASE_URL: /api
       APP_ENVIRONMENT: ${APP_ENVIRONMENT:-compose}
