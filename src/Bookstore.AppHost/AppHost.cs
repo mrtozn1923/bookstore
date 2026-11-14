@@ -90,12 +90,34 @@ builder.AddProject<Projects.Bookstore_Ordering_Api>("ordering")
     .WaitFor(rabbitmq)
     .WithHttpHealthCheck("/health");
 
-builder.AddProject<Projects.Bookstore_Payments_Api>("payments")
+// Shared secret for the provider's webhook signatures (Standard Webhooks: "whsec_" + base64).
+// 32 letters and digits are valid base64 (24 bytes); Aspire generates it once and keeps it in user secrets.
+IResourceBuilder<ParameterResource> webhookSecret = builder.AddResource(ParameterResourceBuilderExtensions.CreateGeneratedParameter(
+    builder, "payment-webhook-secret", secret: true,
+    new GenerateParameterDefault { MinLength = 32, Lower = true, Upper = true, Numeric = true, Special = false }));
+
+// Stands in for the external card payment provider. In production this is the provider's URL, not a resource we run.
+IResourceBuilder<ProjectResource> paymentProvider = builder.AddProject<Projects.Bookstore_FakePaymentProvider>("payment-provider")
+    .WithEnvironment("Webhooks__Secret", ReferenceExpression.Create($"whsec_{webhookSecret}"));
+
+IResourceBuilder<ProjectResource> paymentsMigrator = builder
+    .AddProject<Projects.Bookstore_Payments_Api>("payments-migrator", options => options.ExcludeLaunchProfile = true)
+    .WithArgs("--migrate")
+    .WithReference(paymentsDb)
+    .WaitFor(paymentsDb);
+
+IResourceBuilder<ProjectResource> payments = builder.AddProject<Projects.Bookstore_Payments_Api>("payments")
     .WithReference(paymentsDb)
     .WithReference(rabbitmq)
-    .WaitFor(paymentsDb)
+    .WithReference(paymentProvider)
+    .WithEnvironment("PaymentProvider__WebhookSecret", ReferenceExpression.Create($"whsec_{webhookSecret}"))
+    .WaitForCompletion(paymentsMigrator)
     .WaitFor(rabbitmq)
     .WithHttpHealthCheck("/health");
+
+// The provider calls Payments back; in production this URL is registered in the provider's dashboard.
+paymentProvider.WithEnvironment("Webhooks__Url",
+    ReferenceExpression.Create($"{payments.GetEndpoint("http")}/webhooks/payment-provider"));
 
 builder.AddProject<Projects.Bookstore_Notifications_Api>("notifications")
     .WithReference(redis)

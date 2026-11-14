@@ -19,6 +19,7 @@
     <ProjectReference Include="..\Services\Notifications\Bookstore.Notifications.Api\Bookstore.Notifications.Api.csproj" />
     <ProjectReference Include="..\Services\Ordering\Bookstore.Ordering.Api\Bookstore.Ordering.Api.csproj" />
     <ProjectReference Include="..\Services\Payments\Bookstore.Payments.Api\Bookstore.Payments.Api.csproj" />
+    <ProjectReference Include="..\Simulators\Bookstore.FakePaymentProvider\Bookstore.FakePaymentProvider.csproj" />
   </ItemGroup>
 
 </Project>

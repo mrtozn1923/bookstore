@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <!-- Stands in for an external card payment provider during local development. Not a Bookstore service:
+       it has no ServiceDefaults and shares nothing with the services except HTTP. -->
+  <PropertyGroup>
+    <RootNamespace>Bookstore.FakePaymentProvider</RootNamespace>
+  </PropertyGroup>
+
+</Project>
