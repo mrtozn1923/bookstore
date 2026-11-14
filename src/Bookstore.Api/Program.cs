@@ -1,6 +1,7 @@
 using Azure.Security.KeyVault.Secrets;
 using Bookstore.Api;
 using Bookstore.Api.AppConfiguration;
+using Bookstore.Api.Catalog;
 using Bookstore.Api.Cloud;
 using Bookstore.Api.KeyVault;
 using Bookstore.Api.Options;
@@ -10,6 +11,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Yalnız BOOKSTORE_ ile başlayan değişkenler, önek atılarak
 builder.Configuration.AddEnvironmentVariables(prefix: "BOOKSTORE_");
+
+// Vault Agent'ın yazdığı secret dosyası (yoksa atlanır); agent yeniledikçe yeniden yüklenir
+if (builder.Configuration["Vault:SecretsFile"] is { Length: > 0 } vaultSecretsFile)
+{
+    builder.Configuration.AddJsonFile(vaultSecretsFile, optional: true, reloadOnChange: true);
+}
 
 var credential = AzureCredentials.Create(builder.Environment, builder.Configuration);
 
@@ -83,5 +90,7 @@ app.MapGet("/api/shipping/threshold", (
     Snapshot = snapshot.Value.FreeShippingThreshold,
     Monitor = monitor.CurrentValue.FreeShippingThreshold
 });
+
+app.MapBookEndpoints();
 
 app.Run();

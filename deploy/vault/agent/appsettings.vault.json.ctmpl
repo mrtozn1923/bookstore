@@ -1,0 +1,11 @@
+{{- with secret "database/creds/bookstore-api" -}}
+{
+  "ConnectionStrings": {
+    "Bookstore": "Server=localhost,14350;Database=BookstoreDb;User Id={{ .Data.username }};Password={{ .Data.password }};TrustServerCertificate=True"
+  },
+{{- end }}
+{{- with secret "secret/data/bookstore/api" }}
+  "Jwt": { "SigningKey": "{{ .Data.data.jwt_signing_key }}" },
+  "Email": { "ApiKey": "{{ .Data.data.email_api_key }}" }
+}
+{{- end }}
