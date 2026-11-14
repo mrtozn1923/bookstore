@@ -1,0 +1,12 @@
+body { background: #fff; color: #222; }
+main { max-width: 720px; margin: 0 auto; padding: 16px; }
+h1 { font-size: 22px; margin: 0 0 4px; }
+h2 { font-size: 16px; margin: 20px 0 8px; }
+.note { margin: 0 0 12px; color: #999; font-size: 13px; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.float { position: relative; }
+.float input, .float select { width: 100%; padding: 18px 10px 6px; border: 1px solid #ccc; font: inherit; }
+.float label { position: absolute; left: 11px; top: 13px; color: #999; pointer-events: none; transition: all 0.15s; }
+.float input:focus + label, .float input:not(:placeholder-shown) + label, .float select + label { top: 3px; font-size: 11px; }
+.error { display: block; color: #e11d48; font-size: 12px; }
+.btn { margin-top: 16px; padding: 10px 24px; border: 0; background: #1d4ed8; color: #fff; font: inherit; }

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Checkout - Bookstore</title>
+  <link rel="stylesheet" href="/web/styles/base.css">
+  <link rel="stylesheet" href="before.css">
+</head>
+<body>
+  <main>
+    <h1>Create an account to continue</h1>
+    <p class="note">Fields marked with * are required</p>
+    <form id="checkout" novalidate>
+      <div class="cols">
+        <div class="float"><input id="firstName" name="firstName" placeholder=" "><label for="firstName">First name*</label></div>
+        <div class="float"><input id="lastName" name="lastName" placeholder=" "><label for="lastName">Last name*</label></div>
+        <div class="float"><input id="email" name="email" placeholder=" "><label for="email">Email*</label></div>
+        <div class="float"><input id="email2" name="email2" placeholder=" "><label for="email2">Confirm email*</label></div>
+        <div class="float"><input id="password" name="password" type="password" placeholder=" " onpaste="return false"><label for="password">Password*</label></div>
+        <div class="float"><input id="password2" name="password2" type="password" placeholder=" " onpaste="return false"><label for="password2">Confirm password*</label></div>
+        <div class="float"><input id="phone" name="phone" placeholder=" "><label for="phone">Phone*</label></div>
+        <div class="float"><input id="address" name="address" placeholder=" "><label for="address">Address line 1*</label></div>
+        <div class="float"><input id="address2" name="address2" placeholder=" "><label for="address2">Address line 2</label></div>
+        <div class="float"><input id="city" name="city" placeholder=" "><label for="city">City*</label></div>
+        <div class="float"><input id="postcode" name="postcode" placeholder=" "><label for="postcode">Postcode*</label></div>
+        <div class="float"><select id="country" name="country"><option>Turkey</option></select><label for="country">Country*</label></div>
+      </div>
+      <h2>Billing address</h2>
+      <div class="cols">
+        <div class="float"><input id="billName" name="billName" placeholder=" "><label for="billName">Full name*</label></div>
+        <div class="float"><input id="billAddress" name="billAddress" placeholder=" "><label for="billAddress">Address*</label></div>
+        <div class="float"><input id="billCity" name="billCity" placeholder=" "><label for="billCity">City*</label></div>
+        <div class="float"><input id="billPostcode" name="billPostcode" placeholder=" "><label for="billPostcode">Postcode*</label></div>
+      </div>
+      <button type="submit" class="btn">Continue</button>
+    </form>
+  </main>
+  <script src="before.js"></script>
+</body>
+</html>

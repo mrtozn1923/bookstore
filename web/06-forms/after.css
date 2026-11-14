@@ -1,0 +1,23 @@
+body { background: var(--color-bg); color: var(--color-text); font-family: var(--font-sans); line-height: var(--leading-normal); }
+main { max-width: 32rem; margin: 0 auto; padding: var(--space-6) var(--space-4); }
+h1 { font-size: var(--text-xl); line-height: var(--leading-tight); margin: 0; }
+.guest { margin: var(--space-2) 0 var(--space-6); color: var(--color-text-muted); }
+.guest a { color: var(--color-link); }
+
+/* one column, label above the field, hint between label and field */
+.field { margin-bottom: var(--space-4); }
+label { display: block; font-weight: var(--weight-semibold); }
+.hint { margin: 0; font-size: 14px; color: var(--color-text-muted); }
+input:not([type="checkbox"]) { display: block; width: 100%; margin-top: var(--space-1); padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border-strong); border-radius: 6px; font: inherit; }
+input.short { max-width: 8rem; }
+.check { display: flex; gap: var(--space-2); align-items: center; margin-bottom: var(--space-3); font-weight: var(--weight-regular); }
+
+/* error state: message above the field, thicker border in the danger color */
+.error { margin: var(--space-1) 0 0; color: var(--color-danger-text); font-weight: var(--weight-semibold); }
+[aria-invalid="true"] { border: 2px solid var(--color-danger-text) !important; }
+.summary { margin-bottom: var(--space-6); padding: var(--space-4); border: 2px solid var(--color-danger-text); border-radius: var(--radius-md); }
+.summary h2 { margin: 0 0 var(--space-2); font-size: var(--text-lg); }
+.summary ul { margin: 0; padding-left: var(--space-6); }
+.summary a { color: var(--color-danger-text); font-weight: var(--weight-semibold); }
+
+.btn { margin-top: var(--space-2); padding: var(--space-3) var(--space-6); border: 0; border-radius: 6px; background: var(--color-action); color: var(--color-on-action); font: inherit; font-weight: var(--weight-semibold); }
