@@ -1,0 +1,11 @@
+{
+  "name": "bookstore-pwa",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "api": "node api/server.ts"
+  }
+}
