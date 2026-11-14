@@ -30,7 +30,11 @@
     "versions": "node -p process.versions.node",
     "db:setup": "node --env-file-if-exists=.env scripts/db-setup.ts",
     "db:load": "node --env-file-if-exists=.env scripts/load-catalog.ts",
-    "dev:issuer": "node scripts/dev-issuer.ts"
+    "dev:issuer": "node scripts/dev-issuer.ts",
+    "test": "node --test \"tests/**/*.test.ts\"",
+    "test:watch": "node --test --watch \"tests/**/*.test.ts\"",
+    "test:coverage": "node --test --experimental-test-coverage --test-coverage-include=\"src/**\" --test-coverage-lines=70 \"tests/**/*.test.ts\"",
+    "test:update-snapshots": "node --test --test-update-snapshots \"tests/**/*.test.ts\""
   },
   "dependencies": {
     "@bookstore/contracts": "^0.1.0",
@@ -48,7 +52,9 @@
     "@types/express": "^5.0.6",
     "@types/mssql": "^12.3.0",
     "@types/node": "^26.6.6",
+    "@types/supertest": "^7.2.1",
     "pino-pretty": "^13.2.0",
+    "supertest": "^7.3.2",
     "typescript": "^7.0.2"
   }
 }

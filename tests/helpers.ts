@@ -1,0 +1,56 @@
+import type { Book } from "#domain/book";
+import books from "#db/books.json" with { type: "json" };
+import { InMemoryBookRepository } from "#repositories/bookRepository";
+import { InMemoryOrderRepository } from "#repositories/orderRepository";
+import { BookService } from "#services/bookService";
+import { OrderService } from "#services/orderService";
+import { createApp, type AppOptions } from "../src/app.ts";
+import { InvalidTokenError, type Principal } from "../src/auth/tokenVerifier.ts";
+import { logger } from "../src/diagnostics/logger.ts";
+
+// Tests read their results from assertions, not from log lines
+logger.level = "silent";
+
+export const catalog = books as Book[];
+export const DUNE = "9780441172719";
+export const EMMA = "9780141439587";
+
+// Fake repositories: the in-memory implementations, with a stock level chosen per test
+export function createTestServices(stock: Record<string, number> = { [DUNE]: 5, [EMMA]: 5 }) {
+    const bookRepository = new InMemoryBookRepository(catalog);
+    const orderRepository = new InMemoryOrderRepository(catalog, new Map(Object.entries(stock)));
+    return {
+        bookRepository,
+        orderRepository,
+        books: new BookService(bookRepository),
+        orders: new OrderService(bookRepository, orderRepository),
+    };
+}
+
+// A fake token verifier: tokens are just names, so tests never deal with keys or signatures
+const PRINCIPALS: Record<string, Principal> = {
+    "token-ada": { userId: "ada", roles: ["Customer"] },
+    "token-alan": { userId: "alan", roles: ["Customer"] },
+    "token-grace": { userId: "grace", roles: ["StoreStaff"] },
+};
+
+export function createTestApp(stock?: Record<string, number>, options: Partial<AppOptions> = {}) {
+    const services = createTestServices(stock);
+    const app = createApp(
+        { books: services.books, orders: services.orders, readiness: async () => ({ status: "ready", checks: {} }) },
+        {
+            corsOrigins: ["http://localhost:4200"],
+            trustProxy: 0,
+            rateLimitPerMinute: 1_000,
+            verifyToken: async (token) => {
+                const principal = PRINCIPALS[token];
+                if (!principal) {
+                    throw new InvalidTokenError("ERR_TEST_UNKNOWN_TOKEN");
+                }
+                return principal;
+            },
+            ...options,
+        },
+    );
+    return { app, services };
+}

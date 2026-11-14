@@ -1,0 +1,20 @@
+exports[`POST /api/orders > 400 with every validation error in one Problem Details body 1`] = `
+{
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+  "title": "One or more validation errors occurred.",
+  "status": 400,
+  "instance": "/api/orders",
+  "traceId": "req-16-snapshot",
+  "errors": {
+    "lines[0].isbn": [
+      "must be 13 digits starting with 978 or 979"
+    ],
+    "lines[0].quantity": [
+      "Too small: expected number to be >=1"
+    ],
+    "$": [
+      "Unrecognized key: \\"customerId\\""
+    ]
+  }
+}
+`;

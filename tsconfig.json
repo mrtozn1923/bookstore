@@ -9,5 +9,5 @@
     "resolveJsonModule": true,
     "types": ["node"]
   },
-  "include": ["src", "scripts", "packages/*/src"]
+  "include": ["src", "scripts", "tests", "packages/*/src"]
 }
