@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Frozen page</title>
+</head>
+<body>
+  <button id="reprice">Reprice catalog (3 seconds)</button>
+  <button id="add-to-cart">Add to cart</button>
+  <p id="out"></p>
+
+  <script>
+    const out = document.querySelector("#out");
+
+    document.querySelector("#reprice").addEventListener("click", () => {
+      const end = Date.now() + 3000;
+      while (Date.now() < end) {
+        // a 3-second busy loop standing in for a heavy price calculation
+      }
+      out.textContent = "Catalog repriced";
+    });
+
+    document.querySelector("#add-to-cart").addEventListener("click", () => {
+      out.textContent = "Added to cart!";
+    });
+  </script>
+</body>
+</html>
