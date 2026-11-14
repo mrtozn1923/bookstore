@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Bookstore.Api.Data;
+using Bookstore.Api.Dtos;
+using Bookstore.Api.Mapping;
 using Bookstore.Api.Models;
 
 namespace Bookstore.Api.Controllers;
@@ -17,17 +19,21 @@ public class BooksController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Book>>> GetAll()
+    public async Task<ActionResult<IEnumerable<BookDto>>> GetAll()
     {
-        // We only read, so we spare the change tracker the work
-        List<Book> books = await _db.Books.AsNoTracking().ToListAsync();
+        List<BookDto> books = await _db.Books
+            .Select(b => new BookDto(b.Id, b.Title, b.Price, b.Category!.Name))
+            .ToListAsync();
         return books;
     }
 
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<Book>> GetById(int id)
+    public async Task<ActionResult<BookDto>> GetById(int id)
     {
-        Book? book = await _db.Books.FindAsync(id);
+        BookDto? book = await _db.Books
+            .Where(b => b.Id == id)
+            .Select(b => new BookDto(b.Id, b.Title, b.Price, b.Category!.Name))
+            .FirstOrDefaultAsync();
         if (book is null)
         {
             return NotFound();
@@ -37,15 +43,24 @@ public class BooksController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Book>> Create(Book book)
+    public async Task<ActionResult<BookDto>> Create(CreateBookRequest request)
     {
+        Category? category = await _db.Categories.FindAsync(request.CategoryId);
+        if (category is null)
+        {
+            ModelState.AddModelError(nameof(request.CategoryId), "Category does not exist.");
+            return ValidationProblem(ModelState);
+        }
+
+        Book book = request.ToEntity();
+        book.Category = category;
         _db.Books.Add(book);
         await _db.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetById), new { id = book.Id }, book);
+        return CreatedAtAction(nameof(GetById), new { id = book.Id }, book.ToDto());
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, Book input)
+    public async Task<IActionResult> Update(int id, UpdateBookRequest request)
     {
         Book? book = await _db.Books.FindAsync(id);
         if (book is null)
@@ -53,9 +68,7 @@ public class BooksController : ControllerBase
             return NotFound();
         }
 
-        book.Title = input.Title;
-        book.Price = input.Price;
-        book.CategoryId = input.CategoryId;
+        request.ApplyTo(book);
         await _db.SaveChangesAsync();
         return NoContent();
     }
