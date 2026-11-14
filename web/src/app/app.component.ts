@@ -7,4 +7,8 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'bookstore-web';
+  price = 450;
+  showSale = false;
+  count = 0;
+  visible = true;
 }

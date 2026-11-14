@@ -11,3 +11,16 @@
     <button>Add to cart</button>
   </div>
 </app-card>
+<app-card>
+  <h3 #cardTitle>Order Summary</h3>
+</app-card>
+<app-order-tracking [orderId]="1042"></app-order-tracking>
+<app-price-tag [price]="price"></app-price-tag>
+<button (click)="price = price + 20">Raise price</button>
+<button (click)="price = price - 20">Lower price</button>
+<app-search-box></app-search-box>
+<button (click)="showSale = !showSale">Show/Hide sale</button>
+<app-sale-countdown *ngIf="showSale"></app-sale-countdown>
+<button (click)="count = count + 1">Increment</button>
+<button (click)="visible = !visible">Show/Hide</button>
+<app-lifecycle-demo *ngIf="visible" [count]="count"></app-lifecycle-demo>

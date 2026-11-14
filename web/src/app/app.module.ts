@@ -10,6 +10,11 @@ import { OrderListComponent } from './order-list/order-list.component';
 import { HighlightDirective } from './highlight.directive';
 import { QuantityPickerComponent } from './quantity-picker/quantity-picker.component';
 import { CardComponent } from './card/card.component';
+import { OrderTrackingComponent } from './order-tracking/order-tracking.component';
+import { PriceTagComponent } from './price-tag/price-tag.component';
+import { SearchBoxComponent } from './search-box/search-box.component';
+import { SaleCountdownComponent } from './sale-countdown/sale-countdown.component';
+import { LifecycleDemoComponent } from './lifecycle-demo/lifecycle-demo.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +24,12 @@ import { CardComponent } from './card/card.component';
     OrderListComponent,
     HighlightDirective,
     QuantityPickerComponent,
-    CardComponent
+    CardComponent,
+    OrderTrackingComponent,
+    PriceTagComponent,
+    SearchBoxComponent,
+    SaleCountdownComponent,
+    LifecycleDemoComponent
   ],
   imports: [
     BrowserModule,
