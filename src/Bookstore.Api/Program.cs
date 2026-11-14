@@ -238,6 +238,13 @@ builder.Host.UseDefaultServiceProvider(options =>
 
 var app = builder.Build();
 
+// there is no bookstore.db in the container: create the schema at startup when asked to
+if (app.Configuration.GetValue<bool>("Database:MigrateOnStartup"))
+{
+    using var scope = app.Services.CreateScope();
+    scope.ServiceProvider.GetRequiredService<BookstoreContext>().Database.Migrate();
+}
+
 app.UseSerilogRequestLogging();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
