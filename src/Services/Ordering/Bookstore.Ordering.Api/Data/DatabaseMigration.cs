@@ -34,7 +34,8 @@ public static class DatabaseMigration
                     Title = book.Title,
                     Price = book.Price,
                     Currency = book.Currency,
-                    Version = book.Version,
+                    PriceVersion = book.Version,
+                    TitleVersion = book.Version,
                     UpdatedAtUtc = now
                 });
             }

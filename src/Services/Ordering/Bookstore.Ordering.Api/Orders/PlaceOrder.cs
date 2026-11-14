@@ -1,9 +1,11 @@
+using Bookstore.Contracts.Ordering;
 using Bookstore.Inventory.V1;
 using Bookstore.Ordering.CatalogCopy;
 using Bookstore.Ordering.Data;
 using Bookstore.Ordering.Domain;
 using Grpc.Core;
 using Microsoft.EntityFrameworkCore;
+using Wolverine.EntityFrameworkCore;
 
 namespace Bookstore.Ordering.Orders;
 
@@ -18,9 +20,11 @@ public abstract record PlaceOrderOutcome
 
 // The write side: load what the aggregate needs, let it decide, reserve stock synchronously, save.
 public sealed class PlaceOrderHandler(
-    OrderingDbContext db, InventoryService.InventoryServiceClient inventory, IConfiguration configuration,
+    IDbContextOutbox<OrderingDbContext> outbox, InventoryService.InventoryServiceClient inventory, IConfiguration configuration,
     TimeProvider clock, ILogger<PlaceOrderHandler> logger)
 {
+    private readonly OrderingDbContext db = outbox.DbContext;
+
     public async Task<PlaceOrderOutcome> HandleAsync(PlaceOrderRequest request, CancellationToken ct)
     {
         string[] isbns = [.. request.Items.Select(i => i.Isbn).Distinct()];
@@ -79,15 +83,28 @@ public sealed class PlaceOrderHandler(
         }
 
         db.Orders.Add(order);
-        await db.SaveChangesAsync(ct);
 
-        // Post 06 turns OrderPlaced into an integration event through the outbox.
+        // The domain event stays inside Ordering; what leaves the service is the integration event.
         foreach (object domainEvent in order.DomainEvents)
         {
-            logger.LogInformation("Domain event raised: {EventType} {@Event}", domainEvent.GetType().Name, domainEvent);
+            if (domainEvent is Domain.OrderPlaced)
+            {
+                await outbox.PublishAsync(ToIntegrationEvent(order));
+            }
         }
         order.ClearDomainEvents();
 
+        // INSERT Orders/OrderItems and the outbox row in one transaction, then hand the message to RabbitMQ.
+        await outbox.SaveChangesAndFlushMessagesAsync(ct);
+
         return new PlaceOrderOutcome.Placed(order);
     }
+
+    private static Contracts.Ordering.OrderPlaced ToIntegrationEvent(Order order) => new(
+        order.Id.Value,
+        order.Buyer.Email,
+        [.. order.Items.Select(i => new OrderPlacedLine(i.Isbn, i.Quantity, i.UnitPrice.Amount))],
+        order.Total.Amount,
+        order.Total.Currency,
+        new DateTimeOffset(order.PlacedAtUtc, TimeSpan.Zero));
 }

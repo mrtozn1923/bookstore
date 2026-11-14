@@ -40,16 +40,19 @@ namespace Bookstore.Ordering.Data.Migrations
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal(10,2)");
 
+                    b.Property<int>("PriceVersion")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<int>("TitleVersion")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("UpdatedAtUtc")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("Version")
-                        .HasColumnType("int");
 
                     b.HasKey("Isbn");
 

@@ -21,10 +21,13 @@ IResourceBuilder<RabbitMQServerResource> rabbitmq = builder.AddRabbitMQ("rabbitm
     .WithDataVolume("msapp-rabbitmq-data")
     .WithLifetime(ContainerLifetime.Persistent);
 
+// Nothing uses Keycloak before post 10. Explicit start keeps its ~500 MB free until then:
+// start it from the dashboard (or `aspire resource keycloak start`) when you need it.
 builder.AddKeycloak("keycloak", 8180)
     .WithContainerName("msapp-keycloak")
     .WithDataVolume("msapp-keycloak-data")
-    .WithLifetime(ContainerLifetime.Persistent);
+    .WithLifetime(ContainerLifetime.Persistent)
+    .WithExplicitStart();
 
 // The migrator is the Catalog binary started with --migrate; it exits when the schema is up to date.
 IResourceBuilder<ProjectResource> catalogMigrator = builder
@@ -37,8 +40,10 @@ IResourceBuilder<ProjectResource> catalogMigrator = builder
 IResourceBuilder<ProjectResource> catalog = builder.AddProject<Projects.Bookstore_Catalog_Api>("catalog")
     .WithReference(catalogDb)
     .WithReference(redis)
+    .WithReference(rabbitmq)
     .WaitForCompletion(catalogMigrator)
     .WaitFor(redis)
+    .WaitFor(rabbitmq)
     .WithHttpHealthCheck("/health");
 
 IResourceBuilder<ProjectResource> inventoryMigrator = builder
@@ -79,7 +84,9 @@ IResourceBuilder<ProjectResource> orderingMigrator = builder
 builder.AddProject<Projects.Bookstore_Ordering_Api>("ordering")
     .WithReference(orderingDb)
     .WithReference(inventory)
+    .WithReference(rabbitmq)
     .WaitForCompletion(orderingMigrator)
+    .WaitFor(rabbitmq)
     .WithHttpHealthCheck("/health");
 
 builder.AddProject<Projects.Bookstore_Payments_Api>("payments")

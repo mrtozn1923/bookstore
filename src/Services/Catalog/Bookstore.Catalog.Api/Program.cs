@@ -1,11 +1,47 @@
+using System.Reflection;
 using Asp.Versioning;
 using Bookstore.Catalog.Books;
 using Bookstore.Catalog.Data;
+using Bookstore.Contracts;
+using Bookstore.Contracts.Catalog;
+using Wolverine;
+using Wolverine.EntityFrameworkCore;
+using Wolverine.RabbitMQ;
+using Wolverine.SqlServer;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
-builder.AddSqlServerDbContext<CatalogDbContext>("catalogdb");
+// EF Core's retrying execution strategy (on by default in Aspire) does not allow the explicit transaction
+// the outbox needs, so the service turns it off and leaves retries to Wolverine's error policies.
+// The migrator keeps it: right after a container start, the first connection attempts may fail.
+builder.AddSqlServerDbContext<CatalogDbContext>("catalogdb", settings => settings.DisableRetry = !DatabaseMigration.IsMigrationRun(args));
 builder.AddRedisOutputCache("redis");
+
+// The build-time OpenAPI generator (GetDocument.Insider) starts this host without Aspire's connection strings:
+// no broker and no message store in that run.
+bool openApiBuild = Assembly.GetEntryAssembly()?.GetName().Name == "GetDocument.Insider";
+if (openApiBuild)
+{
+    builder.Services.DisableAllExternalWolverineTransports();
+    builder.Services.DisableAllWolverineMessagePersistence();
+}
+
+builder.UseWolverine(opts =>
+{
+    if (!openApiBuild)
+    {
+        // Outbox tables live in Catalog's own database, in the "wolverine" schema.
+        opts.PersistMessagesWithSqlServerUsingNamedConnection("catalogdb", "wolverine");
+        opts.UseRabbitMqUsingNamedConnection("rabbitmq").AutoProvision();
+    }
+    opts.UseEntityFrameworkCoreTransactions();
+
+    opts.PublishMessage<BookPriceChanged>().ToRabbitExchange(Exchanges.Catalog);
+    opts.PublishMessage<BookRenamed>().ToRabbitExchange(Exchanges.Catalog);
+
+    // Nothing leaves the service without first being written to the outbox table.
+    opts.Policies.UseDurableOutboxOnAllSendingEndpoints();
+});
 
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddProblemDetails();

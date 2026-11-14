@@ -3,6 +3,7 @@ using Bookstore.Catalog.Data;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
+using Wolverine.EntityFrameworkCore;
 
 namespace Bookstore.Catalog.Books;
 
@@ -78,28 +79,37 @@ public static class BookEndpoints
             .ToListAsync(ct));
 
     private static Task<Results<NoContent, ProblemHttpResult>> ChangePrice(
-        string isbn, ChangePriceRequest request, CatalogDbContext db, IOutputCacheStore cache,
-        TimeProvider clock, ILogger<Book> logger, CancellationToken ct) =>
-        ChangeBookAsync(isbn, book => book.ChangePrice(request.Price, clock), db, cache, logger, ct);
+        string isbn, ChangePriceRequest request, IDbContextOutbox<CatalogDbContext> outbox, IOutputCacheStore cache,
+        TimeProvider clock, CancellationToken ct) =>
+        ChangeBookAsync(isbn, book => book.ChangePrice(request.Price, clock), outbox, cache, ct);
 
     private static Task<Results<NoContent, ProblemHttpResult>> RenameBook(
-        string isbn, RenameBookRequest request, CatalogDbContext db, IOutputCacheStore cache,
-        TimeProvider clock, ILogger<Book> logger, CancellationToken ct) =>
-        ChangeBookAsync(isbn, book => book.Rename(request.Title.Trim(), clock), db, cache, logger, ct);
+        string isbn, RenameBookRequest request, IDbContextOutbox<CatalogDbContext> outbox, IOutputCacheStore cache,
+        TimeProvider clock, CancellationToken ct) =>
+        ChangeBookAsync(isbn, book => book.Rename(request.Title.Trim(), clock), outbox, cache, ct);
 
     private static async Task<Results<NoContent, ProblemHttpResult>> ChangeBookAsync(
-        string isbn, Action<Book> change, CatalogDbContext db, IOutputCacheStore cache, ILogger logger, CancellationToken ct)
+        string isbn, Action<Book> change, IDbContextOutbox<CatalogDbContext> outbox, IOutputCacheStore cache, CancellationToken ct)
     {
-        Book? book = await db.Books.FirstOrDefaultAsync(b => b.Isbn == isbn, ct);
+        Book? book = await outbox.DbContext.Books.FirstOrDefaultAsync(b => b.Isbn == isbn, ct);
         if (book is null)
         {
             return BookNotFound(isbn);
         }
 
         change(book);
+        foreach (object integrationEvent in book.Events)
+        {
+            // Not sent yet: queued in memory, written to the outbox table in the same transaction as the book.
+            await outbox.PublishAsync(integrationEvent);
+        }
+        book.ClearEvents();
+
         try
         {
-            await db.SaveChangesAsync(ct);
+            // One transaction: UPDATE Books + INSERT into wolverine_outgoing_envelopes. After the commit,
+            // Wolverine sends the messages to RabbitMQ and deletes them from the outbox.
+            await outbox.SaveChangesAndFlushMessagesAsync(ct);
         }
         catch (DbUpdateConcurrencyException)
         {
@@ -112,14 +122,6 @@ public static class BookEndpoints
         // Both the detail page and every list page that may contain this book are stale now.
         await cache.EvictByTagAsync(CachePolicies.BookTag(isbn), ct);
         await cache.EvictByTagAsync(CachePolicies.BookListsTag, ct);
-
-        // Post 06 sends these through the transactional outbox. Until then they are only logged:
-        // a crash between SaveChanges and a direct publish would lose the event (dual write).
-        foreach (object integrationEvent in book.Events)
-        {
-            logger.LogInformation("Integration event ready: {EventType} {@Event}", integrationEvent.GetType().Name, integrationEvent);
-        }
-        book.ClearEvents();
 
         return TypedResults.NoContent();
     }

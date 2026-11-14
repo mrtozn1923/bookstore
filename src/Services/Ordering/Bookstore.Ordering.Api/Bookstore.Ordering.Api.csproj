@@ -20,6 +20,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="WolverineFx.EntityFrameworkCore" />
+    <PackageReference Include="WolverineFx.RabbitMQ" />
+    <PackageReference Include="WolverineFx.RuntimeCompilation" />
+    <PackageReference Include="WolverineFx.SqlServer" />
     <PackageReference Include="Microsoft.Extensions.ApiDescription.Server">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -27,6 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\BuildingBlocks\Bookstore.Contracts\Bookstore.Contracts.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\Bookstore.ServiceDefaults\Bookstore.ServiceDefaults.csproj" />
     <ProjectReference Include="..\..\Inventory\Bookstore.Inventory.Contracts\Bookstore.Inventory.Contracts.csproj" />
   </ItemGroup>
