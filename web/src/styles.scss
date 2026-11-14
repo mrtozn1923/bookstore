@@ -1,18 +1,43 @@
+@use "@angular/material" as mat;
 @use "abstracts" as *;
+@use "themes/theme-colors" as brand;
 @use "utilities";
 
-// design values live in Sass; the browser gets custom properties
-:root {
-    --color-brand: #{$color-brand};
-    --color-border: #{$color-border};
-    --color-text: #{$color-text};
-    --color-muted: #{$color-muted};
+html {
+    // follows the OS by default; .light / .dark pin it
+    color-scheme: light dark;
+
+    @include mat.theme((
+        color: (
+            primary: brand.$primary-palette,
+            tertiary: brand.$tertiary-palette,
+        ),
+        typography: system-ui,
+        density: 0,
+    ));
+    @include color-tokens($themes);
+
+    // Material buttons use Bookstore's corner radius instead of the pill shape
+    @include mat.button-overrides((
+        filled-container-shape: $radius,
+        outlined-container-shape: $radius,
+    ));
+
     --radius: #{$radius};
     --space: #{$space};
+
+    &.light {
+        color-scheme: light;
+    }
+
+    &.dark {
+        color-scheme: dark;
+    }
 }
 
 body {
     margin: 0;
     font-family: system-ui, sans-serif;
+    background-color: var(--color-surface);
     color: var(--color-text);
 }

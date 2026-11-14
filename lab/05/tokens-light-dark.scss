@@ -1,0 +1,27 @@
+@use "sass:map";
+@use "themes" as *;
+
+@mixin color-tokens($themes) {
+    $light: map.get($themes, light);
+    $dark: map.get($themes, dark);
+
+    @each $name, $value in $light {
+        @if not map.has-key($dark, $name) {
+            @error "Dark theme is missing '#{$name}'";
+        }
+        --color-#{$name}: light-dark(#{$value}, #{map.get($dark, $name)});
+    }
+}
+
+:root {
+    color-scheme: light dark;
+    @include color-tokens($themes);
+}
+
+.light {
+    color-scheme: light;
+}
+
+.dark {
+    color-scheme: dark;
+}

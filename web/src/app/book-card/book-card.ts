@@ -1,10 +1,11 @@
 import { Component, computed, input } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
+import { MatButton } from '@angular/material/button';
 import { Book } from '../book';
 
 @Component({
   selector: 'app-book-card',
-  imports: [CurrencyPipe],
+  imports: [CurrencyPipe, MatButton],
   templateUrl: './book-card.html',
   styleUrl: './book-card.scss',
 })

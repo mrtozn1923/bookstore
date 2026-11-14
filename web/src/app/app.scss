@@ -1,6 +1,9 @@
 @use "abstracts" as *;
 
 .site-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     padding: var(--space) calc(var(--space) * 1.5);
     border-bottom: 1px solid var(--color-border);
 }

@@ -1,0 +1,24 @@
+@use "sass:map";
+@use "themes" as *;
+
+@mixin theme-vars($theme) {
+    @each $name, $value in $theme {
+        --color-#{$name}: #{$value};
+    }
+}
+
+:root,
+.light {
+    @include theme-vars(map.get($themes, light));
+}
+
+// the OS asks for dark and the user has not pinned light
+@media (prefers-color-scheme: dark) {
+    :root:not(.light) {
+        @include theme-vars(map.get($themes, dark));
+    }
+}
+
+.dark {
+    @include theme-vars(map.get($themes, dark));
+}

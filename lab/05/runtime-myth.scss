@@ -1,0 +1,10 @@
+$brand: #b45309;
+
+.dark {
+    // a new local variable, not the global one
+    $brand: #f59e0b;
+}
+
+.book-card__title {
+    color: $brand;
+}
