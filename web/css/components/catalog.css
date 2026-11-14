@@ -32,3 +32,14 @@
 .filters {
     container-name: sidebar;
 }
+
+/* the category colour comes from the CMS at runtime as an inline --cat-color; CSS only decides where it goes */
+.cat-link::before {
+    content: "";
+    display: inline-block;
+    inline-size: 0.625rem;
+    block-size: 0.625rem;
+    margin-inline-end: 0.5rem;
+    border-radius: 50%;
+    background-color: var(--cat-color, var(--color-muted));
+}

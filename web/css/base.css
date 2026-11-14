@@ -1,14 +1,28 @@
+/* design tokens: one place for every colour; light-dark() picks a value from the used color-scheme */
 :root {
-    --color-text: #1f2937;
-    --color-muted: #6b7280;
-    --color-surface: #ffffff;
-    --color-border: #e5e7eb;
-    --color-accent: #b91c1c;
+    color-scheme: light dark;
+    --color-text: light-dark(#1f2937, #e5e7eb);
+    --color-muted: light-dark(#6b7280, #9ca3af);
+    --color-surface: light-dark(#ffffff, #111827);
+    --color-border: light-dark(#e5e7eb, #374151);
+    --color-accent: light-dark(#b91c1c, #f87171);
+    --color-focus: light-dark(#1d4ed8, #93c5fd);
+    --color-tint: light-dark(#fef3c7, #422006);
     --radius: 0.5rem;
     --space: 1rem;
     font-family: system-ui, sans-serif;
     line-height: 1.5;
     color: var(--color-text);
+    background-color: var(--color-surface);
+}
+
+/* the user's own choice (theme.js) wins over the system preference */
+:root[data-theme="light"] {
+    color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
 }
 
 h1, h2, h3 {

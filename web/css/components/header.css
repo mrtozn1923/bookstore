@@ -31,6 +31,6 @@
 
 /* keyboard users get a strong ring, mouse users do not */
 :where(a, button, input, summary):focus-visible {
-    outline: 3px solid #1d4ed8;
+    outline: 3px solid var(--color-focus);
     outline-offset: 2px;
 }

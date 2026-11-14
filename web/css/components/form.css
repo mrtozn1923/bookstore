@@ -9,7 +9,7 @@
 
 /* highlight the whole row while the user is inside it */
 .form-row:focus-within label {
-    color: #1d4ed8;
+    color: var(--color-focus);
 }
 
 /* only after the user has interacted with the field */

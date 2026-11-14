@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Lab 10: custom properties and @property</title>
+    <style>
+        /* self-contained: this lab does not load main.css */
+        body { margin: 0; color: rgb(0, 0, 0); }
+
+        /* 1) inheritance, scope and fallback */
+        .card { --badge-color: rgb(185, 28, 28); }
+        .badge { color: var(--badge-color, rgb(107, 114, 128)); }
+
+        /* 2) invalid at computed-value time: the earlier color declaration is already gone */
+        .price {
+            --accent: 20px;
+            color: rgb(37, 99, 235);
+            color: var(--accent);
+        }
+
+        /* 3) a registered property: typed, not inherited, animatable */
+        @property --stock-level {
+            syntax: "<percentage>";
+            inherits: false;
+            initial-value: 0%;
+        }
+        .stock { --plain-level: 0%; transition: --stock-level 1s linear, --plain-level 1s linear; }
+        .stock.full { --stock-level: 100%; --plain-level: 100%; }
+        /* 20px is not a percentage: the syntax is checked only at computed-value time,
+           so the cascade has already dropped 50% and the initial value is used */
+        .bad-stock { --stock-level: 50%; --stock-level: 20px; }
+
+        /* 4) light-dark() inside an unregistered token is resolved where it is used */
+        :root { color-scheme: light; --token: light-dark(rgb(255, 255, 255), rgb(17, 24, 39)); }
+        .surface { background-color: var(--token); }
+        .dark-band { color-scheme: dark; }
+    </style>
+</head>
+<body>
+    <div class="card"><span class="badge" id="in-card">Bestseller</span></div>
+    <span class="badge" id="outside">Bestseller</span>
+    <p class="price" id="price">349.00 TRY</p>
+
+    <div class="stock" id="stock"><span id="stock-child">child</span></div>
+    <div class="bad-stock" id="bad-stock"></div>
+
+    <div class="surface" id="light-surface">light</div>
+    <div class="dark-band"><div class="surface" id="dark-surface">dark</div></div>
+</body>
+</html>
