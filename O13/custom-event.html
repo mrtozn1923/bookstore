@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>CustomEvent</title>
+</head>
+<body>
+  <p>Cart: <span id="count">0</span> items</p>
+  <div id="books">
+    <button data-title="Dune">Add Dune</button>
+    <button data-title="Emma">Add Emma</button>
+  </div>
+  <script>
+    let count = 0;
+
+    document.addEventListener("cart:add", (event) => {
+      count++;
+      document.querySelector("#count").textContent = count;
+      console.log("Added:", event.detail.title);
+    });
+
+    document.querySelector("#books").addEventListener("click", (event) => {
+      const button = event.target.closest("button");
+      if (!button) return;
+      button.dispatchEvent(new CustomEvent("cart:add", {
+        bubbles: true,
+        detail: { title: button.dataset.title }
+      }));
+      console.log("dispatchEvent finished");
+    });
+  </script>
+</body>
+</html>

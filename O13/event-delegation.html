@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Event delegation</title>
+</head>
+<body>
+  <button id="add">Add a book</button>
+  <ul id="cart-items">
+    <li data-id="1">Dune <button data-action="remove"><span>Remove</span></button></li>
+    <li data-id="2">Emma <button data-action="remove"><span>Remove</span></button></li>
+  </ul>
+  <script>
+    const list = document.querySelector("#cart-items");
+    let nextId = 3;
+
+    list.addEventListener("click", (event) => {
+      const button = event.target.closest('[data-action="remove"]');
+      if (!button || !list.contains(button)) return;
+      const item = button.closest("li");
+      console.log("Removing:", item.dataset.id);
+      item.remove();
+    });
+
+    document.querySelector("#add").addEventListener("click", () => {
+      list.insertAdjacentHTML(
+        "beforeend",
+        `<li data-id="${nextId}">Book ${nextId} <button data-action="remove">Remove</button></li>`
+      );
+      nextId++;
+    });
+  </script>
+</body>
+</html>

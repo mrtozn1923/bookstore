@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Event flow</title>
+</head>
+<body>
+  <section id="card">
+    <h3>Dune</h3>
+    <button id="buy">Buy</button>
+  </section>
+  <script>
+    const log = (name) => (event) => console.log(name, "phase:", event.eventPhase);
+
+    document.body.addEventListener("click", log("body (capture)"), { capture: true });
+    document.querySelector("#card").addEventListener("click", log("section"));
+    document.querySelector("#buy").addEventListener("click", log("button"));
+    document.body.addEventListener("click", log("body (bubble)"));
+  </script>
+</body>
+</html>

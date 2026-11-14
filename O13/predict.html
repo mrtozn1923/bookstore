@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Predict</title>
+</head>
+<body>
+  <div id="outer"><button id="inner">Click</button></div>
+  <script>
+    const outer = document.querySelector("#outer");
+    const inner = document.querySelector("#inner");
+
+    outer.addEventListener("click", () => console.log("outer div"));
+    inner.addEventListener("click", () => console.log("button"));
+    document.addEventListener("click", () => console.log("document"), { capture: true });
+  </script>
+</body>
+</html>

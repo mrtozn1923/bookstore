@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Drag with pointer events</title>
+  <style>
+    #box { position: absolute; width: 80px; height: 80px; background: tomato; touch-action: none; }
+  </style>
+</head>
+<body>
+  <div id="box"></div>
+  <script>
+    const box = document.querySelector("#box");
+    let offsetX = 0;
+    let offsetY = 0;
+
+    box.addEventListener("pointerdown", (event) => {
+      offsetX = event.clientX - box.offsetLeft;
+      offsetY = event.clientY - box.offsetTop;
+      box.setPointerCapture(event.pointerId);
+      console.log("Input type:", event.pointerType);
+    });
+
+    box.addEventListener("pointermove", (event) => {
+      if (!box.hasPointerCapture(event.pointerId)) return;
+      box.style.left = `${event.clientX - offsetX}px`;
+      box.style.top = `${event.clientY - offsetY}px`;
+    });
+  </script>
+</body>
+</html>
