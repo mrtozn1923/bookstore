@@ -182,11 +182,14 @@ switch (command)
     case "timeout-message":
         await ProductionDemo.TimeoutMessageAsync(connectionString);
         break;
+    case "compat":
+        await CompatDemo.CompareAsync(connectionString, Environment.GetEnvironmentVariable("BOOKSTORE_VALKEY") ?? "localhost:6380");
+        break;
     case "sync-over-async":
         await SyncOverAsyncDemo.RunAsync(connectionString);
         break;
     default:
         Console.WriteLine("commands: seed-keys <n> | keys-vs-ping | incr | rtt | mux-per-request [--leak] | mux-singleton | " +
-                          "pipeline | pubsub-connection | scan-vs-ping | server-info | key-names | sync-over-async | lost-update | active-expire | ttl-reset | cart-storage | hash-encoding | big-hash | compact-hash | queue-crash | blpop | visitors | big-set | bestsellers | seed-week | zset-encoding | score-precision | page-drift | recent-orders | unique-visitors | unique-scale | probabilistic | stock-race | script-cache | busy-script | fcall | pubsub-delivery | pubsub-order | slow-subscriber | shared-subscription | queue-signal | expired-events | stream-crash | idempotent-xadd | stream-memory | catalog-scale | write-orders <n> | check-orders | fork-cost | eviction | big-key-delete | fill <mb> | sentinel-failover <s> | cluster-keys | cluster-notifications | cluster-failover <s> | make-certs [dir] | tls-connect [ca.crt] | timeout-message");
+                          "pipeline | pubsub-connection | scan-vs-ping | server-info | key-names | sync-over-async | lost-update | active-expire | ttl-reset | cart-storage | hash-encoding | big-hash | compact-hash | queue-crash | blpop | visitors | big-set | bestsellers | seed-week | zset-encoding | score-precision | page-drift | recent-orders | unique-visitors | unique-scale | probabilistic | stock-race | script-cache | busy-script | fcall | pubsub-delivery | pubsub-order | slow-subscriber | shared-subscription | queue-signal | expired-events | stream-crash | idempotent-xadd | stream-memory | catalog-scale | write-orders <n> | check-orders | fork-cost | eviction | big-key-delete | fill <mb> | sentinel-failover <s> | cluster-keys | cluster-notifications | cluster-failover <s> | make-certs [dir] | tls-connect [ca.crt] | timeout-message | compat");
         break;
 }
