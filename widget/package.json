@@ -17,17 +17,26 @@
     "bench": "node bench/bench.mjs",
     "build:server": "vite build --mode server && node scripts/collect-source-maps.mjs",
     "analyze": "vite build --mode analyze",
-    "analyze:webpack": "webpack --mode production --json=stats/webpack.json && webpack-bundle-analyzer stats/webpack.json dist-webpack --mode static --report stats/webpack.html --no-open"
+    "analyze:webpack": "webpack --mode production --json=stats/webpack.json && webpack-bundle-analyzer stats/webpack.json dist-webpack --mode static --report stats/webpack.html --no-open",
+    "bench:build": "node bench/build-times.mjs",
+    "build:rspack": "rspack build",
+    "dev:rspack": "rspack serve --mode development",
+    "bench:scale": "node bench/scale.mjs",
+    "bench:dev": "node bench/dev-server.mjs"
   },
   "dependencies": {
     "lodash-es": "^4.18.1"
   },
   "devDependencies": {
+    "@rspack/cli": "^2.3.2",
+    "@rspack/core": "^2.3.2",
+    "@rspack/dev-server": "^2.2.2",
     "@types/lodash-es": "^4.17.12",
     "css-loader": "^7.1.5",
     "esbuild": "^0.28.2",
     "html-webpack-plugin": "^5.6.8",
     "mini-css-extract-plugin": "^2.10.2",
+    "playwright": "^1.65.0",
     "rolldown": "~1.2.19",
     "rollup-plugin-visualizer": "^7.1.3",
     "typescript": "^7.0.2",
