@@ -7,10 +7,11 @@ namespace Bookstore.Gateway.Transforms;
 public static class InternalHeaderTransforms
 {
     // Runs once per route when the config is (re)loaded, not once per request.
-    public static void Apply(TransformBuilderContext context)
-    {
-        string routeId = context.Route.RouteId;
+    public static void Apply(TransformBuilderContext context) => Add(context, context.Route.RouteId);
 
+    // Also used by direct forwarding, which never sees the AddTransforms callback.
+    public static TransformBuilderContext Add(TransformBuilderContext context, string routeId)
+    {
         context.AddRequestTransform(transformContext =>
         {
             foreach (string name in transformContext.HttpContext.Request.Headers.Keys)
@@ -32,5 +33,6 @@ public static class InternalHeaderTransforms
 
             return ValueTask.CompletedTask;
         });
+        return context;
     }
 }

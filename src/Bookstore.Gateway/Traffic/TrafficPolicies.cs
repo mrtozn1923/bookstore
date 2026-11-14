@@ -10,7 +10,6 @@ public static class TrafficPolicies
     public const string PerUserOrders = "per-user-orders";
     public const string CatalogRead = "catalog-read";
     public const string CatalogList = "catalog-list";
-    public const string BookstoreWeb = "bookstore-web";
 
     public static IServiceCollection AddGatewayTrafficPolicies(this IServiceCollection services)
     {
@@ -58,14 +57,6 @@ public static class TrafficPolicies
         services.AddOutputCache(options =>
         {
             options.AddPolicy(CatalogList, policy => policy.Expire(TimeSpan.FromSeconds(30)).Tag("catalog"));
-        });
-
-        services.AddCors(options =>
-        {
-            options.AddPolicy(BookstoreWeb, policy => policy
-                .WithOrigins("http://localhost:4200")
-                .WithMethods("GET", "POST")
-                .WithHeaders("Authorization", "Content-Type"));
         });
 
         return services;

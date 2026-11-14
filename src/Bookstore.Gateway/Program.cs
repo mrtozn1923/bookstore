@@ -1,4 +1,6 @@
+using Bookstore.Gateway.Bff;
 using Bookstore.Gateway.Configuration;
+using Bookstore.Gateway.Forwarding;
 using Bookstore.Gateway.LoadBalancing;
 using Bookstore.Gateway.Security;
 using Bookstore.Gateway.Traffic;
@@ -13,6 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddGatewayAuthentication(builder.Configuration);
 builder.Services.AddGatewayTrafficPolicies();
 builder.Services.AddServiceDiscovery();
+builder.Services.AddBffClients();
 builder.Services.AddSingleton<ILoadBalancingPolicy, PreferSameZonePolicy>();
 
 builder.Services.AddReverseProxy()
@@ -34,9 +37,12 @@ if (!string.IsNullOrEmpty(gatewayDb))
 
 var app = builder.Build();
 
-// Order matters: CORS answers preflights, authentication sets User for the rate limiter partition,
+// Angular build output (wwwroot) is served from the same origin as /api: no CORS needed.
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
+// Order matters: authentication sets User for the rate limiter partition,
 // authorization rejects before anything is cached or forwarded.
-app.UseCors();
 app.UseAuthentication();
 app.UseRateLimiter();
 app.UseAuthorization();
@@ -44,6 +50,8 @@ app.UseRequestTimeouts();
 app.UseOutputCache();
 
 app.MapGet("/gateway/ping", () => "pong").AllowAnonymous();
+app.MapBookDetails();
+app.MapInstitutionForwarding();
 
 app.MapReverseProxy(proxyPipeline =>
 {
@@ -73,5 +81,9 @@ app.MapReverseProxy(proxyPipeline =>
     proxyPipeline.UseLoadBalancing();
     proxyPipeline.UsePassiveHealthChecks();
 });
+
+// Unknown /api URLs get 404, not index.html; every other unknown URL is an Angular route.
+app.MapFallback("/api/{**path}", () => Results.NotFound()).AllowAnonymous();
+app.MapFallbackToFile("index.html").AllowAnonymous();
 
 app.Run();

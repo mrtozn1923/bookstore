@@ -8,6 +8,7 @@ namespace Bookstore.Gateway.Security;
 public static class GatewayAuthentication
 {
     public const string CustomerPolicy = "customer";
+    public const string InstitutionBuyerPolicy = "institution-buyer";
 
     public static IServiceCollection AddGatewayAuthentication(
         this IServiceCollection services, IConfiguration configuration)
@@ -31,7 +32,8 @@ public static class GatewayAuthentication
         services.AddAuthorizationBuilder()
             // A route without AuthorizationPolicy is not public by accident.
             .SetFallbackPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build())
-            .AddPolicy(CustomerPolicy, policy => policy.RequireAuthenticatedUser().RequireRole("Customer"));
+            .AddPolicy(CustomerPolicy, policy => policy.RequireAuthenticatedUser().RequireRole("Customer"))
+            .AddPolicy(InstitutionBuyerPolicy, policy => policy.RequireAuthenticatedUser().RequireRole("InstitutionBuyer"));
 
         return services;
     }

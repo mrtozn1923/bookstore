@@ -5,6 +5,7 @@
   <Folder Name="/src/">
     <Project Path="src/Bookstore.Catalog.Api/Bookstore.Catalog.Api.csproj" />
     <Project Path="src/Bookstore.Gateway/Bookstore.Gateway.csproj" />
+    <Project Path="src/Bookstore.Inventory.Api/Bookstore.Inventory.Api.csproj" />
     <Project Path="src/Bookstore.Ordering.Api/Bookstore.Ordering.Api.csproj" />
   </Folder>
   <Folder Name="/tools/">
