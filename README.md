@@ -72,6 +72,22 @@ Anlatım: "Bookstore: Sitedeki Örnek Uygulama" serisi.
 Migration'ları elle yönetmek istersen: `dotnet tool restore` sonra
 `dotnet ef database update --project src/Bookstore.Api`.
 
+### Kapak testleri (Azurite, OAuth)
+
+Kapak endpoint testleri, Azure'daki gibi Entra ID token'ı ve user delegation SAS ile çalışır. Bunun için Azurite'i
+HTTPS ve `--oauth basic` ile başlat; değişken tanımlı değilse bu testler atlanır:
+
+```powershell
+openssl req -x509 -newkey rsa:2048 -nodes -keyout .azurite/key.pem -out .azurite/cert.pem -days 30 `
+  -subj "/CN=127.0.0.1" -addext "subjectAltName=IP:127.0.0.1,DNS:localhost"
+docker run -d --name bookstore-azurite -p 10000:10000 -v "${PWD}/.azurite:/certs:ro" `
+  mcr.microsoft.com/azure-storage/azurite azurite-blob --blobHost 0.0.0.0 --skipApiVersionCheck `
+  --oauth basic --cert /certs/cert.pem --key /certs/key.pem
+$env:AZURITE_OAUTH_BLOB_URI = "https://127.0.0.1:10000/devstoreaccount1"
+dotnet test
+```
+
+
 ### Endpoint'ler
 
 | Method | Yol | Açıklama |
@@ -85,6 +101,8 @@ Migration'ları elle yönetmek istersen: `dotnet tool restore` sonra
 | DELETE | `/api/carts/{cartId}/items/{isbn}` | Kitabı sepetten çıkar |
 | POST | `/api/orders` | Sipariş ver (`{ "cartId", "customerName", "customerEmail" }`) |
 | GET | `/api/orders/{orderId}` | Sipariş |
+| PUT | `/api/books/{isbn}/cover` | Kapak yükle (multipart, `file` alanı; JPEG/PNG/WebP, en fazla 2 MB) |
+| GET | `/api/books/{isbn}/cover` | Kapağın kısa ömürlü, salt okunur SAS adresine 302 |
 
 ---
 
@@ -156,6 +174,22 @@ It is explained in the series "Bookstore: The Site's Example Application".
 To manage migrations by hand: `dotnet tool restore`, then
 `dotnet ef database update --project src/Bookstore.Api`.
 
+### Cover tests (Azurite, OAuth)
+
+The cover endpoint tests use a Microsoft Entra ID token and a user delegation SAS, as on Azure. Start Azurite with
+HTTPS and `--oauth basic`; when the variable isn't set, these tests are skipped:
+
+```powershell
+openssl req -x509 -newkey rsa:2048 -nodes -keyout .azurite/key.pem -out .azurite/cert.pem -days 30 `
+  -subj "/CN=127.0.0.1" -addext "subjectAltName=IP:127.0.0.1,DNS:localhost"
+docker run -d --name bookstore-azurite -p 10000:10000 -v "${PWD}/.azurite:/certs:ro" `
+  mcr.microsoft.com/azure-storage/azurite azurite-blob --blobHost 0.0.0.0 --skipApiVersionCheck `
+  --oauth basic --cert /certs/cert.pem --key /certs/key.pem
+$env:AZURITE_OAUTH_BLOB_URI = "https://127.0.0.1:10000/devstoreaccount1"
+dotnet test
+```
+
+
 ### Endpoints
 
 | Method | Path | Description |
@@ -169,3 +203,5 @@ To manage migrations by hand: `dotnet tool restore`, then
 | DELETE | `/api/carts/{cartId}/items/{isbn}` | Remove a book from the cart |
 | POST | `/api/orders` | Place an order (`{ "cartId", "customerName", "customerEmail" }`) |
 | GET | `/api/orders/{orderId}` | Order |
+| PUT | `/api/books/{isbn}/cover` | Upload a cover (multipart, `file` field; JPEG/PNG/WebP, up to 2 MB) |
+| GET | `/api/books/{isbn}/cover` | 302 to a short-lived, read-only SAS URL of the cover |

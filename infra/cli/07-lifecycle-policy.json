@@ -1,0 +1,39 @@
+{
+  "rules": [
+    {
+      "name": "exports-cool-then-cold-then-delete",
+      "enabled": true,
+      "type": "Lifecycle",
+      "definition": {
+        "filters": {
+          "blobTypes": ["blockBlob"],
+          "prefixMatch": ["exports/"]
+        },
+        "actions": {
+          "baseBlob": {
+            "tierToCool": { "daysAfterModificationGreaterThan": 30 },
+            "tierToCold": { "daysAfterModificationGreaterThan": 90 },
+            "delete": { "daysAfterModificationGreaterThan": 1825 }
+          }
+        }
+      }
+    },
+    {
+      "name": "covers-unread-for-a-year-to-cool",
+      "enabled": true,
+      "type": "Lifecycle",
+      "definition": {
+        "filters": {
+          "blobTypes": ["blockBlob"],
+          "prefixMatch": ["covers/"]
+        },
+        "actions": {
+          "baseBlob": {
+            "tierToCool": { "daysAfterLastAccessTimeGreaterThan": 365 },
+            "enableAutoTierToHotFromCool": true
+          }
+        }
+      }
+    }
+  ]
+}

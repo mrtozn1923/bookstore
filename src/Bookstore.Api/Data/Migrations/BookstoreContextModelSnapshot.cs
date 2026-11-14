@@ -146,6 +146,11 @@ namespace Bookstore.Data.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
+                    b.Property<string>("CoverBlobName")
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(100)");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(1000)

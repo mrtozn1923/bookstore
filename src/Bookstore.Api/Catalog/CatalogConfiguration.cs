@@ -13,6 +13,7 @@ internal sealed class BookConfiguration : IEntityTypeConfiguration<Book>
         book.Property(b => b.Title).HasMaxLength(200);
         book.Property(b => b.Description).HasMaxLength(1000);
         book.Property(b => b.Price).HasPrecision(10, 2);
+        book.Property(b => b.CoverBlobName).HasMaxLength(100).IsUnicode(false);
         book.HasOne(b => b.Author).WithMany(a => a.Books).HasForeignKey(b => b.AuthorId);
         book.HasOne(b => b.Category).WithMany().HasForeignKey(b => b.CategoryId);
         book.HasData(CatalogSeed.Books);

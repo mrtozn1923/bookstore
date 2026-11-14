@@ -1,5 +1,7 @@
 using Bookstore.Data;
+using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +22,11 @@ public sealed class BookstoreApiFactory : WebApplicationFactory<Program>, IAsync
     {
         builder.UseSetting("ConnectionStrings:BookstoreDb", connectionString);
         builder.UseSetting("Database:MigrateOnStartup", "false");
+        if (AzuriteOAuth.ServiceUri is not null)
+        {
+            // Covers go to Azurite over HTTPS with a bearer token, like Azure with a managed identity
+            builder.ConfigureTestServices(services => services.AddSingleton(AzuriteOAuth.CreateServiceClient()));
+        }
     }
 
     public async ValueTask InitializeAsync()
@@ -28,6 +35,10 @@ public sealed class BookstoreApiFactory : WebApplicationFactory<Program>, IAsync
         BookstoreContext db = scope.ServiceProvider.GetRequiredService<BookstoreContext>();
         await db.Database.EnsureDeletedAsync();
         await db.Database.MigrateAsync();
+        if (AzuriteOAuth.ServiceUri is not null)
+        {
+            await Services.GetRequiredService<BlobContainerClient>().CreateIfNotExistsAsync();
+        }
     }
 
     private static string TestConnectionString()

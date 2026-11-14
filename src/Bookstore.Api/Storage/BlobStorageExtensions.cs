@@ -13,6 +13,7 @@ public static class BlobStorageExtensions
         // Created on first use, so the API still starts when storage isn't configured
         services.AddSingleton(_ => CreateServiceClient(options));
         services.AddSingleton(sp => sp.GetRequiredService<BlobServiceClient>().GetBlobContainerClient(options.CoversContainer));
+        services.AddSingleton<CoverUrlSigner>();
         return services;
     }
 

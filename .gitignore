@@ -487,3 +487,6 @@ web/bookstore-web/dist/
 
 # Azure Functions local settings (copy local.settings.sample.json)
 local.settings.json
+
+# Azurite test certificate (README "Cover tests")
+.azurite/

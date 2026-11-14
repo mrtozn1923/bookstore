@@ -32,7 +32,11 @@ builder.Services
 WebApplication app = builder.Build();
 
 app.UseForwardedHeaders();
-app.UseExceptionHandler();
+app.UseExceptionHandler(new ExceptionHandlerOptions
+{
+    // A body that breaks a limit (e.g. a cover over 2 MB) is the client's fault: 400/413, not 500
+    StatusCodeSelector = ex => ex is BadHttpRequestException bad ? bad.StatusCode : StatusCodes.Status500InternalServerError,
+});
 app.UseStatusCodePages();
 
 if (app.Environment.IsDevelopment())
@@ -47,5 +51,6 @@ if (app.Environment.IsDevelopment())
 app.MapCloudHealthChecks();
 app.MapCatalogEndpoints();
 app.MapOrderingEndpoints();
+app.MapCoverEndpoints();
 
 app.Run();
