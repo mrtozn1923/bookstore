@@ -1,29 +1,23 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export interface CartItem {
   title: string;
   price: number;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class CartService {
-  private items: CartItem[] = [];
+  private itemsSubject = new BehaviorSubject<CartItem[]>([]);
+  readonly items$: Observable<CartItem[]> = this.itemsSubject.asObservable();
+  readonly count$: Observable<number> = this.items$.pipe(map(items => items.length));
 
   add(item: CartItem): void {
-    this.items.push(item);
+    this.itemsSubject.next([...this.itemsSubject.value, item]);
   }
 
   clear(): void {
-    this.items = [];
-  }
-
-  get count(): number {
-    return this.items.length;
-  }
-
-  get total(): number {
-    return this.items.reduce((sum, item) => sum + item.price, 0);
+    this.itemsSubject.next([]);
   }
 }

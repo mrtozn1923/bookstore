@@ -24,6 +24,8 @@ import { APP_CONFIG } from './app-config';
 import { LoggerService, SilentLoggerService } from './logger.service';
 import { CartBadgeComponent } from './cart-badge/cart-badge.component';
 import { ReservationTimerComponent } from './reservation-timer/reservation-timer.component';
+import { BookSearchComponent } from './book-search/book-search.component';
+import { CartNotifierComponent } from './cart-notifier/cart-notifier.component';
 
 registerLocaleData(localeTr);
 
@@ -44,7 +46,9 @@ registerLocaleData(localeTr);
     CustomerCardComponent,
     OrderSummaryComponent,
     CartBadgeComponent,
-    ReservationTimerComponent
+    ReservationTimerComponent,
+    BookSearchComponent,
+    CartNotifierComponent
   ],
   imports: [
     BrowserModule,
