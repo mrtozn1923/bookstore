@@ -1,0 +1,7 @@
+{
+  "synonyms_set": [
+    { "id": "novel", "synonyms": "roman, novel" },
+    { "id": "sci-fi", "synonyms": "bilim kurgu, science fiction, sci-fi" },
+    { "id": "translation", "synonyms": "çeviri, translated, translation" }
+  ]
+}

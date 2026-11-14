@@ -3,11 +3,28 @@
     "number_of_shards": 1,
     "number_of_replicas": 0,
     "analysis": {
+      "filter": {
+        "tr_lowercase": { "type": "lowercase", "language": "turkish" },
+        "tr_stop": { "type": "stop", "stopwords": "_turkish_" },
+        "tr_keywords": { "type": "keyword_marker", "keywords": ["ince", "kasaba", "öğretmen"] },
+        "tr_stemmer": { "type": "stemmer", "language": "turkish" },
+        "bookstore_synonyms": { "type": "synonym_graph", "synonyms_set": "bookstore-synonyms", "updateable": true }
+      },
       "analyzer": {
-        "folded": {
+        "tr_text": {
           "type": "custom",
           "tokenizer": "standard",
-          "filter": ["lowercase", "asciifolding"]
+          "filter": ["apostrophe", "tr_lowercase", "tr_stop", "tr_keywords", "tr_stemmer"]
+        },
+        "tr_folded": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": ["apostrophe", "tr_lowercase", "asciifolding"]
+        },
+        "search_synonyms": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": ["lowercase", "bookstore_synonyms"]
         }
       }
     }
@@ -20,7 +37,10 @@
         "type": "text",
         "fields": {
           "keyword": { "type": "keyword", "ignore_above": 256 },
-          "folded": { "type": "text", "analyzer": "folded" }
+          "tr": { "type": "text", "analyzer": "tr_text" },
+          "en": { "type": "text", "analyzer": "english" },
+          "folded": { "type": "text", "analyzer": "tr_folded" },
+          "sort": { "type": "icu_collation_keyword", "language": "tr" }
         }
       },
       "authors": {
@@ -28,7 +48,10 @@
         "properties": {
           "name": {
             "type": "text",
-            "fields": { "keyword": { "type": "keyword", "ignore_above": 256 } }
+            "fields": {
+              "keyword": { "type": "keyword", "ignore_above": 256 },
+              "folded": { "type": "text", "analyzer": "tr_folded" }
+            }
           },
           "role": { "type": "keyword" }
         }
@@ -42,8 +65,11 @@
       "averageRating": { "type": "half_float" },
       "description": {
         "type": "text",
+        "search_analyzer": "search_synonyms",
         "fields": {
-          "folded": { "type": "text", "analyzer": "folded" }
+          "tr": { "type": "text", "analyzer": "tr_text" },
+          "en": { "type": "text", "analyzer": "english" },
+          "folded": { "type": "text", "analyzer": "tr_folded" }
         }
       }
     }

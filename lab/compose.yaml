@@ -4,7 +4,12 @@ name: bookstore-search-lab
 
 services:
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:${ES_VERSION:-9.5.6}
+    # The official image with the analysis-icu plugin added (lab/elasticsearch/Dockerfile, post 04).
+    build:
+      context: ./elasticsearch
+      args:
+        ES_VERSION: ${ES_VERSION:-9.5.6}
+    image: bookstore-search-es:${ES_VERSION:-9.5.6}
     environment:
       - node.name=bookstore-es
       - discovery.type=single-node

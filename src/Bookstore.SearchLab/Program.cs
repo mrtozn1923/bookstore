@@ -21,10 +21,13 @@ switch (command)
     case "translators":
         await MappingDemo.TranslatorsAsync(rest);
         break;
+    case "search":
+        await SearchDemo.RunAsync(rest);
+        break;
     case "seed-sql":
         await SqlSeeder.RunAsync(rest);
         break;
     default:
-        Console.WriteLine("Commands: inverted-index [query], seed-sql [syntheticCount], first-connection, create-index [name], translators [name]");
+        Console.WriteLine("Commands: inverted-index [query], seed-sql [syntheticCount], first-connection, create-index [name], translators [name], search <text>");
         break;
 }
