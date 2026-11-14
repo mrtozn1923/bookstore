@@ -1,5 +1,15 @@
+using Microsoft.AspNetCore.Mvc;
+
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        options.ClientErrorMapping[StatusCodes.Status503ServiceUnavailable] = new ClientErrorData
+        {
+            Title = "Service Unavailable",
+            Link = "https://tools.ietf.org/html/rfc7231#section-6.6.4"
+        };
+    });
 
 var app = builder.Build();
 

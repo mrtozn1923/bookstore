@@ -30,13 +30,46 @@ public class BooksController : ControllerBase
             return NotFound();
         }
 
+        return Ok(book);
+    }
+
+    [HttpGet("{id:int}/text-404")]
+    public ActionResult<Book> GetWithMessage(int id)
+    {
+        return NotFound($"Book {id} was not found.");
+    }
+
+    [HttpGet("{id:int}/null")]
+    public ActionResult<Book> GetNull(int id)
+    {
+        Book? book = Books.FirstOrDefault(b => b.Id == id);
+        return book!;
+    }
+
+    [HttpGet("{id:int}/problem-404")]
+    public ActionResult<Book> GetWithProblem(int id)
+    {
+        Book? book = Books.FirstOrDefault(b => b.Id == id);
+        if (book is null)
+        {
+            return Problem(
+                title: "Book not found",
+                detail: $"There is no book with id {id}.",
+                statusCode: StatusCodes.Status404NotFound);
+        }
+
         return book;
     }
 
     [HttpPost]
     public ActionResult<Book> Create(Book book)
     {
-        book.Id = Books.Count == 0 ? 1 : Books.Max(b => b.Id) + 1;
+        if (Books.Any(b => b.Title.Equals(book.Title, StringComparison.OrdinalIgnoreCase)))
+        {
+            return Conflict();
+        }
+
+        book.Id = Books.Max(b => b.Id) + 1;
         Books.Add(book);
         return CreatedAtAction(nameof(GetById), new { id = book.Id }, book);
     }
