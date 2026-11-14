@@ -1,16 +1,20 @@
-import { TestBed } from '@angular/core/testing';
-
 import { CartService } from './cart.service';
 
 describe('CartService', () => {
   let service: CartService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(CartService);
+    service = new CartService();
   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
+  it('should return 0 for an empty cart', () => {
+    expect(service.getTotal()).toBe(0);
+  });
+
+  it('should add up the prices of the books in the cart', () => {
+    service.add({ title: 'Dune', price: 450 });
+    service.add({ title: 'Emma', price: 320 });
+
+    expect(service.getTotal()).toBe(770);
   });
 });

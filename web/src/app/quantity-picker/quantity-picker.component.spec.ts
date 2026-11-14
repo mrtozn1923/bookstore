@@ -22,4 +22,15 @@ describe('QuantityPickerComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should increase the quantity when + is clicked', () => {
+    const element = fixture.nativeElement as HTMLElement;
+    const plusButton = element.querySelectorAll('button')[1];
+
+    plusButton.click();
+    expect(element.querySelector('.quantity')?.textContent).toBe('1');
+
+    fixture.detectChanges();
+    expect(element.querySelector('.quantity')?.textContent).toBe('2');
+  });
 });
