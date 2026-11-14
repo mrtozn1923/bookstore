@@ -1,0 +1,16 @@
+<header>
+  <h1>Bookstore</h1>
+</header>
+
+@if (update.updateReady()) {
+  <div class="update-banner" role="status">
+    A new version is available.
+    <button type="button" (click)="update.reload()">Reload</button>
+  </div>
+}
+
+<main>
+  <router-outlet />
+</main>
+
+<footer>bookstore-web {{ version }}</footer>
