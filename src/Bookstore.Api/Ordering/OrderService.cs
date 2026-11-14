@@ -1,6 +1,7 @@
 using Bookstore.Catalog;
 using Bookstore.Data;
 using Bookstore.Inventory;
+using Bookstore.Payments;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
@@ -16,7 +17,7 @@ public abstract record PlaceOrderOutcome
 }
 
 public sealed class OrderService(
-    BookstoreContext db, ICatalogService catalog, IInventoryService inventory, TimeProvider clock)
+    BookstoreContext db, ICatalogService catalog, IInventoryService inventory, IPaymentGateway payments, TimeProvider clock)
 {
     public async Task<PlaceOrderOutcome> PlaceOrderAsync(PlaceOrderRequest request, CancellationToken ct)
     {
@@ -76,6 +77,14 @@ public sealed class OrderService(
             return new PlaceOrderOutcome.CartChanged();
         }
         await transaction.CommitAsync(ct);
+
+        // The charge runs after the commit: an external call never holds stock rows locked.
+        ChargeOutcome charge = await payments.ChargeAsync(order.Id, order.Total, order.Currency, ct);
+        if (charge != ChargeOutcome.Skipped)
+        {
+            order.Status = charge == ChargeOutcome.Succeeded ? OrderStatus.Paid : OrderStatus.PaymentPending;
+            await db.SaveChangesAsync(ct);
+        }
 
         return new PlaceOrderOutcome.Placed(order);
     }

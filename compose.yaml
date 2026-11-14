@@ -22,6 +22,13 @@ services:
       ConnectionStrings__BookstoreDb: "Server=sql;Database=BookstoreDb;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True"
       Database__MigrateOnStartup: "true"
       ASPNETCORE_HTTP_PORTS: "8080"
+      # Optional: W3C access log inside the container (docker compose cp api:/tmp/accesslog ./accesslog)
+      AccessLog__Enabled: ${ACCESS_LOG:-false}
+      AccessLog__Directory: /tmp/accesslog
+      # Optional: payment provider stub running on the host (tools/Bookstore.PaymentStub)
+      Payments__BaseUrl: ${PAYMENTS_BASE_URL:-}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "${API_PORT:-5080}:8080"
     depends_on:

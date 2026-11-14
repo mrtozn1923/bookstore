@@ -23,7 +23,8 @@ public static class CatalogModule
     {
         RouteGroupBuilder catalog = app.MapGroup("/api").WithTags("Catalog");
         catalog.MapGet("/books", SearchBooks);
-        catalog.MapGet("/books/{isbn}", GetBook);
+        // Book details change rarely: one minute of output cache (stock may be up to a minute old on this page).
+        catalog.MapGet("/books/{isbn}", GetBook).CacheOutput(policy => policy.Expire(TimeSpan.FromMinutes(1)));
         catalog.MapGet("/categories", GetCategories);
         return app;
     }
