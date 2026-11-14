@@ -18,7 +18,10 @@ switch (command)
     case "ping":
         await ConnectionLab.PingAsync(connectionString);
         break;
+    case "stock-race":
+        await StockLab.RaceAsync(connectionString);
+        break;
     default:
-        Console.WriteLine("Usage: dotnet run --project src/Bookstore.MongoLab -- <bson|objectid|ping>");
+        Console.WriteLine("Usage: dotnet run --project src/Bookstore.MongoLab -- <bson|objectid|ping|stock-race>");
         break;
 }
