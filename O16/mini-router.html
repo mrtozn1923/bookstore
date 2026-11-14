@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Mini router</title>
+</head>
+<body>
+  <nav>
+    <a href="?view=home">Home</a>
+    <a href="?view=catalog">Catalog</a>
+    <a href="?view=about">About</a>
+  </nav>
+  <main id="app"></main>
+  <script>
+    const app = document.querySelector("#app");
+    const books = { 1: "Dune", 2: "Emma", 3: "The Hobbit" };
+
+    function render() {
+      const params = new URLSearchParams(location.search);
+      const view = params.get("view") ?? "home";
+      const title = document.createElement("h2");
+      const body = document.createElement("p");
+
+      if (view === "home") {
+        title.textContent = "Home";
+        body.textContent = "Welcome to Bookstore. Pick a page from the menu.";
+      } else if (view === "catalog") {
+        title.textContent = "Catalog";
+        for (const [id, name] of Object.entries(books)) {
+          const link = document.createElement("a");
+          link.href = `?view=book&id=${id}`;
+          link.textContent = name;
+          body.append(link, " ");
+        }
+      } else if (view === "book") {
+        const name = books[params.get("id")];
+        title.textContent = name ?? "Book not found";
+        body.textContent = name ? `Book number: ${params.get("id")}` : "Go back to the catalog.";
+      } else if (view === "about") {
+        title.textContent = "About";
+        body.textContent = "This page runs on the History API.";
+      } else {
+        title.textContent = "Page not found";
+      }
+
+      app.replaceChildren(title, body);
+      document.title = title.textContent;
+    }
+
+    document.addEventListener("click", (event) => {
+      const link = event.target.closest("a");
+      if (!link || link.origin !== location.origin) return;
+      if (event.ctrlKey || event.metaKey || event.shiftKey) return; // let "open in new tab" work
+      event.preventDefault();
+      if (link.href !== location.href) {
+        history.pushState(null, "", link.href);
+      }
+      render();
+    });
+
+    window.addEventListener("popstate", render);
+    render();
+  </script>
+</body>
+</html>
