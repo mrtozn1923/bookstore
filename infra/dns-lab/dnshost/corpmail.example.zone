@@ -1,0 +1,6 @@
+$TTL 3600
+@       IN SOA  ns1.dnshost.example. hostmaster.corpmail.example. 2026111401 7200 3600 1209600 300
+@       IN NS   ns1.dnshost.example.
+mx1     IN A    203.0.113.130
+mx2     IN A    203.0.113.131
+_spf    IN TXT  "v=spf1 ip4:203.0.113.128/25 -all"

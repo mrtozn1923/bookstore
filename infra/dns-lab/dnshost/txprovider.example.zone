@@ -1,0 +1,7 @@
+$TTL 3600
+@         IN SOA  ns1.dnshost.example. hostmaster.txprovider.example. 2026111402 7200 3600 1209600 300
+@         IN NS   ns1.dnshost.example.
+feedback  IN A    198.51.100.5
+_spf      IN TXT  "v=spf1 ip4:198.51.100.0/25 ip6:2001:db8:51::/48 -all"
+tx1._domainkey IN TXT ( "v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2vHysCkFTBJggMisfBiU9D5C9hg7QAkHPmK9wAhJtOrm4jDtxl8qQE6uoIkjVTYmse4ryJA4o/XlUAj7sJCeAoOAlxx3E5EBXyuqYWRCu+nNZ32NfFAxPF8eH8FyULonHzOj46MViY/W62dnJXy9xKnn6+F5"
+                         "+hY/yeN60RbeoxYVfT6AZA2yc04LsK1hpUTCA8aMtbPa3ZTi02K2w76YPIjkBHU54yunc6mxT7J9C39BrosTkoi65I8sAkEwxL9A+nREtZUe/A1eayDt1IgHMma1hijl05OyVhhnKmnBECR7xm6Q+AX+TAB1i2kQTpbc624XaOyFSAnU6QMJDekn0wIDAQAB" )

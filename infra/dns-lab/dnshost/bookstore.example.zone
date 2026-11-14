@@ -1,5 +1,5 @@
 $TTL 3600
-@               IN SOA   ns1.dnshost.example. hostmaster.bookstore.example. 2026111402 7200 3600 1209600 300
+@               IN SOA   ns1.dnshost.example. hostmaster.bookstore.example. 2026111404 7200 3600 1209600 300
 @               IN NS    ns1.dnshost.example.
 
 @               IN A     203.0.113.10
@@ -19,3 +19,17 @@ asuid.staging-api IN TXT "E0569773CCBDE09F6A6E5713B605DB0178702CB5C816155CD14243
 @               IN TXT   "google-site-verification=pX3c9QeLr0vT2mWb8yKdN5hJ7sFa1uZo4iGyE6"
 
 promo           IN CNAME bookstore-promo-2025.azurewebsites.net.
+
+; mail
+@               IN MX    10 mx1.corpmail.example.
+@               IN MX    20 mx2.corpmail.example.
+@               IN TXT   "v=spf1 include:_spf.corpmail.example -all"
+_dmarc          IN TXT   "v=DMARC1; p=none; rua=mailto:dmarc-reports@bookstore.example"
+
+mail            IN MX    10 feedback.txprovider.example.
+mail            IN TXT   "v=spf1 include:_spf.txprovider.example -all"
+s1._domainkey.mail IN TXT ( "v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2rU8UK0/E30OMTz0FfG6xSj4OkB4X3BV5yoEr/czlZ1GijiMrbV9pJ8hy+9Oq+tMm8gBthy2cwZs605sA+kj+X2DhWLWgF7e0D+LxrLSUEL3JtfnBsGyR8JU6vKZ9ByG48EowUIX1V4OmrG7GaWt6Zei0oPA"
+                            "K4ryXlatZ1uPX5oSxA/xRfkIbu2VvJqk8e3Z0x1yzafQkY3804yeJAwkHwI1LZYH/AkB2IYkGYLf8HXvDNbz4UsEvTunxSnNVeMtsuMO6QztcjKihB+VWC8MnzSDcfTvXe3Z5B3JcaP0366G4V3+hTrgkLBuWil9zaUlvFmsc2tC51Yfmg9XUK0AVQIDAQAB" )
+spf-2027        IN TXT   "v=spf1 include:_spf.corpmail.example include:_spf.txprovider.example include:_spf.crm.saas.example include:_spf.helpdesk.saas.example include:_spf.newsletter.saas.example -all"
+two-spf         IN TXT   "v=spf1 include:_spf.corpmail.example -all"
+two-spf         IN TXT   "v=spf1 include:_spf.txprovider.example -all"

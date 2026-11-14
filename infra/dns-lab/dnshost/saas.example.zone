@@ -1,0 +1,14 @@
+$TTL 3600
+@                IN SOA  ns1.dnshost.example. hostmaster.saas.example. 2026111401 7200 3600 1209600 300
+@                IN NS   ns1.dnshost.example.
+_spf.crm         IN TXT  "v=spf1 include:_spf1.crm.saas.example include:_spf2.crm.saas.example -all"
+_spf1.crm        IN TXT  "v=spf1 ip4:198.51.100.128/27 -all"
+_spf2.crm        IN TXT  "v=spf1 ip4:198.51.100.160/27 -all"
+_spf.helpdesk    IN TXT  "v=spf1 include:_netblocks1.helpdesk.saas.example include:_netblocks2.helpdesk.saas.example include:_netblocks3.helpdesk.saas.example -all"
+_netblocks1.helpdesk IN TXT "v=spf1 ip4:198.51.100.192/28 -all"
+_netblocks2.helpdesk IN TXT "v=spf1 ip4:198.51.100.208/28 -all"
+_netblocks3.helpdesk IN TXT "v=spf1 ip4:198.51.100.224/28 -all"
+_spf.newsletter  IN TXT  "v=spf1 a mx include:_spf1.newsletter.saas.example -all"
+_spf1.newsletter IN TXT  "v=spf1 ip4:198.51.100.240/28 -all"
+newsletter       IN A    198.51.100.241
+newsletter       IN MX   10 newsletter.saas.example.
