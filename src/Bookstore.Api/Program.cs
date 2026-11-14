@@ -3,6 +3,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Bookstore.Api.Data;
+using Bookstore.Api.Middleware;
 using Bookstore.Api.Options;
 using Bookstore.Api.Services;
 using Bookstore.Api.Validation;
@@ -51,6 +52,7 @@ builder.Host.UseDefaultServiceProvider(options =>
 var app = builder.Build();
 
 app.UseSerilogRequestLogging();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.MapControllers();
 
 app.MapGet("/api/orders/{orderId:guid}", (Guid orderId) => new { orderId, Status = "Pending" });

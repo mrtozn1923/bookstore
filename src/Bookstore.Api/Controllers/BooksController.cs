@@ -24,24 +24,13 @@ public class BooksController : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<ActionResult<BookDto>> GetById(int id, CancellationToken cancellationToken)
     {
-        BookDto? book = await _bookService.GetByIdAsync(id, cancellationToken);
-        if (book is null)
-        {
-            return NotFound();
-        }
-
-        return book;
+        return await _bookService.GetByIdAsync(id, cancellationToken);
     }
 
     [HttpPost]
     public async Task<ActionResult<BookDto>> Create(CreateBookRequest request, CancellationToken cancellationToken)
     {
-        BookDto? created = await _bookService.CreateAsync(request, cancellationToken);
-        if (created is null)
-        {
-            return Conflict($"A book titled '{request.Title}' already exists.");
-        }
-
+        BookDto created = await _bookService.CreateAsync(request, cancellationToken);
         return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 

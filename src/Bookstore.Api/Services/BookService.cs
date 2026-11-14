@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Bookstore.Api.Data;
 using Bookstore.Api.Dtos;
+using Bookstore.Api.Exceptions;
 using Bookstore.Api.Models;
 
 namespace Bookstore.Api.Services;
@@ -28,22 +29,23 @@ public class BookService : IBookService
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<BookDto?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<BookDto> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        return await _db.Books
+        BookDto? book = await _db.Books
             .AsNoTracking()
             .Where(b => b.Id == id)
             .Select(ToDto)
             .FirstOrDefaultAsync(cancellationToken);
+
+        return book ?? throw new NotFoundException("Book", id);
     }
 
-    public async Task<BookDto?> CreateAsync(CreateBookRequest request, CancellationToken cancellationToken = default)
+    public async Task<BookDto> CreateAsync(CreateBookRequest request, CancellationToken cancellationToken = default)
     {
-        // business rule: no two books may share a title
         bool titleTaken = await _db.Books.AnyAsync(b => b.Title == request.Title, cancellationToken);
         if (titleTaken)
         {
-            return null;
+            throw new ConflictException($"A book titled '{request.Title}' already exists.");
         }
 
         Book book = new()
