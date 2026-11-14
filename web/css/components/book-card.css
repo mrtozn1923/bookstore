@@ -38,6 +38,7 @@
 .book-card .author { margin: 0.25rem 0 0; color: var(--color-muted); }
 
 .badge {
+    position: relative;
     display: inline-block;
     padding: 0.125rem 0.5rem;
     border-radius: 0.25rem;
@@ -48,6 +49,16 @@
     /* em, not px: grows with the badge's own font-size */
     letter-spacing: 0.08em;
     text-transform: uppercase;
+}
+/* decorative folded corner: empty content, nothing for screen readers */
+.badge::after {
+    content: "";
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-end: 0;
+    border-style: solid;
+    border-width: 0 0.5rem 0.5rem 0;
+    border-color: transparent var(--color-surface) rgb(0 0 0 / 0.25) transparent;
 }
 
 .book-card .price { margin: 0.5rem 0 0; font-weight: 700; }

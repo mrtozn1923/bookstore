@@ -1,0 +1,6 @@
+/* a string as the marker: no image, no ::before */
+.reading-list ul { padding-inline-start: 1.5rem; list-style-type: "○ "; }
+.reading-list .is-read { list-style-type: "✓ "; }
+/* Safari styles only color and font-size on ::marker */
+.reading-list li::marker { color: var(--color-accent); }
+.reading-list small { color: var(--color-muted); }

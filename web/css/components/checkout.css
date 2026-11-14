@@ -37,3 +37,33 @@
     font-weight: 700;
     box-shadow: var(--shadow-md);
 }
+
+/* numbers in circles: ::marker cannot draw a box, so the list counts by itself */
+.checkout-steps {
+    display: flex;
+    gap: 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+}
+.checkout-steps li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-muted);
+    counter-increment: step;
+}
+.checkout-steps li::before {
+    content: counter(step);
+    display: grid;
+    place-items: center;
+    inline-size: 1.75rem;
+    block-size: 1.75rem;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+    font-weight: 700;
+}
+/* the check mark is decoration; the text after the slash is what screen readers get */
+.checkout-steps .is-done::before { content: "✓" / "Completed:"; }
+.checkout-steps [aria-current="step"] { color: var(--color-link); font-weight: 600; }

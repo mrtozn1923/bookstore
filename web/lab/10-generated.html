@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>10 generated content</title>
+    <style>
+        body { margin: 0; padding: 20px; font: 16px/1.5 system-ui, sans-serif; background: #ffffff; color: #1f2937; }
+        section { margin-block-end: 20px; }
+
+        /* 1) no content, no pseudo-element */
+        .dot::before { display: inline-block; inline-size: 20px; block-size: 10px; background: #b91c1c; }
+        #with-content::before { content: ""; }
+
+        /* 2) replaced elements have no ::before (only a broken image may show one) */
+        .cover::before { content: ""; position: absolute; inset: 0; background: #b91c1c; }
+        .cover { position: relative; display: block; inline-size: 60px; block-size: 90px; }
+
+        /* 3) decorative or meaningful? the part after / is the alternative text */
+        .badge::before { content: "★ "; }
+        #badge-alt::before { content: "★ " / ""; }
+        .ext::after { content: " (" attr(href) ")"; }
+
+        /* 4) counters: nested numbering with counters() */
+        .steps { counter-reset: step; list-style: none; padding: 0; }
+        .steps li { counter-increment: step; }
+        .steps li::before { content: counters(step, ".") ". "; }
+
+        /* 5) a counter style for the Turkish alphabet */
+        @counter-style turkish-alpha {
+            system: alphabetic;
+            symbols: a b c ç d e f g ğ h ı i j k l m n o ö p r s ş t u ü v y z;
+            suffix: ") ";
+        }
+        #answers { list-style: turkish-alpha; }
+
+        /* 6) markers: a string as the marker, ::marker for color and content */
+        .marks { list-style-position: inside; padding: 0; }
+        #string-marker { list-style-type: "– "; }
+        #marker-content li::marker { content: "→ "; color: #b91c1c; }
+    </style>
+</head>
+<body>
+    <section><span class="dot" id="no-content">Dune</span><br><span class="dot" id="with-content">Dune</span></section>
+    <section>
+        <img class="cover" id="cover-ok" src="../img/cover-dune.webp" alt="Dune" width="240" height="360">
+        <img class="cover" id="cover-broken" src="../img/missing.webp" alt="Dune" width="240" height="360">
+    </section>
+    <section>
+        <button class="badge" id="badge-plain">New</button>
+        <button class="badge" id="badge-alt">New</button>
+        <a class="ext" id="ext" href="https://example.com/dune">Publisher page</a>
+    </section>
+    <ol class="steps" id="steps">
+        <li>Cart</li>
+        <li>Address
+            <ol class="steps">
+                <li>Billing address</li>
+                <li>Shipping address</li>
+            </ol>
+        </li>
+        <li>Payment</li>
+    </ol>
+    <ol id="answers"><li>Ankara</li><li>Izmir</li><li>Bursa</li><li>Konya</li></ol>
+    <ul class="marks" id="default-marker"><li>Emma</li></ul>
+    <ul class="marks" id="string-marker"><li>Emma</li></ul>
+    <ul class="marks" id="marker-content"><li>Emma</li></ul>
+</body>
+</html>

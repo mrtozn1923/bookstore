@@ -70,6 +70,9 @@ a:hover {
     text-decoration-thickness: 2px;
 }
 
+/* not Baseline (no iOS Safari), harmless where it is missing */
+::selection { background: rgb(29 78 216 / 0.2); }
+
 :focus-visible {
     /* transparent outlines turn visible in forced colors mode */
     outline: 3px solid var(--color-focus);
