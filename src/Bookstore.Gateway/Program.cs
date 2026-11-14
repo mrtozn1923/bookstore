@@ -55,6 +55,7 @@ app.MapInstitutionForwarding();
 
 app.MapReverseProxy(proxyPipeline =>
 {
+    proxyPipeline.UseCanary();
     proxyPipeline.Use(async (context, next) =>
     {
         IReverseProxyFeature proxy = context.GetReverseProxyFeature();
