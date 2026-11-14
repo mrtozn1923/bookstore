@@ -1,0 +1,6 @@
+{
+  "name": "bookstore-javascript-temel",
+  "private": true,
+  "description": "Code from the JavaScript Temel series on mertozen.com (Bookstore examples)",
+  "engines": { "node": ">=24" }
+}
