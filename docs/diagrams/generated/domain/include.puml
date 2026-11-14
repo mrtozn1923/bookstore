@@ -1,0 +1,145 @@
+@startuml
+class BudgetAdjustment {
+    + BudgetAdjustment(unitBudgetId:int, amount:decimal, reason:string, adjustedById:int, adjustedAt:DateTimeOffset)
+    + Id : int <<get>>
+    + UnitBudgetId : int <<get>>
+    + Amount : decimal <<get>>
+    + Reason : string <<get>> = ""
+    + AdjustedById : int <<get>>
+}
+BudgetAdjustment --> "AdjustedAt" DateTimeOffset
+class BudgetCategory {
+    + BudgetCategory(code:string, name:string, deductsFromBudget:bool)
+    + Id : int <<get>>
+    + Code : string <<get>> = ""
+    + Name : string <<get>> = ""
+    + DeductsFromBudget : bool <<get>>
+    + IsActive : bool <<get>>
+    + Deactivate() : void
+}
+class DiscountAgreement {
+    + DiscountAgreement(institutionId:int, discountRate:decimal, startDate:DateOnly, endDate:DateOnly?)
+    + Id : int <<get>>
+    + InstitutionId : int <<get>>
+    + DiscountRate : decimal <<get>>
+    + IsActiveOn(day:DateOnly) : bool
+}
+DiscountAgreement --> "StartDate" DateOnly
+DiscountAgreement --> "EndDate" DateOnly
+class InstitutionUnit {
+    + InstitutionUnit(name:string, purchasingManager:InstitutionUser?)
+    + Id : int <<get>>
+    + Name : string <<get>> = ""
+    + PurchasingManagerId : int? <<get>>
+}
+InstitutionUnit --> "PurchasingManager" InstitutionUser
+class InstitutionUser {
+    + InstitutionUser(staffNumber:string, fullName:string, email:string, institutionUnitId:int, approverId:int?)
+    + Id : int <<get>>
+    + StaffNumber : string <<get>> = ""
+    + FullName : string <<get>> = ""
+    + Email : string <<get>> = ""
+    + InstitutionUnitId : int <<get>>
+    + ApproverId : int? <<get>>
+}
+InstitutionUser o-> "InstitutionUnit" InstitutionUnit
+InstitutionUser --> "Approver" InstitutionUser
+struct Money <<readonly>> <<record>> {
+    + Amount : decimal <<get>> <<init>>
+    + Currency : string <<get>> <<init>>
+    + {static} Try(amount:decimal) : Money
+    + Add(other:Money) : Money
+}
+class Order {
+    + <<const>> PurchasingApprovalThreshold : decimal = 50_000m
+    + Order(placedBy:InstitutionUser, budgetCategory:BudgetCategory, bookId:int, quantity:int, deliveryDate:DateOnly, note:string?, now:DateTimeOffset)
+    + Id : int <<get>>
+    + PlacedById : int <<get>>
+    + BudgetCategoryId : int <<get>>
+    + BookId : int <<get>>
+    + Quantity : int <<get>>
+    + Note : string? <<get>>
+    + RequiresPurchasingApproval : bool <<get>>
+    + Submit(total:Money, now:DateTimeOffset) : void
+    + Approve(approver:InstitutionUser, comment:string?, now:DateTimeOffset) : void
+    + Reject(approver:InstitutionUser, comment:string, now:DateTimeOffset) : void
+    + Cancel(today:DateOnly) : void
+    + Attach(attachment:OrderAttachment) : void
+}
+class "IReadOnlyList`1"<T> {
+}
+Order o-> "PlacedBy" InstitutionUser
+Order o-> "BudgetCategory" BudgetCategory
+Order --> "DeliveryDate" DateOnly
+Order --> "Total" Money
+Order --> "Status" OrderStatus
+Order --> "CreatedAt" DateTimeOffset
+Order --> "SubmittedAt" DateTimeOffset
+Order --> "Attachment" OrderAttachment
+Order --> "Approvals<PurchaseApproval>" "IReadOnlyList`1"
+class OrderAttachment {
+    + FileName : string <<get>> <<set>> = ""
+    + ContentType : string <<get>> <<set>> = ""
+    + StoragePath : string <<get>> <<set>> = ""
+}
+abstract class OrderEvent <<record>> {
+    + Id : int <<get>> <<init>>
+}
+class OrderSubmitted <<sealed>> <<record>> {
+    + Id : int <<get>> <<init>>
+}
+class OrderApproved <<sealed>> <<record>> {
+    + Id : int <<get>> <<init>>
+}
+class OrderRejected <<sealed>> <<record>> {
+    + Id : int <<get>> <<init>>
+    + Reason : string <<get>> <<init>>
+}
+class OrderCancelled <<sealed>> <<record>> {
+    + Id : int <<get>> <<init>>
+}
+OrderEvent <|-- OrderSubmitted
+OrderSubmitted --> "Total" Money
+OrderEvent <|-- OrderApproved
+OrderEvent <|-- OrderRejected
+OrderEvent <|-- OrderCancelled
+enum OrderStatus {
+    Draft,
+    PendingApprover,
+    PendingPurchasingManager,
+    Approved,
+    Rejected,
+    Cancelled,
+}
+enum ApprovalStep {
+    Approver,
+    PurchasingManager,
+}
+enum ApprovalDecision {
+    Approved,
+    Rejected,
+}
+class PurchaseApproval {
+    + Id : int <<get>>
+    + OrderId : int <<get>>
+    + ApproverId : int <<get>>
+    + Comment : string? <<get>>
+}
+PurchaseApproval o-> "Order" Order
+PurchaseApproval o-> "Approver" InstitutionUser
+PurchaseApproval --> "Step" ApprovalStep
+PurchaseApproval --> "Decision" ApprovalDecision
+PurchaseApproval --> "DecidedAt" DateTimeOffset
+class UnitBudget {
+    + UnitBudget(institutionUnitId:int, budgetCategoryId:int, year:int, allocatedAmount:decimal)
+    + Id : int <<get>>
+    + InstitutionUnitId : int <<get>>
+    + BudgetCategoryId : int <<get>>
+    + Year : int <<get>>
+    + AllocatedAmount : decimal <<get>>
+    + SpentAmount : decimal <<get>>
+    + RemainingAmount : decimal <<get>>
+    + Deduct(amount:decimal) : void
+    + Refund(amount:decimal) : void
+}
+@enduml

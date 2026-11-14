@@ -1,0 +1,18 @@
+@startuml
+enum OrderStatus {
+    Draft,
+    PendingApprover,
+    PendingPurchasingManager,
+    Approved,
+    Rejected,
+    Cancelled,
+}
+enum ApprovalStep {
+    Approver,
+    PurchasingManager,
+}
+enum ApprovalDecision {
+    Approved,
+    Rejected,
+}
+@enduml

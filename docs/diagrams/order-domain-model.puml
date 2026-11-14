@@ -1,0 +1,33 @@
+@startuml order-domain-model
+hide circle
+hide empty methods
+
+class InstitutionUser {
+  fullName
+  email
+}
+class InstitutionUnit {
+  name
+}
+class Order {
+  quantity
+  total
+  status
+  note
+}
+class BudgetCategory {
+  name
+  deductsFromBudget
+}
+class PurchaseApproval {
+  decision
+  comment
+  decidedAt
+}
+
+InstitutionUser "0..*" -- "1" InstitutionUnit : belongs to
+InstitutionUser "1" -- "0..*" Order : places
+InstitutionUser "0..2 approver" -- "0..*" Order
+(InstitutionUser, Order) .. PurchaseApproval
+Order "0..*" -- "1" BudgetCategory : category
+@enduml

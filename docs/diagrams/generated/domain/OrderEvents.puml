@@ -1,0 +1,23 @@
+@startuml
+abstract class OrderEvent <<record>> {
+    + Id : int <<get>> <<init>>
+}
+class OrderSubmitted <<sealed>> <<record>> {
+    + Id : int <<get>> <<init>>
+}
+class OrderApproved <<sealed>> <<record>> {
+    + Id : int <<get>> <<init>>
+}
+class OrderRejected <<sealed>> <<record>> {
+    + Id : int <<get>> <<init>>
+    + Reason : string <<get>> <<init>>
+}
+class OrderCancelled <<sealed>> <<record>> {
+    + Id : int <<get>> <<init>>
+}
+OrderEvent <|-- OrderSubmitted
+OrderSubmitted --> "Total" Money
+OrderEvent <|-- OrderApproved
+OrderEvent <|-- OrderRejected
+OrderEvent <|-- OrderCancelled
+@enduml

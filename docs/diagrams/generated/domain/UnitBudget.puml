@@ -1,0 +1,14 @@
+@startuml
+class UnitBudget {
+    + UnitBudget(institutionUnitId:int, budgetCategoryId:int, year:int, allocatedAmount:decimal)
+    + Id : int <<get>>
+    + InstitutionUnitId : int <<get>>
+    + BudgetCategoryId : int <<get>>
+    + Year : int <<get>>
+    + AllocatedAmount : decimal <<get>>
+    + SpentAmount : decimal <<get>>
+    + RemainingAmount : decimal <<get>>
+    + Deduct(amount:decimal) : void
+    + Refund(amount:decimal) : void
+}
+@enduml

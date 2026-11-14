@@ -1,0 +1,11 @@
+@startuml
+class BudgetAdjustment {
+    + BudgetAdjustment(unitBudgetId:int, amount:decimal, reason:string, adjustedById:int, adjustedAt:DateTimeOffset)
+    + Id : int <<get>>
+    + UnitBudgetId : int <<get>>
+    + Amount : decimal <<get>>
+    + Reason : string <<get>> = ""
+    + AdjustedById : int <<get>>
+}
+BudgetAdjustment --> "AdjustedAt" DateTimeOffset
+@enduml

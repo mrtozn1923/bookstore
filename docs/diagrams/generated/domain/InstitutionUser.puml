@@ -1,0 +1,13 @@
+@startuml
+class InstitutionUser {
+    + InstitutionUser(staffNumber:string, fullName:string, email:string, institutionUnitId:int, approverId:int?)
+    + Id : int <<get>>
+    + StaffNumber : string <<get>> = ""
+    + FullName : string <<get>> = ""
+    + Email : string <<get>> = ""
+    + InstitutionUnitId : int <<get>>
+    + ApproverId : int? <<get>>
+}
+InstitutionUser o-> "InstitutionUnit" InstitutionUnit
+InstitutionUser --> "Approver" InstitutionUser
+@enduml

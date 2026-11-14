@@ -1,0 +1,13 @@
+@startuml
+class PurchaseApproval {
+    + Id : int <<get>>
+    + OrderId : int <<get>>
+    + ApproverId : int <<get>>
+    + Comment : string? <<get>>
+}
+PurchaseApproval o-> "Order" Order
+PurchaseApproval o-> "Approver" InstitutionUser
+PurchaseApproval --> "Step" ApprovalStep
+PurchaseApproval --> "Decision" ApprovalDecision
+PurchaseApproval --> "DecidedAt" DateTimeOffset
+@enduml

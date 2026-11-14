@@ -1,0 +1,7 @@
+@startuml
+class OrderAttachment {
+    + FileName : string <<get>> <<set>> = ""
+    + ContentType : string <<get>> <<set>> = ""
+    + StoragePath : string <<get>> <<set>> = ""
+}
+@enduml

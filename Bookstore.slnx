@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Bookstore.Api/Bookstore.Api.csproj" />
+    <Project Path="src/Bookstore.Institutional.Application/Bookstore.Institutional.Application.csproj" />
+    <Project Path="src/Bookstore.Institutional.Domain/Bookstore.Institutional.Domain.csproj" />
+    <Project Path="src/Bookstore.Institutional.Infrastructure/Bookstore.Institutional.Infrastructure.csproj" />
+  </Folder>
+</Solution>

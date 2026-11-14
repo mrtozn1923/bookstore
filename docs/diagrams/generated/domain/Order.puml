@@ -1,0 +1,29 @@
+@startuml
+class Order {
+    + <<const>> PurchasingApprovalThreshold : decimal = 50_000m
+    + Order(placedBy:InstitutionUser, budgetCategory:BudgetCategory, bookId:int, quantity:int, deliveryDate:DateOnly, note:string?, now:DateTimeOffset)
+    + Id : int <<get>>
+    + PlacedById : int <<get>>
+    + BudgetCategoryId : int <<get>>
+    + BookId : int <<get>>
+    + Quantity : int <<get>>
+    + Note : string? <<get>>
+    + RequiresPurchasingApproval : bool <<get>>
+    + Submit(total:Money, now:DateTimeOffset) : void
+    + Approve(approver:InstitutionUser, comment:string?, now:DateTimeOffset) : void
+    + Reject(approver:InstitutionUser, comment:string, now:DateTimeOffset) : void
+    + Cancel(today:DateOnly) : void
+    + Attach(attachment:OrderAttachment) : void
+}
+class "IReadOnlyList`1"<T> {
+}
+Order o-> "PlacedBy" InstitutionUser
+Order o-> "BudgetCategory" BudgetCategory
+Order --> "DeliveryDate" DateOnly
+Order --> "Total" Money
+Order --> "Status" OrderStatus
+Order --> "CreatedAt" DateTimeOffset
+Order --> "SubmittedAt" DateTimeOffset
+Order --> "Attachment" OrderAttachment
+Order --> "Approvals<PurchaseApproval>" "IReadOnlyList`1"
+@enduml

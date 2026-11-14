@@ -1,0 +1,11 @@
+@startuml
+class DiscountAgreement {
+    + DiscountAgreement(institutionId:int, discountRate:decimal, startDate:DateOnly, endDate:DateOnly?)
+    + Id : int <<get>>
+    + InstitutionId : int <<get>>
+    + DiscountRate : decimal <<get>>
+    + IsActiveOn(day:DateOnly) : bool
+}
+DiscountAgreement --> "StartDate" DateOnly
+DiscountAgreement --> "EndDate" DateOnly
+@enduml

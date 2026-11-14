@@ -1,0 +1,11 @@
+@startuml
+class BudgetCategory {
+    + BudgetCategory(code:string, name:string, deductsFromBudget:bool)
+    + Id : int <<get>>
+    + Code : string <<get>> = ""
+    + Name : string <<get>> = ""
+    + DeductsFromBudget : bool <<get>>
+    + IsActive : bool <<get>>
+    + Deactivate() : void
+}
+@enduml

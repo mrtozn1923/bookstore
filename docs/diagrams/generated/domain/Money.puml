@@ -1,0 +1,8 @@
+@startuml
+struct Money <<readonly>> <<record>> {
+    + Amount : decimal <<get>> <<init>>
+    + Currency : string <<get>> <<init>>
+    + {static} Try(amount:decimal) : Money
+    + Add(other:Money) : Money
+}
+@enduml

@@ -1,0 +1,9 @@
+@startuml
+class InstitutionUnit {
+    + InstitutionUnit(name:string, purchasingManager:InstitutionUser?)
+    + Id : int <<get>>
+    + Name : string <<get>> = ""
+    + PurchasingManagerId : int? <<get>>
+}
+InstitutionUnit --> "PurchasingManager" InstitutionUser
+@enduml
