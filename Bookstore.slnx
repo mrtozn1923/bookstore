@@ -1,6 +1,10 @@
 <Solution>
+  <Folder Name="/benchmarks/">
+    <Project Path="benchmarks/Bookstore.IO.Benchmarks/Bookstore.IO.Benchmarks.csproj" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/Bookstore.IO.Files/Bookstore.IO.Files.csproj" />
+    <Project Path="src/Bookstore.IO.Pipelines/Bookstore.IO.Pipelines.csproj" />
     <Project Path="src/Bookstore.IO.Streams/Bookstore.IO.Streams.csproj" />
     <Project Path="src/Bookstore.OrderImport.Worker/Bookstore.OrderImport.Worker.csproj" />
     <Project Path="src/Bookstore.Ordering/Bookstore.Ordering.csproj" />
