@@ -1,3 +1,4 @@
+import { withDevtools } from '@angular-architects/ngrx-toolkit';
 import { HttpClient } from '@angular/common/http';
 import { computed, effect, inject } from '@angular/core';
 import { patchState, signalStore, type, withComputed, withHooks, withMethods, withProps, withState } from '@ngrx/signals';
@@ -96,6 +97,8 @@ export const CartStore = signalStore(
       });
     },
   }),
+  // Community package: shows this store's state in Redux DevTools under the name 'cart'
+  withDevtools('cart'),
 );
 
 type SavedCart = { version: 2; items: CartItem[]; coupon: Coupon | null };

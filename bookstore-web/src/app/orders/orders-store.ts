@@ -1,3 +1,4 @@
+import { withDevtools } from '@angular-architects/ngrx-toolkit';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { mapResponse } from '@ngrx/operators';
@@ -37,4 +38,5 @@ export const OrdersStore = signalStore(
       ),
     ),
   })),
+  withDevtools('orders'),
 );
