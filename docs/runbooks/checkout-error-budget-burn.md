@@ -1,7 +1,8 @@
 # Runbook: CheckoutErrorBudgetBurn (page)
 
 Alert rule: `deploy/prometheus/rules/slo-alerts.yaml` · SLO: `docs/slo/checkout.md` · Owner: Bookstore.Api team
-Last tried: 2026-11-14 in the lab, with the fake payment provider failing 30 % of charges.
+Last tried: 2026-11-14 in the lab, with the fake payment provider failing 30 % of charges, and again in the
+"payment provider timeouts" tabletop (levers).
 
 ## What it means
 Checkout (`POST /api/orders`) fails often enough to spend 2 % of the 30-day error budget in an hour
@@ -37,8 +38,13 @@ cancelled order and its stock is released.
 ### Payment provider
 - Check the provider's status page and open a ticket with them (contact: `docs/contacts.md`).
 - Do not restart Bookstore.Api: a restart does not fix the provider and drops checkouts in flight.
-- Ask the product owner to put up the "payments are delayed" banner on bookstore-web.
-- Error ratio above 50 % for 15 minutes, or no answer from the provider in 30 minutes: declare an incident.
+- Error ratio above 50 % for 15 minutes, or no answer from the provider in 30 minutes: declare an incident
+  (`docs/incidents/README.md`).
+- Timeouts (`TaskCanceledException`) and the provider still answers slowly: raise `Payments:TimeoutSeconds` in
+  `switches.json` above the provider's current latency (`docs/incidents/levers.md`); checkouts succeed again, slowly.
+- 503 from the provider, or raising the timeout did not help: `Payments:CheckoutEnabled=false` (503 + Retry-After,
+  carts are kept) and ask the product owner for the "payments are delayed" banner on bookstore-web.
+- Write every lever change in the incident timeline and set it back when the provider is healthy.
 
 ### Bad deploy
 - Roll back to the previous version (pipeline: "Redeploy previous release"). Do not debug in production first.

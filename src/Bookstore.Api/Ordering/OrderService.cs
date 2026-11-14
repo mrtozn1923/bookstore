@@ -4,6 +4,7 @@ using Bookstore.Inventory;
 using Bookstore.Payments;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Options;
 
 namespace Bookstore.Ordering;
 
@@ -15,14 +16,21 @@ public abstract record PlaceOrderOutcome
     public sealed record OutOfStock(IReadOnlyList<string> Isbns) : PlaceOrderOutcome;
     public sealed record CartChanged : PlaceOrderOutcome;
     public sealed record PaymentFailed(int OrderId) : PlaceOrderOutcome;
+    public sealed record CheckoutPaused : PlaceOrderOutcome;
 }
 
 public sealed class OrderService(
     BookstoreContext db, ICatalogService catalog, IInventoryService inventory, IPaymentGateway payments,
-    TimeProvider clock, ILogger<OrderService> logger)
+    IOptionsMonitor<PaymentsOptions> paymentOptions, TimeProvider clock, ILogger<OrderService> logger)
 {
     public async Task<PlaceOrderOutcome> PlaceOrderAsync(PlaceOrderRequest request, CancellationToken ct)
     {
+        // Kill switch, checked before anything is written: no order, no reservation, the cart stays as it is.
+        if (!paymentOptions.CurrentValue.CheckoutEnabled)
+        {
+            return new PlaceOrderOutcome.CheckoutPaused();
+        }
+
         Cart? cart = await db.Carts.Include(c => c.Items).FirstOrDefaultAsync(c => c.Id == request.CartId, ct);
         if (cart is null)
         {

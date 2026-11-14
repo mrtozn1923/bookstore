@@ -4,6 +4,7 @@ using Bookstore.Catalog;
 using Bookstore.Ordering;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace Bookstore.Api.Tests;
 
@@ -12,6 +13,7 @@ public sealed class OrderingTests(BookstoreApiFactory factory)
     private const string TheHobbit = "9780261102217";
     private const string WarAndPeace = "9781400079988";   // seeded with 3 copies
     private const string Emma = "9780141439587";
+    private const string Middlemarch = "9780141439549";
 
     private readonly HttpClient client = factory.CreateClient();
     private readonly CancellationToken ct = TestContext.Current.CancellationToken;
@@ -48,6 +50,26 @@ public sealed class OrderingTests(BookstoreApiFactory factory)
         Assert.Equal(HttpStatusCode.BadGateway, response.StatusCode);
         BookDetails? book = await client.GetFromJsonAsync<BookDetails>($"/api/books/{Emma}", ct);
         Assert.Equal(25, book?.Available);
+    }
+
+    [Fact]
+    public async Task With_checkout_paused_an_order_gets_503_and_the_cart_and_stock_stay()
+    {
+        using WebApplicationFactory<Program> paused =
+            factory.WithWebHostBuilder(builder => builder.UseSetting("Payments:CheckoutEnabled", "false"));
+        HttpClient pausedClient = paused.CreateClient();
+        Guid cartId = await CreateCartWithAsync(Middlemarch, quantity: 1);
+        int? stockBefore = (await client.GetFromJsonAsync<BookDetails>($"/api/books/{Middlemarch}", ct))?.Available;
+
+        HttpResponseMessage response = await pausedClient.PostAsJsonAsync("/api/orders",
+            new PlaceOrderRequest(cartId, "Ada Lovelace", "ada@example.com"), ct);
+
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+        Assert.Equal(TimeSpan.FromSeconds(300), response.Headers.RetryAfter?.Delta);
+        HttpResponseMessage cart = await client.GetAsync($"/api/carts/{cartId}", ct);
+        Assert.Equal(HttpStatusCode.OK, cart.StatusCode);
+        BookDetails? book = await client.GetFromJsonAsync<BookDetails>($"/api/books/{Middlemarch}", ct);
+        Assert.Equal(stockBefore, book?.Available);
     }
 
     [Fact]

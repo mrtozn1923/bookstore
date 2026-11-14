@@ -8,6 +8,9 @@ using Bookstore.Payments;
 using Microsoft.EntityFrameworkCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+// Incident levers (kill switch, payment timeout) live in their own small file that is watched for changes.
+// Added last, so it wins over appsettings*.json and environment variables. See docs/incidents/levers.md.
+builder.Configuration.AddJsonFile(builder.Configuration["SwitchesFile"] ?? "switches.json", optional: true, reloadOnChange: true);
 builder.AddBookstoreObservability();
 
 string connectionString = builder.Configuration.GetConnectionString("BookstoreDb") is { Length: > 0 } value
@@ -28,7 +31,7 @@ builder.Services
     .AddCatalogModule()
     .AddInventoryModule()
     .AddOrderingModule()
-    .AddPaymentsModule(builder.Configuration);
+    .AddPaymentsModule();
 
 WebApplication app = builder.Build();
 

@@ -89,9 +89,13 @@ public static class OrderingModule
     }
 
     private static async Task<Results<CreatedAtRoute<OrderView>, NotFound, ProblemHttpResult>> PlaceOrder(
-        PlaceOrderRequest request, OrderService orders, CancellationToken ct)
+        PlaceOrderRequest request, OrderService orders, HttpResponse response, CancellationToken ct)
     {
         PlaceOrderOutcome outcome = await orders.PlaceOrderAsync(request, ct);
+        if (outcome is PlaceOrderOutcome.CheckoutPaused)
+        {
+            response.Headers.RetryAfter = "300";
+        }
         return outcome switch
         {
             PlaceOrderOutcome.Placed placed =>
@@ -106,6 +110,9 @@ public static class OrderingModule
             PlaceOrderOutcome.PaymentFailed failed =>
                 TypedResults.Problem($"Payment for order {failed.OrderId} could not be authorized; the order was cancelled.",
                     statusCode: StatusCodes.Status502BadGateway),
+            PlaceOrderOutcome.CheckoutPaused =>
+                TypedResults.Problem("Checkout is paused while the payment provider has problems. Your cart is kept; please try again in a few minutes.",
+                    statusCode: StatusCodes.Status503ServiceUnavailable),
             PlaceOrderOutcome.CartChanged =>
                 TypedResults.Problem("The cart changed while the order was being placed.",
                     statusCode: StatusCodes.Status409Conflict),
