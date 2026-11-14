@@ -66,6 +66,14 @@ services:
         aliases:
           - bookstore-api
     restart: unless-stopped
+    develop:
+      watch:
+        # A change in the API's code: build the image again and recreate the container
+        - path: src/Bookstore.Api
+          action: rebuild
+          ignore:
+            - bin/
+            - obj/
 
   web:
     build: ./web
@@ -78,6 +86,32 @@ services:
       api:
         condition: service_healthy
     restart: unless-stopped
+
+  # Angular dev server: docker compose --profile dev up --watch web-dev
+  web-dev:
+    build:
+      context: ./web
+      target: dev
+    profiles: [dev]
+    environment:
+      API_PROXY_TARGET: http://bookstore-api:8080
+    ports:
+      - "4200:4200"
+    depends_on:
+      api:
+        condition: service_healthy
+    develop:
+      watch:
+        # Source files are copied into the running container; ng serve rebuilds and reloads the browser
+        - path: web/src
+          target: /app/src
+          action: sync
+        - path: web/public
+          target: /app/public
+          action: sync
+        # New packages: build the dev image again (npm ci runs inside it)
+        - path: web/package-lock.json
+          action: rebuild
 
   # Optional services: docker compose --profile cache / --profile tools
   redis:
