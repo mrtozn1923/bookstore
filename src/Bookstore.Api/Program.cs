@@ -3,10 +3,13 @@ using Bookstore.Api;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCloudflareForwarding(Path.Combine(builder.Environment.ContentRootPath, "cloudflare-ips.txt"));
 builder.Services.AddHttpsRedirection(options => options.HttpsPort = 443);
+builder.Services.AddLoginRateLimit();
 var app = builder.Build();
 
 app.UseForwardedHeaders();
+app.RequireFrontDoorId(app.Configuration["FrontDoor:Id"]);
 app.UseHttpsRedirection();
+app.UseRateLimiter();
 
 var originRequests = 0;
 app.Use(async (context, next) =>
@@ -66,6 +69,11 @@ api.MapGet("/orders/mine", (HttpContext http) =>
     return Results.Ok(new OrderSummary(customer, customer == "ada" ? ["BK-1042"] : ["BK-2001", "BK-2002"]));
 });
 
+api.MapPost("/auth/login", (LoginRequest login) =>
+    // lab only: a real implementation checks the password with ASP.NET Core Identity
+    login.Password == "correct horse" ? Results.Ok() : Results.Unauthorized())
+    .RequireRateLimiting(EdgeProtection.LoginPolicy);
+
 app.MapFallbackToFile("index.html", new StaticFileOptions { OnPrepareResponse = CacheHeaders.ForStaticFile });
 
 app.Run();
@@ -73,3 +81,4 @@ app.Run();
 record Book(string Isbn, string Title, decimal Price);
 record Cart(int Items, decimal Total);
 record OrderSummary(string Customer, string[] Orders);
+record LoginRequest(string Email, string Password);
