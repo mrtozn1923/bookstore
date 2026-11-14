@@ -7,7 +7,7 @@ public sealed record BookRow(string Isbn, string Title, string Author, decimal P
     public static BookRow Parse(string line)
     {
         string[] parts = line.Split(',');
-        return new BookRow(parts[0], parts[1], parts[2], decimal.Parse(parts[3], CultureInfo.InvariantCulture));
+        return new BookRow(parts[0].Trim(), parts[1].Trim(), parts[2].Trim(), decimal.Parse(parts[3], CultureInfo.InvariantCulture));
     }
 
     public bool HasValidIsbn13()

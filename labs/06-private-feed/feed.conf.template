@@ -1,0 +1,12 @@
+server {
+    listen 80;
+    root /usr/share/nginx/feed;
+
+    location /v3/ {
+        if ($http_authorization != "Basic ${FEED_BASIC_AUTH}") {
+            add_header WWW-Authenticate 'Basic realm="bookstore-feed"' always;
+            return 401;
+        }
+        default_type application/json;
+    }
+}

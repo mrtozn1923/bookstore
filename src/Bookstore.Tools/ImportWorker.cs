@@ -32,7 +32,7 @@ public sealed class ImportWorker(
                 logger.LogInformation("Batch {Batch}/{Total} imported: {Titles}", batch, batches.Length, string.Join(", ", chunk.Select(b => b.Title)));
             }
 
-            logger.LogInformation("Import finished");
+            logger.LogInformation("Import finished: {Count} books in {Batches} batches", valid.Count, batches.Length);
         }
         catch (OperationCanceledException)
         {
