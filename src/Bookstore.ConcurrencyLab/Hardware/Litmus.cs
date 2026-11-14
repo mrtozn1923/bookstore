@@ -19,7 +19,7 @@ public abstract class LitmusTest
 
     public abstract string Name { get; }
 
-    public void Reset() => Shared = default;
+    public virtual void Reset() => Shared = default;
 
     public abstract int Thread0();
 
