@@ -1,4 +1,5 @@
 import { Component, inject, resource, signal } from '@angular/core';
+import { InstallPrompt } from '../core/install-prompt';
 import { StorageStatusService } from './storage-status-service';
 import { ThemeService } from './theme-service';
 
@@ -24,12 +25,21 @@ import { ThemeService } from './theme-service';
         <button (click)="keep()">Keep my offline library on this device</button>
       }
     }
+    @if (installer.installed()) {
+      <p class="install">You are using the installed Bookstore app.</p>
+    } @else if (installer.safariHint) {
+      <p class="install">
+        To install Bookstore in Safari, choose Share, then Add to Home Screen (iPhone, iPad) or
+        File, then Add to Dock (Mac).
+      </p>
+    }
     <p class="result">{{ result() }}</p>
   `,
 })
 export class SettingsPage {
   private readonly statuses = inject(StorageStatusService);
   protected readonly themes = inject(ThemeService);
+  protected readonly installer = inject(InstallPrompt);
   protected readonly result = signal('');
   protected readonly storage = resource({ loader: () => this.statuses.status() });
 

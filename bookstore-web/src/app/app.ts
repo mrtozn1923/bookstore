@@ -2,20 +2,35 @@ import { Component, inject } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { AppUpdates } from './core/app-updates';
 import { BookstoreDatabase } from './core/bookstore-database';
+import { InstallPrompt } from './core/install-prompt';
+import { OrderBadge } from './core/order-badge';
 
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, RouterLink],
   template: `
     <header>
+      <!-- an installed app has no browser back button -->
+      <button class="back" (click)="back()">Back</button>
       <strong>Bookstore</strong>
       <nav>
         <a routerLink="/">Catalog</a>
         <a routerLink="/reports/orders">Order report</a>
         <a routerLink="/admin/covers">Covers</a>
-        <a routerLink="/orders">My orders</a>
+        <a routerLink="/orders">
+          My orders
+          @if (badge.unread()) {
+            ({{ badge.unread() }})
+          }
+        </a>
         <a routerLink="/settings">Settings</a>
       </nav>
+      @if (installer.offer()) {
+        <span class="install-offer">
+          <button (click)="install()">Install app</button>
+          <button (click)="installer.notNow()">Not now</button>
+        </span>
+      }
     </header>
     @if (database.outdated()) {
       <p class="banner">Bookstore was updated in another tab. Reload this page to continue.</p>
@@ -46,9 +61,31 @@ import { BookstoreDatabase } from './core/bookstore-database';
       display: flex;
       gap: 0.75rem;
     }
+    .back {
+      display: none;
+    }
+    @media (display-mode: standalone) {
+      .back {
+        display: inline;
+      }
+    }
   `,
 })
 export class App {
   protected readonly database = inject(BookstoreDatabase);
   protected readonly updates = inject(AppUpdates);
+  protected readonly installer = inject(InstallPrompt);
+  protected readonly badge = inject(OrderBadge);
+
+  constructor() {
+    void this.badge.refresh();
+  }
+
+  async install() {
+    console.log(`install: ${await this.installer.install()}`);
+  }
+
+  back() {
+    history.back();
+  }
 }

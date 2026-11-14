@@ -14,6 +14,8 @@ let requestNo = 0;
 // 03: reviews and the responses already given per Idempotency-Key
 let nextReviewId = 501;
 const idempotent = new Map<string, { status: number; body: unknown }>();
+// 06: order updates the customer has not seen yet (the app icon badge shows this number)
+let unreadOrderUpdates = 2;
 
 const types: Record<string, string> = {
   ".html": "text/html; charset=utf-8",
@@ -162,6 +164,11 @@ async function handle(req: IncomingMessage, res: ServerResponse) {
     const customer = (req.headers.authorization ?? "").replace("Bearer ", "") || "anonymous";
     if (url.searchParams.get("vary")) res.setHeader("Vary", "Authorization");
     sendJson(req, res, no, { customer, orders: customer === "ada" ? [1042] : [1051] });
+  } else if (req.method === "GET" && url.pathname === "/api/me/order-updates") {
+    sendJson(req, res, no, { unread: unreadOrderUpdates });
+  } else if (req.method === "POST" && url.pathname === "/api/me/order-updates/read") {
+    unreadOrderUpdates = 0;
+    sendJson(req, res, no, { unread: 0 });
   } else if (req.method === "GET" && url.pathname === "/api/reports/orders.csv") {
     await ordersCsv(res, no, Number(url.searchParams.get("rows") ?? 20000));
   } else if (req.method === "POST" && url.pathname.startsWith("/api/covers/")) {

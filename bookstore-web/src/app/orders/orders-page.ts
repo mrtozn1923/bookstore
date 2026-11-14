@@ -1,5 +1,6 @@
 import { httpResource } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { OrderBadge } from '../core/order-badge';
 
 interface MyOrders {
   customer: string;
@@ -20,4 +21,11 @@ interface MyOrders {
 export class OrdersPage {
   // never cached by the service worker: not in any dataGroup
   protected readonly orders = httpResource<MyOrders>(() => '/api/me/orders');
+
+  constructor() {
+    // the user has seen the updates: clear the count and the app icon badge
+    void inject(OrderBadge)
+      .markRead()
+      .catch(() => {});
+  }
 }
