@@ -1,0 +1,7 @@
+CLUSTER KEYSLOT bookstore:stock:{9780441013593}
+CLUSTER KEYSLOT bookstore:stock:{9780441013593}:reservations
+CLUSTER KEYSLOT bookstore:cart:7
+SET bookstore:cart:7 x
+MSET bookstore:stock:{9780441013593} 5 bookstore:stock:{9780441013593}:note restock
+MSET bookstore:stock:{9780441013593} 5 bookstore:cart:7 x
+SELECT 1

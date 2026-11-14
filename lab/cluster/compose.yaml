@@ -1,0 +1,11 @@
+# Post 13: Redis Cluster lab; CLUSTER_IMAGE=valkey/valkey:9 runs the same cluster on Valkey
+name: bookstore-cluster
+services:
+  cluster:
+    image: ${CLUSTER_IMAGE:-redis:8}
+    entrypoint: ["sh", "/lab/start.sh"]
+    ports:
+      - "127.0.0.1:7000-7005:7000-7005"
+    volumes:
+      - ./start.sh:/lab/start.sh:ro
+      - ../functions:/lab/functions:ro

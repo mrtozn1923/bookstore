@@ -1,0 +1,11 @@
+# Post 13: replication + Sentinel lab; ports map 1:1 so the addresses Sentinel announces (127.0.0.1) work from the host
+name: bookstore-sentinel
+services:
+  sentinel:
+    image: redis:8
+    entrypoint: ["sh", "/lab/start.sh"]
+    ports:
+      - "127.0.0.1:6390-6391:6390-6391"
+      - "127.0.0.1:26379-26381:26379-26381"
+    volumes:
+      - ./start.sh:/lab/start.sh:ro
