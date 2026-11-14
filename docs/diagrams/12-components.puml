@@ -1,0 +1,25 @@
+@startuml bookstore-components
+title Bookstore modules (UML component diagram)
+skinparam componentStyle uml2
+
+component "Bookstore.Api" as Api
+component "Institutional" as Institutional
+component "Billing" as Billing
+component "Notifications" as Notifications
+component "DistributorIntegration" as Distributor
+
+interface IOrderService
+interface IApprovedOrderQuery
+interface INotificationSender
+interface IDistributorGateway
+
+Institutional -up- IOrderService
+Institutional -down- IApprovedOrderQuery
+Notifications -left- INotificationSender
+Distributor -left- IDistributorGateway
+
+Api -down-( IOrderService
+Billing -up-( IApprovedOrderQuery
+Institutional -right-( INotificationSender
+Institutional -right-( IDistributorGateway
+@enduml
