@@ -1,0 +1,10 @@
+# /etc/fail2ban/jail.d/bookstore.local
+[DEFAULT]
+# The management machine (my-pc) is never banned
+ignoreip = 127.0.0.1/8 ::1 10.20.30.5
+
+[sshd]
+# 3 failures in 10 minutes = banned for 1 hour
+maxretry = 3
+findtime = 10m
+bantime = 1h
