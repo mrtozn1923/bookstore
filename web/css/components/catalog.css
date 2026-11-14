@@ -43,3 +43,8 @@
     border-radius: 50%;
     background-color: var(--cat-color, var(--color-muted));
 }
+
+/* hover tint derived from the category colour: the same colour at 15% opacity */
+.cat-link:hover {
+    background-color: alpha(from var(--cat-color, var(--color-muted)) / 15%);
+}

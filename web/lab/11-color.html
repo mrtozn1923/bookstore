@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Lab 11: modern colour and CSS math</title>
+    <style>
+        /* self-contained: this lab does not load main.css */
+        body { margin: 0; }
+
+        /* 1) the same "lightness" in hsl and in oklch */
+        #hsl-yellow { background-color: hsl(60 100% 50%); }
+        #hsl-blue { background-color: hsl(240 100% 50%); }
+        #oklch-yellow { background-color: oklch(0.7 0.15 100); }
+        #oklch-blue { background-color: oklch(0.7 0.15 265); }
+
+        /* 2) a palette derived from one category colour */
+        :root { --cat: #2563eb; }
+        #base { background-color: var(--cat); }
+        #oklch-of-hex { background-color: oklch(from var(--cat) l c h); }
+        #darker { background-color: oklch(from var(--cat) calc(l - 0.1) c h); }
+        #soft { background-color: oklch(from var(--cat) 0.95 calc(c * 0.3) h); }
+        #mix-black { background-color: color-mix(in oklch, var(--cat), black 15%); }
+        #mix-srgb { background-color: color-mix(in srgb, var(--cat), yellow); }
+        #mix-oklch { background-color: color-mix(in oklch, var(--cat), yellow); }
+        #faded { background-color: alpha(from var(--cat) / 15%); }
+
+        /* 3) contrast-color() picks black or white */
+        .on { color: contrast-color(var(--bg)); background-color: var(--bg); }
+
+        /* 4) math functions */
+        #round { inline-size: round(up, 0.9rem, 4px); }
+        #mod { inline-size: mod(-7px, 3px); }
+        #rem { inline-size: calc(rem(-7px, 3px) + 10px); }   /* rem() keeps the sign: -1px + 10px */
+        #abs { inline-size: calc(abs(-12px) * sign(-0.5) + 20px); }
+        @property --cols { syntax: "<number>"; inherits: false; initial-value: 0; }
+        .shelf { container-type: inline-size; inline-size: 480px; }
+        #fit {
+            /* typed arithmetic: length / length is a plain number */
+            --cols: round(down, calc((100cqi + 1rem) / 15rem));
+            /* where 480px sits between 20rem and 40rem, as 0..1 */
+            opacity: progress(100cqi, 20rem, 40rem);
+        }
+
+        /* 5) not Baseline: only behind @supports */
+        #if-test { inline-size: 10px; }
+        @supports (width: if(media(width > 1px): 1px; else: 2px)) {
+            #if-test { inline-size: if(media(width >= 48rem): 200px; else: 100px); }
+        }
+        @function --double(--x) { result: calc(var(--x) * 2); }
+        #function-test { inline-size: 10px; inline-size: --double(21px); }
+        #random-test { inline-size: 10px; }
+        @supports (width: random(1px, 2px)) {
+            #random-test { inline-size: random(100px, 200px, 50px); }
+        }
+    </style>
+</head>
+<body>
+    <div id="hsl-yellow"></div><div id="hsl-blue"></div><div id="oklch-yellow"></div><div id="oklch-blue"></div>
+    <div id="base"></div><div id="oklch-of-hex"></div><div id="darker"></div><div id="soft"></div>
+    <div id="mix-black"></div><div id="mix-srgb"></div><div id="mix-oklch"></div><div id="faded"></div>
+    <p class="on" id="accent-light" style="--bg: #b91c1c">Bestseller</p>
+    <p class="on" id="accent-dark" style="--bg: #f87171">Bestseller</p>
+    <p class="on" id="royal-blue" style="--bg: #2277d3">Bestseller</p>
+    <div id="round"></div><div id="mod"></div><div id="rem"></div><div id="abs"></div>
+    <div class="shelf"><div id="fit"></div></div>
+    <div id="if-test"></div><div id="function-test"></div><div id="random-test"></div>
+</body>
+</html>

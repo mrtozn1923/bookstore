@@ -1,3 +1,15 @@
 .add-to-cart {
     background-color: var(--color-accent);
 }
+
+/* in the dark theme the accent is light red: white text would only reach 2.77:1 */
+@supports (color: contrast-color(red)) {
+    .add-to-cart {
+        color: contrast-color(var(--color-accent));
+    }
+}
+
+/* hover: the same accent, 15% of the way to black, mixed in oklch */
+.add-to-cart:hover {
+    background-color: color-mix(in oklch, var(--color-accent), black 15%);
+}

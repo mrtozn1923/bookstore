@@ -80,6 +80,13 @@
     font-size: 0.75rem;
 }
 
+/* black or white, whichever contrasts more with the accent; #ffffff above stays for older browsers */
+@supports (color: contrast-color(red)) {
+    .badge {
+        color: contrast-color(var(--color-accent));
+    }
+}
+
 /* wide slot: cover on the left, text on the right */
 @container book-card (width >= 32rem) {
     .book-card {
