@@ -1,4 +1,9 @@
 import { Routes } from '@angular/router';
+import { provideEffects } from '@ngrx/effects';
+import { provideState } from '@ngrx/store';
+import { AdminOrdersPage } from './admin/admin-orders-page';
+import * as adminOrdersEffects from './admin/orders.effects';
+import { adminOrdersFeature } from './admin/orders.feature';
 import { CartPage } from './cart/cart-page';
 import { BookDetailsPage } from './catalog/book-details-page';
 import { CatalogPage } from './catalog/catalog-page';
@@ -27,4 +32,10 @@ export const routes: Routes = [
     ],
   },
   { path: 'orders', component: OrdersPage },
+  {
+    path: 'admin/orders',
+    component: AdminOrdersPage,
+    // the back office feature registers its state and effects when the route is first activated
+    providers: [provideState(adminOrdersFeature), provideEffects(adminOrdersEffects)],
+  },
 ];

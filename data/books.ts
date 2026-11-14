@@ -45,3 +45,18 @@ export const reviews: Review[] = [
 ];
 
 export const coupons: Coupon[] = [{ code: "BOOKWEEK", percent: 10 }];
+
+// Orders as the back office sees them (post 08); POST /api/orders appends to this list
+export interface Order {
+  id: number;
+  customer: string;
+  items: { isbn: string; title: string; quantity: number }[];
+  total: number;
+  status: "new" | "shipped";
+}
+
+export const orders: Order[] = [
+  { id: 1040, customer: "Ada", items: [{ isbn: "9780441172719", title: "Dune", quantity: 1 }], total: 490, status: "shipped" },
+  { id: 1041, customer: "Alan", items: [{ isbn: "9780141439587", title: "Emma", quantity: 2 }], total: 640, status: "new" },
+  { id: 1042, customer: "Grace", items: [{ isbn: "9780547928227", title: "The Hobbit", quantity: 1 }], total: 430, status: "new" },
+];

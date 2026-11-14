@@ -1,8 +1,9 @@
 import { signalStoreFeature, type, watchState, withHooks } from '@ngrx/signals';
 import type { RequestStatusFeature } from './with-request-status';
 
-// Requires withRequestStatus() earlier in the same store; the compiler checks it
-export function withRequestLog(name: string) {
+// Requires withRequestStatus() earlier in the same store; the compiler checks it.
+// The unused generic avoids a known TypeScript issue when several features with input share a store.
+export function withRequestLog<_>(name: string) {
   return signalStoreFeature(
     type<RequestStatusFeature>(),
     withHooks({

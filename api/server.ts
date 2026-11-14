@@ -2,7 +2,7 @@
 // Run: npm run api   (PORT 5280, DELAY_MS 300)
 // FAIL="POST /api/books/9780441172719/reviews:1" makes the first matching request answer 503 (comma-separated rules).
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
-import { books, categories, coupons, reviews, type Review } from "../data/books.ts";
+import { books, categories, coupons, orders, reviews, type Order, type Review } from "../data/books.ts";
 
 const port = Number(process.env.PORT ?? 5280);
 const delayMs = Number(process.env.DELAY_MS ?? 300);
@@ -82,15 +82,28 @@ async function handle(
     return send(201, review);
   }
 
+  if (route === "GET /api/orders") return send(200, orders);
+
+  const shipMatch = url.pathname.match(/^\/api\/orders\/(\d+)\/ship$/);
+  if (shipMatch && req.method === "POST") {
+    const order = orders.find((o) => o.id === Number(shipMatch[1]));
+    if (!order) return send(404, { title: "Unknown order", status: 404 });
+    if (order.status === "shipped") return send(409, { title: "Order already shipped", status: 409 });
+    order.status = "shipped";
+    return send(200, order);
+  }
+
   if (route === "POST /api/orders") {
     // another customer's order changes the stock that every open page has already loaded
-    const { items = [] } = await readJson<{ items?: { isbn: string; quantity: number }[] }>(req);
+    const { items = [], total = 0 } = await readJson<{ items?: Order["items"]; total?: number }>(req);
     for (const item of items) {
       const b = books.find((x) => x.isbn === item.isbn);
       if (!b || item.quantity > b.stock) return send(409, { title: "Not enough stock", status: 409 });
     }
     for (const item of items) books.find((x) => x.isbn === item.isbn)!.stock -= item.quantity;
-    return send(201, { id: nextOrderId++ });
+    const order: Order = { id: nextOrderId++, customer: "Ada", items, total, status: "new" };
+    orders.push(order);
+    return send(201, { id: order.id });
   }
 
   const couponMatch = url.pathname.match(/^\/api\/coupons\/([A-Z0-9]+)$/);

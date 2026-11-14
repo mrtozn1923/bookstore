@@ -48,3 +48,14 @@ export interface OrderRequest {
 export interface PlacedOrder extends OrderRequest {
   id: number;
 }
+
+// An order as the back office sees it (classic NgRx Store, post 08)
+export interface AdminOrder {
+  id: number;
+  customer: string;
+  items: { isbn: string; title: string; quantity: number }[];
+  total: number;
+  status: OrderStatus;
+}
+
+export type OrderStatus = 'new' | 'shipped';
