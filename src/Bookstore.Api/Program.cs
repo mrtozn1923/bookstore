@@ -44,6 +44,7 @@ builder.Services.AddSingleton<OperationStore>();
 builder.Services.AddHostedService<OperationWorker>();
 builder.Services.AddSingleton<InvoiceData>();
 builder.Services.AddSingleton<OrderBatchData>();
+builder.Services.AddSingleton<PurchaseApprovalData>();
 
 WebApplication app = builder.Build();
 
@@ -63,6 +64,7 @@ app.MapBookEndpoints();
 app.MapOrderEndpoints();
 app.MapInvoiceEndpoints();
 app.MapOperationEndpoints();
+app.MapPurchaseApprovalEndpoints();
 app.MapCartEndpoints();
 app.MapInstitutionEndpoints();
 // draft-ietf-httpapi-ratelimit-headers-11: 5 batches per minute per institution.

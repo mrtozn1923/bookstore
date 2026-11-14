@@ -454,6 +454,106 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/institutions/{institutionId}/purchase-approvals": {
+        parameters: {
+            query?: {
+                /** @description Dated contract version (ADR-0004). Absent means the oldest supported version, 2026-09-01, until its sunset. Responses carry Api-Version; a deprecated version also gets Deprecation (RFC 9745), Sunset (RFC 8594) and a Link rel="deprecation". Unknown versions return 400 unsupported-api-version. */
+                "api-version"?: components["parameters"]["ApiVersion"];
+            };
+            header?: never;
+            path: {
+                institutionId: components["parameters"]["InstitutionId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List purchase approvals of an institution
+         * @description A filtered view of /purchase-approvals (BS-06): approvers see their institution, buyers their unit. Newest first.
+         */
+        get: operations["listPurchaseApprovals"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/purchase-approvals/{approvalId}": {
+        parameters: {
+            query?: {
+                /** @description Dated contract version (ADR-0004). Absent means the oldest supported version, 2026-09-01, until its sunset. Responses carry Api-Version; a deprecated version also gets Deprecation (RFC 9745), Sunset (RFC 8594) and a Link rel="deprecation". Unknown versions return 400 unsupported-api-version. */
+                "api-version"?: components["parameters"]["ApiVersion"];
+            };
+            header?: never;
+            path: {
+                approvalId: components["parameters"]["ApprovalId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Get a purchase approval
+         * @description The approval of one institutional order, with its ETag for the decision.
+         */
+        get: operations["getPurchaseApproval"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/purchase-approvals/{approvalId}:approve": {
+        parameters: {
+            query?: {
+                /** @description Dated contract version (ADR-0004). Absent means the oldest supported version, 2026-09-01, until its sunset. Responses carry Api-Version; a deprecated version also gets Deprecation (RFC 9745), Sunset (RFC 8594) and a Link rel="deprecation". Unknown versions return 400 unsupported-api-version. */
+                "api-version"?: components["parameters"]["ApiVersion"];
+            };
+            header?: never;
+            path: {
+                approvalId: components["parameters"]["ApprovalId"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Approve a purchase
+         * @description InstitutionApprover only (403 approver-required otherwise). Requires If-Match. The order becomes Confirmed. A decided approval returns 409 approval-already-decided.
+         */
+        post: operations["approvePurchase"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/purchase-approvals/{approvalId}:reject": {
+        parameters: {
+            query?: {
+                /** @description Dated contract version (ADR-0004). Absent means the oldest supported version, 2026-09-01, until its sunset. Responses carry Api-Version; a deprecated version also gets Deprecation (RFC 9745), Sunset (RFC 8594) and a Link rel="deprecation". Unknown versions return 400 unsupported-api-version. */
+                "api-version"?: components["parameters"]["ApiVersion"];
+            };
+            header?: never;
+            path: {
+                approvalId: components["parameters"]["ApprovalId"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reject a purchase
+         * @description Like approve, with a reason for the buyer. The order becomes Cancelled.
+         */
+        post: operations["rejectPurchase"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/legacy/rpc": {
         parameters: {
             query?: never;
@@ -537,6 +637,26 @@ export interface webhooks {
          * @description Planned (ADR-0006), not sent yet. Bookstore will POST this event to the URL an institution registers, signed as described in the webhook documentation. Receivers answer 2xx quickly and fetch the report from links.report; until then, poll the operation.
          */
         post: operations["orderBatchCompletedWebhook"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    purchaseApprovalDecided: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * A purchase approval was decided (planned)
+         * @description Planned (ADR-0008), not sent yet. Sent to the institution's registered URL when an approver approves or rejects; the receiver reads the approval from links.approval.
+         */
+        post: operations["purchaseApprovalDecidedWebhook"];
         delete?: never;
         options?: never;
         head?: never;
@@ -702,6 +822,35 @@ export interface components {
                 problem?: components["schemas"]["Problem"];
             }[];
         };
+        PurchaseApproval: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            orderId: string;
+            institutionId: string;
+            unitId: string;
+            amount: components["schemas"]["Money"];
+            /**
+             * @description New values may be added; clients must accept unknown values (BS-52).
+             * @example Pending
+             * @example Approved
+             * @example Rejected
+             */
+            status: string;
+            /** Format: date-time */
+            requestedAt: string;
+            /** @description The approver who decided; present once decided. */
+            decidedBy?: string;
+            /** Format: date-time */
+            decidedAt?: string;
+            /** @description Present on rejected approvals. */
+            reason?: string;
+        };
+        PurchaseApprovalList: {
+            items: components["schemas"]["PurchaseApproval"][];
+            /** @description Absent on the last page. */
+            nextPageToken?: string;
+        };
         CreateReturnRequest: {
             reason: string;
         };
@@ -815,6 +964,7 @@ export interface components {
         IfMatch: string;
         /** @description draft-ietf-httpapi-idempotency-key-header-08: a Structured Field String (in quotes), unique per request, e.g. a UUID. Scoped to the caller and the operation, kept for 24 hours. Same key and body: the first response is returned again. Same key, different body: 422 idempotency-key-reused. First request still running: 409 idempotency-key-in-progress. Missing: 400 idempotency-key-missing. */
         IdempotencyKey: string;
+        ApprovalId: string;
         OperationId: string;
         OrderId: string;
         /** @description Customer id, or "me" for the caller. */
@@ -1694,6 +1844,145 @@ export interface operations {
             404: components["responses"]["NotFound"];
         };
     };
+    listPurchaseApprovals: {
+        parameters: {
+            query?: {
+                /** @description Dated contract version (ADR-0004). Absent means the oldest supported version, 2026-09-01, until its sunset. Responses carry Api-Version; a deprecated version also gets Deprecation (RFC 9745), Sunset (RFC 8594) and a Link rel="deprecation". Unknown versions return 400 unsupported-api-version. */
+                "api-version"?: components["parameters"]["ApiVersion"];
+                /** @description Pending, Approved or Rejected (case-sensitive). */
+                status?: string;
+                /** @description Maximum number of items in the page. Absent or 0 means 10; values above 50 are reduced to 50; negative values return 400. A page may hold fewer items. */
+                pageSize?: components["parameters"]["PageSize"];
+                /** @description Opaque nextPageToken from the previous page. Valid for 3 days and only with the same filters and sort; pageSize and fields may change. Otherwise 400 invalid-page-token. */
+                pageToken?: components["parameters"]["PageToken"];
+            };
+            header?: never;
+            path: {
+                institutionId: components["parameters"]["InstitutionId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description One page of approvals. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PurchaseApprovalList"];
+                };
+            };
+            400: components["responses"]["ValidationFailed"];
+            401: components["responses"]["Problem"];
+            404: components["responses"]["NotFound"];
+        };
+    };
+    getPurchaseApproval: {
+        parameters: {
+            query?: {
+                /** @description Dated contract version (ADR-0004). Absent means the oldest supported version, 2026-09-01, until its sunset. Responses carry Api-Version; a deprecated version also gets Deprecation (RFC 9745), Sunset (RFC 8594) and a Link rel="deprecation". Unknown versions return 400 unsupported-api-version. */
+                "api-version"?: components["parameters"]["ApiVersion"];
+            };
+            header?: never;
+            path: {
+                approvalId: components["parameters"]["ApprovalId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The approval. */
+            200: {
+                headers: {
+                    ETag: components["headers"]["ETag"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PurchaseApproval"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            404: components["responses"]["NotFound"];
+        };
+    };
+    approvePurchase: {
+        parameters: {
+            query?: {
+                /** @description Dated contract version (ADR-0004). Absent means the oldest supported version, 2026-09-01, until its sunset. Responses carry Api-Version; a deprecated version also gets Deprecation (RFC 9745), Sunset (RFC 8594) and a Link rel="deprecation". Unknown versions return 400 unsupported-api-version. */
+                "api-version"?: components["parameters"]["ApiVersion"];
+            };
+            header: {
+                /** @description ETag from a previous GET. Required for every change to an existing resource: missing returns 428 precondition-required, a mismatch returns 412. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                approvalId: components["parameters"]["ApprovalId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Approved. */
+            200: {
+                headers: {
+                    ETag: components["headers"]["ETag"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PurchaseApproval"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Problem"];
+            412: components["responses"]["Problem"];
+            428: components["responses"]["Problem"];
+        };
+    };
+    rejectPurchase: {
+        parameters: {
+            query?: {
+                /** @description Dated contract version (ADR-0004). Absent means the oldest supported version, 2026-09-01, until its sunset. Responses carry Api-Version; a deprecated version also gets Deprecation (RFC 9745), Sunset (RFC 8594) and a Link rel="deprecation". Unknown versions return 400 unsupported-api-version. */
+                "api-version"?: components["parameters"]["ApiVersion"];
+            };
+            header: {
+                /** @description ETag from a previous GET. Required for every change to an existing resource: missing returns 428 precondition-required, a mismatch returns 412. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                approvalId: components["parameters"]["ApprovalId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    reason: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Rejected. */
+            200: {
+                headers: {
+                    ETag: components["headers"]["ETag"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PurchaseApproval"];
+                };
+            };
+            400: components["responses"]["ValidationFailed"];
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Problem"];
+            412: components["responses"]["Problem"];
+            428: components["responses"]["Problem"];
+        };
+    };
     legacyRpc: {
         parameters: {
             query?: never;
@@ -1802,6 +2091,47 @@ export interface operations {
                         links: {
                             /** Format: uri-reference */
                             report?: string;
+                        };
+                    };
+                };
+            };
+        };
+        responses: {
+            /** @description Received. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    purchaseApprovalDecidedWebhook: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    id: string;
+                    /**
+                     * @example purchase-approval.approved
+                     * @example purchase-approval.rejected
+                     */
+                    type: string;
+                    /** Format: date-time */
+                    occurredAt: string;
+                    data: {
+                        /** Format: uuid */
+                        approvalId: string;
+                        /** Format: uuid */
+                        orderId: string;
+                        links: {
+                            /** Format: uri-reference */
+                            approval?: string;
                         };
                     };
                 };

@@ -74,3 +74,8 @@ Each rule has an id. Rules marked [lint] are enforced by .spectral.yaml.
 - BS-82 A breaking change that oasdiff reports is accepted only with a new api-version or an ADR that explains why no consumer breaks.
 - BS-83 Examples in the contract are realistic Bookstore data; the mock server and the documentation show them.
 - BS-84 Generated clients are never edited by hand; they are regenerated from the contract.
+
+## Review and governance
+- BS-90 Every contract change is reviewed with docs/api-review-checklist.md before implementation; the record goes to docs/reviews/.
+- BS-91 Identity comes from the token; request bodies never carry who the caller is (approverName, customerId of the caller).
+- BS-92 Every API surface is listed in docs/api-catalog.md with audience, owner, contract and lifecycle status.

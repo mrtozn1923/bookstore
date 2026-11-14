@@ -13,3 +13,6 @@ bookstore-paginated-lists is turned off for this one operation in .spectral.yaml
 ## Consequences
 - If the catalog ever needs pages, adding them is a breaking change (AIP-158);
   we accept that for a list we fully control.
+- Its response is a bare array. When bookstore-no-bare-arrays was added (ADR-0008) it flagged
+  this operation; wrapping the array in an object would break every client, so the rule is
+  off here too.

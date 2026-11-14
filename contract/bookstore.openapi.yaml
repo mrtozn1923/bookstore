@@ -880,6 +880,144 @@ paths:
           $ref: '#/components/responses/Problem'
         '404':
           $ref: '#/components/responses/NotFound'
+  /institutions/{institutionId}/purchase-approvals:
+    parameters:
+      - $ref: '#/components/parameters/ApiVersion'
+      - $ref: '#/components/parameters/InstitutionId'
+    get:
+      operationId: listPurchaseApprovals
+      summary: List purchase approvals of an institution
+      description: >-
+        A filtered view of /purchase-approvals (BS-06): approvers see their institution,
+        buyers their unit. Newest first.
+      tags: [Institutions]
+      parameters:
+        - name: status
+          in: query
+          description: Pending, Approved or Rejected (case-sensitive).
+          schema:
+            type: string
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/PageToken'
+      responses:
+        '200':
+          description: One page of approvals.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseApprovalList'
+        '400':
+          $ref: '#/components/responses/ValidationFailed'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /purchase-approvals/{approvalId}:
+    parameters:
+      - $ref: '#/components/parameters/ApiVersion'
+      - $ref: '#/components/parameters/ApprovalId'
+    get:
+      operationId: getPurchaseApproval
+      summary: Get a purchase approval
+      description: The approval of one institutional order, with its ETag for the decision.
+      tags: [Institutions]
+      responses:
+        '200':
+          description: The approval.
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseApproval'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /purchase-approvals/{approvalId}:approve:
+    parameters:
+      - $ref: '#/components/parameters/ApiVersion'
+      - $ref: '#/components/parameters/ApprovalId'
+    post:
+      operationId: approvePurchase
+      summary: Approve a purchase
+      description: >-
+        InstitutionApprover only (403 approver-required otherwise). Requires If-Match.
+        The order becomes Confirmed. A decided approval returns 409 approval-already-decided.
+      tags: [Institutions]
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: Approved.
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseApproval'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '412':
+          $ref: '#/components/responses/Problem'
+        '428':
+          $ref: '#/components/responses/Problem'
+  /purchase-approvals/{approvalId}:reject:
+    parameters:
+      - $ref: '#/components/parameters/ApiVersion'
+      - $ref: '#/components/parameters/ApprovalId'
+    post:
+      operationId: rejectPurchase
+      summary: Reject a purchase
+      description: >-
+        Like approve, with a reason for the buyer. The order becomes Cancelled.
+      tags: [Institutions]
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason:
+                  type: string
+                  minLength: 3
+                  maxLength: 500
+      responses:
+        '200':
+          description: Rejected.
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseApproval'
+        '400':
+          $ref: '#/components/responses/ValidationFailed'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '412':
+          $ref: '#/components/responses/Problem'
+        '428':
+          $ref: '#/components/responses/Problem'
   /legacy/rpc:
     post:
       operationId: legacyRpc
@@ -1011,6 +1149,49 @@ webhooks:
       responses:
         '204':
           description: Received.
+  purchaseApprovalDecided:
+    post:
+      operationId: purchaseApprovalDecidedWebhook
+      summary: A purchase approval was decided (planned)
+      description: >-
+        Planned (ADR-0008), not sent yet. Sent to the institution's registered URL when
+        an approver approves or rejects; the receiver reads the approval from links.approval.
+      tags: [Institutions]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id, type, occurredAt, data]
+              properties:
+                id:
+                  type: string
+                type:
+                  type: string
+                  examples: [purchase-approval.approved, purchase-approval.rejected]
+                occurredAt:
+                  type: string
+                  format: date-time
+                data:
+                  type: object
+                  required: [approvalId, orderId, links]
+                  properties:
+                    approvalId:
+                      type: string
+                      format: uuid
+                    orderId:
+                      type: string
+                      format: uuid
+                    links:
+                      type: object
+                      properties:
+                        approval:
+                          type: string
+                          format: uri-reference
+      responses:
+        '204':
+          description: Received.
 components:
   securitySchemes:
     bearerAuth:
@@ -1107,6 +1288,13 @@ components:
         type: string
         pattern: '^"[ -~]{1,255}"$'
         examples: ['"5f0c6e1a-8b2d-4c3e-9a71-2d4b8e6f1c90"']
+    ApprovalId:
+      name: approvalId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
     OperationId:
       name: operationId
       in: path
@@ -1477,6 +1665,49 @@ components:
                 examples: [Accepted, Rejected]
               problem:
                 $ref: '#/components/schemas/Problem'
+    PurchaseApproval:
+      type: object
+      required: [id, orderId, institutionId, unitId, amount, status, requestedAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        orderId:
+          type: string
+          format: uuid
+        institutionId:
+          type: string
+        unitId:
+          type: string
+        amount:
+          $ref: '#/components/schemas/Money'
+        status:
+          type: string
+          description: New values may be added; clients must accept unknown values (BS-52).
+          examples: [Pending, Approved, Rejected]
+        requestedAt:
+          type: string
+          format: date-time
+        decidedBy:
+          type: string
+          description: The approver who decided; present once decided.
+        decidedAt:
+          type: string
+          format: date-time
+        reason:
+          type: string
+          description: Present on rejected approvals.
+    PurchaseApprovalList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PurchaseApproval'
+        nextPageToken:
+          type: string
+          description: Absent on the last page.
     CreateReturnRequest:
       type: object
       required: [reason]

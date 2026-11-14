@@ -65,7 +65,7 @@ public static class OrderBatchEndpoints
     private static async Task<IResult> CreateBatch(
         string institutionId, OrderBatchRequest request, HttpContext http, ClaimsPrincipal principal,
         InstitutionData institutions, CatalogData catalog, OrderData orders, OrderBatchData batches,
-        OperationStore operations)
+        PurchaseApprovalData approvals, OperationStore operations)
     {
         DemoUser user = principal.Current();
         if (institutions.Find(institutionId) is not { } institution ||
@@ -90,7 +90,7 @@ public static class OrderBatchEndpoints
         {
             Operation operation = operations.Start(Kind, user.Name, null, async (progress, cancellationToken) =>
             {
-                OrderBatchReport report = await ProcessAsync(institutionId, request, catalog, orders, progress, cancellationToken);
+                OrderBatchReport report = await ProcessAsync(institutionId, request, catalog, orders, approvals, progress, cancellationToken);
                 batches.Add(report);
                 return $"/institutions/{institutionId}/order-batches/{report.Id}";
             });
@@ -98,7 +98,7 @@ public static class OrderBatchEndpoints
             return OperationStore.Accepted(http, operation);
         }
 
-        OrderBatchReport result = await ProcessAsync(institutionId, request, catalog, orders, _ => { }, http.RequestAborted);
+        OrderBatchReport result = await ProcessAsync(institutionId, request, catalog, orders, approvals, _ => { }, http.RequestAborted);
         if (result.OrderId is null)
         {
             return ProblemCatalog.Create(ProblemCatalog.BatchRejected, [result.RejectedLines, request.Lines.Count],
@@ -121,8 +121,8 @@ public static class OrderBatchEndpoints
 
     // Business rules are checked per line; schema errors were already rejected as a whole (400).
     private static async Task<OrderBatchReport> ProcessAsync(
-        string institutionId, OrderBatchRequest request, CatalogData catalog, OrderData orders, Action<int> progress,
-        CancellationToken cancellationToken)
+        string institutionId, OrderBatchRequest request, CatalogData catalog, OrderData orders,
+        PurchaseApprovalData approvals, Action<int> progress, CancellationToken cancellationToken)
     {
         List<OrderBatchLineResult> results = [];
         List<OrderItem> items = [];
@@ -154,9 +154,16 @@ public static class OrderBatchEndpoints
         }
 
         int rejected = results.Count(r => r.Status == LineStatus.Rejected);
-        Guid? orderId = items.Count > 0 && !(request.AllOrNothing && rejected > 0)
-            ? orders.AddInstitutional(institutionId, request.UnitId, items).Id
+        Order? order = items.Count > 0 && !(request.AllOrNothing && rejected > 0)
+            ? orders.AddInstitutional(institutionId, request.UnitId, items)
             : null;
+        if (order is not null)
+        {
+            // A new institutional order waits for its approver (ADR-0008).
+            approvals.Request(order, order.CreatedAt);
+        }
+
+        Guid? orderId = order?.Id;
         return new OrderBatchReport(Guid.CreateVersion7(), institutionId, request.UnitId, orderId, items.Count, rejected, results);
     }
 

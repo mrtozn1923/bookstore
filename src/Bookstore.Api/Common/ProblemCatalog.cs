@@ -104,6 +104,13 @@ public static class ProblemCatalog
         "Quota exceeded", "Kota aşıldı",
         "Policy {0} allows {1} requests per {2} seconds; wait for Retry-After seconds.",
         "{0} politikası {2} saniyede {1} isteğe izin veriyor; Retry-After kadar bekle.");
+    public static readonly ProblemType ApproverRequired = new("approver-required", 403,
+        "Approver required", "Onaylayıcı gerekiyor",
+        "Only an approver of the institution can decide on a purchase approval.",
+        "Satın alma onayına yalnız kurumun onaylayıcısı karar verebilir.");
+    public static readonly ProblemType ApprovalAlreadyDecided = new("approval-already-decided", 409,
+        "Approval already decided", "Onay zaten karara bağlandı",
+        "Purchase approval {0} is already {1}.", "{0} satın alma onayı zaten {1} durumunda.");
     public static readonly ProblemType InsufficientStock = new("insufficient-stock", 422,
         "Insufficient stock", "Stok yetersiz",
         "Only {0} copies of {1} are available.", "{1} kitabından yalnızca {0} adet var.");
@@ -121,7 +128,7 @@ public static class ProblemCatalog
         BookAlreadyExists, OrderNotCancellable, OrderNotReturnable, OrderNotInvoiceable, InvoiceAlreadyRequested,
         OperationNotCancellable, IdempotencyKeyMissing, IdempotencyKeyInProgress, IdempotencyKeyReused, PreconditionFailed,
         PreconditionRequired, UnsupportedMediaType, InvoiceDetailsMissing,
-        BatchRejected, QuotaExceeded, InsufficientStock, UnsupportedCurrency, InternalError,
+        BatchRejected, QuotaExceeded, ApproverRequired, ApprovalAlreadyDecided, InsufficientStock, UnsupportedCurrency, InternalError,
     ];
 
     private static bool Turkish => CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";

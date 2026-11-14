@@ -18,6 +18,7 @@ Breaking changes: oasdiff 1.37.0 (https://github.com/oasdiff/oasdiff/releases),
 
 - contract/bookstore.openapi.yaml: the API contract (OpenAPI 3.2), written before the code.
 - docs/api-style-guide.md and docs/adr/: design rules and decisions.
+- docs/api-review-checklist.md, docs/reviews/ and docs/api-catalog.md: how API changes are reviewed and the API inventory.
 - src/Bookstore.Api/Legacy: the old RPC-style endpoint kept as a counterexample.
 - clients/angular-snippets: the bookstore-web error interceptor (Angular 22.2, TypeScript 6.0);
   `cd clients/angular-snippets && npm ci && npm run typecheck`.

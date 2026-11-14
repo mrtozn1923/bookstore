@@ -5,6 +5,7 @@ overrides:
   - files: ["contract/bookstore.openapi.yaml#/paths/~1problems/get"]
     rules:
       bookstore-paginated-lists: "off"
+      bookstore-no-bare-arrays: "off"
 rules:
   bookstore-path-kebab-case:
     description: Path segments are lowercase kebab-case; parameters are camelCase; an optional :customMethod ends the path.
@@ -76,3 +77,13 @@ rules:
     then:
       field: description
       function: truthy
+  bookstore-no-bare-arrays:
+    description: Responses are objects; a list is { items, nextPageToken } so it can be paginated and extended (BS-30, review 2026-11).
+    message: "{{path}} returns a bare array"
+    severity: error
+    given: $.paths[*][*].responses[?(@property.match(/^2/))].content[*].schema
+    then:
+      field: type
+      function: pattern
+      functionOptions:
+        notMatch: "^array$"

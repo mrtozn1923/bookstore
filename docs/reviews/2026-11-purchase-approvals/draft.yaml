@@ -1,0 +1,77 @@
+# First draft of the purchase approval API, as submitted for review (kept unchanged).
+openapi: 3.2.0
+info:
+  title: Purchase approvals (draft)
+  version: 0.0.1
+paths:
+  /getApprovals:
+    get:
+      operationId: getApprovals
+      parameters:
+        - name: institutionId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: All approvals of the institution.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Approval'
+  /approvePurchase:
+    post:
+      operationId: approvePurchase
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: string
+                approved:
+                  type: boolean
+                approverName:
+                  type: string
+      responses:
+        '200':
+          description: success is false when the approval failed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+  /institutions/{institutionId}/units/{unitId}/orders/{orderId}/approval:
+    get:
+      operationId: getApproval
+      parameters:
+        - {name: institutionId, in: path, required: true, schema: {type: string}}
+        - {name: unitId, in: path, required: true, schema: {type: string}}
+        - {name: orderId, in: path, required: true, schema: {type: string}}
+      responses:
+        '200':
+          description: The approval of one order.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Approval'
+components:
+  schemas:
+    Approval:
+      type: object
+      properties:
+        orderId:
+          type: string
+        status:
+          type: string
+          enum: [WAITING, OK, NOT_OK]
+        approverName:
+          type: string
