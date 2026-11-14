@@ -1,0 +1,13 @@
+@startuml bookstore-manifest
+artifact "bookstore-api:1.4.0" <<image>> as Image {
+  artifact "Bookstore.Api.dll" as ApiDll
+  artifact "Bookstore.Institutional.dll" as InstitutionalDll
+  artifact "Bookstore.Billing.dll" as BillingDll
+}
+component "Api" as Api
+component "Institutional" as Institutional
+component "Billing" as Billing
+ApiDll ..> Api : <<manifest>>
+InstitutionalDll ..> Institutional : <<manifest>>
+BillingDll ..> Billing : <<manifest>>
+@enduml

@@ -1,0 +1,37 @@
+@startuml bookstore-production
+title Bookstore - production deployment (Azure, West Europe)
+
+node "Institution User PC" <<device>> {
+  node "Web browser" <<executionEnvironment>> as Browser {
+    artifact "bookstore-web" as SpaBundle
+  }
+}
+node "Front Door + Storage" <<cdn>> as Cdn {
+  artifact "bookstore-web/dist" as SpaDist
+}
+node "Azure Container Apps" <<executionEnvironment>> as Aca {
+  node "bookstore-api (replicas 2..5)" <<container>> as Api {
+    artifact "bookstore-api:1.4.0" <<image>> as ApiImage
+  }
+  node "bookstore-worker" <<container>> as Worker {
+    artifact "bookstore-worker:1.4.0" <<image>> as WorkerImage
+  }
+}
+artifact "appsettings.Production.json" <<deployment spec>> as Spec
+node "Azure SQL DB" <<PaaS>> as Sql
+node "Managed Redis" <<PaaS>> as Redis
+node "Azure Service Bus" <<PaaS>> as Bus {
+  artifact "order-events" <<topic>> as Topic
+}
+node "Book Distributor" <<external>> as Distributor
+node "SMTP relay" <<external>> as Smtp
+
+Api .. Spec
+Browser -- Cdn : HTTPS 443
+Browser -- Api : HTTPS 443
+Api -- Distributor : HTTPS 443
+Aca -- Sql : TDS 1433
+Aca -- Redis : RESP/TLS 10000
+Aca -- Bus : AMQP/TLS 5671
+Worker -- Smtp : SMTP 587
+@enduml

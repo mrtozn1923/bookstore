@@ -1,0 +1,47 @@
+name: bookstore-dev
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: src/Bookstore.Api/Dockerfile
+    image: bookstore-api:dev
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Bookstore: "Server=sqlserver;Database=BookstoreDb;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=true"
+      ConnectionStrings__Redis: "redis:6379"
+      ConnectionStrings__ServiceBus: "Endpoint=sb://servicebus;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;"
+    depends_on: [sqlserver, redis, servicebus]
+
+  worker:
+    build:
+      context: .
+      dockerfile: src/Bookstore.Worker/Dockerfile
+    image: bookstore-worker:dev
+    environment:
+      ConnectionStrings__Bookstore: "Server=sqlserver;Database=BookstoreDb;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=true"
+      ConnectionStrings__ServiceBus: "Endpoint=sb://servicebus;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;"
+    depends_on: [sqlserver, servicebus]
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2025-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD}"
+    ports:
+      - "1433:1433"
+
+  redis:
+    image: redis:7-alpine
+
+  servicebus:
+    image: mcr.microsoft.com/azure-messaging/servicebus-emulator:latest
+    volumes:
+      - "./servicebus-config.json:/ServiceBus_Emulator/ConfigFiles/Config.json"
+    environment:
+      SQL_SERVER: sqlserver
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD}"
+      ACCEPT_EULA: "Y"
+    depends_on: [sqlserver]
