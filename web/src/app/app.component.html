@@ -1,6 +1,11 @@
 <header>
   <h1>Bookstore</h1>
   <app-sale-countdown></app-sale-countdown>
+  @defer (on interaction; prefetch on idle) {
+    <app-cart-badge />
+  } @placeholder {
+    <button>Show cart</button>
+  }
   <nav>
     <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
     <a routerLink="/books" routerLinkActive="active">Books</a>

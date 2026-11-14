@@ -1,5 +1,4 @@
 import { Component, inject, signal } from '@angular/core';
-import { NgFor } from '@angular/common';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { BookService } from '../book.service';
@@ -7,10 +6,11 @@ import { BookService } from '../book.service';
 @Component({
   selector: 'app-book-search',
   standalone: true,
-  imports: [NgFor],
   template: `
     <input (input)="query.set($any($event.target).value)" placeholder="Search books...">
-    <p *ngFor="let title of results()">{{ title }}</p>
+    @for (title of results(); track title) {
+      <p>{{ title }}</p>
+    }
   `
 })
 export class BookSearchComponent {

@@ -1,0 +1,7 @@
+<h3>Copies sold this week</h3>
+@for (row of data; track row.title) {
+  <div class="row">
+    <span class="label">{{ row.title }}</span>
+    <span class="bar" [style.width.%]="row.copies / max * 80">{{ row.copies }}</span>
+  </div>
+}

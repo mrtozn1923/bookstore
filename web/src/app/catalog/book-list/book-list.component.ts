@@ -6,7 +6,6 @@ import { CartService } from '../../cart.service';
 import { LoggerService } from '../../logger.service';
 import { InStockPipe } from '../in-stock.pipe';
 import { BookItemComponent } from '../book-item/book-item.component';
-import { NgFor } from '@angular/common';
 import { BookSearchComponent } from '../../book-search/book-search.component';
 
 @Component({
@@ -14,7 +13,7 @@ import { BookSearchComponent } from '../../book-search/book-search.component';
     templateUrl: './book-list.component.html',
     styleUrls: ['./book-list.component.css'],
     standalone: true,
-    imports: [RouterLink, NgFor, BookItemComponent, InStockPipe, BookSearchComponent]
+    imports: [RouterLink, BookItemComponent, InStockPipe, BookSearchComponent]
 })
 export class BookListComponent implements OnInit {
   books: Book[] = [

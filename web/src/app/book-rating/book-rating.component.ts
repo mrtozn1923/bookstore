@@ -1,12 +1,12 @@
 import { Component, Input, booleanAttribute, numberAttribute } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-book-rating',
   standalone: true,
-  imports: [CommonModule],
   template: `
-    <span *ngFor="let star of stars" [class.filled]="star <= value" [class.compact]="compact">★</span>
+    @for (star of stars; track star) {
+      <span [class.filled]="star <= value" [class.compact]="compact">★</span>
+    }
   `
 })
 export class BookRatingComponent {

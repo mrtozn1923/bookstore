@@ -1,1 +1,15 @@
-<p>admin works!</p>
+<h2>Back office</h2>
+<p class="intro">
+  Stock, returns and price changes are managed here.
+  <a routerLink="customers">Customers</a>
+</p>
+
+@defer (on viewport) {
+  <app-sales-chart [data]="sales" />
+} @placeholder {
+  <div class="chart-box">The chart will appear here</div>
+} @loading (minimum 500ms) {
+  <p>Loading chart...</p>
+} @error {
+  <p>The chart could not be loaded.</p>
+}

@@ -1,31 +1,39 @@
-<p *ngIf="orders.length === 0">No orders yet.</p>
-
-<div *ngIf="!isLoading; else loading">
-  There are {{ orders.length }} orders.
-</div>
-
-<ng-template #loading>
+@if (isLoading) {
   <p>Loading orders...</p>
-</ng-template>
+} @else if (orders.length === 0) {
+  <p>No orders yet.</p>
+} @else {
+  <p>There are {{ orders.length }} orders.</p>
+}
 
 <ul>
-  <li *ngFor="let order of orders; let i = index; let first = first; let last = last; let even = even; trackBy: trackById"
-      [class.first]="first" [class.last]="last" [class.even]="even"
-      [ngClass]="{ 'delivered': order.status === 'delivered', 'express': order.shipping === 'express' }"
-      [ngStyle]="{ 'opacity': order.status === 'delivered' ? 0.5 : 1 }"
-      appHighlight>
-    {{ i + 1 }}. {{ order.books }}
-    <span [ngSwitch]="order.status">
-      <span *ngSwitchCase="'pending'">Pending</span>
-      <span *ngSwitchCase="'shipped'">Shipped</span>
-      <span *ngSwitchCase="'delivered'">Delivered</span>
-      <span *ngSwitchDefault>Unknown</span>
-    </span>
-  </li>
+  @for (order of orders; track order.id) {
+    <li [class.first]="$first" [class.last]="$last" [class.even]="$even"
+        [ngClass]="{ 'delivered': order.status === 'delivered', 'express': order.shipping === 'express' }"
+        [ngStyle]="{ 'opacity': order.status === 'delivered' ? 0.5 : 1 }"
+        appHighlight>
+      {{ $index + 1 }}. {{ order.books }}
+      @switch (order.status) {
+        @case ('pending') { <span>Pending</span> }
+        @case ('shipped') { <span>Shipped</span> }
+        @case ('delivered') { <span>Delivered</span> }
+        @default { <span>Unknown</span> }
+      }
+    </li>
+  } @empty {
+    <li>No orders yet.</li>
+  }
 </ul>
 
 <ul class="open-orders">
-  <ng-container *ngFor="let order of orders; trackBy: trackById">
-    <li *ngIf="order.status !== 'delivered'">{{ order.books }}</li>
-  </ng-container>
+  @for (order of orders; track order.id) {
+    @if (order.status !== 'delivered') {
+      <li>{{ order.books }}</li>
+    }
+  }
 </ul>
+
+<button (click)="showTracking = !showTracking">Track order 1042</button>
+@defer (when showTracking) {
+  <app-order-tracking [orderId]="1042" />
+}

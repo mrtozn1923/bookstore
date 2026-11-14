@@ -1,17 +1,21 @@
 import { Component } from '@angular/core';
 import { CartService } from '../cart.service';
-import { NgIf, NgFor, AsyncPipe } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
     selector: 'app-cart-badge',
     template: `
     <span>Books in cart: {{ count$ | async }}</span>
-    <div *ngIf="items$ | async as items">
-      <p *ngFor="let item of items">{{ item.title }}</p>
-    </div>
-  `,
+    @if (items$ | async; as items) {
+      <div>
+        @for (item of items; track $index) {
+          <p>{{ item.title }}</p>
+        }
+      </div>
+    }
+    `,
     standalone: true,
-    imports: [NgIf, NgFor, AsyncPipe]
+    imports: [AsyncPipe]
 })
 export class CartBadgeComponent {
   count$ = this.cartService.count$;

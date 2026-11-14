@@ -3,13 +3,13 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormArray, FormControl, NonNullableFormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime } from 'rxjs/operators';
 import { noWhitespace, usernameAvailable } from './sign-up.validators';
-import { NgIf, NgFor } from '@angular/common';
+
 
 @Component({
     selector: 'app-sign-up',
     templateUrl: './sign-up.component.html',
     standalone: true,
-    imports: [FormsModule, ReactiveFormsModule, NgIf, NgFor]
+    imports: [FormsModule, ReactiveFormsModule]
 })
 export class SignUpComponent {
   private readonly fb = inject(NonNullableFormBuilder);

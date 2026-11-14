@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Customer, CustomerService } from '../customer.service';
-import { NgIf, NgFor } from '@angular/common';
+
 
 @Component({
     selector: 'app-customer-list',
     templateUrl: './customer-list.component.html',
     styleUrls: ['./customer-list.component.css'],
     standalone: true,
-    imports: [NgIf, NgFor]
+    imports: []
 })
 export class CustomerListComponent implements OnInit {
   customers: Customer[] = [];
