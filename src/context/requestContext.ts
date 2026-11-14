@@ -5,6 +5,8 @@ export interface RequestContext {
     requestId: string;
     method: string;
     path: string;
+    // Aborted when the client disconnects before the response is complete (RequestAborted counterpart)
+    signal: AbortSignal;
 }
 
 const storage = new AsyncLocalStorage<RequestContext>();

@@ -1,6 +1,7 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { buildPriceReport, buildPriceReportChunked, type PriceReport } from "#services/priceReport";
 import { buildPriceReportInWorker } from "#services/priceReportRunner";
+import { currentRequestContext } from "../context/requestContext.ts";
 
 // GET /api/reports/prices?mode=inline|chunked|worker&rows=20000000
 export async function handlePriceReport(req: IncomingMessage, res: ServerResponse, url: URL): Promise<void> {
@@ -14,7 +15,8 @@ export async function handlePriceReport(req: IncomingMessage, res: ServerRespons
     } else if (mode === "chunked") {
         report = await buildPriceReportChunked(rows);
     } else {
-        report = await buildPriceReportInWorker(rows);
+        // The worker is terminated if the client disconnects before the report is ready
+        report = await buildPriceReportInWorker(rows, currentRequestContext()?.signal);
     }
 
     res.writeHead(200, { "content-type": "application/json" });

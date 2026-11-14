@@ -6,6 +6,7 @@
   "type": "module",
   "main": "src/server.ts",
   "imports": {
+    "#http/*": "./src/http/*.ts",
     "#routes/*": "./src/routes/*.ts",
     "#services/*": "./src/services/*.ts",
     "#domain/*": "./src/domain/*.ts",
