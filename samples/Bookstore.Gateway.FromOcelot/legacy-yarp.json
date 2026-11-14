@@ -1,0 +1,27 @@
+{
+  "ReverseProxy": {
+    "Routes": [
+      {
+        "RouteId": "books",
+        "ClusterId": "catalog",
+        "Match": {
+          "Path": "/api/v1/books/{**everything}"
+        },
+        "Transforms": [
+          { "PathPattern": "/books/{**everything}" }
+        ]
+      }
+    ],
+    "Clusters": {
+      "catalog": {
+        "LoadBalancingPolicy": "First",
+        "HttpRequest": {
+          "Timeout": "00:00:05"
+        },
+        "Destinations": {
+          "catalog-1": { "Address": "http://localhost:5301/" }
+        }
+      }
+    }
+  }
+}

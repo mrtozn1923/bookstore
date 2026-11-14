@@ -1,0 +1,42 @@
+{
+  "ReverseProxy": {
+    "Routes": {
+      "books": {
+        "ClusterId": "catalog",
+        "Match": {
+          "Path": "/api/v1/books/{**everything}",
+          "Methods": [ "GET" ]
+        },
+        "Transforms": [
+          { "PathPattern": "/books/{**everything}" }
+        ]
+      },
+      "orders": {
+        "ClusterId": "ordering",
+        "AuthorizationPolicy": "Default",
+        "RateLimiterPolicy": "per-user",
+        "Match": {
+          "Path": "/api/v1/orders/{**everything}",
+          "Methods": [ "GET" ]
+        },
+        "Transforms": [
+          { "PathPattern": "/orders/{**everything}" }
+        ]
+      }
+    },
+    "Clusters": {
+      "catalog": {
+        "LoadBalancingPolicy": "RoundRobin",
+        "Destinations": {
+          "catalog-1": { "Address": "http://localhost:5301/" },
+          "catalog-2": { "Address": "http://localhost:5311/" }
+        }
+      },
+      "ordering": {
+        "Destinations": {
+          "ordering": { "Address": "http://localhost:5302/" }
+        }
+      }
+    }
+  }
+}

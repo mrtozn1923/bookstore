@@ -1,0 +1,34 @@
+{
+  "Routes": [
+    {
+      "UpstreamPathTemplate": "/api/v1/books/{everything}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/books/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 5301 },
+        { "Host": "localhost", "Port": 5311 }
+      ],
+      "LoadBalancerOptions": { "Type": "RoundRobin" }
+    },
+    {
+      "UpstreamPathTemplate": "/api/v1/orders/{everything}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/orders/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 5302 }
+      ],
+      "AuthenticationOptions": { "AuthenticationProviderKeys": [ "Bearer" ] },
+      "RateLimitOptions": {
+        "ClientIdHeader": "X-Client-Id",
+        "EnableRateLimiting": true,
+        "Period": "10s",
+        "Limit": 5
+      }
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "http://localhost:5308"
+  }
+}

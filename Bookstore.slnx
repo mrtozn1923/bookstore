@@ -1,6 +1,8 @@
 <Solution>
   <Folder Name="/samples/">
+    <Project Path="samples/Bookstore.Gateway.FromOcelot/Bookstore.Gateway.FromOcelot.csproj" />
     <Project Path="samples/Bookstore.Gateway.InMemory/Bookstore.Gateway.InMemory.csproj" />
+    <Project Path="samples/Bookstore.Gateway.Ocelot/Bookstore.Gateway.Ocelot.csproj" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Bookstore.Catalog.Api/Bookstore.Catalog.Api.csproj" />
