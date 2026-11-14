@@ -19,5 +19,11 @@ public static class RedisKeys
 
     public static RedisKey CartPriceLocks(int customerId) => $"{Prefix}:cart:{customerId}:price-locks";
 
+    public static RedisKey RecentlyViewed(int customerId) => $"{Prefix}:customer:{customerId}:recent";
+
+    public static RedisKey Tag(string tag) => $"{Prefix}:tag:{tag}";
+
+    public static RedisKey DailyVisitors(DateOnly day) => $"{Prefix}:visitors:{day:yyyyMMdd}";
+
     public static RedisKey OrderIdSequence => $"{Prefix}:order:id-seq";
 }

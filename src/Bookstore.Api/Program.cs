@@ -16,5 +16,8 @@ app.MapBookViews();
 app.MapVerification();
 app.MapOrders();
 app.MapCart();
+app.MapRecentlyViewed();
+app.MapTags();
+app.MapVisitors();
 
 app.Run();

@@ -62,11 +62,23 @@ switch (command)
     case "compact-hash":
         await HashDemo.CompactHashAsync(connectionString);
         break;
+    case "queue-crash":
+        await ListSetDemo.QueueCrashAsync(connectionString);
+        break;
+    case "blpop":
+        await ListSetDemo.BlockingPopAsync(connectionString);
+        break;
+    case "visitors":
+        await ListSetDemo.VisitorsAsync(connectionString);
+        break;
+    case "big-set":
+        await ListSetDemo.BigSetAsync(connectionString);
+        break;
     case "sync-over-async":
         await SyncOverAsyncDemo.RunAsync(connectionString);
         break;
     default:
         Console.WriteLine("commands: seed-keys <n> | keys-vs-ping | incr | rtt | mux-per-request [--leak] | mux-singleton | " +
-                          "pipeline | pubsub-connection | scan-vs-ping | server-info | key-names | sync-over-async | lost-update | active-expire | ttl-reset | cart-storage | hash-encoding | big-hash | compact-hash");
+                          "pipeline | pubsub-connection | scan-vs-ping | server-info | key-names | sync-over-async | lost-update | active-expire | ttl-reset | cart-storage | hash-encoding | big-hash | compact-hash | queue-crash | blpop | visitors | big-set");
         break;
 }
