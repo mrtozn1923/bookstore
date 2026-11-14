@@ -1,22 +1,19 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 
 @Component({
-    selector: 'app-sale-countdown',
-    template: `<p>Sale ends in {{ secondsLeft }} s</p>`,
-    standalone: true
+  selector: 'app-sale-countdown',
+  template: `<p>Sale ends in {{ secondsLeft }} s</p>`,
+  standalone: true
 })
-export class SaleCountdownComponent implements OnInit, OnDestroy {
+export class SaleCountdownComponent implements OnInit {
   secondsLeft = 3600;
-  private timerId = 0;
+  private destroyRef = inject(DestroyRef);
 
   ngOnInit(): void {
-    this.timerId = window.setInterval(() => {
+    const id = window.setInterval(() => {
       this.secondsLeft--;
       console.log('tick');
     }, 1000);
-  }
-
-  ngOnDestroy(): void {
-    window.clearInterval(this.timerId);
+    this.destroyRef.onDestroy(() => window.clearInterval(id));
   }
 }

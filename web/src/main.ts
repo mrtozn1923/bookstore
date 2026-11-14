@@ -2,7 +2,7 @@ import { LOCALE_ID, enableProdMode } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import localeTr from '@angular/common/locales/tr';
 import { bootstrapApplication } from '@angular/platform-browser';
-import { PreloadAllModules, TitleStrategy, provideRouter, withPreloading } from '@angular/router';
+import { PreloadAllModules, TitleStrategy, provideRouter, withComponentInputBinding, withPreloading } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
 import { AppComponent } from './app/app.component';
@@ -22,7 +22,7 @@ registerLocaleData(localeTr);
 
 bootstrapApplication(AppComponent, {
   providers: [
-    provideRouter(routes, withPreloading(PreloadAllModules)),
+    provideRouter(routes, withPreloading(PreloadAllModules), withComponentInputBinding()),
     provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
     { provide: LOCALE_ID, useValue: 'tr' },
     {

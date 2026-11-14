@@ -1,7 +1,7 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormArray, FormControl, NonNullableFormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Subject } from 'rxjs';
-import { debounceTime, takeUntil } from 'rxjs/operators';
+import { debounceTime } from 'rxjs/operators';
 import { noWhitespace, usernameAvailable } from './sign-up.validators';
 import { NgIf, NgFor } from '@angular/common';
 
@@ -11,7 +11,7 @@ import { NgIf, NgFor } from '@angular/common';
     standalone: true,
     imports: [FormsModule, ReactiveFormsModule, NgIf, NgFor]
 })
-export class SignUpComponent implements OnInit, OnDestroy {
+export class SignUpComponent {
   private readonly fb = inject(NonNullableFormBuilder);
 
   signUpForm = this.fb.group({
@@ -21,23 +21,16 @@ export class SignUpComponent implements OnInit, OnDestroy {
     genres: this.fb.array<string>([])
   });
 
-  private destroy$ = new Subject<void>();
-
   get genres(): FormArray<FormControl<string>> {
     return this.signUpForm.controls.genres;
   }
 
-  ngOnInit(): void {
+  constructor() {
     this.signUpForm.valueChanges
-      .pipe(debounceTime(500), takeUntil(this.destroy$))
+      .pipe(debounceTime(500), takeUntilDestroyed())
       .subscribe(value => {
         localStorage.setItem('signUpDraft', JSON.stringify(value));
       });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   addGenre(): void {

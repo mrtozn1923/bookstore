@@ -1,33 +1,29 @@
-import { Component, OnInit } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { Component, inject, signal } from '@angular/core';
+import { NgFor } from '@angular/common';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { BookService } from '../book.service';
-import { NgFor, AsyncPipe } from '@angular/common';
 
 @Component({
-    selector: 'app-book-search',
-    template: `
-    <input #box (input)="search(box.value)" placeholder="Search books...">
-    <p *ngFor="let title of results$ | async">{{ title }}</p>
-  `,
-    standalone: true,
-    imports: [NgFor, AsyncPipe]
+  selector: 'app-book-search',
+  standalone: true,
+  imports: [NgFor],
+  template: `
+    <input (input)="query.set($any($event.target).value)" placeholder="Search books...">
+    <p *ngFor="let title of results()">{{ title }}</p>
+  `
 })
-export class BookSearchComponent implements OnInit {
-  results$!: Observable<string[]>;
-  private searchTerms = new Subject<string>();
+export class BookSearchComponent {
+  private bookService = inject(BookService);
 
-  constructor(private bookService: BookService) { }
+  query = signal('');
 
-  search(term: string): void {
-    this.searchTerms.next(term);
-  }
-
-  ngOnInit(): void {
-    this.results$ = this.searchTerms.pipe(
+  results = toSignal(
+    toObservable(this.query).pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap(term => this.bookService.search(term))
-    );
-  }
+      switchMap(q => this.bookService.search(q))
+    ),
+    { initialValue: [] }
+  );
 }

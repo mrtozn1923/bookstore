@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, booleanAttribute, numberAttribute } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -6,10 +6,15 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <span *ngFor="let star of stars" [class.filled]="star <= value">★</span>
+    <span *ngFor="let star of stars" [class.filled]="star <= value" [class.compact]="compact">★</span>
   `
 })
 export class BookRatingComponent {
-  @Input() value = 0;
-  stars = [1, 2, 3, 4, 5];
+  @Input({ required: true, transform: numberAttribute }) value!: number;
+  @Input({ transform: booleanAttribute }) compact = false;
+  @Input({ transform: numberAttribute }) max = 5;
+
+  get stars(): number[] {
+    return Array.from({ length: this.max }, (_, i) => i + 1);
+  }
 }

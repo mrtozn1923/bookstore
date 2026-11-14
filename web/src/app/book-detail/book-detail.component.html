@@ -7,7 +7,7 @@
 <router-outlet></router-outlet>
 
 <h3>{{ title }}</h3>
-<p>{{ author }} · {{ inCart }} in cart</p>
+<p>{{ author }} · {{ inCart() }} in cart · {{ total() }} TRY</p>
 <p>Status: {{ inStock ? 'In stock' : 'Out of stock' }}</p>
 <p>{{ title.toUpperCase() }}</p>
 

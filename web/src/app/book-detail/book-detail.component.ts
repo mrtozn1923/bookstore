@@ -1,5 +1,5 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Component, Input, ViewChild, computed, effect, signal } from '@angular/core';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Book } from '../book';
 import { QuantityPickerComponent } from '../quantity-picker/quantity-picker.component';
 import { FormsModule } from '@angular/forms';
@@ -12,33 +12,29 @@ import { NgIf, NgOptimizedImage } from '@angular/common';
     standalone: true,
     imports: [NgIf, NgOptimizedImage, RouterLink, RouterLinkActive, RouterOutlet, FormsModule, QuantityPickerComponent]
 })
-export class BookDetailComponent implements OnInit {
+export class BookDetailComponent {
   @ViewChild(QuantityPickerComponent) picker!: QuantityPickerComponent;
+  @Input() isbn = '';
+  @Input() book?: Book;
 
   title = 'Dune';
   author = 'Frank Herbert';
   coverUrl = 'assets/covers/dune.svg';
   inStock = true;
-  inCart = 0;
+  price = 450;
+  inCart = signal(0);
+  total = computed(() => this.inCart() * this.price);
   rating = 90;
   coupon = '';
   giftNote = '';
   amount = 1;
-  isbn = '';
-  book?: Book;
 
-  constructor(private route: ActivatedRoute) { }
-
-  ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
-      this.isbn = params.get('isbn') ?? '';
-    });
-
-    this.route.data.subscribe(data => this.book = data.book);
+  constructor() {
+    effect(() => console.log('Copies in cart:', this.inCart()));
   }
 
   addToCart(): void {
-    this.inCart++;
+    this.inCart.update(c => c + 1);
   }
 
   onGiftNoteInput(event: Event): void {
