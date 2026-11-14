@@ -12,6 +12,7 @@ using Bookstore.Api.Data;
 using Bookstore.Api.Filters;
 using Bookstore.Api.Middleware;
 using Bookstore.Api.Options;
+using Bookstore.Api.Security;
 using Bookstore.Api.Services;
 using Bookstore.Api.Validation;
 using Serilog;
@@ -28,6 +29,8 @@ builder.Host.UseSerilog((context, configuration) => configuration
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.Limits.MaxRequestBodySize = 10 * 1024 * 1024;
+    // remove the "Server: Kestrel" header from responses
+    options.AddServerHeader = false;
 });
 
 // limit of the multipart form reader: 10 MB
@@ -65,6 +68,23 @@ builder.Services.AddOptions<CatalogOptions>()
     .ValidateDataAnnotations()
     .Validate(o => o.Currency.Length == 3, "Currency must be a 3-letter ISO code.")
     .ValidateOnStart();
+
+builder.Services.AddCors(options =>
+{
+    // we trust only the frontend addresses we know
+    options.AddPolicy("Frontend", policy =>
+        policy.WithOrigins("https://bookstore.example.com", "http://localhost:4200")
+              .WithMethods("GET", "POST", "PUT", "DELETE")
+              .WithHeaders("Content-Type", "Authorization")
+              .WithExposedHeaders("X-Catalog-Version")
+              .SetPreflightMaxAge(TimeSpan.FromMinutes(10)));
+});
+
+builder.Services.AddHsts(options =>
+{
+    options.MaxAge = TimeSpan.FromDays(365);
+    options.IncludeSubDomains = true;
+});
 
 var jwtSection = builder.Configuration.GetSection(JwtOptions.SectionName);
 builder.Services.Configure<JwtOptions>(jwtSection);
@@ -130,6 +150,16 @@ var app = builder.Build();
 
 app.UseSerilogRequestLogging();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+app.UseSecurityHeaders();
+// CORS comes before authentication: a preflight request carries no token
+app.UseCors("Frontend");
 
 // order matters: first find out who you are, then check what you may do
 app.UseAuthentication();
