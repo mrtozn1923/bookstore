@@ -321,7 +321,8 @@
           "category",
           "price",
           "currency",
-          "publishedYear"
+          "publishedYear",
+          "version"
         ],
         "type": "object",
         "properties": {
@@ -349,6 +350,14 @@
             "type": "string"
           },
           "publishedYear": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "version": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
               "integer",

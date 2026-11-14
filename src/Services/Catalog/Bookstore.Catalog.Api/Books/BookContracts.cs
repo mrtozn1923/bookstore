@@ -4,7 +4,7 @@ namespace Bookstore.Catalog.Books;
 
 // The public HTTP contract of Catalog. Entities never leave the service; these records do.
 public sealed record BookSummaryResponse(
-    string Isbn, string Title, string Author, string Category, decimal Price, string Currency, int PublishedYear);
+    string Isbn, string Title, string Author, string Category, decimal Price, string Currency, int PublishedYear, int Version);
 
 public sealed record BookResponse(
     string Isbn, string Title, string Author, string Category, decimal Price, string Currency,

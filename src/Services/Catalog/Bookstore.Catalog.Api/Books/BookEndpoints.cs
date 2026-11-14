@@ -52,7 +52,7 @@ public static class BookEndpoints
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .Select(b => new BookSummaryResponse(
-                b.Isbn, b.Title, b.Author.Name, b.Category.Name, b.Price, Data.Catalog.Currency, b.PublishedYear))
+                b.Isbn, b.Title, b.Author.Name, b.Category.Name, b.Price, Data.Catalog.Currency, b.PublishedYear, b.Version))
             .ToListAsync(ct);
 
         return TypedResults.Ok(new PagedResponse<BookSummaryResponse>(items, page, pageSize, total));

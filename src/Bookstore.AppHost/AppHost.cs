@@ -34,16 +34,26 @@ IResourceBuilder<ProjectResource> catalogMigrator = builder
     .WithReference(catalogDb)
     .WaitFor(catalogDb);
 
-builder.AddProject<Projects.Bookstore_Catalog_Api>("catalog")
+IResourceBuilder<ProjectResource> catalog = builder.AddProject<Projects.Bookstore_Catalog_Api>("catalog")
     .WithReference(catalogDb)
     .WithReference(redis)
     .WaitForCompletion(catalogMigrator)
     .WaitFor(redis)
     .WithHttpHealthCheck("/health");
 
+// Ordering's migrator also fills the local book copy once, from Catalog's API.
+IResourceBuilder<ProjectResource> orderingMigrator = builder
+    .AddProject<Projects.Bookstore_Ordering_Api>("ordering-migrator", options => options.ExcludeLaunchProfile = true)
+    .WithArgs("--migrate")
+    .WithEnvironment("CatalogCopy__ImportWhenEmpty", "true")
+    .WithReference(orderingDb)
+    .WithReference(catalog)
+    .WaitFor(orderingDb)
+    .WaitFor(catalog);
+
 builder.AddProject<Projects.Bookstore_Ordering_Api>("ordering")
     .WithReference(orderingDb)
-    .WaitFor(orderingDb)
+    .WaitForCompletion(orderingMigrator)
     .WithHttpHealthCheck("/health");
 
 builder.AddProject<Projects.Bookstore_Inventory_Grpc>("inventory")
