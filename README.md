@@ -129,6 +129,7 @@ Bu branch, mertozen.com'daki Observability serisinin kodudur. Bu tag'e kadar ekl
   dotnet run --project tools/Bookstore.AlertSink
   alertmanager.exe --config.file=deploy/observability/alertmanager.yml --cluster.listen-address=
   ```
+- `docs/telemetry-checklist.md`: yeni bir servis production'a çıkmadan önceki telemetry kontrol listesi.
 
 ---
 
@@ -257,3 +258,4 @@ This branch holds the code of the Observability series on mertozen.com. Added up
   dotnet run --project tools/Bookstore.AlertSink
   alertmanager.exe --config.file=deploy/observability/alertmanager.yml --cluster.listen-address=
   ```
+- `docs/telemetry-checklist.md`: the telemetry checklist for a new service before it goes to production.
