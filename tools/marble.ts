@@ -17,7 +17,9 @@ function render(events: Event[]): { marbles: string; values: Record<string, unkn
   const keyOf = (v: unknown) => {
     const known = Object.entries(values).find(([, x]) => Object.is(x, v)); // same reference = same letter
     if (known) return known[0];
-    const key = letters[Object.keys(values).length];
+    // a one-character string draws as itself (e.g. "A"), anything else gets the next free letter
+    const free = letters.split("").filter((l) => !(l in values));
+    const key = typeof v === "string" && /^[A-Z0-9]$/.test(v) && !(v in values) ? v : free[0];
     values[key] = v;
     return key;
   };
@@ -28,7 +30,7 @@ function render(events: Event[]): { marbles: string; values: Record<string, unkn
     const chars = events.filter((e) => e.frame === frame).map((e) => (e.kind === "N" ? keyOf(e.value) : e.kind === "E" ? "#" : "|"));
     marbles += chars.length === 1 ? chars[0] : `(${chars.join("")})`;
   }
-  const legend = Object.entries(values).map(([k, v]) => `${k}=${show(v)}`).join(" ");
+  const legend = Object.entries(values).filter(([k, v]) => k !== v).map(([k, v]) => `${k}=${show(v)}`).join(" ");
   return { marbles, values, legend };
 }
 
@@ -40,7 +42,7 @@ export function showMarbles(title: string, build: (cold: Cold) => Observable<unk
   recorder.run(({ cold }) => {
     const recordingCold: Cold = (marbles, values, error) => {
       const legend = values ? Object.entries(values).filter(([k]) => marbles.includes(k)).map(([k, v]) => `${k}=${show(v)}`).join(" ") : "";
-      inputs.push({ marbles, legend });
+      if (!inputs.some((i) => i.marbles === marbles && i.legend === legend)) inputs.push({ marbles, legend });
       return cold(marbles, values, error);
     };
     const sub = build(recordingCold).subscribe({
