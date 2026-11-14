@@ -73,7 +73,44 @@ switch (command)
         break;
     }
 
+    case "threads":
+    {
+        ThreadLab.Describe("main");
+        Thread exporter = new(() =>
+        {
+            ThreadLab.Describe("OrderExporter");
+            Thread.Sleep(TimeSpan.FromSeconds(int.Parse(args[1])));
+        }) { Name = "OrderExporter" };
+        exporter.Start();
+        await Task.Run(() => ThreadLab.Describe("thread pool"));
+        Console.WriteLine($"pid={Environment.ProcessId}, sleeping {args[1]} s");
+        exporter.Join();
+        break;
+    }
+
+    case "thread-cost":
+    {
+        int count = int.Parse(args[1]);
+        int stack = args.Length > 2 ? int.Parse(args[2]) * 1024 : 0;
+        ThreadCost c = ThreadLab.Measure(count, stack);
+        Console.WriteLine($"{c.Waiters} threads (maxStackSize={(stack == 0 ? "default" : $"{stack / 1024} KB")}): " +
+            $"{c.Milliseconds:F1} ms, os threads={c.OsThreads}, virtual +{c.VirtualDeltaMb} MB, resident +{c.ResidentDeltaMb} MB");
+        break;
+    }
+
+    case "task-cost":
+    {
+        ThreadCost c = await ThreadLab.MeasureTasksAsync(int.Parse(args[1]));
+        Console.WriteLine($"{c.Waiters} awaiting tasks: {c.Milliseconds:F1} ms, os threads={c.OsThreads}, " +
+            $"virtual +{c.VirtualDeltaMb} MB, resident +{c.ResidentDeltaMb} MB");
+        break;
+    }
+
+    case "context":
+        Console.WriteLine(await ContextDemo.RunAsync());
+        break;
+
     default:
-        Console.WriteLine("usage: read-catalog | log-naive N | log-buffered N | proc-info S | report-naive N | report N [--fail] | report-timeout | shell-demo TEXT | env-demo");
+        Console.WriteLine("usage: read-catalog | log-naive N | log-buffered N | proc-info S | report-naive N | report N [--fail] | report-timeout | shell-demo TEXT | env-demo | threads S | thread-cost N [stackKB] | task-cost N | context");
         break;
 }
