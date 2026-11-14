@@ -34,3 +34,9 @@ variable "payments_api_key" {
   description = "Key for the payment provider's sandbox."
   sensitive   = true
 }
+
+variable "shared_network_name" {
+  type        = string
+  description = "Network owned by the platform team; read here, never managed."
+  default     = "tfseries-shared"
+}

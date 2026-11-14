@@ -50,3 +50,11 @@ variable "sql_admin_password" {
   description = "SQL Server administrator password (post 9 removes it from the state)."
   sensitive   = true
 }
+
+variable "shared_key_vault" {
+  type = object({
+    name                = string
+    resource_group_name = string
+  })
+  description = "Key Vault owned by the platform team; read here, never managed."
+}

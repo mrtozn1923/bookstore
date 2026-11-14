@@ -11,5 +11,9 @@ terraform {
       source  = "kreuzwerker/docker"
       version = "~> 4.7"
     }
+    http = {
+      source  = "hashicorp/http"
+      version = "~> 3.6"
+    }
   }
 }

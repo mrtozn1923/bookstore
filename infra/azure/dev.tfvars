@@ -11,3 +11,8 @@ api = {
 allowed_ip_ranges = {
   office = "203.0.113.0/24"
 }
+
+shared_key_vault = {
+  name                = "kv-platform-dev-weu"
+  resource_group_name = "rg-platform-dev-weu"
+}
