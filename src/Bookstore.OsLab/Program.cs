@@ -228,7 +228,67 @@ switch (command)
         }
         break;
 
+    case "gc-limits":
+    {
+        string[] keys = ["GCHeapHardLimit", "GCRegionRange", "HeapCount", "GCDynamicAdaptationMode"];
+        IReadOnlyDictionary<string, object> vars = GC.GetConfigurationVariables();
+        foreach (string key in keys)
+        {
+            Console.WriteLine($"{key,-23} = {(vars.TryGetValue(key, out object? v) ? v : "-")}");
+        }
+        Console.WriteLine($"{"IsServerGC",-23} = {System.Runtime.GCSettings.IsServerGC}");
+        Console.WriteLine($"{"TotalAvailableMemory",-23} = {GC.GetGCMemoryInfo().TotalAvailableMemoryBytes >> 20} MB");
+        Console.WriteLine($"{"memory.max",-23} = {MemLab.CgroupValue("memory.max")}");
+        break;
+    }
+
+    case "fill":
+        foreach (string line in MemLab.FillManaged(int.Parse(args[1])))
+        {
+            Console.WriteLine(line);
+        }
+        break;
+
+    case "churn":
+        Console.WriteLine(MemLab.Churn(int.Parse(args[1])));
+        break;
+
+    case "map-share":
+        foreach (string line in MapLab.Share(args[1], int.Parse(args[2]), TimeSpan.FromSeconds(int.Parse(args[3]))))
+        {
+            Console.WriteLine(line);
+        }
+        break;
+
+    case "cow":
+        foreach (string line in MapLab.CopyOnWrite(args[1], int.Parse(args[2])))
+        {
+            Console.WriteLine(line);
+        }
+        break;
+
+    case "layout":
+        foreach (string line in MapLab.Layout())
+        {
+            Console.WriteLine(line);
+        }
+        break;
+
+    case "big-maps":
+        foreach (string line in MapLab.LargeMappings(long.Parse(args[1])))
+        {
+            Console.WriteLine(line);
+        }
+        break;
+
+    case "wx":
+    {
+        (int writable, int executable, int both) = MapLab.Permissions();
+        Console.WriteLine($"mappings: writable={writable} executable={executable} writable+executable={both}");
+        break;
+    }
+
     default:
-        Console.WriteLine("usage: read-catalog | log-naive N | log-buffered N | proc-info S | report-naive N | report N [--fail] | report-timeout | shell-demo TEXT | env-demo | threads S | thread-cost N [stackKB] | task-cost N | context | cpu-info | workers N S | spin S [PriorityClass] | pingpong N | nice | paging MB | mem-info | overcommit GB | oom MB | gc-config");
+        Console.WriteLine("usage: read-catalog | log-naive N | log-buffered N | proc-info S | report-naive N | report N [--fail] | report-timeout | shell-demo TEXT | env-demo | threads S | thread-cost N [stackKB] | task-cost N | context | cpu-info | workers N S | spin S [PriorityClass] | pingpong N | nice | paging MB | mem-info | overcommit GB | oom MB | gc-config | gc-limits | fill MB | churn MB | map-share FILE MB S | cow FILE MB | layout | big-maps MB | wx");
         break;
 }
