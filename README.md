@@ -12,4 +12,9 @@ npm run api                  # http://localhost:5281
 cd bookstore-web
 npm ci
 npm start                    # http://localhost:4200, /api is proxied to the mock API
+
+# production build with the Angular service worker (05)
+npm run build
+cd ..
+npm run serve:app            # http://localhost:5281 serves the build and /api
 ```

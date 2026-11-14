@@ -5,7 +5,7 @@ import { readFileSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { createSecureServer } from "node:http2";
-import { extname, join, normalize } from "node:path";
+import { extname, join, normalize, resolve } from "node:path";
 import { books, customers } from "../data/books.ts";
 
 const port = Number(process.env.PORT ?? 5281);
@@ -99,17 +99,30 @@ async function addReview(req: IncomingMessage, res: ServerResponse, no: number, 
   log(no, `201 review ${review.id} for ${isbn} (key ${key.slice(0, 8)})`);
 }
 
+// 05: --app <folder> (or APP_DIST) serves the Angular production build instead of web/, with the cache headers a deploy needs
+const appArg = process.argv.indexOf("--app");
+const appFolder = appArg > 0 ? process.argv[appArg + 1] : process.env.APP_DIST;
+const appDist = appFolder ? `${resolve(appFolder)}/` : null;
+
+function cacheControlFor(pathname: string) {
+  if (appDist && /-[\w-]{8}\.(js|css)$/.test(pathname)) return "public, max-age=31536000, immutable"; // hashed bundles never change
+  // 04: the service worker script gets a long max-age, like a careless "cache all .js for an hour" rule
+  if (pathname === "/sw/sw.js") return "max-age=3600";
+  return "no-cache"; // index.html, ngsw.json, ngsw-worker.js, manifest: always ask the server
+}
+
 async function serveStatic(res: ServerResponse, no: number, pathname: string) {
-  const file = normalize(join(webRoot, pathname.endsWith("/") ? `${pathname}index.html` : pathname));
-  if (!file.startsWith(webRoot)) {
+  const root = appDist ?? webRoot;
+  let file = normalize(join(root, pathname.endsWith("/") ? `${pathname}index.html` : pathname));
+  if (!file.startsWith(root)) {
     res.writeHead(403).end();
     return;
   }
+  // SPA fallback: an Angular route such as /books/9780441172719 gets index.html
+  if (appDist && !extname(pathname)) file = join(root, "index.html");
   try {
     const body = await readFile(file);
-    // 04: the service worker script gets a long max-age, like a careless "cache all .js for an hour" rule
-    const cacheControl = pathname === "/sw/sw.js" ? "max-age=3600" : "no-cache";
-    res.writeHead(200, { "Content-Type": types[extname(file)] ?? "application/octet-stream", "Cache-Control": cacheControl });
+    res.writeHead(200, { "Content-Type": types[extname(file)] ?? "application/octet-stream", "Cache-Control": cacheControlFor(pathname) });
     res.end(body);
     log(no, `200 ${pathname}`);
   } catch {

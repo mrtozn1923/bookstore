@@ -6,6 +6,7 @@
     "node": ">=24"
   },
   "scripts": {
-    "api": "node api/server.ts"
+    "api": "node api/server.ts",
+    "serve:app": "node api/server.ts --app bookstore-web/dist/bookstore-web/browser"
   }
 }
