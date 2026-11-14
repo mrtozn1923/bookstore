@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/bench/">
+    <Project Path="bench/Bookstore.OsLab.Benchmarks/Bookstore.OsLab.Benchmarks.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Bookstore.OsLab/Bookstore.OsLab.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Bookstore.OsLab.Tests/Bookstore.OsLab.Tests.csproj" />
+  </Folder>
+</Solution>

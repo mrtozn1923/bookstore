@@ -1,0 +1,6 @@
+[
+  { "isbn": "9780441172719", "title": "Dune", "author": "Frank Herbert", "price": 420.00, "currency": "TRY" },
+  { "isbn": "9780141439587", "title": "Emma", "author": "Jane Austen", "price": 185.50, "currency": "TRY" },
+  { "isbn": "9780547928227", "title": "The Hobbit", "author": "J. R. R. Tolkien", "price": 310.00, "currency": "TRY" },
+  { "isbn": "9780141439549", "title": "Middlemarch", "author": "George Eliot", "price": 265.75, "currency": "TRY" }
+]
