@@ -1,7 +1,9 @@
 using System.Net;
 using Bookstore.Api.Carts;
 using Bookstore.Api.Catalog;
+using Bookstore.Api.Formatters;
 using Bookstore.Api.Institutional;
+using Bookstore.Api.Json;
 using Bookstore.Api.Middleware;
 using Bookstore.Api.OpenApi;
 using Bookstore.Api.Ordering;
@@ -27,6 +29,16 @@ builder.Services.AddValidation();
 builder.Services.AddProblemDetails();
 builder.Services.AddAntiforgery();
 builder.Services.AddSingleton<OrderStore>();
+
+builder.Services.ConfigureHttpJsonOptions(options => JsonDefaults.Apply(options.SerializerOptions));
+builder.Services.AddControllers(options =>
+    {
+        options.ReturnHttpNotAcceptable = true;
+        options.OutputFormatters.Add(new BookCsvOutputFormatter());
+        options.FormatterMappings.SetMediaTypeMappingForFormat("csv", "text/csv");
+    })
+    .AddJsonOptions(options => JsonDefaults.Apply(options.JsonSerializerOptions))
+    .AddXmlSerializerFormatters();
 
 builder.Services.AddAuthentication().AddJwtBearer();
 builder.Services.AddAuthorization();
@@ -164,7 +176,11 @@ app.MapGet("/api/antiforgery/token", (IAntiforgery antiforgery, HttpContext cont
 app.MapPost("/api/books/{isbn}/cover", (Isbn isbn, IFormFile file, [FromForm] string? altText) =>
     new { Isbn = isbn.Value, file.FileName, file.ContentType, file.Length, AltText = altText });
 
+app.MapPatch("/api/books/{isbn}", BookPatchEndpoint.Patch)
+    .RequireAuthorization(policy => policy.RequireRole("StoreStaff"));
+
 app.MapOrderEndpoints();
+app.MapControllers();
 
 app.Run();
 
