@@ -4,7 +4,7 @@ import { isValidIsbn13 } from "@bookstore/contracts";
 import { writeFileAtomic } from "#storage/atomicWrite";
 import { resolveInsideRoot } from "#storage/safePath";
 
-const coversRoot: string = path.resolve(process.env.COVERS_DIR ?? "uploads/covers");
+export const coversRoot: string = path.resolve(process.env.COVERS_DIR ?? "uploads/covers");
 const JPEG_MAGIC = [0xff, 0xd8, 0xff];
 
 export class InvalidCoverError extends Error {

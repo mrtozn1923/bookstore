@@ -1,0 +1,9 @@
+{
+  "name": "bookstore-lab-11",
+  "private": true,
+  "type": "module",
+  "description": "Express 4 next to Express 5 for the comparison in post 11",
+  "dependencies": {
+    "express4": "npm:express@4.22.3"
+  }
+}

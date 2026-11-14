@@ -1,36 +1,12 @@
-import type { IncomingMessage, ServerResponse } from "node:http";
+import { Router } from "express";
 import { createGzip } from "node:zlib";
 import { pipeline } from "node:stream/promises";
 import { orderRowStream, csvTransform } from "#services/orderExport";
 import { orderService, UnknownBookError, type OrderLine } from "#services/orderService";
-import { readJsonBody } from "#http/body";
 import { HttpError } from "#http/errors";
-import { sendJson } from "#http/respond";
-import type { Params } from "#http/router";
 import { log } from "../diagnostics/log.ts";
 
-// GET /api/orders/export?rows=N: CSV, gzip-compressed when the client accepts it
-export async function handleOrderExport(req: IncomingMessage, res: ServerResponse, url: URL): Promise<void> {
-    const rows = Number(url.searchParams.get("rows") ?? 100_000);
-    const gzip = /\bgzip\b/.test(req.headers["accept-encoding"] ?? "");
-    const started = performance.now();
-
-    res.writeHead(200, {
-        "content-type": "text/csv; charset=utf-8",
-        "content-disposition": 'attachment; filename="orders.csv"',
-        ...(gzip ? { "content-encoding": "gzip" } : {}),
-    });
-
-    const stages = gzip ? [csvTransform(), createGzip()] : [csvTransform()];
-    try {
-        // pipeline wires backpressure through every stage and destroys all of them on error
-        await pipeline(orderRowStream(rows), ...stages, res);
-        log("info", "order export finished", { rows, gzip, durationMs: Math.round(performance.now() - started) });
-    } catch (err) {
-        // A client that disconnects mid-download ends up here as ERR_STREAM_PREMATURE_CLOSE
-        log("warn", "order export aborted", { error: (err as NodeJS.ErrnoException).code ?? (err as Error).message, durationMs: Math.round(performance.now() - started) });
-    }
-}
+export const ordersRouter = Router();
 
 // Hand-written validation: exactly the part a schema library will take over
 function parsePlaceOrder(body: unknown): { customerId: string; lines: OrderLine[] } {
@@ -58,24 +34,50 @@ function parsePlaceOrder(body: unknown): { customerId: string; lines: OrderLine[
 }
 
 // POST /api/orders
-export async function handlePlaceOrder(req: IncomingMessage, res: ServerResponse): Promise<void> {
-    const { customerId, lines } = parsePlaceOrder(await readJsonBody(req));
+ordersRouter.post("/", (req, res) => {
+    if (!req.is("application/json")) {
+        throw new HttpError(415, "content-type must be application/json");
+    }
+    const { customerId, lines } = parsePlaceOrder(req.body);
     try {
         const order = orderService.placeOrder(customerId, lines);
-        sendJson(res, 201, order, { location: `/api/orders/${order.id}` });
+        res.status(201).location(`/api/orders/${order.id}`).json(order);
     } catch (err) {
         if (err instanceof UnknownBookError) {
             throw new HttpError(422, err.message);
         }
         throw err;
     }
-}
+});
 
-// GET /api/orders/:id
-export function handleGetOrder(req: IncomingMessage, res: ServerResponse, { params }: { params: Params }): void {
-    const order = orderService.findOrder(params.id);
-    if (!order) {
-        throw new HttpError(404, `order ${params.id} not found`);
+// GET /api/orders/export?rows=N: CSV, gzip-compressed when the client accepts it
+ordersRouter.get("/export", async (req, res) => {
+    const rows = Number(req.query.rows ?? 100_000);
+    const gzip = req.acceptsEncodings("gzip", "identity") === "gzip";
+    const started = performance.now();
+
+    res.writeHead(200, {
+        "content-type": "text/csv; charset=utf-8",
+        "content-disposition": 'attachment; filename="orders.csv"',
+        ...(gzip ? { "content-encoding": "gzip" } : {}),
+    });
+
+    const stages = gzip ? [csvTransform(), createGzip()] : [csvTransform()];
+    try {
+        // pipeline wires backpressure through every stage and destroys all of them on error
+        await pipeline(orderRowStream(rows), ...stages, res);
+        log("info", "order export finished", { rows, gzip, durationMs: Math.round(performance.now() - started) });
+    } catch (err) {
+        // A client that disconnects mid-download ends up here as ERR_STREAM_PREMATURE_CLOSE
+        log("warn", "order export aborted", { error: (err as NodeJS.ErrnoException).code ?? (err as Error).message, durationMs: Math.round(performance.now() - started) });
     }
-    sendJson(res, 200, order);
-}
+});
+
+// GET /api/orders/:id (after /export, so "export" is never taken for an id)
+ordersRouter.get("/:id", (req, res) => {
+    const order = orderService.findOrder(req.params.id);
+    if (!order) {
+        throw new HttpError(404, `order ${req.params.id} not found`);
+    }
+    res.json(order);
+});

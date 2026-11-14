@@ -7,6 +7,7 @@
   "main": "src/server.ts",
   "imports": {
     "#http/*": "./src/http/*.ts",
+    "#middleware/*": "./src/middleware/*.ts",
     "#routes/*": "./src/routes/*.ts",
     "#services/*": "./src/services/*.ts",
     "#domain/*": "./src/domain/*.ts",
@@ -26,9 +27,11 @@
     "versions": "node -p process.versions.node"
   },
   "dependencies": {
-    "@bookstore/contracts": "^0.1.0"
+    "@bookstore/contracts": "^0.1.0",
+    "express": "^5.3.0"
   },
   "devDependencies": {
+    "@types/express": "^5.0.6",
     "@types/node": "^26.6.6",
     "typescript": "^7.0.2"
   }

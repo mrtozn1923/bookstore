@@ -1,12 +1,14 @@
-import type { IncomingMessage, ServerResponse } from "node:http";
+import { Router } from "express";
 import { buildPriceReport, buildPriceReportChunked, type PriceReport } from "#services/priceReport";
 import { buildPriceReportInWorker } from "#services/priceReportRunner";
 import { currentRequestContext } from "../context/requestContext.ts";
 
+export const reportsRouter = Router();
+
 // GET /api/reports/prices?mode=inline|chunked|worker&rows=20000000
-export async function handlePriceReport(req: IncomingMessage, res: ServerResponse, url: URL): Promise<void> {
-    const mode = url.searchParams.get("mode") ?? "worker";
-    const rows = Number(url.searchParams.get("rows") ?? 20_000_000);
+reportsRouter.get("/prices", async (req, res) => {
+    const mode = String(req.query.mode ?? "worker");
+    const rows = Number(req.query.rows ?? 20_000_000);
     const started = performance.now();
 
     let report: PriceReport;
@@ -18,7 +20,5 @@ export async function handlePriceReport(req: IncomingMessage, res: ServerRespons
         // The worker is terminated if the client disconnects before the report is ready
         report = await buildPriceReportInWorker(rows, currentRequestContext()?.signal);
     }
-
-    res.writeHead(200, { "content-type": "application/json" });
-    res.end(JSON.stringify({ mode, ...report, durationMs: Math.round(performance.now() - started) }));
-}
+    res.json({ mode, ...report, durationMs: Math.round(performance.now() - started) });
+});
