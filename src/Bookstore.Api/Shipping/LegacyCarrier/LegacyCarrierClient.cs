@@ -6,8 +6,10 @@ using System.Text.Json.Serialization;
 namespace Bookstore.Shipping.LegacyCarrier;
 
 // Hand-written typed client + anti-corruption mapping for the legacy carrier API.
-public sealed class LegacyCarrierClient(HttpClient httpClient) : IShippingCarrier
+public sealed class LegacyCarrierClient([FromKeyedServices(LegacyCarrierClient.ClientName)] HttpClient httpClient) : IShippingCarrier
 {
+    public const string ClientName = "legacy-carrier";
+
     public async Task<ShippingQuote> GetQuoteAsync(ShippingQuoteRequest request, CancellationToken cancellationToken)
     {
         var url = $"api/v2/quotes?from={Uri.EscapeDataString(request.FromPostalCode)}" +

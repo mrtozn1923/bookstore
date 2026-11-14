@@ -3,6 +3,7 @@ using Bookstore.Ordering;
 using Bookstore.Payments;
 using Bookstore.Shipping;
 using Bookstore.Shipping.LegacyCarrier;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,17 +13,38 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 builder.Services.AddExceptionHandler<ExternalServiceExceptionHandler>();
 builder.Services.AddSingleton<OrderStore>();
 builder.Services.AddScoped<CheckoutService>();
+builder.Services.AddSingleton(TimeProvider.System);
 
-builder.Services.AddHttpClient<IPaymentGateway, ProviderPaymentGateway>(client =>
-{
-    client.BaseAddress = new Uri(builder.Configuration["Payments:Provider:BaseUrl"]!);
-    client.DefaultRequestHeaders.Authorization = new("Bearer", builder.Configuration["Payments:Provider:ApiKey"]);
-});
+// Every client the factory creates gets the correlation header.
+builder.Services.AddTransient<CorrelationIdHandler>();
+builder.Services.ConfigureHttpClientDefaults(http => http.AddHttpMessageHandler<CorrelationIdHandler>());
 
-builder.Services.AddHttpClient<IShippingCarrier, LegacyCarrierClient>(client =>
-{
-    client.BaseAddress = new Uri(builder.Configuration["Shipping:LegacyCarrier:BaseUrl"]!);
-});
+// Payments: keyed client + plain scoped service.
+builder.Services.AddHttpClient(ProviderPaymentGateway.ClientName, client =>
+    {
+        client.BaseAddress = new Uri(builder.Configuration["Payments:Provider:BaseUrl"]!);
+        client.DefaultRequestHeaders.Authorization = new("Bearer", builder.Configuration["Payments:Provider:ApiKey"]);
+        client.Timeout = TimeSpan.FromSeconds(10);
+    })
+    .AddAsKeyed();
+builder.Services.AddScoped<IPaymentGateway, ProviderPaymentGateway>();
+
+// Shipping: OAuth token handler on the API client, a separate client for the token endpoint.
+builder.Services.AddOptions<LegacyCarrierOptions>()
+    .BindConfiguration("Shipping:LegacyCarrier")
+    .ValidateOnStart();
+builder.Services.AddSingleton<CarrierTokenProvider>();
+builder.Services.AddTransient<CarrierAuthHandler>();
+builder.Services.AddHttpClient(CarrierTokenProvider.AuthClientName, (sp, client) =>
+    client.BaseAddress = sp.GetRequiredService<IOptions<LegacyCarrierOptions>>().Value.BaseUrl);
+builder.Services.AddHttpClient(LegacyCarrierClient.ClientName, (sp, client) =>
+    {
+        client.BaseAddress = sp.GetRequiredService<IOptions<LegacyCarrierOptions>>().Value.BaseUrl;
+        client.Timeout = TimeSpan.FromSeconds(5);
+    })
+    .AddHttpMessageHandler<CarrierAuthHandler>()
+    .AddAsKeyed();
+builder.Services.AddScoped<IShippingCarrier, LegacyCarrierClient>();
 
 var app = builder.Build();
 

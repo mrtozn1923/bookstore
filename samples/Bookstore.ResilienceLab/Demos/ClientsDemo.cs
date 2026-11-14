@@ -28,8 +28,8 @@ public static class ClientsDemo
 
         var services = new ServiceCollection();
         services.AddRefitGeneratedClient<ILegacyCarrierApi>()
-            .ConfigureHttpClient(c => c.BaseAddress = baseAddress);
-        services.AddHttpClient("kiota-carrier", c => c.BaseAddress = baseAddress);
+            .ConfigureHttpClient(c => Configure(c, baseAddress));
+        services.AddHttpClient("kiota-carrier", c => Configure(c, baseAddress));
         await using var provider = services.BuildServiceProvider();
 
         var refit = provider.GetRequiredService<ILegacyCarrierApi>();
@@ -57,5 +57,12 @@ public static class ClientsDemo
             Console.WriteLine($"Kiota : QUOTE_ID={k?.QUOTEID}, AMT={k?.AMT ?? "null"}, " +
                               $"unknown fields=[{string.Join(", ", k?.AdditionalData.Keys ?? [])}]");
         }
+    }
+
+    // The carrier needs a bearer token since post 02; a fixed fake token is enough here.
+    private static void Configure(HttpClient client, Uri baseAddress)
+    {
+        client.BaseAddress = baseAddress;
+        client.DefaultRequestHeaders.Authorization = new("Bearer", "fake-carrier-token-demo");
     }
 }

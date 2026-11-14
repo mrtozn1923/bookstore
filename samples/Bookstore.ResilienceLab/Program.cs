@@ -1,9 +1,22 @@
+using System.Globalization;
 using Bookstore.ResilienceLab.Demos;
+
+// Same number and date format on every machine.
+CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
 // Usage: dotnet run --project samples/Bookstore.ResilienceLab -- <demo>
 var demos = new Dictionary<string, Func<Task>>
 {
-    ["clients"] = ClientsDemo.RunAsync
+    ["clients"] = ClientsDemo.RunAsync,
+    ["lifetime"] = FactoryDemos.LifetimeAsync,
+    ["captive"] = FactoryDemos.CaptiveAsync,
+    ["scope"] = FactoryDemos.ScopeAsync,
+    ["logging"] = FactoryDemos.LoggingAsync,
+    ["timeout"] = FactoryDemos.TimeoutAsync,
+    ["singleton-handler"] = FactoryDemos.SingletonHandlerAsync,
+    ["base-address"] = FactoryDemos.BaseAddressAsync,
+    ["stream"] = FactoryDemos.StreamAsync
 };
 
 if (args.Length == 0 || !demos.TryGetValue(args[0], out var demo))

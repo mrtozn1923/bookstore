@@ -6,8 +6,12 @@ using System.Text.Json.Serialization;
 namespace Bookstore.Payments;
 
 // The adapter: the only class that knows the provider's JSON, status codes and error codes.
-public sealed class ProviderPaymentGateway(HttpClient httpClient, ILogger<ProviderPaymentGateway> logger) : IPaymentGateway
+public sealed class ProviderPaymentGateway(
+    [FromKeyedServices(ProviderPaymentGateway.ClientName)] HttpClient httpClient,
+    ILogger<ProviderPaymentGateway> logger) : IPaymentGateway
 {
+    public const string ClientName = "payment-provider";
+
     private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web)
     {
         PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
