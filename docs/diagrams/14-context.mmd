@@ -1,0 +1,9 @@
+C4Context
+    title System Context diagram for Bookstore (institutional ordering)
+    Person(user, "Institution User", "Places book orders and checks the unit budget")
+    Person(approver, "Approver", "Approves or rejects orders")
+    System(bookstore, "Bookstore", "Institutional orders, approvals, budgets and invoices")
+    System_Ext(distributor, "Book Distributor", "Receives and delivers approved orders")
+    Rel(user, bookstore, "Places and cancels orders")
+    Rel(approver, bookstore, "Approves or rejects orders")
+    Rel(bookstore, distributor, "Places approved orders, cancels them on request", "JSON/HTTPS")

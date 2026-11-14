@@ -1,0 +1,36 @@
+@startuml bookstore-containers
+!include <C4/C4_Container>
+
+title Container diagram for Bookstore (institutional ordering)
+
+Person(user, "Institution User", "Places book orders and checks the unit budget")
+Person(approver, "Approver", "Approves or rejects orders; a purchasing manager is also an approver")
+Person(admin, "Portal Admin", "Manages budget categories and unit budgets")
+System_Ext(distributor, "Book Distributor", "Acme Book Distribution; receives and delivers approved orders")
+System_Ext(smtp, "E-mail System", "Delivers notification e-mails")
+System_Ext(idp, "Identity Provider", "Microsoft Entra ID")
+
+System_Boundary(bookstore, "Bookstore") {
+    Container(spa, "Single-Page Application", "Angular 22", "Order, approval and budget screens (bookstore-web)")
+    Container(api, "API Application", "ASP.NET Core, .NET 10", "Institutional, Billing, Notifications and DistributorIntegration modules")
+    Container(worker, "Worker", ".NET 10 Worker Service", "Sends notifications and approval reminders")
+    ContainerDb(db, "Database", "Azure SQL Database", "Orders, approvals, budgets")
+    ContainerDb(cache, "Cache", "Azure Managed Redis", "Budgets, discount agreements and lookup data")
+    ContainerQueue(topic, "order-events", "Azure Service Bus topic", "Order integration events")
+}
+
+Rel(user, spa, "Creates and cancels orders", "HTTPS")
+Rel(approver, spa, "Approves or rejects orders", "HTTPS")
+Rel(admin, spa, "Maintains budget categories and budgets", "HTTPS")
+Rel(spa, idp, "Signs the user in", "OpenID Connect")
+Rel(spa, api, "Reads and writes order data", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core, TDS")
+Rel(api, cache, "Caches budgets", "RESP/TLS")
+Rel(api, topic, "Publishes OrderApproved etc.", "AMQP")
+Rel(api, distributor, "Places and cancels approved orders", "JSON/HTTPS")
+Rel(worker, topic, "Consumes events from", "AMQP")
+Rel(worker, db, "Reads pending orders", "TDS")
+Rel(worker, smtp, "Sends e-mails via", "SMTP")
+
+SHOW_LEGEND()
+@enduml
