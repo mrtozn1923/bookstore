@@ -4,6 +4,7 @@
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Bookstore.OsLab/Bookstore.OsLab.csproj" />
+    <Project Path="src/Bookstore.ReportTool/Bookstore.ReportTool.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Bookstore.OsLab.Tests/Bookstore.OsLab.Tests.csproj" />

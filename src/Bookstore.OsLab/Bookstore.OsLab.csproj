@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Bookstore.ReportTool\Bookstore.ReportTool.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="data\catalog.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
