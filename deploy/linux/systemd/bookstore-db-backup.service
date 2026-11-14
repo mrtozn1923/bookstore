@@ -8,3 +8,6 @@ Type=oneshot
 User=bookstore
 Group=bookstore
 ExecStart=/usr/local/bin/bookstore-db-backup
+# Background job: give way to bookstore-api when the CPU is busy
+Nice=10
+CPUWeight=20

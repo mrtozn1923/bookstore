@@ -1,6 +1,8 @@
 [Unit]
 Description=Bookstore API (ASP.NET Core on Kestrel)
 After=network.target
+StartLimitIntervalSec=300
+StartLimitBurst=5
 
 [Service]
 Type=notify

@@ -1,1 +1,1 @@
-deploy ALL=(root) NOPASSWD: /usr/bin/systemctl restart bookstore-api, /usr/bin/systemctl status bookstore-api
+deploy ALL=(root) NOPASSWD: /usr/bin/systemctl restart bookstore-api, /usr/bin/systemctl status bookstore-api, /usr/bin/systemctl reset-failed bookstore-api
