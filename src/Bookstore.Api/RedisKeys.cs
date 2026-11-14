@@ -15,5 +15,9 @@ public static class RedisKeys
 
     public static RedisKey Idempotency(string key) => $"{Prefix}:idem:{key}";
 
+    public static RedisKey Cart(int customerId) => $"{Prefix}:cart:{customerId}";
+
+    public static RedisKey CartPriceLocks(int customerId) => $"{Prefix}:cart:{customerId}:price-locks";
+
     public static RedisKey OrderIdSequence => $"{Prefix}:order:id-seq";
 }

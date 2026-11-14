@@ -15,5 +15,6 @@ WebApplication app = builder.Build();
 app.MapBookViews();
 app.MapVerification();
 app.MapOrders();
+app.MapCart();
 
 app.Run();
