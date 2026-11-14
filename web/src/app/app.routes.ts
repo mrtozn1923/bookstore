@@ -1,4 +1,6 @@
+import { inject } from '@angular/core';
 import { Routes } from '@angular/router';
+import { AuthService } from './auth.service';
 import { HomeComponent } from './home/home.component';
 import { BookListComponent } from './catalog/book-list/book-list.component';
 import { BookDetailComponent } from './book-detail/book-detail.component';
@@ -38,6 +40,16 @@ export const routes: Routes = [
   { path: 'sign-up', component: SignUpComponent, title: 'Sign up' },
   { path: 'orders', component: OrderListComponent, canActivate: [authGuard], title: 'My orders' },
   { path: 'account/address', component: AddressEditComponent, canDeactivate: [unsavedChangesGuard] },
+  {
+    path: 'my-account',
+    redirectTo: ({ queryParams }) => {
+      const auth = inject(AuthService);
+      if (!auth.isLoggedIn()) {
+        return '/login';
+      }
+      return queryParams['tab'] === 'address' ? '/account/address' : '/orders';
+    }
+  },
   {
     path: 'admin',
     loadChildren: () => import('./admin/admin.routes').then(m => m.ADMIN_ROUTES),

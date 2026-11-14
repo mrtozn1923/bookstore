@@ -5,15 +5,14 @@ import { AsyncPipe } from '@angular/common';
 @Component({
     selector: 'app-cart-badge',
     template: `
-    <span>Books in cart: {{ count$ | async }}</span>
-    @if (items$ | async; as items) {
-      <div>
-        @for (item of items; track $index) {
-          <p>{{ item.title }}</p>
-        }
-      </div>
+    @let count = count$ | async;
+    @let items = items$ | async;
+
+    <span>Books in cart: {{ count }}</span>
+    @for (item of items; track $index) {
+      <p>{{ item.title }}</p>
     }
-    `,
+  `,
     standalone: true,
     imports: [AsyncPipe]
 })

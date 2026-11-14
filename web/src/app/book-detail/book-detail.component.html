@@ -38,4 +38,8 @@
 
 <app-quantity-picker [(quantity)]="amount" />
 <button (click)="resetQuantity()">Reset</button>
-<p>Quantity: {{ amount() }} · Total: {{ amount() * price }} TRY</p>
+@let lineTotal = amount() * price;
+<p>
+  Quantity: {{ amount() }} · Total: {{ lineTotal }} TRY
+  @if (lineTotal > 500) { <span>(free shipping)</span> }
+</p>
