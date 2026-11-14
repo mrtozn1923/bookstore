@@ -297,3 +297,8 @@ app.MapGet("/debug/routes", (IEnumerable<EndpointDataSource> sources) =>
            .Select(e => e.RoutePattern.RawText));
 
 app.Run();
+
+// so that the test project can write WebApplicationFactory<Program>
+public partial class Program
+{
+}
