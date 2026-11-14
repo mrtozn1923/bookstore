@@ -7,6 +7,7 @@ namespace Bookstore.Api.Controllers;
 [Route("api/[controller]")]
 public class BooksController : ControllerBase
 {
+    // A temporary in-memory list until we have a database
     private static readonly List<Book> Books = new()
     {
         new Book { Id = 1, Title = "Dune", Price = 450m, CategoryId = 1 },
@@ -15,26 +16,56 @@ public class BooksController : ControllerBase
     };
 
     [HttpGet]
-    public IEnumerable<Book> GetAll() => Books;
+    public ActionResult<IEnumerable<Book>> GetAll()
+    {
+        return Books;
+    }
 
-    [HttpGet("{id:int:min(1)}")]
+    [HttpGet("{id:int}")]
     public ActionResult<Book> GetById(int id)
     {
-        var book = Books.FirstOrDefault(b => b.Id == id);
-        return book is null ? NotFound() : book;
+        Book? book = Books.FirstOrDefault(b => b.Id == id);
+        if (book is null)
+        {
+            return NotFound();
+        }
+
+        return book;
     }
 
-    [HttpGet("{title}")]
-    public ActionResult<Book> GetByTitle(string title)
+    [HttpPost]
+    public ActionResult<Book> Create(Book book)
     {
-        var book = Books.FirstOrDefault(b => b.Title.Replace(" ", "-").Equals(title, StringComparison.OrdinalIgnoreCase));
-        return book is null ? NotFound() : book;
+        book.Id = Books.Count == 0 ? 1 : Books.Max(b => b.Id) + 1;
+        Books.Add(book);
+        return CreatedAtAction(nameof(GetById), new { id = book.Id }, book);
     }
 
-    [HttpGet("/api/categories/{categoryId:int}/books")]
-    public IEnumerable<Book> GetByCategory(int categoryId) =>
-        Books.Where(b => b.CategoryId == categoryId);
+    [HttpPut("{id:int}")]
+    public IActionResult Update(int id, Book book)
+    {
+        Book? existing = Books.FirstOrDefault(b => b.Id == id);
+        if (existing is null)
+        {
+            return NotFound();
+        }
 
-    [HttpGet("[action]")]
-    public int Count() => Books.Count;
+        existing.Title = book.Title;
+        existing.Price = book.Price;
+        existing.CategoryId = book.CategoryId;
+        return NoContent();
+    }
+
+    [HttpDelete("{id:int}")]
+    public IActionResult Delete(int id)
+    {
+        Book? existing = Books.FirstOrDefault(b => b.Id == id);
+        if (existing is null)
+        {
+            return NotFound();
+        }
+
+        Books.Remove(existing);
+        return NoContent();
+    }
 }
