@@ -178,7 +178,7 @@ public static class TlsCommands
         }
     }
 
-    private sealed class LoopbackTls : IAsyncDisposable
+    internal sealed class LoopbackTls : IAsyncDisposable
     {
         private readonly TcpClient _clientSocket;
         private readonly TcpClient _serverSocket;
@@ -248,7 +248,7 @@ public static class TlsCommands
     }
 
     // Records the raw bytes of a stream in both directions: what TLS puts on the wire
-    private sealed class WireTap(Stream inner) : Stream
+    internal sealed class WireTap(Stream inner) : Stream
     {
         public MemoryStream Sent { get; } = new();
         public MemoryStream Received { get; } = new();

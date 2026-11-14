@@ -32,6 +32,9 @@ switch (command)
     case "tls-handshake": await TlsCommands.HandshakeAsync(); break;
     case "tls-keylog": await TlsCommands.KeyLogAsync(); break;
     case "tls-server": await TlsCommands.ServeAsync(args); break;
+    case "pqc-sizes": PqcCommands.Sizes(); break;
+    case "pqc-envelope": PqcCommands.Envelope(); break;
+    case "tls-groups": await PqcCommands.GroupsAsync(); break;
     default: Console.Error.WriteLine($"Unknown command: {command}"); return 1;
 }
 return 0;
