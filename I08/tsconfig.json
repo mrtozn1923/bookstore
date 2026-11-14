@@ -1,0 +1,17 @@
+{
+  // Decorators are not erasable: compile this folder with `npx tsc -p I08` and run the output,
+  // e.g. `node I08/dist/invoice.js`. The target must not be esnext, or tsc leaves the decorators in place.
+  // example-07.ts is the experimentalDecorators example that the post rejects on purpose (TS1241).
+  "compilerOptions": {
+    "target": "es2025",
+    "module": "nodenext",
+    "strict": true,
+    "moduleDetection": "force",
+    "skipLibCheck": true,
+    "types": [],
+    "rootDir": ".",
+    "outDir": "dist"
+  },
+  "include": ["*.ts"],
+  "exclude": ["example-07.ts", "dist"]
+}
