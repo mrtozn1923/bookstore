@@ -1,0 +1,12 @@
+{
+  "name": "npm-lab",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "semver": "^7.7.3"
+  }
+}
