@@ -3,6 +3,7 @@ using Bookstore.Catalog;
 using Bookstore.Data;
 using Bookstore.Inventory;
 using Bookstore.Ordering;
+using Bookstore.Storage;
 using Microsoft.EntityFrameworkCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -23,7 +24,8 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 builder.Services
     .AddCatalogModule()
     .AddInventoryModule()
-    .AddOrderingModule();
+    .AddOrderingModule()
+    .AddBlobStorage(builder.Configuration);
 
 WebApplication app = builder.Build();
 
