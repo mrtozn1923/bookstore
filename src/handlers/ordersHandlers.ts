@@ -7,7 +7,7 @@ import { placeOrderBody } from "#schemas/orders";
 import { parseRequest } from "#http/validation";
 import { HttpError } from "#http/errors";
 import { toOrderDto } from "#handlers/dto";
-import { log } from "../diagnostics/log.ts";
+import { logger } from "../diagnostics/logger.ts";
 
 // POST /api/orders: validate, call the service, map the result; no business rules here
 export function placeOrder(orders: OrderService): RequestHandler {
@@ -44,10 +44,10 @@ export function exportOrders(orders: OrderService): RequestHandler {
         try {
             // pipeline wires backpressure from the response back to SQL Server and destroys every stage on error
             await pipeline(orders.exportRows(), ...stages, res);
-            log("info", "order export finished", { gzip, durationMs: Math.round(performance.now() - started) });
+            logger.info({ gzip, durationMs: Math.round(performance.now() - started) }, "order export finished");
         } catch (err) {
             // A client that disconnects mid-download ends up here as ERR_STREAM_PREMATURE_CLOSE
-            log("warn", "order export aborted", { error: (err as NodeJS.ErrnoException).code ?? (err as Error).message, durationMs: Math.round(performance.now() - started) });
+            logger.warn({ error: (err as NodeJS.ErrnoException).code ?? (err as Error).message, durationMs: Math.round(performance.now() - started) }, "order export aborted");
         }
     };
 }

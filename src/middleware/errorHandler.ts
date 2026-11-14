@@ -4,7 +4,7 @@ import { RequestValidationError } from "#http/validation";
 import { sendProblem } from "#http/problem";
 import { BookNotFoundError, DomainError, MixedCurrencyError, OrderNotFoundError, OutOfStockError, UnknownBookError } from "#domain/errors";
 import { currentRequestContext } from "../context/requestContext.ts";
-import { log } from "../diagnostics/log.ts";
+import { logger } from "../diagnostics/logger.ts";
 
 // Domain error -> HTTP status, in one place
 const DOMAIN_STATUS = new Map<Function, number>([
@@ -24,12 +24,12 @@ export const notFound: RequestHandler = (req, res, next) => {
 export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
     const context = currentRequestContext();
     if (context?.signal.aborted) {
-        log("warn", "client went away", { method: req.method, path: req.path });
+        logger.warn({ method: req.method, path: req.path }, "client went away");
         return;
     }
     if (res.headersSent) {
         // Too late for a status code; Express's default handler closes the connection
-        log("error", "error after the response started", { error: (err as Error).message });
+        logger.error({ err }, "error after the response started");
         return next(err);
     }
     const common = { instance: req.originalUrl, traceId: context?.requestId };
@@ -54,6 +54,6 @@ export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
         return sendProblem(res, 413, { detail: `request body is larger than ${err.limit} bytes`, ...common });
     }
     // Anything else is a bug: full details in the log, none in the response
-    log("error", "unhandled error", { error: (err as Error).stack });
+    logger.error({ err }, "unhandled error");
     sendProblem(res, 500, common);
 };

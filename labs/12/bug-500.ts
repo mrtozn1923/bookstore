@@ -9,7 +9,8 @@ const buggyBooks = {
     },
 } as unknown as BookService;
 
-const app = createApp({ books: buggyBooks, orders: {} as OrderService });
+// readiness added in post 14; not used here
+const app = createApp({ books: buggyBooks, orders: {} as OrderService, readiness: async () => ({ status: "ready", checks: {} }) });
 const server = app.listen(0, "127.0.0.1", async () => {
     const { port } = server.address() as { port: number };
     const res = await fetch(`http://127.0.0.1:${port}/api/books`, { headers: { "x-request-id": "req-12z" } });

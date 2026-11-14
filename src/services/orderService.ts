@@ -4,7 +4,7 @@ import type { Order, OrderItem } from "#domain/order";
 import { MixedCurrencyError, OrderNotFoundError, UnknownBookError } from "#domain/errors";
 import type { BookRepository } from "#repositories/bookRepository";
 import type { OrderRepository } from "#repositories/orderRepository";
-import { log } from "../diagnostics/log.ts";
+import { logger } from "../diagnostics/logger.ts";
 
 export interface OrderLine {
     isbn: string;
@@ -27,7 +27,7 @@ export class OrderService extends EventEmitter<OrderEvents> {
         this.#books = books;
         this.#orders = orders;
         this.on("error", (err) => {
-            log("error", "orderPlaced listener failed", { error: `${err.name}: ${err.message}`, cause: (err.cause as Error | undefined)?.name });
+            logger.error({ error: `${err.name}: ${err.message}`, cause: (err.cause as Error | undefined)?.name }, "orderPlaced listener failed");
         });
     }
 
@@ -52,7 +52,7 @@ export class OrderService extends EventEmitter<OrderEvents> {
             createdAtUtc: new Date().toISOString(),
         };
         await this.#orders.add(order);
-        log("info", "order placed", { orderId: order.id, items: items.length });
+        logger.info({ orderId: order.id, items: items.length }, "order placed");
         this.emit("orderPlaced", order);
         return order;
     }

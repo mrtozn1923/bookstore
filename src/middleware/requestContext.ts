@@ -1,7 +1,7 @@
 import type { RequestHandler } from "express";
 import { randomUUID } from "node:crypto";
 import { runWithRequestContext } from "../context/requestContext.ts";
-import { log } from "../diagnostics/log.ts";
+import { logger } from "../diagnostics/logger.ts";
 
 // Accept the caller's correlation id if it looks sane, otherwise create one
 function requestIdFrom(header: string | string[] | undefined): string {
@@ -24,7 +24,7 @@ export const requestContext: RequestHandler = (req, res, next) => {
     const path = req.path;
     const started = performance.now();
     res.on("finish", () => {
-        log("info", "request finished", { method: req.method, path, status: res.statusCode, durationMs: Math.round(performance.now() - started) });
+        logger.info({ method: req.method, path, status: res.statusCode, durationMs: Math.round(performance.now() - started) }, "request finished");
     });
 
     runWithRequestContext({ requestId, method: req.method, path, signal: aborted.signal }, next);

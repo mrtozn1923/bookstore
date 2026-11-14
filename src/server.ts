@@ -1,29 +1,40 @@
 import { createApp } from "./app.ts";
 import { createServices } from "./composition.ts";
 import { openPool } from "./db/pool.ts";
+import { ConfigError, loadConfig, type AppConfig } from "./config.ts";
+import { logger } from "./diagnostics/logger.ts";
+import { createReadinessCheck, type Lifecycle } from "./lifecycle/readiness.ts";
+import { registerGracefulShutdown } from "./lifecycle/shutdown.ts";
 
-const port: number = Number(process.env.PORT ?? 3000);
-// Loopback only by default; containers set HOST=0.0.0.0
-const host: string = process.env.HOST ?? "127.0.0.1";
-const connectionString = process.env.DB_CONNECTION_STRING;
-if (!connectionString) {
-    console.error("DB_CONNECTION_STRING is not set");
+let config: AppConfig;
+try {
+    config = loadConfig();
+} catch (err) {
+    // Fail fast with every problem listed; nothing has been started yet
+    console.error((err as ConfigError).message);
     process.exit(1);
 }
+logger.level = config.logLevel;
+logger.info({ config }, "configuration loaded");
 
 // Top-level await: the API starts listening only after the first SQL connection succeeded
-const pool = await openPool(connectionString);
-const app = createApp(createServices(pool));
+const pool = await openPool(config.db.connectionString);
+const lifecycle: Lifecycle = { shuttingDown: false };
+const app = createApp({ ...createServices(pool), readiness: createReadinessCheck(pool, lifecycle) });
+app.set("env", config.env);
+
 // Express 5 passes listen errors (EADDRINUSE...) to this callback instead of throwing them
-const server = app.listen(port, host, (err?: Error) => {
+const server = app.listen(config.port, config.host, (err?: Error) => {
     if (err) {
-        console.error(`cannot listen on ${host}:${port}: ${err.message}`);
+        logger.fatal({ err }, `cannot listen on ${config.host}:${config.port}`);
         process.exit(1);
     }
-    console.log(`Bookstore API listening on http://${host}:${port} (${app.get("env")})`);
+    logger.info({ url: `http://${config.host}:${config.port}`, env: config.env, pid: process.pid }, "Bookstore API listening");
 });
 
 // app.listen returns the node:http server, so the timeouts from post 10 still apply here
 server.headersTimeout = 10_000;
 server.requestTimeout = 30_000;
 server.keepAliveTimeout = 5_000;
+
+registerGracefulShutdown({ server, pool, lifecycle, config: config.shutdown });
