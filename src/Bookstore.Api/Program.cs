@@ -1,4 +1,7 @@
+using System.Globalization;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using Bookstore.Api.Validation;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers()
@@ -10,6 +13,8 @@ builder.Services.AddControllers()
             Link = "https://tools.ietf.org/html/rfc7231#section-6.6.4"
         };
     });
+builder.Services.AddValidatorsFromAssemblyContaining<CreateOrderRequestValidator>();
+ValidatorOptions.Global.LanguageManager.Culture = new CultureInfo("en");
 
 var app = builder.Build();
 
