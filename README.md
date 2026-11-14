@@ -130,6 +130,7 @@ Bu branch, mertozen.com'daki Observability serisinin kodudur. Bu tag'e kadar ekl
   alertmanager.exe --config.file=deploy/observability/alertmanager.yml --cluster.listen-address=
   ```
 - `docs/telemetry-checklist.md`: yeni bir servis production'a çıkmadan önceki telemetry kontrol listesi.
+- `samples/Net11Observability`: .NET 11 SDK isteyen ayrı örnek (ASP.NET Core'un yerleşik HTTP span'ı, MemoryCache metric'leri, schema URL); `cd samples/Net11Observability; dotnet run`.
 
 ---
 
@@ -259,3 +260,4 @@ This branch holds the code of the Observability series on mertozen.com. Added up
   alertmanager.exe --config.file=deploy/observability/alertmanager.yml --cluster.listen-address=
   ```
 - `docs/telemetry-checklist.md`: the telemetry checklist for a new service before it goes to production.
+- `samples/Net11Observability`: a separate sample that needs the .NET 11 SDK (ASP.NET Core's built-in HTTP span, MemoryCache metrics, schema URLs); `cd samples/Net11Observability; dotnet run`.

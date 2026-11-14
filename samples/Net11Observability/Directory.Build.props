@@ -1,0 +1,9 @@
+<Project>
+  <!-- This sample is on its own: it targets .NET 11 and does not inherit the repo's .NET 10 settings. -->
+  <PropertyGroup>
+    <TargetFramework>net11.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+</Project>
