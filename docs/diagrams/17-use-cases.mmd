@@ -1,0 +1,22 @@
+usecase-beta
+direction LR
+actor User("Institution User")
+actor Approver
+actor PM("Purchasing Manager")
+actor Admin("Portal Admin")
+systemBoundary "Bookstore - Institutional Ordering"
+  UC01("UC-01 Place Order")
+  UC02("UC-02 Decide on Order")
+  UC03("UC-03 Cancel Order")
+  CheckBudget("Check Budget")
+  AttachLetter("Attach Donation Letter")
+end
+PM --|> Approver
+User -- UC01
+User -- UC03
+Approver -- UC02
+Admin -- UC03
+UC01 ..> : include CheckBudget
+UC02 ..> : include CheckBudget
+AttachLetter ..> : extend UC01
+note for AttachLetter "condition: budget category = Donation"

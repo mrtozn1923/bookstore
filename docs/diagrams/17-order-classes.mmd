@@ -1,0 +1,34 @@
+classDiagram
+    direction LR
+    class Order {
+        +int Quantity
+        +DateOnly DeliveryDate
+        +Money Total
+        +string? Note
+        +OrderStatus Status
+        +Submit(Money total, DateTimeOffset now) void
+        +Approve(InstitutionUser approver, string? comment, DateTimeOffset now) void
+        +Cancel(DateOnly today) void
+    }
+    class PurchaseApproval {
+        +ApprovalStep Step
+        +ApprovalDecision Decision
+        +DateTimeOffset DecidedAt
+    }
+    class OrderStatus {
+        <<enumeration>>
+        Draft
+        PendingApprover
+        PendingPurchasingManager
+        Approved
+        Rejected
+        Cancelled
+    }
+    class InstitutionUser {
+        +string StaffNumber
+        +string FullName
+    }
+    Order "1" *-- "0..2" PurchaseApproval : approvals
+    PurchaseApproval "0..*" --> "1" InstitutionUser : approver
+    Order "0..*" --> "1" InstitutionUser : placedBy
+    Order ..> OrderStatus

@@ -1,0 +1,22 @@
+C4Container
+    title Bookstore - containers
+    Person(user, "Institution User", "Places orders")
+    Person(approver, "Approver", "Approves or rejects")
+    System_Boundary(bookstore, "Bookstore") {
+        Container(web, "Web App", "Angular 22", "Single-page app")
+        Container(api, "Bookstore.Api", "ASP.NET Core, .NET 10", "Institutional, Billing, Notifications modules")
+        ContainerDb(db, "Bookstore Database", "SQL Server", "Orders, approvals, budgets")
+        ContainerQueue(broker, "Message Broker", "Azure Service Bus", "order-events topic")
+        Container(worker, "Bookstore.Worker", ".NET 10 worker", "Notifications and reminders")
+    }
+    System_Ext(distributor, "Book Distributor", "Acme Book Distribution")
+    System_Ext(mail, "E-mail Server", "SMTP relay")
+    Rel(user, web, "Places orders", "HTTPS")
+    Rel(approver, web, "Approves or rejects", "HTTPS")
+    Rel(web, api, "Calls", "JSON/HTTPS")
+    Rel(api, db, "Reads and writes", "EF Core")
+    Rel(api, broker, "Publishes events", "AMQP")
+    Rel(broker, worker, "Delivers events", "AMQP")
+    Rel(api, distributor, "Places approved orders", "HTTPS")
+    Rel(worker, mail, "Sends e-mails", "SMTP")
+    UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")

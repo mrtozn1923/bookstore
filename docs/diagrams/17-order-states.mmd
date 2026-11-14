@@ -1,0 +1,19 @@
+stateDiagram-v2
+    [*] --> Draft
+    Draft --> PendingApprover: Submit [hasEnoughBudget]
+    state "Pending Approval" as PendingApproval {
+        state afterApprover <<choice>>
+        PendingApprover: PendingApprover
+        PendingApprover: entry / notifyApprover
+        PendingPurchasingManager: PendingPurchasingManager
+        PendingPurchasingManager: entry / notifyPurchasingManager
+        PendingApprover --> afterApprover: Approve [hasEnoughBudget]
+        afterApprover --> PendingPurchasingManager: [requiresPurchasingApproval]
+    }
+    afterApprover --> Approved: [else]
+    PendingPurchasingManager --> Approved: Approve [hasEnoughBudget]
+    PendingApproval --> Rejected: Reject [hasComment] / recordApproval
+    PendingApproval --> Cancelled: Cancel
+    Approved: Approved
+    Approved: entry / deductBudget#59; placeDistributorOrder
+    Approved --> Cancelled: Cancel [today < deliveryDate || byPortalAdmin] / refundBudget

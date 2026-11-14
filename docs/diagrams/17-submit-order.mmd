@@ -1,0 +1,21 @@
+sequenceDiagram
+    autonumber
+    actor User as InstitutionUser
+    participant Form as OrderFormComponent
+    participant Api as Bookstore.Api
+    participant Svc as OrderService
+    participant Bud as IBudgetService
+    User->>Form: Submit
+    Form->>+Api: POST /orders/42/submit
+    Api->>+Svc: SubmitAsync(42)
+    Svc->>Bud: HasEnoughBudgetAsync(7, classroom-sets, 2026, 56700)
+    Bud-->>Svc: true (remaining 75000)
+    alt enough budget
+        Svc-->>Api: PendingApprover
+        Api-->>Form: 200 OK
+    else insufficient budget
+        Svc-->>Api: InsufficientBudget
+        Api-->>Form: 422 ProblemDetails
+    end
+    deactivate Svc
+    deactivate Api
