@@ -38,3 +38,16 @@
     /* long URLs and ISBNs may break anywhere */
     overflow-wrap: anywhere;
 }
+
+.rating-ring {
+    display: grid;
+    place-items: center;
+    inline-size: 4rem;
+    block-size: 4rem;
+    border-radius: 50%;
+    font-weight: 700;
+    /* a white disc on top of the conic ring */
+    background:
+        radial-gradient(closest-side, #ffffff 78%, transparent 80%),
+        conic-gradient(#f59e0b calc(var(--rating) / 5 * 100%), #e5e7eb 0);
+}

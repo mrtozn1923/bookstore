@@ -1,6 +1,6 @@
 // Reads pixels of a screenshot back through a canvas in the page (no image library needed).
 export async function pixels(page, clip) {
-    const png = (await page.screenshot({ clip })).toString('base64');
+    const png = (await page.screenshot({ clip, fullPage: true })).toString('base64');
     return page.evaluate(async src => {
         const img = new Image();
         img.src = `data:image/png;base64,${src}`;

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>04 background lab</title>
+    <style>
+        body { margin: 0; padding: 16px; font: 16px/1.5 system-ui, sans-serif; }
+        .box { inline-size: 400px; block-size: 200px; margin-block-end: 16px; }
+
+        /* 1) the shorthand resets background-color */
+        .banner { background-color: #1e3a8a; }
+        .banner.sale { background: url("../img/square.png") center / cover no-repeat; }
+
+        /* 2) cover vs contain: a 300x300 image in a 400x200 box */
+        .fill { background: #1e3a8a url("../img/square.png") center / cover no-repeat; }
+        .fill.contain { background-size: contain; }
+
+        /* 3) interpolation: the same two colors, three color spaces */
+        .mix { block-size: 40px; background: linear-gradient(to right, #0000ff, #ffff00); }
+        .mix.oklab { background: linear-gradient(to right in oklab, #0000ff, #ffff00); }
+        .mix.oklch { background: linear-gradient(to right in oklch, #0000ff, #ffff00); }
+
+        /* 4) a color hint moves the midpoint, equal stops make a hard edge */
+        .hint { block-size: 40px; background: linear-gradient(to right, #b91c1c, 20%, #1d4ed8); }
+        .hard { block-size: 40px; background: linear-gradient(to right, #b91c1c 50%, #1d4ed8 50%); }
+
+        /* 5) a rating ring: 4.2 out of 5 */
+        .rating {
+            --rating: 4.2;
+            inline-size: 120px;
+            block-size: 120px;
+            border-radius: 50%;
+            background: conic-gradient(#f59e0b calc(var(--rating) / 5 * 100%), #e5e7eb 0);
+        }
+    </style>
+</head>
+<body>
+    <div class="box banner sale" id="sale"></div>
+    <div class="box fill" id="cover"></div>
+    <div class="box fill contain" id="contain"></div>
+    <div class="box mix" id="srgb"></div>
+    <div class="box mix oklab" id="oklab"></div>
+    <div class="box mix oklch" id="oklch"></div>
+    <div class="box hint" id="hint"></div>
+    <div class="box hard" id="hard"></div>
+    <div class="rating" id="rating"></div>
+</body>
+</html>
