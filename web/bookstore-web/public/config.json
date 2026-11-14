@@ -1,0 +1,5 @@
+{
+  "environment": "Local",
+  "apiBaseUrl": "http://localhost:5080",
+  "freeShippingThreshold": 500
+}

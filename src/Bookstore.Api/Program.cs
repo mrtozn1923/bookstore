@@ -1,20 +1,28 @@
+using Bookstore.Api;
 using Bookstore.Api.Options;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.Configure<ShippingOptions>(builder.Configuration.GetSection(ShippingOptions.SectionName));
-builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.SectionName));
-builder.Services.Configure<EmailOptions>(builder.Configuration.GetSection(EmailOptions.SectionName));
-builder.Services.Configure<PaymentWebhookOptions>(builder.Configuration.GetSection(PaymentWebhookOptions.SectionName));
+// Yalnız BOOKSTORE_ ile başlayan değişkenler, önek atılarak
+builder.Configuration.AddEnvironmentVariables(prefix: "BOOKSTORE_");
+
+builder.Services.AddBookstoreOptions();
 
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment())
+{
+    // Hangi değer hangi provider'dan geldi; secret'lar maskeli
+    app.MapGet("/debug/config", (IConfiguration config) =>
+        ConfigDebug.SafeDebugView((IConfigurationRoot)config));
+}
+
 // Reports which settings are present, never their values.
-app.MapGet("/api/info", (IHostEnvironment env, IConfiguration config, IOptions<ShippingOptions> shipping) => new
+app.MapGet("/api/info", (IHostEnvironment env, IConfiguration config, IOptionsMonitor<ShippingOptions> shipping) => new
 {
     Environment = env.EnvironmentName,
-    shipping.Value.FreeShippingThreshold,
+    shipping.CurrentValue.FreeShippingThreshold,
     Secrets = new Dictionary<string, bool>
     {
         ["ConnectionStrings:Bookstore"] = !string.IsNullOrEmpty(config.GetConnectionString("Bookstore")),
@@ -22,6 +30,17 @@ app.MapGet("/api/info", (IHostEnvironment env, IConfiguration config, IOptions<S
         ["Email:ApiKey"] = !string.IsNullOrEmpty(config["Email:ApiKey"]),
         ["Payments:Webhook:Secret"] = !string.IsNullOrEmpty(config["Payments:Webhook:Secret"])
     }
+});
+
+// Üç options interface'inin aynı anda ne gördüğü
+app.MapGet("/api/shipping/threshold", (
+    IOptions<ShippingOptions> options,
+    IOptionsSnapshot<ShippingOptions> snapshot,
+    IOptionsMonitor<ShippingOptions> monitor) => new
+{
+    Options = options.Value.FreeShippingThreshold,
+    Snapshot = snapshot.Value.FreeShippingThreshold,
+    Monitor = monitor.CurrentValue.FreeShippingThreshold
 });
 
 app.Run();

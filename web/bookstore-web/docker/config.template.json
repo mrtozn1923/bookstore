@@ -1,0 +1,5 @@
+{
+  "environment": "${APP_ENVIRONMENT}",
+  "apiBaseUrl": "${API_BASE_URL}",
+  "freeShippingThreshold": ${FREE_SHIPPING_THRESHOLD}
+}
