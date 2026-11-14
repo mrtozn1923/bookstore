@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>this and events</title>
+</head>
+<body>
+  <button id="add-to-cart">Add to cart</button>
+  <button id="cancel">Cancel</button>
+  <script>
+    const addBtn = document.getElementById("add-to-cart");
+    addBtn.addEventListener("click", function () {
+      console.log(this === addBtn); // true
+      this.textContent = "Added";
+    });
+
+    const orderForm = {
+      label: "Order form",
+      init() {
+        document.getElementById("cancel").addEventListener("click", () => {
+          console.log(`${this.label} cancelled`); // this is orderForm
+        });
+      }
+    };
+    orderForm.init();
+  </script>
+</body>
+</html>
