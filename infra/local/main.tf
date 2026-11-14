@@ -1,12 +1,3 @@
-terraform {
-  required_providers {
-    docker = {
-      source  = "kreuzwerker/docker"
-      version = "~> 4.7"
-    }
-  }
-}
-
 provider "docker" {}
 
 resource "docker_network" "bookstore" {
@@ -14,8 +5,9 @@ resource "docker_network" "bookstore" {
 }
 
 resource "docker_container" "api" {
-  name  = "tfseries-dev-api"
-  image = "bookstore-api:1.0.0"
+  name    = "tfseries-dev-api"
+  image   = "bookstore-api:1.1.0"
+  restart = "unless-stopped"
 
   env = ["Bookstore__Environment=dev"]
 
