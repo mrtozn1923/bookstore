@@ -1,11 +1,14 @@
 import { Component, input } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 @Component({
+  imports: [RouterLink],
   selector: 'app-book-card',
   template: `
     <article class="card">
-      <img [src]="cover()" [alt]="'Cover of ' + bookTitle()" width="120" height="180">
-      <h3><a href="book.html">{{ bookTitle() }}</a></h3>
+      <img [src]="cover()" [alt]="'Cover of ' + bookTitle()" width="120" height="180"
+           [style.view-transition-name]="'cover-' + slug()">
+      <h3><a [routerLink]="['/books', slug()]">{{ bookTitle() }}</a></h3>
       <p class="author">{{ author() }}</p>
       @if (note()) {
         <!-- the editor's note is HTML from the CMS, inserted as is -->
@@ -48,5 +51,6 @@ export class BookCard {
   readonly bookTitle = input.required<string>();
   readonly author = input.required<string>();
   readonly cover = input.required<string>();
+  readonly slug = input.required<string>();
   readonly note = input('');
 }

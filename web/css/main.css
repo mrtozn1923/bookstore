@@ -12,5 +12,7 @@
 @import url("components/form.css") layer(components);
 @import url("components/book-detail.css") layer(components);
 @import url("components/dialog.css") layer(components);
+@import url("components/guide.css") layer(components);
+@import url("components/view-transitions.css") layer(components);
 @import url("components/preferences.css") layer(components);
 @import url("utilities.css") layer(utilities);

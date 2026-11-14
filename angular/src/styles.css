@@ -1,1 +1,9 @@
-/* You can add global styles to this file, and also import other style files */
+/* The ::view-transition-* pseudo-elements hang off the document root, outside every component:
+   rules for them belong in this global file, not in a component's styles */
+
+/* less motion: the cover does not travel to its new place, the two pages only cross-fade */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*) {
+    animation-duration: 0s;
+  }
+}

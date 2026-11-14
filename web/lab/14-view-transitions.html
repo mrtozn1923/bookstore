@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Lab 14: view transition names</title>
+    <style>
+        /* self-contained: this lab does not load main.css */
+        body { margin: 0; }
+        /* two elements with the same name in one snapshot: the whole transition is skipped */
+        .cover { view-transition-name: book-cover; inline-size: 60px; block-size: 90px; }
+    </style>
+</head>
+<body>
+    <div class="cover" id="dune"></div>
+    <div class="cover" id="emma"></div>
+</body>
+</html>

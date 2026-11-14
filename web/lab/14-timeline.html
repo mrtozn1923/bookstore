@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Lab 14: scroll() and view() timelines</title>
+    <style>
+        /* self-contained: this lab does not load main.css */
+        body { margin: 0; }
+        @property --progress { syntax: "<number>"; inherits: false; initial-value: 0; }
+        @keyframes progress { to { --progress: 1; } }
+
+        /* a 200px scroller with 700px of content: it scrolls from 0 to 500px */
+        .scroller { block-size: 200px; overflow-y: scroll; }
+        .spacer { block-size: 300px; }
+
+        /* 1) scroll(): progress of the nearest scroll container, 0 at the top, 1 at the bottom */
+        .scroll-progress { animation: progress linear both; animation-timeline: scroll(nearest); }
+
+        /* 2) view(): progress of a 100px subject crossing the scroller, split into named ranges */
+        .subject { block-size: 100px; view-timeline: --book block; }
+        .range { animation: progress linear both; animation-timeline: --book; }
+        #cover { animation-range: cover; }
+        #entry { animation-range: entry; }
+        #contain { animation-range: contain; }
+        #exit { animation-range: exit; }
+
+        /* 3) the shorthand after the timeline: animation-timeline is reset to auto */
+        .wrong-order { animation-timeline: scroll(nearest); animation: progress linear both; }
+    </style>
+</head>
+<body>
+    <div class="scroller" id="scroller">
+        <div class="scroll-progress" id="scroll"></div>
+        <div class="wrong-order" id="wrong"></div>
+        <div class="spacer"></div>
+        <div class="subject">
+            <div class="range" id="cover"></div>
+            <div class="range" id="entry"></div>
+            <div class="range" id="contain"></div>
+            <div class="range" id="exit"></div>
+        </div>
+        <div class="spacer"></div>
+    </div>
+</body>
+</html>

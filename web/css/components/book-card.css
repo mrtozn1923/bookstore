@@ -134,3 +134,29 @@
         text-decoration: none;
     }
 }
+
+/* cards fade in as they scroll into view; the slide is only for users who did not ask for less motion */
+@supports (animation-timeline: view()) {
+    .book-list > .book-card {
+        animation: card-fade linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 100%;
+
+        @media (prefers-reduced-motion: no-preference) {
+            animation-name: card-slide;
+        }
+    }
+}
+
+@keyframes card-fade {
+    from {
+        opacity: 0;
+    }
+}
+
+@keyframes card-slide {
+    from {
+        opacity: 0;
+        translate: 0 2rem;
+    }
+}
