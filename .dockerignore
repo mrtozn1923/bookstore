@@ -8,3 +8,4 @@ out/
 backup/
 secrets/
 scan/
+.env

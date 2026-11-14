@@ -7,10 +7,14 @@ services:
         condition: service_healthy
     pre_start:
       - image: mcr.microsoft.com/mssql/server:2025-latest
-        entrypoint: ["/opt/mssql-tools18/bin/sqlcmd"]
-        command: ["-C", "-S", "db", "-U", "sa", "-b", "-i", "/scripts/01-bookstore.sql", "-i", "/scripts/02-app-login.sql"]
-        environment:
-          SQLCMDPASSWORD: ${MSSQL_SA_PASSWORD}
-          BOOKSTORE_DB_PASSWORD: ${BOOKSTORE_DB_PASSWORD}
+        entrypoint: ["/bin/bash", "-c"]
+        command:
+          - >-
+            SQLCMDPASSWORD="$$(cat /hook-secrets/sa-password.txt)"
+            BOOKSTORE_DB_PASSWORD="$$(cat /hook-secrets/db-app-password.txt)"
+            exec /opt/mssql-tools18/bin/sqlcmd -C -S db -U sa -b
+            -i /scripts/01-bookstore.sql -i /scripts/02-app-login.sql
+        # Compose 5.7.1 does not mount secrets: into hooks (we got "Is a directory"), so the files come as a bind mount
         volumes:
           - ./db:/scripts:ro
+          - ./secrets:/hook-secrets:ro

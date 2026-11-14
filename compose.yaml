@@ -6,14 +6,16 @@ services:
     image: mcr.microsoft.com/mssql/server:2025-latest
     environment:
       ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+      # Not in the documented variable list, but SQL Server 2025 reads the sa password from this file
+      MSSQL_SA_PASSWORD_FILE: /run/secrets/sa-password
+    secrets:
+      - sa-password
     volumes:
       - db-data:/var/opt/mssql
     ports:
       - "127.0.0.1:1433:1433"
     healthcheck:
-      # $$ reaches the container as $: the shell inside the container expands it, not Compose
-      test: SQLCMDPASSWORD="$$MSSQL_SA_PASSWORD" /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -b -Q "SELECT 1" -o /dev/null
+      test: SQLCMDPASSWORD="$$(cat /run/secrets/sa-password)" /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -b -Q "SELECT 1" -o /dev/null
       interval: 10s
       timeout: 5s
       retries: 5
@@ -24,11 +26,16 @@ services:
   # One-off: creates BookstoreDb and the app login, then exits with 0
   migrate:
     image: mcr.microsoft.com/mssql/server:2025-latest
-    entrypoint: ["/opt/mssql-tools18/bin/sqlcmd"]
-    command: ["-C", "-S", "db", "-U", "sa", "-b", "-i", "/scripts/01-bookstore.sql", "-i", "/scripts/02-app-login.sql"]
-    environment:
-      SQLCMDPASSWORD: ${MSSQL_SA_PASSWORD}
-      BOOKSTORE_DB_PASSWORD: ${BOOKSTORE_DB_PASSWORD}
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - >-
+        SQLCMDPASSWORD="$$(cat /run/secrets/sa-password)"
+        BOOKSTORE_DB_PASSWORD="$$(cat /run/secrets/db-app-password)"
+        exec /opt/mssql-tools18/bin/sqlcmd -C -S db -U sa -b
+        -i /scripts/01-bookstore.sql -i /scripts/02-app-login.sql
+    secrets:
+      - sa-password
+      - db-app-password
     volumes:
       - ./db:/scripts:ro
     depends_on:
@@ -39,8 +46,16 @@ services:
     build:
       context: .
       dockerfile: src/Bookstore.Api/Dockerfile
+    env_file: config/api.env
     environment:
-      ConnectionStrings__Default: "Server=db;Database=BookstoreDb;User Id=bookstore_app;Password=${BOOKSTORE_DB_PASSWORD};TrustServerCertificate=True"
+      Store__TimeZone: ${STORE_TIMEZONE:-Europe/Istanbul}
+    secrets:
+      # Key-per-file: /run/secrets/ConnectionStrings__Default becomes ConnectionStrings:Default
+      - source: api-connection-string
+        target: ConnectionStrings__Default
+    configs:
+      - source: api-settings
+        target: /app/appsettings.Production.json
     depends_on:
       db:
         condition: service_healthy
@@ -64,5 +79,47 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  # Optional services: docker compose --profile cache / --profile tools
+  redis:
+    image: redis:8-alpine
+    profiles: [cache]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+    restart: unless-stopped
+
+  mailpit:
+    image: axllent/mailpit:v1.33
+    profiles: [tools]
+    ports:
+      - "127.0.0.1:8025:8025"
+
+  # Ad-hoc queries, never started by up: docker compose run --rm sqlcmd -Q "SELECT COUNT(*) FROM dbo.Books"
+  sqlcmd:
+    image: mcr.microsoft.com/mssql/server:2025-latest
+    profiles: [cli]
+    entrypoint:
+      - /bin/bash
+      - -c
+      - SQLCMDPASSWORD="$$(cat /run/secrets/sa-password)" exec /opt/mssql-tools18/bin/sqlcmd -C -S db -U sa -d BookstoreDb "$$@"
+      - sqlcmd
+    secrets:
+      - sa-password
+    depends_on:
+      db:
+        condition: service_healthy
+
 volumes:
   db-data:
+
+secrets:
+  sa-password:
+    file: ./secrets/sa-password.txt
+  db-app-password:
+    file: ./secrets/db-app-password.txt
+  api-connection-string:
+    file: ./secrets/api-connection-string.txt
+
+configs:
+  api-settings:
+    file: ./config/appsettings.Production.json
