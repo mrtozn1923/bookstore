@@ -10,6 +10,7 @@ const { values, positionals } = parseArgs({
     runs: { type: 'string', default: '5' },
     profile: { type: 'string', default: 'mobile' },
     type: { type: 'string' },
+    clear: { type: 'boolean', default: false },
     json: { type: 'boolean', default: false },
   },
 });
@@ -23,6 +24,11 @@ for (let run = 1; run <= Number(values.runs); run++) {
   await page.goto(url, { waitUntil: 'networkidle', timeout: 120_000 });
   if (values.type) {
     await page.locator('input[type=search]').pressSequentially(values.type, { delay: 150 });
+    // --clear: delete the query again, key by key, like a user starting a new search
+    for (let i = 0; values.clear && i < values.type.length; i++) {
+      await page.keyboard.press('Backspace');
+      await page.waitForTimeout(150);
+    }
     await page.waitForTimeout(1000);
   }
   await finishVisit(page);
