@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Browser Info</title>
+</head>
+<body>
+  <p id="language"></p>
+  <p id="connection"></p>
+  <p id="size"></p>
+  <button id="back">Go back</button>
+  <script>
+    const language = document.getElementById("language");
+    const connection = document.getElementById("connection");
+    const size = document.getElementById("size");
+
+    language.textContent = `Browser language: ${navigator.language}`;
+
+    function showConnection() {
+      connection.textContent = navigator.onLine ? "You're on a network." : "You seem to be offline.";
+    }
+
+    function showSize() {
+      size.textContent = `Window: ${window.innerWidth} x ${window.innerHeight}, screen: ${screen.width} x ${screen.height}`;
+    }
+
+    showConnection();
+    showSize();
+
+    window.addEventListener("online", showConnection);
+    window.addEventListener("offline", showConnection);
+    window.addEventListener("resize", showSize);
+
+    document.getElementById("back").addEventListener("click", () => history.back());
+  </script>
+</body>
+</html>

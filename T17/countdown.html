@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Countdown</title>
+</head>
+<body>
+  <p>The spring sale starts in:</p>
+  <p id="counter">10</p>
+  <button id="start">Start</button>
+  <button id="stop">Stop</button>
+  <p id="message"></p>
+  <script>
+    const counterArea = document.getElementById("counter");
+    const message = document.getElementById("message");
+    let remaining = 10;
+    let intervalId = null;
+
+    document.getElementById("start").addEventListener("click", () => {
+      if (intervalId !== null) return; // already running
+      if (remaining === 0) remaining = 10;
+
+      intervalId = setInterval(() => {
+        remaining = remaining - 1;
+        counterArea.textContent = remaining;
+
+        if (remaining === 0) {
+          clearInterval(intervalId);
+          intervalId = null;
+          message.textContent = "Sale starts!";
+          setTimeout(() => {
+            message.textContent = "";
+          }, 3000);
+        }
+      }, 1000);
+    });
+
+    document.getElementById("stop").addEventListener("click", () => {
+      clearInterval(intervalId);
+      intervalId = null;
+    });
+  </script>
+</body>
+</html>
