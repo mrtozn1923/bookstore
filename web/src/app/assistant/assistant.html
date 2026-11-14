@@ -1,0 +1,30 @@
+<section class="log" #log (scroll)="onScroll()">
+  @for (message of store.messages(); track message.id) {
+    <article class="bubble" [class.user]="message.role === 'user'">
+      @if (message.status === 'thinking') {
+        <p class="status">Thinking…</p>
+      }
+      <p class="text">{{ message.text }}</p>
+      @if (message.status === 'stopped') {
+        <p class="status">Stopped.</p>
+      } @else if (message.status === 'interrupted') {
+        <p class="status error">The answer was interrupted.</p>
+      }
+    </article>
+  } @empty {
+    <p class="hint">Ask about a book, an order or the store.</p>
+  }
+</section>
+
+<form (submit)="submit($event)">
+  <input #input [value]="draft()" (input)="draft.set(input.value)" placeholder="Ask the Bookstore assistant" />
+  @if (store.busy()) {
+    <button type="button" (click)="store.stop()">Stop</button>
+  } @else {
+    <button type="submit" [disabled]="draft().trim() === ''">Send</button>
+  }
+</form>
+
+@if (store.usage(); as usage) {
+  <p class="usage">Last answer: {{ usage.inputTokens }} input / {{ usage.outputTokens }} output tokens</p>
+}
