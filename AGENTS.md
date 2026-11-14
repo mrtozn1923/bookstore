@@ -22,7 +22,9 @@ Online bookstore: ASP.NET Core 10 Web API, EF Core 10 on SQL Server, Angular 22 
   `dotnet ef migrations add <Name> --project src/Bookstore.Api`. Never edit an existing migration.
 - New behaviour comes with an integration test. Do not delete, skip or weaken an existing test.
 - Do not add NuGet or npm packages without asking. Versions live in `Directory.Packages.props`.
-- No secrets in files. Connection strings come from user-secrets or environment variables.
+  Check a new package id first: `dotnet run eng/check-packages.cs -- <PackageId>`.
+- No secrets in files. Connection strings come from user-secrets or environment variables;
+  never print them (`dotnet user-secrets list`, `env`) into the chat or a commit.
 
 ## Ask first
 Changing a public endpoint contract, touching migrations or CI files, anything you are not sure about.
