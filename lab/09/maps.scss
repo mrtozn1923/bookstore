@@ -1,0 +1,21 @@
+@use "sass:map";
+
+$tokens: (
+    color: (
+        brand: (base: #b45309, hover: #92400e),
+        surface: #ffffff,
+    ),
+    radius: 8px,
+);
+
+.map-demo {
+    a: map.get($tokens, color, brand, hover);
+    b: map.get($tokens, color, brand, focus);
+    c: map.has-key($tokens, color, brand, base);
+    d: map.keys(map.get($tokens, color));
+    e: map.values(map.get($tokens, color, brand));
+    f: map.keys(map.get(map.set($tokens, color, brand, focus, #78350f), color, brand));
+    g: map.keys(map.remove($tokens, radius));
+    h: map.keys(map.get(map.deep-remove($tokens, color, brand, hover), color, brand));
+    i: map.keys(map.get($tokens, color, brand));
+}

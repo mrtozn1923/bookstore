@@ -1,5 +1,8 @@
-// one map per theme; both must have the same keys
-$themes: (
+@use "sass:map";
+@use "colors";
+
+// base colors per theme; both must have the same keys
+$-base: (
     light: (
         surface: #ffffff,
         text: #1c1917,
@@ -15,6 +18,22 @@ $themes: (
         brand: #f59e0b,
     ),
 );
+
+// the institutional portal only changes the brand color
+$-institutional: (
+    light: (brand: #1d4ed8),
+    dark: (brand: #60a5fa),
+);
+
+@function -with-brand-states($themes) {
+    @return (
+        light: colors.with-states(map.get($themes, light), brand, -1),
+        dark: colors.with-states(map.get($themes, dark), brand, 1),
+    );
+}
+
+$themes: -with-brand-states($-base);
+$institutional-themes: -with-brand-states(map.deep-merge($-base, $-institutional));
 
 $radius: 8px;
 $space: 16px;

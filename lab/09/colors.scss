@@ -1,0 +1,18 @@
+@use "sass:color";
+
+$brand: #b45309;
+
+.color-demo {
+    a: color.adjust($brand, $lightness: -10%, $space: oklch);
+    b: color.scale($brand, $lightness: 40%, $space: oklch);
+    c: color.change($brand, $alpha: 0.5);
+    d: color.channel($brand, "hue", $space: oklch);
+    e: color.to-space($brand, oklch);
+    f: color.mix($brand, white, 50%);
+    g: color.mix($brand, white, 50%, $method: oklch);
+    h: color.is-legacy($brand) color.is-legacy(color.to-space($brand, oklch));
+    i: color.same(#b45309, rgb(180 83 9));
+    j: color.is-in-gamut(oklch(70% 0.3 50deg), $space: rgb);
+    k: color.to-gamut(oklch(70% 0.3 50deg), $space: rgb, $method: local-minde);
+    l: oklch(70% 0.3 50deg);
+}

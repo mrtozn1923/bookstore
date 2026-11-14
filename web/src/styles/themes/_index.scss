@@ -32,4 +32,9 @@ html {
     &.dark {
         color-scheme: dark;
     }
+
+    // institutional portal: same tokens, different brand
+    &.institutional {
+        @include color-tokens($institutional-themes);
+    }
 }

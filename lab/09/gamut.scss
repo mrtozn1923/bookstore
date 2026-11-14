@@ -1,0 +1,11 @@
+@use "sass:color";
+
+$brand: #b45309;
+$hover: color.adjust($brand, $lightness: -10%, $space: oklch);
+
+.gamut-demo {
+    raw: $hover;
+    in-gamut: color.is-in-gamut($hover);
+    mapped: color.to-gamut($hover, $method: local-minde);
+    clipped: color.to-gamut($hover, $method: clip);
+}

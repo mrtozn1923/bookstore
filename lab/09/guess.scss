@@ -1,0 +1,20 @@
+@use "sass:map";
+
+$defaults: (
+    color: (
+        brand: #b45309,
+        surface: #ffffff,
+        text: #1c1917,
+    ),
+    radius: 8px,
+);
+
+// the institutional portal only changes the brand color
+$institutional: map.merge($defaults, (color: (brand: #1d4ed8)));
+
+.portal-header {
+    background-color: map.get($institutional, color, surface);
+    color: map.get($institutional, color, text);
+    border-bottom: 2px solid map.get($institutional, color, brand);
+    border-radius: map.get($institutional, radius);
+}

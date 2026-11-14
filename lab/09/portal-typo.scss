@@ -1,0 +1,15 @@
+@use "sass:map";
+@use "portal-theme" with (
+    $config: (
+        color: (
+            brnad: #1d4ed8,
+        ),
+    )
+);
+
+.portal-header {
+    background-color: map.get(portal-theme.$theme, color, surface);
+    color: map.get(portal-theme.$theme, color, text);
+    border-bottom: 2px solid map.get(portal-theme.$theme, color, brand);
+    border-radius: map.get(portal-theme.$theme, radius);
+}

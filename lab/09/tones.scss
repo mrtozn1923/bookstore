@@ -1,0 +1,20 @@
+@use "sass:color";
+@use "sass:math";
+
+// Bookstore's brand, the institutional portal's brand, the in-stock green
+$brands: ("amber": #b45309, "blue": #1d4ed8, "green": #15803d);
+
+// perceived lightness: the oklch "l" channel
+@function lightness($c) {
+    @return math.round(color.channel($c, "lightness", $space: oklch));
+}
+
+@each $name, $c in $brands {
+    .#{$name} {
+        base: lightness($c);
+        hsl-minus-10: lightness(color.adjust($c, $lightness: -10%, $space: hsl));
+        oklch-minus-10: lightness(color.adjust($c, $lightness: -10%, $space: oklch));
+        hsl-plus-20: lightness(color.adjust($c, $lightness: 20%, $space: hsl));
+        oklch-plus-20: lightness(color.adjust($c, $lightness: 20%, $space: oklch));
+    }
+}

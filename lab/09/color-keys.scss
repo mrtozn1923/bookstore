@@ -1,0 +1,8 @@
+// unquoted color names as map keys are colors, not strings
+$badges: (blue: #1d4ed8, green: #15803d);
+
+@each $name, $c in $badges {
+    .badge-#{$name} {
+        color: $c;
+    }
+}

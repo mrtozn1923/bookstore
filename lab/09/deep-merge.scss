@@ -1,0 +1,22 @@
+@use "sass:map";
+
+$defaults: (
+    color: (
+        brand: #b45309,
+        surface: #ffffff,
+        text: #1c1917,
+    ),
+    radius: 8px,
+);
+
+$override: (color: (brand: #1d4ed8));
+
+$shallow: map.merge($defaults, $override);
+$deep: map.deep-merge($defaults, $override);
+
+.merge-demo {
+    shallow: map.keys(map.get($shallow, color));
+    deep: map.keys(map.get($deep, color));
+    deep-brand: map.get($deep, color, brand);
+    defaults-brand: map.get($defaults, color, brand);
+}

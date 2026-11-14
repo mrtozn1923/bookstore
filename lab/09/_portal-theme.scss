@@ -1,0 +1,31 @@
+@use "sass:map";
+@use "sass:meta";
+
+$-defaults: (
+    color: (
+        brand: #b45309,
+        surface: #ffffff,
+        text: #1c1917,
+    ),
+    radius: 8px,
+);
+
+// overrides from the caller: @use "portal-theme" with ($config: (...))
+$config: () !default;
+
+// every key in the override must exist in the defaults: catches typos
+@function -check($override, $defaults, $path: "") {
+    @each $key, $value in $override {
+        @if not map.has-key($defaults, $key) {
+            @error "Unknown theme key '#{$path}#{$key}'. Expected one of: #{map.keys($defaults)}";
+        }
+        $default: map.get($defaults, $key);
+        @if meta.type-of($value) == map and meta.type-of($default) == map {
+            $_: -check($value, $default, "#{$path}#{$key}.");
+        }
+    }
+    @return true;
+}
+
+$_: -check($config, $-defaults);
+$theme: map.deep-merge($-defaults, $config);

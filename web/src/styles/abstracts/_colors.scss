@@ -1,0 +1,26 @@
+@use "sass:color";
+@use "sass:map";
+
+// a tone of $color: lightness moved in oklch, then mapped back into sRGB
+@function tone($color, $lightness: 0%, $chroma: 0%) {
+    $result: color.adjust($color, $lightness: $lightness, $space: oklch);
+    $result: color.scale($result, $chroma: $chroma, $space: oklch);
+    @return color.to-gamut($result, $space: rgb, $method: local-minde);
+}
+
+// adds <key>-hover, <key>-active and <key>-subtle to a theme map;
+// $direction: -1 darkens (light theme), 1 lightens (dark theme)
+@function with-states($theme, $key, $direction) {
+    $base: map.get($theme, $key);
+    // a very light background tone in the light theme, a very dark one in the dark theme
+    $subtle-lightness: 96%;
+    @if $direction > 0 {
+        $subtle-lightness: 28%;
+    }
+    $subtle: color.change($base, $lightness: $subtle-lightness, $space: oklch);
+    @return map.merge($theme, (
+        "#{$key}-hover": tone($base, $direction * 8%),
+        "#{$key}-active": tone($base, $direction * 14%),
+        "#{$key}-subtle": tone($subtle, $chroma: -60%),
+    ));
+}

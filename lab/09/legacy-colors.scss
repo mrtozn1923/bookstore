@@ -1,0 +1,6 @@
+$brand: #b45309;
+
+.button {
+    background-color: darken($brand, 10%);
+    border-color: transparentize($brand, 0.5);
+}
