@@ -1,0 +1,10 @@
+JSON.SET bookstore:catalog:9780441013593 $ '{"isbn":"9780441013593","title":"Dune","author":"Frank Herbert","year":1965,"price":299.90,"stock":12,"categories":["science-fiction","classic"]}'
+JSON.GET bookstore:catalog:9780441013593 $.title $.price
+JSON.NUMINCRBY bookstore:catalog:9780441013593 $.stock -2
+JSON.SET bookstore:catalog:9780441013593 $.price 279.90
+JSON.ARRAPPEND bookstore:catalog:9780441013593 $.categories '"bestseller"'
+JSON.GET bookstore:catalog:9780441013593 $.categories
+JSON.GET bookstore:catalog:9780441013593 '$.categories.length()'
+JSON.GET bookstore:catalog:9780441013593 '$.price * 100'
+JSON.TYPE bookstore:catalog:9780441013593 $.price
+MEMORY USAGE bookstore:catalog:9780441013593

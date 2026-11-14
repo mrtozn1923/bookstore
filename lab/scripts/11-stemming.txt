@@ -1,0 +1,7 @@
+FT.SEARCH idx:catalog "@description:evlilikler" RETURN 1 title
+FT.SEARCH idx:catalog-en "@description:evlilikler" RETURN 1 title
+FT.SEARCH idx:catalog "@description:ingiliz" RETURN 1 title
+FT.SEARCH idx:catalog "@description:İngiliz" RETURN 1 title
+FT.SEARCH idx:catalog "@description:gezegenlerde" RETURN 1 title
+FT.EXPLAIN idx:catalog "@description:gezegenlerde"
+FT.EXPLAIN idx:catalog "@description:gezegeni"

@@ -14,6 +14,8 @@ builder.Services.AddHostedService<PriceInvalidationListener>();
 
 WebApplication app = builder.Build();
 
+await CatalogEndpoints.EnsureIndexAsync(redis.GetDatabase());
+
 app.MapBookViews();
 app.MapVerification();
 app.MapOrders();
@@ -25,5 +27,6 @@ app.MapBestsellers();
 app.MapWarehouses();
 app.MapInventory();
 app.MapBookPrices();
+app.MapCatalog();
 
 app.Run();

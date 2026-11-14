@@ -1,0 +1,2 @@
+FT.CREATE idx:catalog ON JSON PREFIX 1 bookstore:catalog: LANGUAGE turkish SCHEMA $.title AS title TEXT WEIGHT 2 $.author AS author TEXT $.description AS description TEXT $.categories[*] AS category TAG $.priceKurus AS price NUMERIC SORTABLE $.year AS year NUMERIC SORTABLE $.stock AS stock NUMERIC
+FT.CREATE idx:catalog-en ON JSON PREFIX 1 bookstore:catalog: SCHEMA $.title AS title TEXT WEIGHT 2 $.author AS author TEXT $.description AS description TEXT $.categories[*] AS category TAG $.priceKurus AS price NUMERIC SORTABLE

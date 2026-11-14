@@ -1,0 +1,6 @@
+FT.CREATE idx:catalog ON JSON PREFIX 1 bookstore:catalog: LANGUAGE turkish SCHEMA $.title AS title TEXT
+FT.CREATE idx:catalog ON JSON PREFIX 1 bookstore:catalog: SCHEMA $.title AS title TEXT WEIGHT 2
+FT.CREATE idx:catalog ON JSON PREFIX 1 bookstore:catalog: SCHEMA $.title AS title TEXT $.categories[*] AS category TAG $.priceKurus AS price NUMERIC
+FT.SEARCH idx:catalog "@title:dune" RETURN 1 title
+FT.SEARCH idx:catalog "@category:{classic}" LIMIT 0 0
+FT.SEARCH idx:catalog "@price:[-inf 20000]" LIMIT 0 0

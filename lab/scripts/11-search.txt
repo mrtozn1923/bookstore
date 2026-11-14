@@ -1,0 +1,7 @@
+FT.SEARCH idx:catalog "@category:{classic} @price:[-inf 20000]" SORTBY price ASC LIMIT 0 2 RETURN 2 title price
+FT.SEARCH idx:catalog "austen" RETURN 1 title
+FT.SEARCH idx:catalog "@category:{science\\-fiction} -@category:{dystopia}" RETURN 1 title
+FT.SEARCH idx:catalog "@category:{science-fiction}" RETURN 1 title
+FT.AGGREGATE idx:catalog "*" GROUPBY 1 @category REDUCE COUNT 0 AS books REDUCE AVG 1 @price AS avgPrice SORTBY 2 @books DESC
+FT.AGGREGATE idx:catalog "*" APPLY "floor(@year / 100) * 100" AS century GROUPBY 1 @century REDUCE COUNT 0 AS books REDUCE AVG 1 @price AS avgPrice SORTBY 2 @century ASC
+FT.SEARCH idx:catalog "@category:{classic}" LIMIT 0 0

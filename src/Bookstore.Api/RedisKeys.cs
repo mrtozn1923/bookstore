@@ -58,4 +58,9 @@ public static class RedisKeys
         $"{Prefix}:bestsellers:week:{lastDay:yyyyMMdd}:{part}";
 
     public static RedisKey RecentOrders => $"{Prefix}:orders:recent";
+
+    // Catalog documents (JSON, post 11), indexed by idx:catalog
+    public const string CatalogPrefix = $"{Prefix}:catalog:";
+
+    public static RedisKey CatalogBook(string isbn) => $"{CatalogPrefix}{isbn}";
 }
