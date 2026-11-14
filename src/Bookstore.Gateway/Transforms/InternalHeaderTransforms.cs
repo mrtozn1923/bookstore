@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Yarp.ReverseProxy.Transforms;
 using Yarp.ReverseProxy.Transforms.Builder;
 
@@ -21,6 +22,14 @@ public static class InternalHeaderTransforms
             }
 
             transformContext.ProxyRequest.Headers.TryAddWithoutValidation(InternalHeaders.Route, routeId);
+
+            // Only after authentication: the value comes from a validated token, never from the client.
+            string? userId = transformContext.HttpContext.User.FindFirstValue("sub");
+            if (userId is not null)
+            {
+                transformContext.ProxyRequest.Headers.TryAddWithoutValidation(InternalHeaders.UserId, userId);
+            }
+
             return ValueTask.CompletedTask;
         });
     }

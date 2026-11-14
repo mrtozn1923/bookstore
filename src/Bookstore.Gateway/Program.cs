@@ -1,12 +1,17 @@
 using Bookstore.Gateway.Configuration;
 using Bookstore.Gateway.LoadBalancing;
+using Bookstore.Gateway.Security;
+using Bookstore.Gateway.Traffic;
 using Bookstore.Gateway.Transforms;
 using Yarp.ReverseProxy.Configuration;
+using Yarp.ReverseProxy.Forwarder;
 using Yarp.ReverseProxy.LoadBalancing;
 using Yarp.ReverseProxy.Model;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddGatewayAuthentication(builder.Configuration);
+builder.Services.AddGatewayTrafficPolicies();
 builder.Services.AddServiceDiscovery();
 builder.Services.AddSingleton<ILoadBalancingPolicy, PreferSameZonePolicy>();
 
@@ -29,7 +34,16 @@ if (!string.IsNullOrEmpty(gatewayDb))
 
 var app = builder.Build();
 
-app.MapGet("/gateway/ping", () => "pong");
+// Order matters: CORS answers preflights, authentication sets User for the rate limiter partition,
+// authorization rejects before anything is cached or forwarded.
+app.UseCors();
+app.UseAuthentication();
+app.UseRateLimiter();
+app.UseAuthorization();
+app.UseRequestTimeouts();
+app.UseOutputCache();
+
+app.MapGet("/gateway/ping", () => "pong").AllowAnonymous();
 
 app.MapReverseProxy(proxyPipeline =>
 {
@@ -49,10 +63,12 @@ app.MapReverseProxy(proxyPipeline =>
         await next();
 
         logger.LogInformation(
-            "Forwarded to {DestinationId}, status {StatusCode}",
+            "Forwarded to {DestinationId}, status {StatusCode}, error {Error}",
             proxy.ProxiedDestination?.DestinationId,
-            context.Response.StatusCode);
+            context.Response.StatusCode,
+            context.GetForwarderErrorFeature()?.Error.ToString() ?? "none");
     });
+    proxyPipeline.UseRequestTimeoutStatus();
     proxyPipeline.UseSessionAffinity();
     proxyPipeline.UseLoadBalancing();
     proxyPipeline.UsePassiveHealthChecks();
