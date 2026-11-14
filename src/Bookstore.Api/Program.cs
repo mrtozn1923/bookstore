@@ -145,6 +145,7 @@ builder.Services.AddHealthChecks()
     .AddDbContextCheck<BookstoreContext>("database", tags: new[] { "ready" })
     .AddCheck<CacheHealthCheck>("cache", tags: new[] { "ready" }, timeout: TimeSpan.FromSeconds(2));
 builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<IBookDiscountService, BookDiscountService>();
 builder.Services.AddScoped<ExecutionTimeFilter>();
 builder.Services.AddSingleton<SingletonOperation>();
 builder.Services.AddScoped<ScopedOperation>();

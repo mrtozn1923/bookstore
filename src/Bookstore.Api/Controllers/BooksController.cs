@@ -89,11 +89,9 @@ public class BooksController : ControllerBase
 
     [HttpPost("{id:int}/discount")]
     [Authorize(Policy = "ExperiencedStaff")]
-    public async Task<ActionResult<BookDto>> Discount(int id, DiscountRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<BookDto>> Discount(
+        int id, DiscountRequest request, [FromServices] IBookDiscountService discounts, CancellationToken cancellationToken)
     {
-        BookDto book = await _bookService.GetByIdAsync(id, cancellationToken);
-        UpdateBookRequest update = new() { Title = book.Title, Price = book.Price - request.Amount };
-        await _bookService.UpdateAsync(id, update, cancellationToken);
-        return await _bookService.GetByIdAsync(id, cancellationToken);
+        return await discounts.ApplyAsync(id, request.Amount, cancellationToken);
     }
 }
