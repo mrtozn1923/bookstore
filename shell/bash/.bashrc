@@ -36,6 +36,17 @@ dtf() {
     dotnet test --filter "FullyQualifiedName~${1:?usage: dtf <TestClassOrMethod>}" "${@:2}"
 }
 
+# --- Modern CLI tools (post 05) ---
+if command -v fzf >/dev/null; then
+    export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix'
+    export FZF_CTRL_T_COMMAND=$FZF_DEFAULT_COMMAND
+    eval "$(fzf --bash)"
+fi
+if command -v zoxide >/dev/null; then
+    eval "$(zoxide init bash)"
+fi
+alias ll='eza -l --git'
+
 # --- Prompt (post 03) ---
 if command -v starship >/dev/null; then
     eval "$(starship init bash)"

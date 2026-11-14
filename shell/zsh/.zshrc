@@ -36,6 +36,15 @@ cache_completion() {
 cache_completion dotnet dotnet completions script bash
 cache_completion ng env SHELL=${commands[zsh]} ng completion script
 
+# --- Modern CLI tools (post 05) ---
+if (( $+commands[fzf] )); then
+    export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix'
+    export FZF_CTRL_T_COMMAND=$FZF_DEFAULT_COMMAND
+    export FZF_DEFAULT_OPTS='--height 40% --layout reverse --border'
+    cache_completion fzf fzf --zsh
+fi
+cache_completion zoxide zoxide init zsh
+
 # --- Aliases and functions (post 03) ---
 alias dt='dotnet test'
 alias db='dotnet build'
@@ -49,6 +58,25 @@ dtf() {
 
 mkcd() {
     mkdir -p -- "$1" && cd -- "$1"
+}
+
+alias ll='eza -l --git'
+alias lt='eza --tree --level 2 --git-ignore'
+
+# Pick a branch with fzf and switch to it
+gsw() {
+    local branch
+    branch=$(git branch --format='%(refname:short)' | fzf --prompt='branch> ') &&
+        git switch "$branch"
+}
+
+# Pick one test with fzf and run only that test
+dtp() {
+    local test
+    test=$(dotnet test --list-tests --no-build 2>/dev/null |
+        sed -n 's/^    //p' | sed 's/(.*//' | sort -u |
+        fzf --prompt='test> ') &&
+        dotnet test --no-build --filter "FullyQualifiedName=$test"
 }
 
 # --- Plugins (post 03) ---

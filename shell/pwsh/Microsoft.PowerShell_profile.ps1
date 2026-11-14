@@ -36,6 +36,15 @@ function dtf {
     dotnet test --filter "FullyQualifiedName~$Name" @Rest
 }
 
+# --- Modern CLI tools (post 05) ---
+if ((Get-Command fzf -ErrorAction Ignore) -and (Get-Module PSFzf -ListAvailable)) {
+    Import-Module PSFzf
+    Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
+}
+if (Get-Command zoxide -ErrorAction Ignore) {
+    Invoke-Expression (& { (zoxide init powershell | Out-String) })
+}
+
 # --- Modules and prompt (post 04) ---
 if (Get-Module posh-git -ListAvailable) {
     Import-Module posh-git
