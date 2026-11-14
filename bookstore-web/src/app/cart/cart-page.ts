@@ -39,6 +39,7 @@ export class CartPage {
       .placeOrder(this.cart.items())
       // the button comes back whatever happens: success or error
       .pipe(finalize(() => this.placing.set(false)))
+      // eslint-disable-next-line rxjs-x/no-ignored-subscription -- one POST: HttpClient completes after the response
       .subscribe({
         next: (order) => this.message.set(`Order ${order.id} placed.`),
         // component level: this page knows what a 409 means for the user

@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { outputFromObservable, toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { catchError, debounceTime, distinctUntilChanged, map, of, switchMap } from 'rxjs';
+import { catchError, of, switchMap } from 'rxjs';
 import { apiUrl } from '../api';
+import { settledTerm } from '../core/operators';
 import type { Book } from '../catalog/book';
 
 // 2. signal in, signal out: RxJS only for the part that is about time
@@ -21,11 +22,7 @@ export class SearchInterop {
   readonly #http = inject(HttpClient);
   protected readonly term = signal('');
 
-  readonly #settledTerm$ = toObservable(this.term).pipe(
-    debounceTime(300),
-    map((term) => term.trim()),
-    distinctUntilChanged(),
-  );
+  readonly #settledTerm$ = toObservable(this.term).pipe(settledTerm(300));
 
   protected readonly results = toSignal(
     this.#settledTerm$.pipe(
