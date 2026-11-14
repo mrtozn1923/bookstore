@@ -13,5 +13,4 @@ module "bookstore" {
     name                = "kv-platform-staging-weu"
     resource_group_name = "rg-platform-staging-weu"
   }
-  sql_admin_password = var.sql_admin_password
 }

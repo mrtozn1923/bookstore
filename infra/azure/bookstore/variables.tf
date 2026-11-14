@@ -50,10 +50,10 @@ variable "sql_admin_login" {
   default     = "bookstoreadmin"
 }
 
-variable "sql_admin_password" {
-  type        = string
-  description = "SQL Server administrator password (post 9 removes it from the state)."
-  sensitive   = true
+variable "sql_admin_password_version" {
+  type        = number
+  description = "Increase by one to generate a new SQL administrator password and store it in Key Vault."
+  default     = 1
 }
 
 variable "shared_key_vault" {

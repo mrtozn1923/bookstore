@@ -43,14 +43,17 @@ module "api" {
 }
 
 resource "azurerm_mssql_server" "bookstore" {
-  name                         = "sql-${local.suffix}"
-  resource_group_name          = azurerm_resource_group.bookstore.name
-  location                     = azurerm_resource_group.bookstore.location
-  version                      = "12.0"
-  administrator_login          = var.sql_admin_login
-  administrator_login_password = var.sql_admin_password
-  minimum_tls_version          = "1.2"
-  tags                         = local.tags
+  name                = "sql-${local.suffix}"
+  resource_group_name = azurerm_resource_group.bookstore.name
+  location            = azurerm_resource_group.bookstore.location
+  version             = "12.0"
+  administrator_login = var.sql_admin_login
+  minimum_tls_version = "1.2"
+  tags                = local.tags
+
+  # Write-only: sent to Azure only when the version changes, never stored in state or plan
+  administrator_login_password_wo         = ephemeral.random_password.sql_admin.result
+  administrator_login_password_wo_version = var.sql_admin_password_version
 }
 
 resource "azurerm_mssql_database" "bookstore" {
