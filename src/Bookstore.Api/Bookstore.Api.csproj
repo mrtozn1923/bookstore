@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Bookstore.IO.Json\Bookstore.IO.Json.csproj" />
+    <ProjectReference Include="..\Bookstore.IO.Compression\Bookstore.IO.Compression.csproj" />
   </ItemGroup>
 
 </Project>

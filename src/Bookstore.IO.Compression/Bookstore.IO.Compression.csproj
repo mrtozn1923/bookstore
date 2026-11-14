@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Bookstore.IO.Compression</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Bookstore.Ordering\Bookstore.Ordering.csproj" />
+    <ProjectReference Include="..\Bookstore.IO.Xml\Bookstore.IO.Xml.csproj" />
+  </ItemGroup>
+
+</Project>
