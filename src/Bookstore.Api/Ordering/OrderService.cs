@@ -92,9 +92,12 @@ public sealed class OrderService(
         using (Activity? check = BookstoreActivitySources.Ordering.StartActivity("check availability"))
         {
             check?.SetTag("bookstore.cart.line_count", cart.Items.Count);
+            // One query for the whole cart: the per-line query was an N+1 (12 SELECTs for an institutional order).
+            IReadOnlyDictionary<int, int> available =
+                await inventory.GetAvailableAsync([.. cart.Items.Select(i => i.BookId)], ct);
             foreach (CartItem item in cart.Items)
             {
-                if (await inventory.GetAvailableAsync(item.BookId, ct) < item.Quantity)
+                if (available.GetValueOrDefault(item.BookId) < item.Quantity)
                 {
                     shortIsbns.Add(books[item.BookId].Isbn);
                 }

@@ -13,15 +13,18 @@ public static class PaymentsModule
         services.AddHttpClient<IPaymentGateway, PaymentGatewayClient>(client => client.BaseAddress = baseAddress)
             .AddResilienceHandler("payment-provider", pipeline =>
             {
-                // Outer: up to 3 retries, 500 ms apart. Inner: every attempt gets 2 seconds.
+                // Outer: the whole call, retries included, never takes longer than 10 seconds.
+                pipeline.AddTimeout(TimeSpan.FromSeconds(10));
+                // Retry only transient failures (5xx, 408, 429, network errors, attempt timeouts), backing off with jitter.
                 pipeline.AddRetry(new HttpRetryStrategyOptions
                 {
-                    MaxRetryAttempts = 3,
-                    Delay = TimeSpan.FromMilliseconds(500),
-                    BackoffType = DelayBackoffType.Constant,
-                    UseJitter = false
+                    MaxRetryAttempts = 2,
+                    Delay = TimeSpan.FromMilliseconds(200),
+                    BackoffType = DelayBackoffType.Exponential,
+                    UseJitter = true
                 });
-                pipeline.AddTimeout(TimeSpan.FromSeconds(2));
+                // Inner: one attempt may take 4 seconds, above the provider's slowest normal answer (3 s, seen in the traces).
+                pipeline.AddTimeout(TimeSpan.FromSeconds(4));
             });
         return services;
     }

@@ -12,6 +12,9 @@ public interface IInventoryService
 {
     Task<int> GetAvailableAsync(int bookId, CancellationToken ct);
 
+    // Available copies of many books in one query (bookId → available); unknown books are left out.
+    Task<IReadOnlyDictionary<int, int>> GetAvailableAsync(IReadOnlyCollection<int> bookIds, CancellationToken ct);
+
     // Must run inside the caller's transaction: a failed reservation is undone by rolling it back.
     Task<ReservationResult> ReserveAsync(IReadOnlyCollection<StockLine> lines, CancellationToken ct);
 
@@ -29,6 +32,11 @@ internal sealed class InventoryService(BookstoreContext db) : IInventoryService
             .Where(s => s.BookId == bookId)
             .Select(s => s.QuantityOnHand - s.QuantityReserved)
             .FirstOrDefaultAsync(ct);
+
+    public async Task<IReadOnlyDictionary<int, int>> GetAvailableAsync(IReadOnlyCollection<int> bookIds, CancellationToken ct) =>
+        await db.StockItems.AsNoTracking()
+            .Where(s => bookIds.Contains(s.BookId))
+            .ToDictionaryAsync(s => s.BookId, s => s.QuantityOnHand - s.QuantityReserved, ct);
 
     public async Task<ReservationResult> ReserveAsync(IReadOnlyCollection<StockLine> lines, CancellationToken ct)
     {

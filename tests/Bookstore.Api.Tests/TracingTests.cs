@@ -64,6 +64,37 @@ public sealed class TracingTests(BookstoreApiFactory factory)
         Assert.Equal(ActivityKind.Consumer, process.Kind);
     }
 
+    [Fact]
+    public async Task Availability_of_a_whole_cart_is_checked_with_one_query()
+    {
+        ConcurrentBag<Activity> stopped = [];
+        using ActivityListener listener = new()
+        {
+            ShouldListenTo = s => s.Name is "Bookstore.Ordering" or "OpenTelemetry.Instrumentation.SqlClient",
+            Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllDataAndRecorded,
+            ActivityStopped = stopped.Add
+        };
+        ActivitySource.AddActivityListener(listener);
+
+        HttpResponseMessage cart = await client.PostAsync("/api/carts", null, ct);
+        Guid cartId = (await cart.Content.ReadFromJsonAsync<CartView>(ct))!.Id;
+        foreach (string isbn in (string[])["9780441172719", "9780261102217", "9780141439587", "9780451524935"])
+        {
+            await client.PutAsJsonAsync($"/api/carts/{cartId}/items/{isbn}", new SetQuantityRequest(1), ct);
+        }
+        HttpResponseMessage response = await client.PostAsJsonAsync("/api/orders",
+            new PlaceOrderRequest(cartId, "Ada Lovelace", "ada@example.com"), ct);
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        int orderId = (await response.Content.ReadFromJsonAsync<OrderView>(ct))!.Id;
+
+        ActivityTraceId traceId = stopped.Single(a =>
+            a.DisplayName == "authorize payment" && Equals(a.GetTagItem("bookstore.order.id"), orderId)).TraceId;
+        Activity check = stopped.Single(a => a.DisplayName == "check availability" && a.TraceId == traceId);
+        Assert.Equal(4, check.GetTagItem("bookstore.cart.line_count"));
+        // Four cart lines, one SELECT: no N+1.
+        Assert.Single(stopped, a => a.ParentSpanId == check.SpanId);
+    }
+
     private async Task<Activity> WaitForAsync(Func<Activity?> find)
     {
         for (int i = 0; i < 50; i++)
