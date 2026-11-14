@@ -9,6 +9,7 @@
     <Project Path="src/Bookstore.IO.Files/Bookstore.IO.Files.csproj" />
     <Project Path="src/Bookstore.IO.Json/Bookstore.IO.Json.csproj" />
     <Project Path="src/Bookstore.IO.LargeFiles/Bookstore.IO.LargeFiles.csproj" />
+    <Project Path="src/Bookstore.IO.Net11/Bookstore.IO.Net11.csproj" />
     <Project Path="src/Bookstore.IO.Pipelines/Bookstore.IO.Pipelines.csproj" />
     <Project Path="src/Bookstore.IO.Streams/Bookstore.IO.Streams.csproj" />
     <Project Path="src/Bookstore.IO.WhatsNew/Bookstore.IO.WhatsNew.csproj" />
