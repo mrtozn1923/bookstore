@@ -1,6 +1,8 @@
 <Project>
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <!-- 0.15.8 is the latest stable release. .NET 11 jobs need 0.16: set the BenchmarkDotNetVersion environment variable to 0.16.0-preview.2. -->
+    <BenchmarkDotNetVersion Condition="'$(BenchmarkDotNetVersion)' == ''">0.15.8</BenchmarkDotNetVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.15" />
@@ -9,5 +11,6 @@
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.15" />
     <PackageVersion Include="xunit.v3" Version="4.0.3" />
     <PackageVersion Include="WireMock.Net" Version="2.31.0" />
+    <PackageVersion Include="BenchmarkDotNet" Version="$(BenchmarkDotNetVersion)" />
   </ItemGroup>
 </Project>

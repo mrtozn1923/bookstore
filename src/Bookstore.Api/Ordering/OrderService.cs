@@ -63,7 +63,9 @@ public sealed class OrderService(
                 LineTotal = OrderItem.CalculateLineTotal(book.Price, item.Quantity)
             });
         }
-        order.Total = order.Items.Sum(i => i.LineTotal);
+        PriceQuote quote = CartPricing.Quote(
+            [.. order.Items.Select(i => new PriceLine(books[i.BookId].Isbn, i.UnitPrice, i.Quantity))], institutional: false);
+        order.Total = quote.Total;
 
         db.Orders.Add(order);
         db.Carts.Remove(cart);
