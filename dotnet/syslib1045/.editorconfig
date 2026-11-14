@@ -1,0 +1,5 @@
+root = true
+
+# show SYSLIB1045 (by default an IDE suggestion) as a build warning
+[*.cs]
+dotnet_diagnostic.SYSLIB1045.severity = warning
