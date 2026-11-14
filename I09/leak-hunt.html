@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Leak hunt</title>
+</head>
+<body>
+  <button id="add">Add and remove 1000 books</button>
+  <ul id="list"></ul>
+
+  <script>
+    class BookRow {
+      constructor(el) {
+        this.el = el;
+      }
+    }
+
+    const list = document.querySelector("#list");
+    const archive = [];
+
+    document.querySelector("#add").addEventListener("click", () => {
+      for (let i = 0; i < 1000; i++) {
+        const li = document.createElement("li");
+        li.textContent = `Book ${i}`;
+        list.append(li);
+        archive.push(new BookRow(li));
+      }
+      list.replaceChildren();
+      console.log("Detached elements in archive:", archive.length);
+    });
+  </script>
+</body>
+</html>
