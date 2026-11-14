@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Books - Bookstore</title>
+  <link rel="stylesheet" href="/web/styles/base.css">
+  <link rel="stylesheet" href="/web/styles/tokens.css">
+  <link rel="stylesheet" href="after.css">
+</head>
+<body>
+  <header class="top">
+    <a class="logo" href="after.html">Bookstore</a>
+    <nav aria-label="Categories" class="cats" id="cats"></nav>
+    <form class="search" role="search" action="after.html">
+      <label for="q" class="visually-hidden">Search books</label>
+      <input id="q" name="q" list="suggestions" placeholder="Title or author" autocomplete="off">
+      <datalist id="suggestions"></datalist>
+      <button class="btn">Search</button>
+    </form>
+  </header>
+  <nav aria-label="Breadcrumb" class="crumbs"><ol id="crumbs"></ol></nav>
+  <div class="layout">
+    <form class="filters" id="filters" aria-label="Filters">
+      <fieldset>
+        <legend>Format</legend>
+        <div id="formats"></div>
+      </fieldset>
+    </form>
+    <main>
+      <div class="head">
+        <h1 id="title">All books</h1>
+        <label class="sort">Sort by
+          <select id="sort">
+            <option value="relevance">Relevance</option>
+            <option value="price-asc">Price, low to high</option>
+            <option value="price-desc">Price, high to low</option>
+            <option value="year-desc">Newest first</option>
+          </select>
+        </label>
+      </div>
+      <p id="count" class="count" role="status"></p>
+      <ul id="chips" class="chips"></ul>
+      <div id="grid" class="grid"></div>
+      <nav aria-label="Pages" class="pages" id="pages"></nav>
+    </main>
+  </div>
+  <footer class="footer">
+    <a href="#returns">Returns policy</a> <a href="#contact">Contact us</a> <a href="#shipping">Shipping</a>
+  </footer>
+  <script src="books.js"></script>
+  <script src="after.js"></script>
+</body>
+</html>

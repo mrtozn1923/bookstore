@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Books - Bookstore</title>
+  <link rel="stylesheet" href="/web/styles/base.css">
+  <link rel="stylesheet" href="/web/styles/tokens.css">
+  <link rel="stylesheet" href="before.css">
+</head>
+<body>
+  <header class="top">
+    <span class="logo" onclick="location.reload()">Bookstore</span>
+    <input id="q" placeholder="Search" aria-label="Search books">
+  </header>
+  <div class="layout">
+    <aside class="filters">
+      <h2>Category</h2>
+      <div id="categories"></div>
+      <h2>Format</h2>
+      <div id="formats"></div>
+      <h2>Sort</h2>
+      <select id="sort">
+        <option value="relevance">Relevance</option>
+        <option value="price-asc">Price, low to high</option>
+        <option value="price-desc">Price, high to low</option>
+        <option value="year-desc">Newest first</option>
+      </select>
+    </aside>
+    <main>
+      <div id="grid" class="grid"></div>
+      <div id="sentinel"></div>
+    </main>
+  </div>
+  <footer class="footer">
+    <a href="#returns">Returns policy</a> <a href="#contact">Contact us</a> <a href="#shipping">Shipping</a>
+  </footer>
+  <script src="books.js"></script>
+  <script src="before.js"></script>
+</body>
+</html>
