@@ -1,5 +1,9 @@
 <header>
   <strong>Bookstore</strong>
+  <nav>
+    <a routerLink="/">Catalog</a> | <a routerLink="/search">Search</a> |
+    <a routerLink="/orders/1042">My order</a>
+  </nav>
   <a class="cart" routerLink="/cart">Cart ({{ cart.count() }}): {{ cart.total() }} TRY</a>
 </header>
 @if (serverStatus.unavailable()) {

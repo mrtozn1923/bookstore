@@ -2,6 +2,7 @@ import { AsyncPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { RouterLink } from '@angular/router';
 import { catchError, of } from 'rxjs';
 import { apiUrl } from '../api';
 import { CartStore } from '../cart/cart-store';
@@ -10,7 +11,7 @@ import { CategoryService } from './category-service';
 
 @Component({
   selector: 'app-catalog-page',
-  imports: [AsyncPipe],
+  imports: [AsyncPipe, RouterLink],
   template: `
     <h1>Catalog</h1>
     <nav class="categories">
@@ -29,7 +30,7 @@ import { CategoryService } from './category-service';
     <ul>
       @for (book of books(); track book.isbn) {
         <li>
-          {{ book.title }} - {{ book.price }} TRY
+          <a [routerLink]="['/books', book.isbn]">{{ book.title }}</a> - {{ book.price }} TRY
           <button type="button" (click)="cart.add(book)" [disabled]="book.stock === 0">
             Add to cart
           </button>

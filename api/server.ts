@@ -80,7 +80,9 @@ const server = createServer((req, res) => {
     const match = url.pathname.match(/^\/api\/books(?:\/(\d{13}))?(?:\/(stock|price))?$/);
     const book = match?.[1] ? books.find((b) => b.isbn === match[1]) : undefined;
     let body: unknown;
-    if (match && !match[1]) body = books;
+    // ?q=dun (10): title search, case-insensitive
+    const q = url.searchParams.get("q")?.toLowerCase();
+    if (match && !match[1]) body = q ? books.filter((b) => b.title.toLowerCase().includes(q)) : books;
     else if (book && match?.[2] === "stock") body = { isbn: book.isbn, stock: book.stock };
     else if (book && match?.[2] === "price") body = { isbn: book.isbn, price: book.price, currency: "TRY" };
     else if (book) body = book;
