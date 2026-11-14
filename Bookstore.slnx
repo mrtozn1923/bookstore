@@ -10,4 +10,7 @@
     <Project Path="src/Bookstore.Ordering.Api/Bookstore.Ordering.Api.csproj" />
     <Project Path="src/Bookstore.ServiceDefaults/Bookstore.ServiceDefaults.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Bookstore.AppHost.Tests/Bookstore.AppHost.Tests.csproj" />
+  </Folder>
 </Solution>

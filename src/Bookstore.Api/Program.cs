@@ -9,9 +9,17 @@ builder.AddServiceDefaults();
 builder.AddSqlServerDbContext<BookstoreContext>("bookstoredb");
 
 // The cache is optional: without Redis the catalog must still answer, and quickly
-builder.AddRedisOutputCache("redis",
-    settings => settings.DisableHealthChecks = true,
-    options => options.BacklogPolicy = BacklogPolicy.FailFast);
+if (string.IsNullOrEmpty(builder.Configuration.GetConnectionString("redis")))
+{
+    // No Redis configured (a test, or the catalog run on its own): keep the cache in memory
+    builder.Services.AddOutputCache();
+}
+else
+{
+    builder.AddRedisOutputCache("redis",
+        settings => settings.DisableHealthChecks = true,
+        options => options.BacklogPolicy = BacklogPolicy.FailFast);
+}
 
 builder.Services.AddAuthentication()
     .AddKeycloakJwtBearer(serviceName: "keycloak", realm: "bookstore", options =>
