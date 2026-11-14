@@ -106,6 +106,7 @@ Bu branch, mertozen.com'daki Observability serisinin kodudur. Bu tag'e kadar ekl
   dotnet run --project src/Bookstore.Api
   ```
 - İş metric'leri: `Bookstore.Ordering` (sipariş sayısı, checkout süresi, işlenen checkout'lar) ve `Bookstore.Inventory` (stoğu azalan kitaplar); `MetricCollector` testleri.
+- Kendi span'larımız (`Bookstore.Ordering`, `Bookstore.Notifications`), sipariş onayı için in-process queue ve trace context propagation, `traceparent`/`tracestate` için CORS (`Cors:Origins`).
 
 ---
 
@@ -211,3 +212,4 @@ This branch holds the code of the Observability series on mertozen.com. Added up
   dotnet run --project src/Bookstore.Api
   ```
 - Business metrics: `Bookstore.Ordering` (orders placed, checkout duration, checkouts in progress) and `Bookstore.Inventory` (books running low); `MetricCollector` tests.
+- Our own spans (`Bookstore.Ordering`, `Bookstore.Notifications`), an in-process queue for order confirmations with trace context propagation, CORS for `traceparent`/`tracestate` (`Cors:Origins`).

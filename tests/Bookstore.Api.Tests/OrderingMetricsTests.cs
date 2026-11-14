@@ -8,7 +8,7 @@ using Microsoft.Extensions.Diagnostics.Metrics.Testing;
 namespace Bookstore.Api.Tests;
 
 // The API host is shared by all tests, so its meters see every order placed in parallel tests.
-// This class runs alone; otherwise a measurement of another test lands in the snapshot.
+// Telemetry tests run alone; otherwise a measurement of another test lands in the snapshot.
 [CollectionDefinition(DisableParallelization = true)]
 public sealed class MetricsCollection;
 

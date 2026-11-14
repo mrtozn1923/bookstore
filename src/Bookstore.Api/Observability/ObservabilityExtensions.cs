@@ -21,6 +21,8 @@ public static class ObservabilityExtensions
                 .AddAttributes([new("deployment.environment.name", builder.Environment.EnvironmentName.ToLowerInvariant())])
                 .AddEnvironmentVariableDetector())
             .WithTracing(tracing => tracing
+                // Bookstore.Ordering, Bookstore.Notifications…: the spans we start ourselves
+                .AddSource("Bookstore.*")
                 .AddAspNetCoreInstrumentation()
                 .AddHttpClientInstrumentation()
                 .AddSqlClientInstrumentation())

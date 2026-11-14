@@ -1,6 +1,9 @@
 using Bookstore.Catalog;
 using Bookstore.Data;
+using System.Diagnostics;
 using Bookstore.Inventory;
+using Bookstore.Notifications;
+using Bookstore.Observability;
 using Bookstore.Payments;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -19,7 +22,7 @@ public abstract record PlaceOrderOutcome
 
 public sealed class OrderService(
     BookstoreContext db, ICatalogService catalog, IInventoryService inventory, IPaymentGateway payments,
-    TimeProvider clock, OrderingMetrics metrics, ILogger<OrderService> logger)
+    OrderConfirmationQueue confirmations, TimeProvider clock, OrderingMetrics metrics, ILogger<OrderService> logger)
 {
     // Institutional orders (schools, libraries, companies) have many lines; retail carts have a few.
     private const int InstitutionalLineCount = 10;
@@ -86,11 +89,15 @@ public sealed class OrderService(
 
         // Friendly early answer before any row is locked: which books are short?
         List<string> shortIsbns = [];
-        foreach (CartItem item in cart.Items)
+        using (Activity? check = BookstoreActivitySources.Ordering.StartActivity("check availability"))
         {
-            if (await inventory.GetAvailableAsync(item.BookId, ct) < item.Quantity)
+            check?.SetTag("bookstore.cart.line_count", cart.Items.Count);
+            foreach (CartItem item in cart.Items)
             {
-                shortIsbns.Add(books[item.BookId].Isbn);
+                if (await inventory.GetAvailableAsync(item.BookId, ct) < item.Quantity)
+                {
+                    shortIsbns.Add(books[item.BookId].Isbn);
+                }
             }
         }
         if (shortIsbns.Count > 0)
@@ -101,8 +108,12 @@ public sealed class OrderService(
         // Stock reservation, the order and the cart removal commit or roll back together.
         await using IDbContextTransaction transaction = await db.Database.BeginTransactionAsync(ct);
 
-        ReservationResult reservation = await inventory.ReserveAsync(
-            [.. cart.Items.Select(i => new StockLine(i.BookId, i.Quantity))], ct);
+        ReservationResult reservation;
+        using (Activity? reserve = BookstoreActivitySources.Ordering.StartActivity("reserve stock"))
+        {
+            reservation = await inventory.ReserveAsync([.. cart.Items.Select(i => new StockLine(i.BookId, i.Quantity))], ct);
+            reserve?.SetTag("bookstore.stock.reserved", reservation.Succeeded);
+        }
         if (!reservation.Succeeded)
         {
             return new PlaceOrderOutcome.OutOfStock([.. reservation.UnavailableBookIds.Select(id => books[id].Isbn)]);
@@ -147,15 +158,21 @@ public sealed class OrderService(
 
     private async Task<PlaceOrderOutcome> AuthorizePaymentAsync(Order order, CancellationToken ct)
     {
+        // Parent of every HTTP attempt (retries included) that the resilience handler makes.
+        using Activity? activity = BookstoreActivitySources.Ordering.StartActivity("authorize payment");
+        activity?.SetTag("bookstore.order.id", order.Id);
         try
         {
             await payments.AuthorizeAsync(new PaymentRequest(order.Id, order.Total, order.Currency), ct);
             order.Status = OrderStatus.Paid;
             await db.SaveChangesAsync(ct);
+            await confirmations.PublishAsync(order.Id, order.Customer.Email, ct);
             return new PlaceOrderOutcome.Placed(order);
         }
         catch (Exception ex) when (ex is HttpRequestException or TimeoutException or Polly.Timeout.TimeoutRejectedException)
         {
+            activity?.AddException(ex);
+            activity?.SetStatus(ActivityStatusCode.Error, "Payment could not be authorized");
             logger.LogError(ex, "Payment for order {OrderId} failed", order.Id);
             order.Status = OrderStatus.Cancelled;
             await inventory.ReleaseAsync([.. order.Items.Select(i => new StockLine(i.BookId, i.Quantity))], ct);

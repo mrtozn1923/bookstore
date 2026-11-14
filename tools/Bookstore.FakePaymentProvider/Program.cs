@@ -19,8 +19,11 @@ ConcurrentDictionary<string, int> attempts = new();
 
 app.MapPost("/v1/charges", async (
     ChargeRequest charge, [FromHeader(Name = "Idempotency-Key")] string idempotencyKey,
-    ILogger<Program> logger, CancellationToken ct) =>
+    HttpRequest request, ILogger<Program> logger, CancellationToken ct) =>
 {
+    // The provider has no OpenTelemetry; it only shows which trace context it received.
+    logger.LogInformation("{Key} traceparent={TraceParent} baggage={Baggage}",
+        idempotencyKey, request.Headers.TraceParent.ToString(), request.Headers.Baggage.ToString());
     int attempt = attempts.AddOrUpdate(idempotencyKey, 1, (_, n) => n + 1);
     bool slow = Random.Shared.NextDouble() < slowRatio;
     int delayMs = slow ? slowDelayMs : Random.Shared.Next(40, 121);
