@@ -484,3 +484,6 @@ $RECYCLE.BIN/
 # Angular client
 .angular/
 web/bookstore-web/dist/
+
+# Uploaded files (development storage)
+App_Data/

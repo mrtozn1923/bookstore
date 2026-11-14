@@ -74,6 +74,9 @@ Anlatım: "Bookstore: Sitedeki Örnek Uygulama" serisi.
    cd web/bookstore-web; npm test
    ```
 
+Uçtan uca smoke test (bash, curl 8.3+ ve jq; Windows'ta Git Bash ya da WSL):
+`BOOKSTORE_PASSWORD=Bookstore-Demo-1 ./scripts/smoke.sh`
+
 Migration'ları elle yönetmek istersen: `dotnet tool restore` sonra
 `dotnet ef database update --project src/Bookstore.Api`.
 
@@ -86,6 +89,8 @@ Migration'ları elle yönetmek istersen: `dotnet tool restore` sonra
 | GET | `/api/books?search=&category=&page=&pageSize=` | Katalog listesi ve arama |
 | GET | `/api/books/{isbn}` | Kitap detayı ve stok |
 | GET | `/api/categories` | Kategoriler |
+| PUT | `/api/books/{isbn}/cover` | Kapak yükle (multipart, `file` alanı; JPEG/PNG, en çok 2 MB; StoreStaff) |
+| GET | `/api/books/{isbn}/cover` | Kapak görseli |
 | POST | `/api/carts` | Yeni sepet (`/api/carts` ve `/api/orders` altındaki her istek token ister) |
 | GET | `/api/carts/{cartId}` | Sepet |
 | PUT | `/api/carts/{cartId}/items/{isbn}` | Kitap ekle / adet değiştir (`{ "quantity": 2 }`) |
@@ -165,6 +170,9 @@ It is explained in the series "Bookstore: The Site's Example Application".
    cd web/bookstore-web; npm test
    ```
 
+End-to-end smoke test (bash, curl 8.3+ and jq; on Windows use Git Bash or WSL):
+`BOOKSTORE_PASSWORD=Bookstore-Demo-1 ./scripts/smoke.sh`
+
 To manage migrations by hand: `dotnet tool restore`, then
 `dotnet ef database update --project src/Bookstore.Api`.
 
@@ -177,6 +185,8 @@ To manage migrations by hand: `dotnet tool restore`, then
 | GET | `/api/books?search=&category=&page=&pageSize=` | Catalog list and search |
 | GET | `/api/books/{isbn}` | Book details and stock |
 | GET | `/api/categories` | Categories |
+| PUT | `/api/books/{isbn}/cover` | Upload a cover (multipart, `file` field; JPEG/PNG, at most 2 MB; StoreStaff) |
+| GET | `/api/books/{isbn}/cover` | Cover image |
 | POST | `/api/carts` | New cart (every request under `/api/carts` and `/api/orders` needs a token) |
 | GET | `/api/carts/{cartId}` | Cart |
 | PUT | `/api/carts/{cartId}/items/{isbn}` | Add a book / change its quantity (`{ "quantity": 2 }`) |

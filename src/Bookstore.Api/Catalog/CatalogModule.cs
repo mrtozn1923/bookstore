@@ -25,6 +25,7 @@ public static class CatalogModule
         catalog.MapGet("/books", SearchBooks);
         catalog.MapGet("/books/{isbn}", GetBook);
         catalog.MapGet("/categories", GetCategories);
+        catalog.MapBookCoverEndpoints();
         return app;
     }
 
