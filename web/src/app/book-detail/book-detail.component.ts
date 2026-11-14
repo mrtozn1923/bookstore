@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
+import { QuantityPickerComponent } from '../quantity-picker/quantity-picker.component';
 
 @Component({
   selector: 'app-book-detail',
@@ -6,6 +7,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./book-detail.component.css']
 })
 export class BookDetailComponent {
+  @ViewChild(QuantityPickerComponent) picker!: QuantityPickerComponent;
+
   title = 'Dune';
   author = 'Frank Herbert';
   coverUrl = 'assets/covers/dune.svg';
@@ -14,6 +17,7 @@ export class BookDetailComponent {
   rating = 90;
   coupon = '';
   giftNote = '';
+  amount = 1;
 
   addToCart(): void {
     this.inCart++;
@@ -26,5 +30,9 @@ export class BookDetailComponent {
 
   applyCoupon(code: string): void {
     this.coupon = code;
+  }
+
+  resetQuantity(): void {
+    this.picker.reset();
   }
 }

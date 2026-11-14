@@ -24,3 +24,7 @@
 
 <input [(ngModel)]="giftNote">
 <p>Gift note: {{ giftNote }}</p>
+
+<app-quantity-picker [(quantity)]="amount"></app-quantity-picker>
+<button (click)="resetQuantity()">Reset</button>
+<p>Quantity: {{ amount }}</p>

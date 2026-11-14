@@ -8,6 +8,8 @@ import { CatalogModule } from './catalog/catalog.module';
 import { BookDetailComponent } from './book-detail/book-detail.component';
 import { OrderListComponent } from './order-list/order-list.component';
 import { HighlightDirective } from './highlight.directive';
+import { QuantityPickerComponent } from './quantity-picker/quantity-picker.component';
+import { CardComponent } from './card/card.component';
 
 @NgModule({
   declarations: [
@@ -15,7 +17,9 @@ import { HighlightDirective } from './highlight.directive';
     BookCardComponent,
     BookDetailComponent,
     OrderListComponent,
-    HighlightDirective
+    HighlightDirective,
+    QuantityPickerComponent,
+    CardComponent
   ],
   imports: [
     BrowserModule,
