@@ -1,0 +1,20 @@
+# Local observability stack for Bookstore: one container with an OpenTelemetry Collector (contrib),
+# Prometheus, Tempo, Loki and Grafana. Development only.
+#   docker compose -f deploy/observability/compose.yaml up -d
+#   API: OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317   Grafana: http://localhost:3000
+services:
+  lgtm:
+    image: grafana/otel-lgtm:0.41.0
+    container_name: bookstore-lgtm
+    ports:
+      - "3000:3000"   # Grafana
+      - "4317:4317"   # OTLP/gRPC
+      - "4318:4318"   # OTLP/HTTP
+      - "9090:9090"   # Prometheus
+      - "3200:3200"   # Tempo API
+      - "3100:3100"   # Loki API
+    environment:
+      # Collector logs (and the debug exporter's output) go to docker logs
+      ENABLE_LOGS_OTELCOL: "true"
+    volumes:
+      - ./otelcol-config.yaml:/otel-lgtm/otelcol-config.yaml:ro

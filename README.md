@@ -107,6 +107,12 @@ Bu branch, mertozen.com'daki Observability serisinin kodudur. Bu tag'e kadar ekl
   ```
 - İş metric'leri: `Bookstore.Ordering` (sipariş sayısı, checkout süresi, işlenen checkout'lar) ve `Bookstore.Inventory` (stoğu azalan kitaplar); `MetricCollector` testleri.
 - Kendi span'larımız (`Bookstore.Ordering`, `Bookstore.Notifications`), sipariş onayı için in-process queue ve trace context propagation, `traceparent`/`tracestate` için CORS (`Cors:Origins`).
+- `deploy/observability`: tek container'lık LGTM stack'i (Collector contrib, Prometheus, Tempo, Loki, Grafana) ve Collector config'i (filter, PII transform, tail sampling):
+
+  ```powershell
+  docker compose -f deploy/observability/compose.yaml up -d
+  # Grafana: http://localhost:3000, API: OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
+  ```
 
 ---
 
@@ -213,3 +219,9 @@ This branch holds the code of the Observability series on mertozen.com. Added up
   ```
 - Business metrics: `Bookstore.Ordering` (orders placed, checkout duration, checkouts in progress) and `Bookstore.Inventory` (books running low); `MetricCollector` tests.
 - Our own spans (`Bookstore.Ordering`, `Bookstore.Notifications`), an in-process queue for order confirmations with trace context propagation, CORS for `traceparent`/`tracestate` (`Cors:Origins`).
+- `deploy/observability`: a one-container LGTM stack (Collector contrib, Prometheus, Tempo, Loki, Grafana) and the Collector config (filter, PII transform, tail sampling):
+
+  ```powershell
+  docker compose -f deploy/observability/compose.yaml up -d
+  # Grafana: http://localhost:3000, API: OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
+  ```

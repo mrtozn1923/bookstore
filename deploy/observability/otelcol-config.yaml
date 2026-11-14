@@ -1,0 +1,89 @@
+# Bookstore's local Collector. It replaces the Collector config inside grafana/otel-lgtm;
+# the exporters point at the Tempo, Prometheus and Loki running in the same container.
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+  # The Collector's own metrics (port 8888), so we can see what it receives, drops and samples.
+  prometheus/collector:
+    config:
+      scrape_configs:
+        - job_name: otel-collector
+          scrape_interval: 10s
+          static_configs:
+            - targets: ["127.0.0.1:8888"]
+
+processors:
+  # First in every pipeline: refuse data before the process runs out of memory.
+  memory_limiter:
+    check_interval: 1s
+    limit_percentage: 80
+    spike_limit_percentage: 20
+
+  # Every signal gets the environment, even if the application forgot it.
+  resource:
+    attributes:
+      - key: deployment.environment.name
+        value: local
+        action: insert
+
+  # HttpClient writes four Information logs per call; the spans already tell the same story.
+  filter/http-client-logs:
+    error_mode: ignore
+    log_conditions:
+      - IsMatch(instrumentation_scope.name, "^System\\.Net\\.Http\\.HttpClient\\.") and log.severity_number < SEVERITY_NUMBER_WARN
+
+  # PII: the e-mail address is hashed (still groupable, not readable); any other address in a body is masked.
+  transform/pii:
+    error_mode: ignore
+    log_statements:
+      - set(log.attributes["CustomerEmail"], SHA256(log.attributes["CustomerEmail"])) where log.attributes["CustomerEmail"] != nil
+      - replace_pattern(log.body, "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}", "<email>")
+
+  # Keep every error, every trace slower than 1 s, and 10% of the rest.
+  tail_sampling:
+    decision_wait: 10s
+    num_traces: 50000
+    policies:
+      - name: errors
+        type: status_code
+        status_code:
+          status_codes: [ERROR]
+      - name: slow
+        type: latency
+        latency:
+          threshold_ms: 1000
+      - name: ten-percent
+        type: probabilistic
+        probabilistic:
+          sampling_percentage: 10
+
+  batch:
+
+exporters:
+  otlp_http/tempo:
+    endpoint: http://127.0.0.1:4418
+  otlp_http/prometheus:
+    endpoint: http://127.0.0.1:9090/api/v1/otlp
+  otlp_http/loki:
+    endpoint: http://127.0.0.1:3100/otlp
+  debug:
+    verbosity: basic
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, resource, tail_sampling, batch]
+      exporters: [otlp_http/tempo]
+    metrics:
+      receivers: [otlp, prometheus/collector]
+      processors: [memory_limiter, resource, batch]
+      exporters: [otlp_http/prometheus]
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, resource, filter/http-client-logs, transform/pii, batch]
+      exporters: [otlp_http/loki, debug]
