@@ -94,8 +94,11 @@ switch (args.FirstOrDefault())
     case "ef-concurrency":
         await Bookstore.PgLab.Catalog.CatalogDemo.ConcurrencyAsync(connectionString);
         break;
+    case "tls":
+        await SecurityDemo.TlsAsync(connectionString, Environment.GetEnvironmentVariable("BOOKSTORE_PG_ROOT_CERT"));
+        break;
     default:
         Console.WriteLine("usage: dotnet run -- connections | pool | ef-script | bestsellers | write-skew | queue | advisory | ef-retry\n" +
-            "       defaults | types | enum | copy | prepare | listen | otel | ef-seed | ef-query | ef-concurrency");
+            "       defaults | types | enum | copy | prepare | listen | otel | ef-seed | ef-query | ef-concurrency | tls");
         break;
 }
