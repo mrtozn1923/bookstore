@@ -5,6 +5,12 @@ public sealed record CatalogBook(string Isbn, string Title, decimal Price, strin
 // Typed client; the base address is a logical name resolved by service discovery
 public sealed class CatalogClient(HttpClient http)
 {
+    public async Task<IReadOnlyList<CatalogBook>> GetBooksAsync(IEnumerable<string> isbns, CancellationToken ct)
+    {
+        string query = string.Join("&", isbns.Distinct().Select(i => $"isbn={Uri.EscapeDataString(i)}"));
+        return await http.GetFromJsonAsync<List<CatalogBook>>($"/api/books/lookup?{query}", ct) ?? [];
+    }
+
     public async Task<CatalogBook?> GetBookAsync(string isbn, CancellationToken ct)
     {
         using HttpResponseMessage response = await http.GetAsync($"/api/books/{isbn}", ct);

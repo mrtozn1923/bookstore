@@ -7,6 +7,7 @@ namespace Bookstore.MigrationService;
 // Applies EF Core migrations, seeds sample books and stops the process
 public sealed class MigrationWorker(
     IServiceProvider services,
+    IConfiguration configuration,
     IHostApplicationLifetime lifetime,
     ILogger<MigrationWorker> logger) : BackgroundService
 {
@@ -26,7 +27,7 @@ public sealed class MigrationWorker(
             await db.Database.MigrateAsync(stoppingToken);
             logger.LogInformation("Applied {Count} migration(s)", pending.Length);
 
-            int added = await SampleBooks.SeedAsync(db, stoppingToken);
+            int added = await SampleBooks.SeedAsync(db, configuration.GetValue<int>("Seed:GeneratedBooks"), stoppingToken);
             logger.LogInformation("Seeded {Added} book(s)", added);
         }
         catch (Exception ex)

@@ -50,6 +50,8 @@ namespace Bookstore.Data.Migrations
 
                     b.HasKey("Isbn");
 
+                    b.HasIndex("Author");
+
                     b.ToTable("Books");
                 });
 #pragma warning restore 612, 618

@@ -14,6 +14,7 @@ IResourceBuilder<RedisResource> redis = builder.AddRedis("redis")
     .WithContainerName("aspire-redis");
 
 IResourceBuilder<ProjectResource> migrations = builder.AddProject<Projects.Bookstore_MigrationService>("migrations")
+    .WithEnvironment("Seed__GeneratedBooks", "200000")
     .WithReference(bookstoreDb)
     .WaitFor(bookstoreDb);
 

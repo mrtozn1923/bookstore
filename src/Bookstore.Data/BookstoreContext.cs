@@ -11,6 +11,7 @@ public sealed class BookstoreContext(DbContextOptions<BookstoreContext> options)
         modelBuilder.Entity<Book>(book =>
         {
             book.HasKey(b => b.Isbn);
+            book.HasIndex(b => b.Author);
             book.Property(b => b.Isbn).HasMaxLength(13).IsFixedLength();
             book.Property(b => b.Title).HasMaxLength(200);
             book.Property(b => b.Author).HasMaxLength(200);
