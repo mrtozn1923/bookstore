@@ -1,4 +1,4 @@
-import { LOCALE_ID, enableProdMode } from '@angular/core';
+import { LOCALE_ID, enableProdMode, provideZoneChangeDetection } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import localeTr from '@angular/common/locales/tr';
 import { bootstrapApplication } from '@angular/platform-browser';
@@ -22,6 +22,7 @@ registerLocaleData(localeTr);
 
 bootstrapApplication(AppComponent, {
   providers: [
+    provideZoneChangeDetection(),
     provideRouter(routes, withPreloading(PreloadAllModules), withComponentInputBinding()),
     provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
     { provide: LOCALE_ID, useValue: 'tr' },

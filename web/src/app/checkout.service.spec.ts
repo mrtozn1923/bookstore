@@ -1,25 +1,28 @@
+import type { Mock } from "vitest";
 import { TestBed } from '@angular/core/testing';
 
 import { CartService } from './cart.service';
 import { CheckoutService } from './checkout.service';
 
 describe('CheckoutService', () => {
-  let service: CheckoutService;
-  let cartSpy: jasmine.SpyObj<CartService>;
+    let service: CheckoutService;
+    let cartSpy: { getTotal: Mock };
 
-  beforeEach(() => {
-    cartSpy = jasmine.createSpyObj('CartService', ['getTotal']);
+    beforeEach(() => {
+        cartSpy = {
+            getTotal: vi.fn().mockName("CartService.getTotal")
+        };
 
-    TestBed.configureTestingModule({
-      providers: [{ provide: CartService, useValue: cartSpy }]
+        TestBed.configureTestingModule({
+            providers: [{ provide: CartService, useValue: cartSpy }]
+        });
+        service = TestBed.inject(CheckoutService);
     });
-    service = TestBed.inject(CheckoutService);
-  });
 
-  it('should offer free shipping for orders over 500 TRY', () => {
-    cartSpy.getTotal.and.returnValue(650);
+    it('should offer free shipping for orders over 500 TRY', () => {
+        cartSpy.getTotal.mockReturnValue(650);
 
-    expect(service.getShippingFee()).toBe(0);
-    expect(cartSpy.getTotal).toHaveBeenCalled();
-  });
+        expect(service.getShippingFee()).toBe(0);
+        expect(cartSpy.getTotal).toHaveBeenCalled();
+    });
 });
