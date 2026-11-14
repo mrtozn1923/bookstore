@@ -6,7 +6,17 @@
     padding: 0 2rem;
     list-style: none;
     overflow-x: auto;
+    /* snap to whole covers; the snap line starts after the faded edge */
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 2rem;
+    /* a sideways swipe at the end does not become "back" in the browser history */
+    overscroll-behavior-inline: contain;
     /* faded edges: a hint that the row scrolls sideways */
     mask-image: linear-gradient(to right, transparent, #000000 2rem, #000000 calc(100% - 2rem), transparent);
+}
+.book-strip li {
+    /* do not shrink: an img with a percentage max-inline-size gives the item no minimum width */
+    flex: none;
+    scroll-snap-align: start;
 }
 .book-strip img { inline-size: 10rem; border-radius: 0.25rem; }

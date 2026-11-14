@@ -17,6 +17,15 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
+html {
+    /* room for the scrollbar is kept even when the page cannot scroll (no shift when a modal locks it) */
+    scrollbar-gutter: stable;
+}
+/* smooth jumps to anchors, only for people who did not ask for less motion */
+@media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+}
+
 /* images: block, never wider than their container, height from the width/height ratio */
 img, picture, video {
     display: block;

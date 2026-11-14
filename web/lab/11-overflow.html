@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>11 overflow and scroll</title>
+    <style>
+        body { margin: 0; padding: 20px; font: 16px/1.5 system-ui, sans-serif; background: #ffffff; color: #1f2937; }
+        section { max-inline-size: 640px; margin-block-end: 20px; }
+        .frame { inline-size: 200px; block-size: 60px; border: 1px solid #d1d5db; white-space: nowrap; }
+        .frame a { margin-inline-start: 400px; }
+
+        /* 1) hidden still makes a scroll container, clip does not */
+        #hidden-box { overflow: hidden; }
+        #clip-box { overflow: clip; }
+
+        /* 5) touch-action: which finger movements does the browser handle itself? */
+        #swipe { display: flex; gap: 10px; inline-size: 400px; overflow-x: auto; }
+        #swipe div { flex: none; inline-size: 160px; block-size: 80px; background: #e5e7eb; }
+
+        /* 2) scroll-margin: the target keeps its distance from the sticky header */
+        #feed { block-size: 300px; overflow-y: auto; border: 1px solid #d1d5db; }
+        #feed header { position: sticky; inset-block-start: 0; block-size: 50px; background: #e5e7eb; }
+        #feed h2 { margin: 0; padding-block-start: 400px; font-size: 1rem; }
+        #target-margin { scroll-margin-block-start: 60px; }
+
+        /* 3) scrollbars */
+        .bar { inline-size: 200px; block-size: 80px; overflow: auto; border: 1px solid #d1d5db; display: inline-block; }
+        .bar .tall { block-size: 300px; }
+        #gutter-short { scrollbar-gutter: stable; }
+        #thin-long { scrollbar-width: thin; }
+        #color-long { scrollbar-color: #b91c1c #fde68a; }
+        #legacy::-webkit-scrollbar, #both::-webkit-scrollbar { inline-size: 8px; }
+        #legacy::-webkit-scrollbar-thumb, #both::-webkit-scrollbar-thumb { background: #15803d; }
+        #both { scrollbar-color: #b91c1c #fde68a; }
+
+        /* 4) scroll chaining: what happens when the panel reaches its end? */
+        #panel { position: fixed; inset-block-start: 20px; inset-inline-end: 20px; inline-size: 300px; block-size: 300px;
+            overflow-y: auto; border: 1px solid #d1d5db; background: #f9fafb; }
+        #panel.contain { overscroll-behavior: contain; }
+        #panel .content { block-size: 600px; }
+        #panel.short .content { block-size: 100px; }
+        .page-filler { block-size: 3000px; }
+    </style>
+</head>
+<body>
+    <section>
+        <div class="frame" id="hidden-box">Dune, Emma <a href="#" id="hidden-link">Middlemarch</a></div>
+        <div class="frame" id="clip-box">Dune, Emma <a href="#" id="clip-link">Middlemarch</a></div>
+    </section>
+    <section>
+        <div id="swipe"><div></div><div></div><div></div><div></div></div>
+    </section>
+    <section>
+        <div id="feed">
+            <header>Filters</header>
+            <h2 id="target-plain">Reviews</h2>
+            <h2 id="target-margin">Recommended</h2>
+            <div style="block-size: 400px"></div>
+        </div>
+    </section>
+    <section>
+        <div class="bar" id="auto-short">short</div>
+        <div class="bar" id="auto-long"><div class="tall">long</div></div>
+        <div class="bar" id="gutter-short">short</div>
+        <div class="bar" id="thin-long"><div class="tall">long</div></div>
+        <div class="bar" id="color-long"><div class="tall">long</div></div>
+        <div class="bar" id="legacy"><div class="tall">long</div></div>
+        <div class="bar" id="both"><div class="tall">long</div></div>
+    </section>
+    <div id="panel"><div class="content">Cart</div></div>
+    <div class="page-filler"></div>
+</body>
+</html>

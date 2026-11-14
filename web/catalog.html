@@ -9,10 +9,11 @@
 <body>
     <header class="site-header">
         <a class="logo" href="catalog.html">Bookstore</a>
-        <a class="cart-link" href="checkout.html">
+        <a href="#reading-list">Reading list</a>
+        <button type="button" class="cart-link" aria-haspopup="dialog" aria-controls="cart-drawer">
             <svg class="icon icon-line cart-icon" aria-hidden="true"><use href="img/icons.svg#cart"/></svg>
-            Cart <span class="cart-count">0</span>
-        </a>
+            Cart <span class="cart-count">7</span>
+        </button>
     </header>
     <main class="catalog">
         <h1>Classics</h1>
@@ -53,7 +54,7 @@
                 <button type="button" class="fav" aria-pressed="false" aria-label="Favorite: The Hobbit"><svg class="icon icon-line" aria-hidden="true"><use href="img/icons.svg#heart"/></svg></button>
             </li>
         </ul>
-        <section class="reading-list">
+        <section class="reading-list" id="reading-list">
             <h2>My reading list</h2>
             <ul>
                 <li class="is-read">Emma <small>finished</small></li>
@@ -62,6 +63,23 @@
             </ul>
         </section>
     </main>
+    <dialog class="cart-drawer" id="cart-drawer" aria-labelledby="cart-title">
+        <header><h2 id="cart-title">Your cart</h2></header>
+        <ul class="cart-items">
+            <li><img src="img/cover-dune.webp" alt="" width="240" height="360" loading="lazy"> Dune <span class="price">₺420.00</span></li>
+            <li><img src="img/cover-middlemarch.webp" alt="" width="240" height="360" loading="lazy"> Middlemarch <span class="price">₺385.50</span></li>
+            <li><img src="img/cover-emma.webp" alt="" width="240" height="360" loading="lazy"> Emma <span class="price">₺240.00</span></li>
+            <li><img src="img/cover-persuasion.webp" alt="" width="240" height="360" loading="lazy"> Persuasion <span class="price">₺255.00</span></li>
+            <li><img src="img/cover-jane-eyre.webp" alt="" width="240" height="360" loading="lazy"> Jane Eyre <span class="price">₺298.00</span></li>
+            <li><img src="img/cover-frankenstein.webp" alt="" width="240" height="360" loading="lazy"> Frankenstein <span class="price">₺210.00</span></li>
+            <li><img src="img/cover-hobbit.webp" alt="" width="240" height="360" loading="lazy"> The Hobbit <span class="price">₺310.00</span></li>
+        </ul>
+        <footer>
+            <p class="cart-total">Total ₺2,118.50</p>
+            <form method="dialog"><button type="submit">Close</button></form>
+        </footer>
+    </dialog>
     <script src="js/favorite.js" defer></script>
+    <script src="js/cart-drawer.js" defer></script>
 </body>
 </html>

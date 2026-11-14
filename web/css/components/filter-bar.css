@@ -1,3 +1,6 @@
+/* anchor targets stop below the sticky bar, not under it */
+html:has(.filter-bar) { scroll-padding-block-start: 4rem; }
+
 .filter-bar {
     position: sticky;
     inset-block-start: 0;
