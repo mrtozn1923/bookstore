@@ -17,7 +17,8 @@ public enum ReservationStatus
 {
     Active,
     Released,
-    Expired
+    Expired,
+    Committed
 }
 
 public sealed class StockReservation

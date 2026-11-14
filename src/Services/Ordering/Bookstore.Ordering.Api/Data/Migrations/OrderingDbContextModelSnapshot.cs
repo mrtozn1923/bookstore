@@ -59,6 +59,41 @@ namespace Bookstore.Ordering.Data.Migrations
                     b.ToTable("CatalogBooks");
                 });
 
+            modelBuilder.Entity("Bookstore.Ordering.Checkout.CheckoutSaga", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(3)");
+
+                    b.Property<string>("CustomerEmail")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("Step")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<decimal>("Total")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CheckoutSagas");
+                });
+
             modelBuilder.Entity("Bookstore.Ordering.Domain.Order", b =>
                 {
                     b.Property<Guid>("Id")
@@ -67,6 +102,10 @@ namespace Bookstore.Ordering.Data.Migrations
                     b.Property<string>("CancellationReason")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("PaymentReference")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime>("PlacedAtUtc")
                         .HasColumnType("datetime2");

@@ -1,9 +1,42 @@
+using System.Reflection;
+using Bookstore.Contracts;
+using Bookstore.Contracts.Inventory;
 using Bookstore.Inventory.Data;
 using Bookstore.Inventory.Stock;
+using Microsoft.EntityFrameworkCore;
+using Wolverine;
+using Wolverine.EntityFrameworkCore;
+using Wolverine.ErrorHandling;
+using Wolverine.RabbitMQ;
+using Wolverine.SqlServer;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
-builder.AddSqlServerDbContext<InventoryDbContext>("inventorydb");
+// Same reasoning as Catalog and Ordering: the outbox needs its own transaction, the migrator keeps EF Core's retries.
+builder.AddSqlServerDbContext<InventoryDbContext>("inventorydb", settings => settings.DisableRetry = !DatabaseMigration.IsMigrationRun(args));
+
+builder.UseWolverine(opts =>
+{
+    opts.PersistMessagesWithSqlServerUsingNamedConnection("inventorydb", "wolverine");
+    opts.UseRabbitMqUsingNamedConnection("rabbitmq").AutoProvision();
+    opts.UseEntityFrameworkCoreTransactions();
+    opts.Policies.AutoApplyTransactions();
+
+    // Inventory owns its command queue; the checkout saga only knows its name.
+    opts.ListenToRabbitQueue(CommandQueues.Inventory)
+        .UseDurableInbox()
+        .DeadLetterQueueing(new DeadLetterQueue("inventory.dead-letter"));
+
+    opts.PublishMessage<StockReserved>().ToRabbitExchange(Exchanges.Inventory);
+    opts.PublishMessage<StockReservationFailed>().ToRabbitExchange(Exchanges.Inventory);
+    opts.PublishMessage<StockCommitted>().ToRabbitExchange(Exchanges.Inventory);
+    opts.Policies.UseDurableOutboxOnAllSendingEndpoints();
+
+    // The reservation retries five times itself; if the row is still contended, the whole message is tried again later.
+    opts.OnException<DbUpdateConcurrencyException>().RetryWithCooldown(
+        TimeSpan.FromMilliseconds(100), TimeSpan.FromMilliseconds(500), TimeSpan.FromSeconds(2));
+    opts.OnException<InvalidOperationException>().MoveToErrorQueue();
+});
 
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.Configure<ReservationOptions>(builder.Configuration.GetSection("Reservations"));

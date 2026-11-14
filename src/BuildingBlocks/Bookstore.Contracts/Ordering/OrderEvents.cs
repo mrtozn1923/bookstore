@@ -7,3 +7,8 @@ public sealed record OrderPlaced(
     DateTimeOffset PlacedAtUtc);
 
 public sealed record OrderPlacedLine(string Isbn, int Quantity, decimal UnitPrice);
+
+// The two ends of the checkout saga.
+public sealed record OrderConfirmed(Guid OrderId, string CustomerEmail, DateTimeOffset ConfirmedAtUtc);
+
+public sealed record OrderCancelled(Guid OrderId, string CustomerEmail, string Reason, DateTimeOffset CancelledAtUtc);

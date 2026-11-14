@@ -1,6 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
+  <PropertyGroup>
+    <RootNamespace>Bookstore.Payments</RootNamespace>
+  </PropertyGroup>
+
   <ItemGroup>
+    <PackageReference Include="WolverineFx.RabbitMQ" />
+    <PackageReference Include="WolverineFx.RuntimeCompilation" />
+    <PackageReference Include="WolverineFx.SqlServer" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\BuildingBlocks\Bookstore.Contracts\Bookstore.Contracts.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\Bookstore.ServiceDefaults\Bookstore.ServiceDefaults.csproj" />
   </ItemGroup>
 

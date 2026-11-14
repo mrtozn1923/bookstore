@@ -1,9 +1,9 @@
+using Bookstore.Contracts.Inventory;
 using Bookstore.Contracts.Ordering;
-using Bookstore.Inventory.V1;
 using Bookstore.Ordering.CatalogCopy;
+using Bookstore.Ordering.Checkout;
 using Bookstore.Ordering.Data;
 using Bookstore.Ordering.Domain;
-using Grpc.Core;
 using Microsoft.EntityFrameworkCore;
 using Wolverine.EntityFrameworkCore;
 
@@ -14,14 +14,10 @@ public abstract record PlaceOrderOutcome
     public sealed record Placed(Order Order) : PlaceOrderOutcome;
     public sealed record UnknownBooks(IReadOnlyList<string> Isbns) : PlaceOrderOutcome;
     public sealed record PricesChanged(IReadOnlyList<PriceChange> Changes) : PlaceOrderOutcome;
-    public sealed record OutOfStock(IReadOnlyList<string> Isbns) : PlaceOrderOutcome;
-    public sealed record InventoryUnavailable(StatusCode Status) : PlaceOrderOutcome;
 }
 
-// The write side: load what the aggregate needs, let it decide, reserve stock synchronously, save.
-public sealed class PlaceOrderHandler(
-    IDbContextOutbox<OrderingDbContext> outbox, InventoryService.InventoryServiceClient inventory, IConfiguration configuration,
-    TimeProvider clock, ILogger<PlaceOrderHandler> logger)
+// The write side: load what the aggregate needs, let it decide, save, and hand the rest to the checkout saga.
+public sealed class PlaceOrderHandler(IDbContextOutbox<OrderingDbContext> outbox, TimeProvider clock)
 {
     private readonly OrderingDbContext db = outbox.DbContext;
 
@@ -56,32 +52,6 @@ public sealed class PlaceOrderHandler(
                 i.Isbn, books[i.Isbn].Title, new Money(books[i.Isbn].Price, books[i.Isbn].Currency), i.Quantity))],
             clock);
 
-        // Sync call with its own deadline: Inventory gets at most this long, then the caller gives up.
-        TimeSpan deadline = configuration.GetValue("Ordering:ReservationDeadline", TimeSpan.FromSeconds(2));
-        try
-        {
-            ReserveStockResponse reserved = await inventory.ReserveStockAsync(
-                new ReserveStockRequest
-                {
-                    OrderId = order.Id.ToString(),
-                    Lines = { order.Items.Select(i => new ReservationLine { BookId = i.Isbn, Quantity = i.Quantity }) }
-                },
-                deadline: clock.GetUtcNow().UtcDateTime + deadline,
-                cancellationToken: ct);
-            order.MarkStockReserved(Guid.Parse(reserved.ReservationId), reserved.ExpiresAt.ToDateTime());
-        }
-        catch (RpcException ex) when (ex.StatusCode == StatusCode.FailedPrecondition)
-        {
-            string unavailable = ex.Trailers.GetValue("unavailable-books") ?? "";
-            return new PlaceOrderOutcome.OutOfStock(unavailable.Split(',', StringSplitOptions.RemoveEmptyEntries));
-        }
-        catch (RpcException ex) when (ex.StatusCode is StatusCode.Unavailable or StatusCode.DeadlineExceeded or StatusCode.Aborted)
-        {
-            // Unknown result: the reservation may exist on Inventory's side. Its TTL releases it.
-            logger.LogWarning("Stock reservation for order {OrderId} failed with {Status}", order.Id, ex.StatusCode);
-            return new PlaceOrderOutcome.InventoryUnavailable(ex.StatusCode);
-        }
-
         db.Orders.Add(order);
 
         // The domain event stays inside Ordering; what leaves the service is the integration event.
@@ -94,7 +64,15 @@ public sealed class PlaceOrderHandler(
         }
         order.ClearDomainEvents();
 
-        // INSERT Orders/OrderItems and the outbox row in one transaction, then hand the message to RabbitMQ.
+        // No call to Inventory here: the saga reserves stock with a message. Checkout no longer stops when Inventory is down.
+        await outbox.SendAsync(new StartCheckout(
+            order.Id.Value,
+            [.. order.Items.Select(i => new StockLine(i.Isbn, i.Quantity))],
+            order.Total.Amount,
+            order.Total.Currency,
+            order.Buyer.Email));
+
+        // INSERT Orders/OrderItems and both outbox rows in one transaction, then the messages leave.
         await outbox.SaveChangesAndFlushMessagesAsync(ct);
 
         return new PlaceOrderOutcome.Placed(order);

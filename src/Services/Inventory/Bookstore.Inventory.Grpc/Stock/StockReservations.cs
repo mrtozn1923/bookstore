@@ -1,5 +1,4 @@
 using Bookstore.Inventory.Data;
-using Grpc.Core;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -8,12 +7,19 @@ namespace Bookstore.Inventory.Stock;
 
 public sealed record StockRequest(string Isbn, int Quantity);
 
+// The same reservation logic serves two doors: the gRPC API and the checkout saga's ReserveStock message.
+public abstract record ReservationOutcome
+{
+    public sealed record Reserved(StockReservation Reservation) : ReservationOutcome;
+    public sealed record Unavailable(IReadOnlyList<string> Isbns) : ReservationOutcome;
+}
+
 public sealed class StockReservations(
     InventoryDbContext db, TimeProvider clock, IOptions<ReservationOptions> options, ILogger<StockReservations> logger)
 {
     private const int MaxAttempts = 5;
 
-    public async Task<StockReservation> ReserveAsync(Guid orderId, IReadOnlyList<StockRequest> lines, CancellationToken ct)
+    public async Task<ReservationOutcome> ReserveAsync(Guid orderId, IReadOnlyList<StockRequest> lines, CancellationToken ct)
     {
         Dictionary<string, int> wanted = lines.GroupBy(l => l.Isbn).ToDictionary(g => g.Key, g => g.Sum(l => l.Quantity));
 
@@ -23,7 +29,7 @@ public sealed class StockReservations(
             StockReservation? existing = await db.Reservations.AsNoTracking().FirstOrDefaultAsync(r => r.OrderId == orderId, ct);
             if (existing is not null)
             {
-                return existing;
+                return new ReservationOutcome.Reserved(existing);
             }
 
             try
@@ -37,10 +43,6 @@ public sealed class StockReservations(
                 db.ChangeTracker.Clear();
                 // A short random pause so that the competing requests do not collide again in lockstep.
                 await Task.Delay(TimeSpan.FromMilliseconds(Random.Shared.Next(10, 50) * attempt), ct);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                throw new RpcException(new Status(StatusCode.Aborted, "Stock is changing too fast; retry the reservation."));
             }
             catch (DbUpdateException ex) when (ex.InnerException is SqlException { Number: 2601 or 2627 })
             {
@@ -73,7 +75,37 @@ public sealed class StockReservations(
         return reservation.Lines.Count;
     }
 
-    private async Task<StockReservation> TryReserveAsync(Guid orderId, Dictionary<string, int> wanted, CancellationToken ct)
+    // Turns the reservation into a sale: the copies leave the shelf for good. Idempotent per order.
+    public async Task<bool> CommitAsync(Guid orderId, CancellationToken ct)
+    {
+        StockReservation? reservation = await db.Reservations.FirstOrDefaultAsync(r => r.OrderId == orderId, ct);
+        if (reservation is null || reservation.Status is not (ReservationStatus.Active or ReservationStatus.Committed))
+        {
+            return false;
+        }
+        if (reservation.Status == ReservationStatus.Committed)
+        {
+            return true;
+        }
+
+        string[] isbns = [.. reservation.Lines.Select(l => l.Isbn)];
+        List<StockItem> items = await db.StockItems.Where(s => isbns.Contains(s.Isbn)).ToListAsync(ct);
+        DateTime now = clock.GetUtcNow().UtcDateTime;
+        foreach (ReservationLine line in reservation.Lines)
+        {
+            StockItem item = items.Single(i => i.Isbn == line.Isbn);
+            item.QuantityOnHand -= line.Quantity;
+            item.QuantityReserved -= line.Quantity;
+            item.UpdatedAtUtc = now;
+        }
+        reservation.Status = ReservationStatus.Committed;
+        await db.SaveChangesAsync(ct);
+
+        logger.LogInformation("Reservation {ReservationId} for order {OrderId} Committed", reservation.Id, orderId);
+        return true;
+    }
+
+    private async Task<ReservationOutcome> TryReserveAsync(Guid orderId, Dictionary<string, int> wanted, CancellationToken ct)
     {
         List<StockItem> items = await db.StockItems.Where(s => wanted.Keys.Contains(s.Isbn)).ToListAsync(ct);
 
@@ -83,9 +115,7 @@ public sealed class StockReservations(
         ];
         if (unavailable.Length > 0)
         {
-            throw new RpcException(
-                new Status(StatusCode.FailedPrecondition, $"Not enough stock for: {string.Join(", ", unavailable)}."),
-                new Metadata { { "unavailable-books", string.Join(",", unavailable) } });
+            return new ReservationOutcome.Unavailable(unavailable);
         }
 
         DateTime now = clock.GetUtcNow().UtcDateTime;
@@ -109,6 +139,6 @@ public sealed class StockReservations(
         // UPDATE ... WHERE [Isbn] = @p AND [RowVersion] = @p for every stock row, plus the INSERT, in one transaction.
         await db.SaveChangesAsync(ct);
         logger.LogInformation("Reserved {Lines} line(s) for order {OrderId} until {ExpiresAtUtc:O}", wanted.Count, orderId, reservation.ExpiresAtUtc);
-        return reservation;
+        return new ReservationOutcome.Reserved(reservation);
     }
 }

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Bookstore.Inventory.Data;
 using Bookstore.Inventory.V1;
 using Google.Protobuf.WellKnownTypes;
@@ -16,14 +17,29 @@ public sealed class InventoryGrpcService(InventoryDbContext db, StockReservation
             throw new RpcException(new Status(StatusCode.InvalidArgument, "order_id must be a GUID and every line needs a positive quantity."));
         }
 
-        // context.CancellationToken fires at the caller's deadline: the database work stops with it.
-        StockReservation reservation = await reservations.ReserveAsync(
-            orderId, [.. request.Lines.Select(l => new StockRequest(l.BookId, l.Quantity))], context.CancellationToken);
-
-        return new ReserveStockResponse
+        ReservationOutcome outcome;
+        try
         {
-            ReservationId = reservation.Id.ToString(),
-            ExpiresAt = Timestamp.FromDateTime(DateTime.SpecifyKind(reservation.ExpiresAtUtc, DateTimeKind.Utc))
+            // context.CancellationToken fires at the caller's deadline: the database work stops with it.
+            outcome = await reservations.ReserveAsync(
+                orderId, [.. request.Lines.Select(l => new StockRequest(l.BookId, l.Quantity))], context.CancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            throw new RpcException(new Status(StatusCode.Aborted, "Stock is changing too fast; retry the reservation."));
+        }
+
+        return outcome switch
+        {
+            ReservationOutcome.Reserved reserved => new ReserveStockResponse
+            {
+                ReservationId = reserved.Reservation.Id.ToString(),
+                ExpiresAt = Timestamp.FromDateTime(DateTime.SpecifyKind(reserved.Reservation.ExpiresAtUtc, DateTimeKind.Utc))
+            },
+            ReservationOutcome.Unavailable unavailable => throw new RpcException(
+                new Status(StatusCode.FailedPrecondition, $"Not enough stock for: {string.Join(", ", unavailable.Isbns)}."),
+                new Metadata { { "unavailable-books", string.Join(",", unavailable.Isbns) } }),
+            _ => throw new UnreachableException()
         };
     }
 

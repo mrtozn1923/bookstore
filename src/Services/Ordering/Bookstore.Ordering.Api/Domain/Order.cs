@@ -1,9 +1,12 @@
 namespace Bookstore.Ordering.Domain;
 
+// The checkout saga moves an order through these states (post 07).
 public enum OrderStatus
 {
     Pending,
     StockReserved,
+    Paid,
+    Confirmed,
     Cancelled
 }
 
@@ -28,6 +31,7 @@ public sealed class Order
     public OrderStatus Status { get; private set; }
     public string? CancellationReason { get; private set; }
     public Guid? StockReservationId { get; private set; }
+    public string? PaymentReference { get; private set; }
     public DateTime? StockReservedUntilUtc { get; private set; }
     public Money Total { get; private set; } = null!;
     public IReadOnlyList<OrderItem> Items => _items;
@@ -54,7 +58,7 @@ public sealed class Order
         }
         order.Total = order._items.Select(i => i.LineTotal).Aggregate((sum, lineTotal) => sum + lineTotal);
 
-        // Pending, not confirmed: stock and payment are not settled yet (checkout saga, post 07).
+        // Pending, not confirmed: stock and payment are settled later by the checkout saga.
         order._domainEvents.Add(new OrderPlaced(order.Id, order.Total, order._items.Sum(i => i.Quantity), now));
         return order;
     }
@@ -68,6 +72,25 @@ public sealed class Order
         Status = OrderStatus.StockReserved;
         StockReservationId = reservationId;
         StockReservedUntilUtc = reservedUntilUtc;
+    }
+
+    public void MarkPaid(string paymentReference)
+    {
+        if (Status != OrderStatus.StockReserved)
+        {
+            throw new DomainException("order.not-payable", $"An order in status {Status} cannot be marked as paid.");
+        }
+        Status = OrderStatus.Paid;
+        PaymentReference = paymentReference;
+    }
+
+    public void Confirm()
+    {
+        if (Status != OrderStatus.Paid)
+        {
+            throw new DomainException("order.not-confirmable", $"An order in status {Status} cannot be confirmed.");
+        }
+        Status = OrderStatus.Confirmed;
     }
 
     public void Cancel(string reason, TimeProvider clock)

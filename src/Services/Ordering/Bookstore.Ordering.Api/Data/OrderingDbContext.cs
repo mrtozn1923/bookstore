@@ -1,4 +1,5 @@
 using Bookstore.Ordering.CatalogCopy;
+using Bookstore.Ordering.Checkout;
 using Bookstore.Ordering.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -9,6 +10,7 @@ public sealed class OrderingDbContext(DbContextOptions<OrderingDbContext> option
 {
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<CatalogBook> CatalogBooks => Set<CatalogBook>();
+    public DbSet<CheckoutSaga> CheckoutSagas => Set<CheckoutSaga>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -21,6 +23,7 @@ public sealed class OrderingDbContext(DbContextOptions<OrderingDbContext> option
             order.Property(o => o.Id).HasConversion(id => id.Value, value => new OrderId(value));
             order.Property(o => o.Status).HasConversion<string>().HasMaxLength(20);
             order.Property(o => o.CancellationReason).HasMaxLength(200);
+            order.Property(o => o.PaymentReference).HasMaxLength(100);
             order.ComplexProperty(o => o.Buyer, buyer =>
             {
                 buyer.Property(b => b.Name).HasMaxLength(200);
@@ -42,6 +45,18 @@ public sealed class OrderingDbContext(DbContextOptions<OrderingDbContext> option
             item.Property(i => i.Title).HasMaxLength(200);
             item.ComplexProperty(i => i.UnitPrice, MapMoney);
             item.ComplexProperty(i => i.LineTotal, MapMoney);
+        });
+
+        // Wolverine finds the saga's storage through this mapping and increments Version on every save:
+        // two messages for the same checkout handled at the same time cannot overwrite each other.
+        modelBuilder.Entity<CheckoutSaga>(saga =>
+        {
+            saga.HasKey(s => s.Id);
+            saga.Property(s => s.Step).HasConversion<string>().HasMaxLength(30);
+            saga.Property(s => s.Total).HasPrecision(12, 2);
+            saga.Property(s => s.Currency).HasMaxLength(3).IsUnicode(false);
+            saga.Property(s => s.CustomerEmail).HasMaxLength(256);
+            saga.Property(s => s.Version).IsConcurrencyToken();
         });
 
         modelBuilder.Entity<CatalogBook>(book =>

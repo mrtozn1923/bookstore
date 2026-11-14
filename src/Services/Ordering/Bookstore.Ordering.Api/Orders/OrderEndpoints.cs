@@ -13,14 +13,15 @@ public static class OrderEndpoints
             .MapGroup("/api/v{version:apiVersion}/orders")
             .HasApiVersion(1.0);
 
-        orders.MapPost("/", PlaceOrder).ProducesValidationProblem()
-            .ProducesProblem(StatusCodes.Status409Conflict).ProducesProblem(StatusCodes.Status503ServiceUnavailable);
+        orders.MapPost("/", PlaceOrder).ProducesValidationProblem().ProducesProblem(StatusCodes.Status409Conflict);
         orders.MapGet("/{orderId:guid}", GetOrder).WithName("GetOrder").ProducesProblem(StatusCodes.Status404NotFound);
         orders.MapGet("/", ListOrders);
         return app;
     }
 
-    private static async Task<Results<CreatedAtRoute<OrderResponse>, ProblemHttpResult>> PlaceOrder(
+    // 202, not 201: the order exists, but stock and payment are decided later by the checkout saga.
+    // The client follows the Location header to see the status change.
+    private static async Task<Results<AcceptedAtRoute<OrderResponse>, ProblemHttpResult>> PlaceOrder(
         PlaceOrderRequest request, PlaceOrderHandler handler, OrderQueries queries, CancellationToken ct)
     {
         PlaceOrderOutcome outcome;
@@ -36,7 +37,7 @@ public static class OrderEndpoints
 
         return outcome switch
         {
-            PlaceOrderOutcome.Placed placed => TypedResults.CreatedAtRoute(
+            PlaceOrderOutcome.Placed placed => TypedResults.AcceptedAtRoute(
                 (await queries.GetAsync(placed.Order.Id.Value, ct))!, "GetOrder", new { orderId = placed.Order.Id.Value, version = "1" }),
             PlaceOrderOutcome.UnknownBooks unknown => TypedResults.Problem(
                 title: "Unknown books", detail: $"Not in the catalog: {string.Join(", ", unknown.Isbns)}.",
@@ -45,14 +46,6 @@ public static class OrderEndpoints
                 title: "Prices changed", detail: "Some prices changed since the cart was shown. Confirm the new prices.",
                 statusCode: StatusCodes.Status409Conflict,
                 extensions: new Dictionary<string, object?> { ["changes"] = changed.Changes }),
-            PlaceOrderOutcome.OutOfStock outOfStock => TypedResults.Problem(
-                title: "Out of stock", detail: $"Not enough stock for: {string.Join(", ", outOfStock.Isbns)}.",
-                statusCode: StatusCodes.Status409Conflict),
-            PlaceOrderOutcome.InventoryUnavailable unavailable => TypedResults.Problem(
-                title: "Checkout is temporarily unavailable",
-                detail: "Stock could not be reserved. No order was created; please try again in a moment.",
-                statusCode: StatusCodes.Status503ServiceUnavailable,
-                extensions: new Dictionary<string, object?> { ["grpcStatus"] = unavailable.Status.ToString() }),
             _ => throw new UnreachableException()
         };
     }

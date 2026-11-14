@@ -59,7 +59,9 @@ IResourceBuilder<ProjectResource> inventory = builder.AddProject<Projects.Bookst
     .WithHttpEndpoint(name: "grpc")
     .WithEndpoint("grpc", endpoint => endpoint.Transport = "http2")
     .WithReference(inventoryDb)
+    .WithReference(rabbitmq)
     .WaitForCompletion(inventoryMigrator)
+    .WaitFor(rabbitmq)
     .WithHttpHealthCheck("/health");
 EndpointReference inventoryHttp = inventory.GetEndpoint("http");
 EndpointReference inventoryGrpc = inventory.GetEndpoint("grpc");
@@ -80,10 +82,9 @@ IResourceBuilder<ProjectResource> orderingMigrator = builder
     .WaitFor(orderingDb)
     .WaitFor(catalog);
 
-// Ordering calls Inventory at runtime, but does not wait for it to start: they start independently.
+// Since post 07 Ordering talks to Inventory and Payments only through RabbitMQ.
 builder.AddProject<Projects.Bookstore_Ordering_Api>("ordering")
     .WithReference(orderingDb)
-    .WithReference(inventory)
     .WithReference(rabbitmq)
     .WaitForCompletion(orderingMigrator)
     .WaitFor(rabbitmq)
@@ -91,7 +92,9 @@ builder.AddProject<Projects.Bookstore_Ordering_Api>("ordering")
 
 builder.AddProject<Projects.Bookstore_Payments_Api>("payments")
     .WithReference(paymentsDb)
+    .WithReference(rabbitmq)
     .WaitFor(paymentsDb)
+    .WaitFor(rabbitmq)
     .WithHttpHealthCheck("/health");
 
 builder.AddProject<Projects.Bookstore_Notifications_Api>("notifications")
