@@ -18,7 +18,10 @@ public static class LoadCommand
         using CancellationTokenSource stop = new(duration);
         ConcurrentBag<double> latenciesMs = [];
         int errors = 0;
-        Task<Dictionary<string, int>> sampler = SampleWaitsAsync(db, stop.Token);
+        string? firstError = null;
+        Task<Dictionary<string, int>> sampler = options.Get("sample", "on") == "on"
+            ? SampleWaitsAsync(db, stop.Token)
+            : Task.FromResult(new Dictionary<string, int>());
 
         Stopwatch total = Stopwatch.StartNew();
         Task[] workers = Enumerable.Range(0, concurrency).Select(async worker =>
@@ -41,9 +44,10 @@ public static class LoadCommand
                     while (await reader.ReadAsync()) { }
                     latenciesMs.Add(Stopwatch.GetElapsedTime(started).TotalMilliseconds);
                 }
-                catch (DbException)
+                catch (Exception ex) when (ex is DbException or InvalidOperationException)
                 {
                     Interlocked.Increment(ref errors);
+                    Interlocked.CompareExchange(ref firstError, ex.GetType().Name + ": " + ex.Message, null);
                 }
             }
         }).ToArray();
@@ -56,6 +60,10 @@ public static class LoadCommand
         Console.WriteLine($"db={db} concurrency={concurrency} requests={sorted.Length} errors={errors}");
         Console.WriteLine($"throughput={sorted.Length / total.Elapsed.TotalSeconds:F1} req/s " +
                           $"p50={Percentile(sorted, 50):F1} ms p95={Percentile(sorted, 95):F1} ms p99={Percentile(sorted, 99):F1} ms");
+        if (firstError is not null)
+        {
+            Console.WriteLine($"first error: {firstError}");
+        }
         int samples = waits.Values.Sum();
         foreach ((string wait, int count) in waits.OrderByDescending(w => w.Value).Take(4))
         {
