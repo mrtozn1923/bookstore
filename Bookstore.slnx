@@ -6,5 +6,6 @@
     <Project Path="samples/Cd01.PatternTemplate/Cd01.PatternTemplate.csproj" />
     <Project Path="samples/Cd02.VirtualRoot/Cd02.VirtualRoot.csproj" />
     <Project Path="samples/Cd03.SentinelValues/Cd03.SentinelValues.csproj" />
+    <Project Path="samples/Cd04.PublicId/Cd04.PublicId.csproj" />
   </Folder>
 </Solution>
