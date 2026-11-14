@@ -44,3 +44,9 @@ Thumbs.db
 
 # Vitest browser mode attachments (failure screenshots, actual/diff images)
 /.vitest
+
+# Playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/
+/playwright/.auth/
