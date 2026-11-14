@@ -14,7 +14,8 @@
     "build:federation": "webpack -c webpack.federation.config.mjs --mode production",
     "build:esbuild": "node esbuild.config.mjs",
     "dev:esbuild": "node esbuild.config.mjs --serve",
-    "bench": "node bench/bench.mjs"
+    "bench": "node bench/bench.mjs",
+    "build:server": "vite build --mode server"
   },
   "dependencies": {
     "lodash-es": "^4.18.1"

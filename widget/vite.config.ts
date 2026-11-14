@@ -29,4 +29,21 @@ function moduleGraphReport(): Plugin {
 
 export default defineConfig(({ mode }) => ({
     plugins: mode === "graph" ? [moduleGraphReport()] : [],
+    server: {
+        port: 5173,
+        strictPort: true,
+        // Bookstore.Web (ASP.NET Core) runs at 5080: /api goes there, its pages load our modules
+        proxy: { "/api/": "http://localhost:5080" },
+        cors: { origin: "http://localhost:5080" },
+    },
+    ...(mode === "server" && {
+        base: "/dist/",
+        input: "src/main.ts",
+        build: {
+            manifest: true,
+            outDir: "../server/Bookstore.Web/wwwroot/dist",
+            emptyOutDir: true,
+            modulePreload: { polyfill: false },
+        },
+    }),
 }));
