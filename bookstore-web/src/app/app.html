@@ -1,6 +1,6 @@
 <header>
   <strong>Bookstore</strong>
-  <span class="cart">Cart ({{ cart.count() }}): {{ cart.total() }} TRY</span>
+  <a class="cart" routerLink="/cart">Cart ({{ cart.count() }}): {{ cart.total() }} TRY</a>
 </header>
 <app-cart-toast />
 <main>

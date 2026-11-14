@@ -44,6 +44,14 @@ const server = createServer((req, res) => {
       return;
     }
 
+    // categories (08): the distinct categories of the sample books
+    if (url.pathname === "/api/categories") {
+      const categories = [...new Set(books.map((b) => b.category))];
+      res.writeHead(200, { "Content-Type": "application/json" }).end(JSON.stringify(categories));
+      console.log(`[api] #${no} 200`);
+      return;
+    }
+
     const match = url.pathname.match(/^\/api\/books(?:\/(\d{13}))?(?:\/(stock|price))?$/);
     const book = match?.[1] ? books.find((b) => b.isbn === match[1]) : undefined;
     let body: unknown;

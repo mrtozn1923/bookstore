@@ -1,10 +1,10 @@
 import { Component, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterLink, RouterOutlet } from '@angular/router';
 import { CartStore } from './cart/cart-store';
 import { CartToast } from './cart/cart-toast';
 
 @Component({
-  imports: [RouterOutlet, CartToast],
+  imports: [RouterOutlet, RouterLink, CartToast],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
