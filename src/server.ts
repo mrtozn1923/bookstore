@@ -4,6 +4,7 @@ import { handleHealth } from "#routes/health";
 import { handleListBooks } from "#routes/books";
 import { handlePriceReport } from "#routes/reports";
 import { handleEventLoopDelay } from "#routes/diagnostics";
+import { handleOrderExport } from "#routes/orders";
 import { orderService } from "#services/orderService";
 import { registerOrderNotifications } from "#services/notificationService";
 import { runWithRequestContext } from "./context/requestContext.ts";
@@ -39,6 +40,9 @@ const server = createServer((req, res) => {
         }
         if (req.method === "GET" && url.pathname === "/api/reports/prices") {
             return handlePriceReport(req, res, url);
+        }
+        if (req.method === "GET" && url.pathname === "/api/orders/export") {
+            return handleOrderExport(req, res, url);
         }
         if (req.method === "GET" && url.pathname === "/diagnostics/event-loop") {
             return handleEventLoopDelay(req, res);
