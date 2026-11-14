@@ -3,7 +3,8 @@ using Elastic.Clients.Elasticsearch.QueryDsl;
 
 namespace Bookstore.Search;
 
-public sealed record BookSearchFilter(string? Text, string? Category = null, string? Language = null, decimal? MinPrice = null, decimal? MaxPrice = null);
+public sealed record BookSearchFilter(string? Text, string? Category = null, string? Language = null, decimal? MinPrice = null, decimal? MaxPrice = null,
+    decimal? MinRating = null);
 
 // Every knob that changes ranking, in one place, so _rank_eval and the API run the same query.
 public sealed record SearchTuning
@@ -56,25 +57,7 @@ public static class BookSearchQuery
         }
 
         // Filter context: yes/no conditions, no score, cacheable.
-        List<Query> filters = [];
-        if (!string.IsNullOrWhiteSpace(filter.Category))
-        {
-            filters.Add(new TermQuery { Field = "categories", Value = filter.Category });
-        }
-        if (!string.IsNullOrWhiteSpace(filter.Language))
-        {
-            filters.Add(new TermQuery { Field = "language", Value = filter.Language });
-        }
-        if (filter.MinPrice is not null || filter.MaxPrice is not null)
-        {
-            filters.Add(new NumberRangeQuery
-            {
-                Field = "price",
-                Gte = filter.MinPrice is null ? null : (double)filter.MinPrice.Value,
-                Lte = filter.MaxPrice is null ? null : (double)filter.MaxPrice.Value
-            });
-        }
-
+        List<Query> filters = [.. BookFacets.SelectedFilters(filter).Values];
         return new BoolQuery { Must = [textQuery], Filter = filters };
     }
 

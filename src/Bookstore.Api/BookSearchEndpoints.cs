@@ -8,18 +8,21 @@ namespace Bookstore.Api;
 public sealed record BookSearchHit(string Isbn, string Title, IReadOnlyList<string> Authors, string Language, decimal Price, double? Score,
     string? TitleHighlight, string? DescriptionHighlight);
 
-public sealed record BookSearchResult(long Total, int Page, int PageSize, IReadOnlyList<BookSearchHit> Items, string? DidYouMean);
+public sealed record BookSearchResult(long Total, int Page, int PageSize, IReadOnlyList<BookSearchHit> Items, string? DidYouMean,
+    IReadOnlyList<Facet> Facets);
 
 public static class BookSearchEndpoints
 {
     private const int MaxPageSize = 50;
     private const int MaxResultWindow = 10_000;
     private const string DidYouMean = "did-you-mean";
+    private const int MinHitsWithoutSuggestion = 3;
 
     public static IEndpointRouteBuilder MapBookSearchEndpoints(this IEndpointRouteBuilder app)
     {
         app.MapGet("/books/search", async (string? q, string? category, string? language, decimal? minPrice, decimal? maxPrice,
-            int? page, int? pageSize, ElasticsearchClient client, ILoggerFactory loggerFactory, CancellationToken cancellationToken) =>
+            decimal? minRating, string? sort, int? page, int? pageSize, ElasticsearchClient client, ILoggerFactory loggerFactory,
+            CancellationToken cancellationToken) =>
         {
             int currentPage = page ?? 1;
             int size = pageSize ?? 20;
@@ -34,13 +37,18 @@ public static class BookSearchEndpoints
                 return Results.Problem("Only the first 10,000 results can be paged. Narrow the search with filters.", statusCode: StatusCodes.Status400BadRequest);
             }
 
-            BookSearchFilter filter = new(q, category, language, minPrice, maxPrice);
+            BookSearchFilter filter = new(q, category, language, minPrice, maxPrice, minRating);
             SearchRequest<Book> request = new()
             {
                 From = from,
                 Size = size,
                 TrackTotalHits = new TrackHits(true),
-                Query = BookSearchQuery.Build(filter, SearchTuning.Tuned),
+                // Only the text goes into the query, so every facet counts over everything the text matched.
+                Query = BookSearchQuery.Build(new BookSearchFilter(q), SearchTuning.Tuned),
+                // Selected filters narrow the hits only, after the aggregations have run.
+                PostFilter = BookFacets.PostFilter(filter),
+                Aggregations = BookFacets.Aggregations(filter),
+                Sort = BuildSort(sort),
                 Highlight = string.IsNullOrWhiteSpace(q) ? null : BuildHighlight(),
                 Suggest = string.IsNullOrWhiteSpace(q) ? null : BuildDidYouMean(q)
             };
@@ -57,11 +65,23 @@ public static class BookSearchEndpoints
             }
 
             List<BookSearchHit> items = response.Hits.Select(ToHit).ToList();
-            return Results.Ok(new BookSearchResult(response.Total, currentPage, size, items, ReadDidYouMean(response, q)));
+            return Results.Ok(new BookSearchResult(response.Total, currentPage, size, items, ReadDidYouMean(response, q),
+                BookFacets.Read(response.Aggregations)));
         });
 
         return app;
     }
+
+    // isbn is the tie-breaker: equal prices or dates must not reorder between pages.
+    private static ICollection<SortOptions> BuildSort(string? sort) => sort switch
+    {
+        "price_asc" => [By("price", SortOrder.Asc), By("isbn", SortOrder.Asc)],
+        "price_desc" => [By("price", SortOrder.Desc), By("isbn", SortOrder.Asc)],
+        "newest" => [By("publishedOn", SortOrder.Desc), By("isbn", SortOrder.Asc)],
+        _ => [new SortOptions { Score = new ScoreSort { Order = SortOrder.Desc } }, By("isbn", SortOrder.Asc)]
+    };
+
+    private static SortOptions By(string field, SortOrder order) => new() { Field = new FieldSort { Field = field, Order = order } };
 
     private static Highlight BuildHighlight() => new()
     {
@@ -96,10 +116,10 @@ public static class BookSearchEndpoints
         }
     };
 
-    // Fuzziness already finds most typos, so the suggestion is shown whenever it differs from what was typed.
+    // Fuzziness already finds most typos; suggest only when the search found little (post 09: "roman" got "road").
     private static string? ReadDidYouMean(SearchResponse<Book> response, string? text)
     {
-        if (string.IsNullOrWhiteSpace(text) || response.Suggest is null)
+        if (string.IsNullOrWhiteSpace(text) || response.Suggest is null || response.Total >= MinHitsWithoutSuggestion)
         {
             return null;
         }
