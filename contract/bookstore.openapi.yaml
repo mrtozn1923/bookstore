@@ -1,0 +1,147 @@
+openapi: 3.2.0
+info:
+  title: Bookstore API
+  version: 0.1.0
+  summary: Public and partner HTTP API of Bookstore.
+  description: >-
+    Contract for the Bookstore catalog and ordering API. Design rules are in
+    docs/adr/0001-api-style-guide.md.
+  contact:
+    name: Bookstore API team
+    email: api-team@example.com
+  license:
+    name: MIT
+    identifier: MIT
+servers:
+  - url: https://api.example.com
+    description: Placeholder; the real host is not part of the samples.
+security:
+  - bearerAuth: []
+tags:
+  - name: Books
+    description: Catalog books.
+paths:
+  /books:
+    get:
+      operationId: listBooks
+      summary: List books
+      description: Returns one page of the catalog. Lists are always paginated.
+      tags: [Books]
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/PageToken'
+      responses:
+        '200':
+          description: One page of books.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookList'
+        '400':
+          $ref: '#/components/responses/Problem'
+  /books/{isbn}:
+    get:
+      operationId: getBook
+      summary: Get a book
+      description: Returns one book by its ISBN-13.
+      tags: [Books]
+      security: []
+      parameters:
+        - name: isbn
+          in: path
+          required: true
+          description: ISBN-13 without dashes.
+          schema:
+            type: string
+            pattern: '^97[89][0-9]{10}$'
+      responses:
+        '200':
+          description: The book.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '404':
+          $ref: '#/components/responses/Problem'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  parameters:
+    PageSize:
+      name: pageSize
+      in: query
+      description: Maximum number of items in the page (default 10, maximum 50).
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 50
+        default: 10
+    PageToken:
+      name: pageToken
+      in: query
+      description: Opaque token from a previous response's nextPageToken.
+      schema:
+        type: string
+  responses:
+    Problem:
+      description: An error in RFC 9457 Problem Details format.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+  schemas:
+    Money:
+      type: object
+      required: [amount, currency]
+      properties:
+        amount:
+          type: number
+        currency:
+          type: string
+          description: ISO 4217 code.
+          examples: [TRY]
+    Book:
+      type: object
+      required: [isbn, title, author, category, price, inStock]
+      properties:
+        isbn:
+          type: string
+        title:
+          type: string
+        author:
+          type: string
+        category:
+          type: string
+        price:
+          $ref: '#/components/schemas/Money'
+        inStock:
+          type: boolean
+    BookList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Book'
+        nextPageToken:
+          type: string
+          description: Absent on the last page.
+    Problem:
+      type: object
+      properties:
+        type:
+          type: string
+          format: uri-reference
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+          format: uri-reference

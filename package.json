@@ -1,0 +1,11 @@
+{
+  "name": "bookstore-api-contract",
+  "private": true,
+  "scripts": {
+    "lint:contract": "redocly lint contract/bookstore.openapi.yaml && spectral lint contract/bookstore.openapi.yaml"
+  },
+  "devDependencies": {
+    "@redocly/cli": "2.78.0",
+    "@stoplight/spectral-cli": "6.17.1"
+  }
+}

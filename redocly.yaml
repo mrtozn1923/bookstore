@@ -1,0 +1,5 @@
+extends:
+  - recommended
+rules:
+  # The samples use a placeholder host on purpose.
+  no-server-example.com: off

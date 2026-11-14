@@ -1,0 +1,21 @@
+# Rules from ADR-0001 that a linter can check.
+extends: ["spectral:oas"]
+rules:
+  bookstore-path-kebab-case:
+    description: Path segments are lowercase kebab-case; parameters are camelCase.
+    message: "Path is not kebab-case: {{property}}"
+    severity: error
+    given: $.paths[*]~
+    then:
+      function: pattern
+      functionOptions:
+        match: "^(/([a-z0-9]+(-[a-z0-9]+)*|\\{[a-z][a-zA-Z0-9]*\\}))+$"
+  bookstore-no-verbs-in-path:
+    description: Resources are nouns; CRUD verbs do not belong in the URL.
+    message: "Verb in path: {{property}}"
+    severity: error
+    given: $.paths[*]~
+    then:
+      function: pattern
+      functionOptions:
+        notMatch: "/(get|list|create|add|update|save|delete|remove)([A-Z/-]|$)"
