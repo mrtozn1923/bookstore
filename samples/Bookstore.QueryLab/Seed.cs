@@ -9,12 +9,6 @@ static class Seed
         await db.Database.EnsureDeletedAsync();
         await db.Database.MigrateAsync();
 
-        var sql = await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "functions.sql"));
-        foreach (var batch in sql.Split("\nGO", StringSplitOptions.RemoveEmptyEntries))
-        {
-            await db.Database.ExecuteSqlRawAsync(batch);
-        }
-
         var herbert = new Author { Name = "Frank Herbert" };
         var austen = new Author { Name = "Jane Austen" };
         var tolkien = new Author { Name = "J. R. R. Tolkien" };
@@ -29,9 +23,9 @@ static class Seed
         var memed = new Book { Title = "İnce Memed", Isbn = "9789750807147", Price = 11.40m, PublishedOn = new(1955, 1, 1), Author = kemal, Tags = ["classic", "turkish"] };
         db.Books.AddRange(dune, emma, pride, hobbit, middlemarch, memed);
 
-        var ada = new Customer { FullName = "Ada Lovelace", Email = "ada@example.com" };
-        var alan = new Customer { FullName = "Alan Turing", Email = "alan@example.com" };
-        var grace = new Customer { FullName = "Grace Hopper", Email = "grace@example.com" };
+        var ada = new Customer { FirstName = "Ada", LastName = "Lovelace", Email = "ada@example.com" };
+        var alan = new Customer { FirstName = "Alan", LastName = "Turing", Email = "alan@example.com" };
+        var grace = new Customer { FirstName = "Grace", LastName = "Hopper", Email = "grace@example.com" };
         db.Customers.AddRange(ada, alan, grace);
 
         var now = DateTime.UtcNow;

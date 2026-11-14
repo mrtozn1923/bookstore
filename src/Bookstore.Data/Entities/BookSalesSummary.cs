@@ -1,6 +1,6 @@
 namespace Bookstore.Data.Entities;
 
-// Keyless read model defined by a SQL query (ToSqlQuery).
+// Keyless read model mapped to the catalog.vw_BookSales view.
 public class BookSalesSummary
 {
     public int BookId { get; set; }

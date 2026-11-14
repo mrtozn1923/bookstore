@@ -137,7 +137,7 @@ namespace Bookstore.Data.Migrations
 
                     b.ToTable((string)null);
 
-                    b.ToSqlQuery("SELECT b.Id AS BookId, b.Title, SUM(oi.Quantity) AS Units\nFROM catalog.Books AS b\nJOIN dbo.OrderItems AS oi ON oi.BookId = b.Id\nGROUP BY b.Id, b.Title");
+                    b.ToView("vw_BookSales", "catalog");
                 });
 
             modelBuilder.Entity("Bookstore.Data.Entities.Customer", b =>
@@ -153,7 +153,12 @@ namespace Bookstore.Data.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.Property<string>("FullName")
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
@@ -163,7 +168,7 @@ namespace Bookstore.Data.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Customers", (string)null);
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("Bookstore.Data.Entities.Order", b =>
@@ -192,7 +197,6 @@ namespace Bookstore.Data.Migrations
                         .HasDefaultValueSql("NEXT VALUE FOR ordering.OrderNumbers");
 
                     b.Property<decimal>("ShippingFee")
-                        .ValueGeneratedOnAdd()
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)")
                         .HasDefaultValue(4.99m);
@@ -214,7 +218,7 @@ namespace Bookstore.Data.Migrations
                     b.HasIndex("OrderNumber")
                         .IsUnique();
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("Bookstore.Data.Entities.OrderItem", b =>
@@ -244,7 +248,7 @@ namespace Bookstore.Data.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderItems", (string)null);
+                    b.ToTable("OrderItems");
                 });
 
             modelBuilder.Entity("Bookstore.Data.Entities.Book", b =>

@@ -8,8 +8,4 @@
     <OutputType>Exe</OutputType>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Include="..\..\db\functions.sql" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
-
 </Project>

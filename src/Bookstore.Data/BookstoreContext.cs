@@ -1,5 +1,7 @@
 using Bookstore.Data.Entities;
+using Bookstore.Data.Migrations.Operations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Bookstore.Data;
 
@@ -14,6 +16,9 @@ public class BookstoreContext(DbContextOptions<BookstoreContext> options) : DbCo
 
     public IQueryable<BestSeller> BestSellers(DateTime since)
         => FromExpression(() => BestSellers(since));
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        => optionsBuilder.ReplaceService<IMigrationsSqlGenerator, BookstoreMigrationsSqlGenerator>();
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
@@ -31,13 +36,7 @@ public class BookstoreContext(DbContextOptions<BookstoreContext> options) : DbCo
 
         modelBuilder.Entity<BookSalesSummary>()
             .HasNoKey()
-            .ToTable((string?)null)
-            .ToSqlQuery("""
-                SELECT b.Id AS BookId, b.Title, SUM(oi.Quantity) AS Units
-                FROM catalog.Books AS b
-                JOIN dbo.OrderItems AS oi ON oi.BookId = b.Id
-                GROUP BY b.Id, b.Title
-                """);
+            .ToView("vw_BookSales", "catalog");
 
         modelBuilder.HasDbFunction(typeof(BookstoreFunctions).GetMethod(nameof(BookstoreFunctions.DiscountedPrice))!)
             .HasName("fn_DiscountedPrice")
