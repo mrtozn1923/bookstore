@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Options;
+using Bookstore.Configuration;
 
 namespace Bookstore.Payments;
 
@@ -12,13 +12,13 @@ public interface IPaymentGateway
     Task<PaymentResult> AuthorizeAsync(PaymentRequest request, CancellationToken ct);
 }
 
-internal sealed class PaymentGatewayClient(HttpClient http, IOptionsMonitor<PaymentsOptions> options) : IPaymentGateway
+internal sealed class PaymentGatewayClient(HttpClient http, LastKnownGood<PaymentsOptions> options) : IPaymentGateway
 {
     public async Task<PaymentResult> AuthorizeAsync(PaymentRequest request, CancellationToken ct)
     {
         // Read on every call: an incident commander can raise the timeout in switches.json without a restart.
         using CancellationTokenSource timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
-        timeout.CancelAfter(TimeSpan.FromSeconds(options.CurrentValue.TimeoutSeconds));
+        timeout.CancelAfter(TimeSpan.FromSeconds(options.Value.TimeoutSeconds));
 
         using HttpRequestMessage message = new(HttpMethod.Post, "/v1/charges")
         {

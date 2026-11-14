@@ -18,6 +18,14 @@ seconds. It wins over appsettings*.json and environment variables.
 
 Put every lever back to its default when the incident ends, and write the change and the time in the timeline.
 
+## Shipping a change
+1. Check the file: `dotnet run tools/switches-check/switches-check.cs -- switches.json` (known keys, types, ranges,
+   no duplicate keys, at most 4 KB). The pipeline that ships the file runs the same check.
+2. Ship it to one instance first and look at checkout status codes for a minute, then to the rest.
+3. If an instance rejects the file it keeps its last valid values, logs an error and counts
+   `bookstore_switches_rejected_total`; the `SwitchesFileRejected` ticket tells you. A new instance that starts with a
+   broken file ignores it and runs with the appsettings defaults (checkout enabled, 3 s): fix the file first.
+
 ## Other levers
 - Roll back to the previous release: pipeline "Redeploy previous release" (Deployment Strategies series).
 - Banner on bookstore-web: "Payments are delayed" (product owner).

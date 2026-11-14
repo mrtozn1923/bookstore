@@ -1,0 +1,27 @@
+rule_files:
+  - ../rules/config-alerts.yaml
+
+evaluation_interval: 1m
+
+tests:
+  # One rejected reload at minute 5: the ticket fires at once and clears 10 minutes later.
+  - interval: 1m
+    input_series:
+      - series: 'bookstore_switches_rejected_total{job="bookstore-api", reason="invalid", instance="a"}'
+        values: '0x4 1x20'
+    alert_rule_test:
+      - eval_time: 4m
+        alertname: SwitchesFileRejected
+        exp_alerts: []
+      - eval_time: 6m
+        alertname: SwitchesFileRejected
+        exp_alerts:
+          - exp_labels:
+              severity: ticket
+              reason: invalid
+            exp_annotations:
+              summary: "An instance rejected a switches.json change (invalid); it still runs with the previous values"
+              runbook_url: https://git.example.com/bookstore/blob/main/docs/incidents/levers.md
+      - eval_time: 16m
+        alertname: SwitchesFileRejected
+        exp_alerts: []

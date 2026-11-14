@@ -1,3 +1,4 @@
+using Bookstore.Configuration;
 using Microsoft.Extensions.Options;
 
 namespace Bookstore.Payments;
@@ -10,6 +11,7 @@ public static class PaymentsModule
             .BindConfiguration(PaymentsOptions.SectionName)
             .ValidateDataAnnotations()
             .ValidateOnStart();
+        services.AddSingleton<LastKnownGood<PaymentsOptions>>();
 
         // No retries on purpose: one attempt, so every provider failure shows up in the SLI.
         // The per-call timeout is applied in PaymentGatewayClient (it can change at runtime); HttpClient.Timeout

@@ -1,10 +1,10 @@
 using Bookstore.Catalog;
+using Bookstore.Configuration;
 using Bookstore.Data;
 using Bookstore.Inventory;
 using Bookstore.Payments;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.Extensions.Options;
 
 namespace Bookstore.Ordering;
 
@@ -21,12 +21,12 @@ public abstract record PlaceOrderOutcome
 
 public sealed class OrderService(
     BookstoreContext db, ICatalogService catalog, IInventoryService inventory, IPaymentGateway payments,
-    IOptionsMonitor<PaymentsOptions> paymentOptions, TimeProvider clock, ILogger<OrderService> logger)
+    LastKnownGood<PaymentsOptions> paymentOptions, TimeProvider clock, ILogger<OrderService> logger)
 {
     public async Task<PlaceOrderOutcome> PlaceOrderAsync(PlaceOrderRequest request, CancellationToken ct)
     {
         // Kill switch, checked before anything is written: no order, no reservation, the cart stays as it is.
-        if (!paymentOptions.CurrentValue.CheckoutEnabled)
+        if (!paymentOptions.Value.CheckoutEnabled)
         {
             return new PlaceOrderOutcome.CheckoutPaused();
         }

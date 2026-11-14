@@ -1,4 +1,5 @@
 using System.Reflection;
+using Bookstore.Configuration;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -22,6 +23,7 @@ public static class ObservabilityExtensions
             .WithMetrics(metrics => metrics
                 .AddAspNetCoreInstrumentation()
                 .AddHttpClientInstrumentation()
+                .AddMeter(SwitchesFile.MeterName)
                 // ASP.NET Core's default boundaries plus 0.8: the checkout latency SLO counts requests under 800 ms,
                 // and a histogram can only count exactly up to one of its bucket boundaries.
                 .AddView("http.server.request.duration", new ExplicitBucketHistogramConfiguration

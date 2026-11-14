@@ -1,0 +1,12 @@
+# switches.json changes that an instance rejected (bad JSON, unknown type, value out of range).
+# The instance keeps its last valid values, so nothing breaks; but the lever someone just pulled did not happen.
+groups:
+  - name: bookstore-config
+    rules:
+      - alert: SwitchesFileRejected
+        expr: sum by (reason) (increase(bookstore_switches_rejected_total{job="bookstore-api"}[10m])) > 0
+        labels:
+          severity: ticket
+        annotations:
+          summary: "An instance rejected a switches.json change ({{ $labels.reason }}); it still runs with the previous values"
+          runbook_url: https://git.example.com/bookstore/blob/main/docs/incidents/levers.md
