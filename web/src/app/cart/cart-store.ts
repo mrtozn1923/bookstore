@@ -33,4 +33,8 @@ export class CartStore {
   remove(isbn: string): void {
     this.items.update((lines) => lines.filter((line) => line.book.isbn !== isbn));
   }
+
+  clear(): void {
+    this.items.set([]);
+  }
 }
