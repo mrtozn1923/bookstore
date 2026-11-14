@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/bench/">
+    <Project Path="bench/Bookstore.ConcurrencyLab.Benchmarks/Bookstore.ConcurrencyLab.Benchmarks.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Bookstore.ConcurrencyLab/Bookstore.ConcurrencyLab.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Bookstore.ConcurrencyLab.Tests/Bookstore.ConcurrencyLab.Tests.csproj" />
+  </Folder>
+</Solution>
