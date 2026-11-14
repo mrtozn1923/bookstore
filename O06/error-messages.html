@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Error messages</title>
+  <style>.error { color: #b00020; }</style>
+</head>
+<body>
+  <label>Quantity: <input id="quantity" type="text"></label>
+  <button id="add">Add to cart</button>
+  <button id="broken">Broken button</button>
+  <p id="message"></p>
+  <script>
+    class ValidationError extends Error {
+      constructor(message) {
+        super(message);
+        this.name = "ValidationError";
+      }
+    }
+
+    function parseQuantity(text) {
+      const quantity = Number(text);
+      if (text.trim() === "" || Number.isNaN(quantity)) {
+        throw new ValidationError("Please enter the quantity in digits.");
+      }
+      if (!Number.isInteger(quantity) || quantity < 1 || quantity > 10) {
+        throw new ValidationError("You can order 1 to 10 copies at a time.");
+      }
+      return quantity;
+    }
+
+    const output = document.getElementById("message");
+
+    document.getElementById("add").addEventListener("click", () => {
+      try {
+        const quantity = parseQuantity(document.getElementById("quantity").value);
+        output.className = "";
+        output.textContent = `${quantity} copies of Dune added to your cart.`;
+      } catch (error) {
+        if (!(error instanceof ValidationError)) throw error;
+        output.className = "error";
+        output.textContent = error.message;
+      }
+    });
+
+    document.getElementById("broken").addEventListener("click", () => {
+      notDefinedAnywhere(); // ReferenceError, nobody catches it
+    });
+
+    window.addEventListener("error", (event) => {
+      console.log("Uncaught error:", event.error);
+      output.className = "error";
+      output.textContent = "Something unexpected went wrong. Please reload the page and try again.";
+    });
+  </script>
+</body>
+</html>
