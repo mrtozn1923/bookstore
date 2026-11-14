@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Bookstore.Data;
 using Bookstore.Inventory;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -24,6 +25,7 @@ public static class CatalogModule
         RouteGroupBuilder catalog = app.MapGroup("/api").WithTags("Catalog");
         catalog.MapGet("/books", SearchBooks);
         catalog.MapGet("/books/{isbn}", GetBook);
+        catalog.MapGet("/books/featured", GetFeatured);
         catalog.MapGet("/categories", GetCategories);
         return app;
     }
@@ -72,6 +74,18 @@ public static class CatalogModule
         int available = await inventory.GetAvailableAsync(book.Id, ct);
         return TypedResults.Ok(new BookDetails(
             book.Isbn, book.Title, book.Author, book.Category, book.Price, book.PublishedYear, book.Description, available));
+    }
+
+    // Four random books for the home page; a different selection on every request.
+    [SuppressMessage("Security", "CA5394:Do not use insecure randomness",
+        Justification = "Picks books to show on the home page; the result is public and grants nothing.")]
+    private static async Task<Ok<BookSummary[]>> GetFeatured(BookstoreContext db, CancellationToken ct)
+    {
+        BookSummary[] books = await db.Books.AsNoTracking()
+            .Select(b => new BookSummary(b.Isbn, b.Title, b.Author.Name, b.Category.Name, b.Price, b.PublishedYear))
+            .ToArrayAsync(ct);
+        Random.Shared.Shuffle(books);
+        return TypedResults.Ok(books[..Math.Min(4, books.Length)]);
     }
 
     private static async Task<Ok<List<CategoryView>>> GetCategories(BookstoreContext db, CancellationToken ct) =>

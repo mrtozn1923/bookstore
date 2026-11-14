@@ -7,7 +7,7 @@ namespace Bookstore.Catalog;
 
 public sealed record PriceImportResult(int Updated, IReadOnlyList<string> UnknownIsbns);
 
-public static class PriceImportModule
+public static partial class PriceImportModule
 {
     public static IEndpointRouteBuilder MapPriceImportEndpoints(this IEndpointRouteBuilder app)
     {
@@ -27,7 +27,11 @@ public static class PriceImportModule
         foreach (string line in body.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
             string[] parts = line.Split(';');
-            string isbn = parts[0];
+            if (Isbn.Normalize(parts[0]) is not { } isbn)
+            {
+                unknown.Add(parts[0]);
+                continue;
+            }
             decimal price = decimal.Parse(parts[1], CultureInfo.InvariantCulture);
 
             Book? book = await db.Books.FirstOrDefaultAsync(b => b.Isbn == isbn, ct);
@@ -41,7 +45,10 @@ public static class PriceImportModule
         }
 
         await db.SaveChangesAsync(ct);
-        logger.LogInformation("Price import finished: {Updated} updated, {Unknown} unknown", updated, unknown.Count);
+        LogImportFinished(logger, updated, unknown.Count);
         return TypedResults.Ok(new PriceImportResult(updated, unknown));
     }
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Price import finished: {Updated} updated, {Unknown} unknown")]
+    private static partial void LogImportFinished(ILogger logger, int updated, int unknown);
 }

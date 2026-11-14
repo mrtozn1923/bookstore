@@ -3,6 +3,7 @@ using Bookstore.Catalog;
 using Bookstore.Data;
 using Bookstore.Inventory;
 using Bookstore.Ordering;
+using Bookstore.Reports;
 using Microsoft.EntityFrameworkCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -42,5 +43,6 @@ if (app.Environment.IsDevelopment())
 app.MapCatalogEndpoints();
 app.MapOrderingEndpoints();
 app.MapPriceImportEndpoints();
+app.MapReportEndpoints();
 
 app.Run();

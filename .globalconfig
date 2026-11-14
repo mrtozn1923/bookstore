@@ -1,0 +1,27 @@
+is_global = true
+
+# Bookstore code analysis rules. The rule set comes from Directory.Build.props
+# (AnalysisLevel = 10.0-recommended); this file only records our decisions.
+
+# Bugs we have actually shipped: these break the build.
+# CA2016: forward the CancellationToken
+dotnet_diagnostic.CA2016.severity = error
+# CA1305: culture-dependent parsing and formatting
+dotnet_diagnostic.CA1305.severity = error
+# CA1309: ordinal comparison for codes, slugs and ISBNs
+dotnet_diagnostic.CA1309.severity = error
+# CA2100: SQL text built from input
+dotnet_diagnostic.CA2100.severity = error
+# CA5394: Random for codes and tokens
+dotnet_diagnostic.CA5394.severity = error
+# EF1002 / EF1003: interpolated or concatenated string in FromSqlRaw/ExecuteSqlRaw
+dotnet_diagnostic.EF1002.severity = error
+dotnet_diagnostic.EF1003.severity = error
+
+# Stays a warning: visible in the IDE and in the pull request, does not break the build.
+# CA1848: LoggerMessage source generator
+dotnet_diagnostic.CA1848.severity = warning
+
+# Off on purpose.
+# CA2007: no SynchronizationContext in ASP.NET Core
+dotnet_diagnostic.CA2007.severity = none

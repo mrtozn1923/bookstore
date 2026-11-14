@@ -1,0 +1,11 @@
+root = true
+
+# Code style rules are not here: see the Coding Conventions series.
+# This file only holds path-based analysis settings; project-wide rules live in .globalconfig.
+
+[src/Bookstore.Api/Data/Migrations/*.cs]
+generated_code = true
+
+[tests/**/*.cs]
+# Underscores in test names are a Bookstore convention: Placing_an_order_reserves_stock
+dotnet_diagnostic.CA1707.severity = none
