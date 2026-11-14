@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Bookstore.Reporting\Bookstore.Reporting.csproj" />
+    <ProjectReference Include="..\Bookstore.Data\Bookstore.Data.csproj" />
   </ItemGroup>
 
 </Project>
