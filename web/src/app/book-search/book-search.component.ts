@@ -1,10 +1,11 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { BookService } from '../book.service';
 
 @Component({
   selector: 'app-book-search',
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <input (input)="query.set($any($event.target).value)" placeholder="Search books...">
     @for (title of results(); track title) {

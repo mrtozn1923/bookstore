@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, computed, viewChildren } from '@angular/core';
+import { Component, Inject, OnInit, computed, viewChildren, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AppConfig, APP_CONFIG } from '../../app-config';
 import { Book } from '../../book';
@@ -12,6 +12,7 @@ import { BookSearchComponent } from '../../book-search/book-search.component';
     selector: 'app-book-list',
     templateUrl: './book-list.component.html',
     styleUrls: ['./book-list.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RouterLink, BookItemComponent, InStockPipe, BookSearchComponent]
 })
 export class BookListComponent implements OnInit {

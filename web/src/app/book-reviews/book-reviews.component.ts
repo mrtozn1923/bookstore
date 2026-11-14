@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BookRatingComponent } from '../book-rating/book-rating.component';
 
@@ -6,6 +6,7 @@ import { BookRatingComponent } from '../book-rating/book-rating.component';
     selector: 'app-book-reviews',
     templateUrl: './book-reviews.component.html',
     styleUrls: ['./book-reviews.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [BookRatingComponent]
 })
 export class BookReviewsComponent implements OnInit {

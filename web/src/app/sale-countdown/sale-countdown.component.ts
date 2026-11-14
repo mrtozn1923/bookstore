@@ -1,9 +1,10 @@
-import { Component, effect } from '@angular/core';
+import { Component, effect, ChangeDetectionStrategy } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { interval, map } from 'rxjs';
 
 @Component({
   selector: 'app-sale-countdown',
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `<p>Sale ends in {{ secondsLeft() }} s</p>`
 })
 export class SaleCountdownComponent {

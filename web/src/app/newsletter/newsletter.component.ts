@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, StatusChangeEvent, TouchedChangeEvent, ValueChangeEvent, Validators } from '@angular/forms';
 
@@ -8,6 +8,7 @@ import { FormControl, ReactiveFormsModule, StatusChangeEvent, TouchedChangeEvent
     <input type="email" [formControl]="email">
     <p>Newsletter will be sent to: {{ email.value }}</p>
   `,
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [ReactiveFormsModule]
 })
 export class NewsletterComponent {

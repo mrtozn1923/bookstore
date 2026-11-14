@@ -1,8 +1,9 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 import { Book } from '../../book';
 
 @Component({
   selector: 'app-book-editor',
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <input #title [value]="book().title" />
     <button (click)="save(title.value)">Save</button>

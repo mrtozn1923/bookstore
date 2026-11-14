@@ -1,7 +1,8 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, input, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-price-tag',
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `<span>{{ finalPrice() }} {{ currency() }}</span>`
 })
 export class PriceTagComponent {

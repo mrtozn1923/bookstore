@@ -1,4 +1,4 @@
-import { Component, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, ViewChild, ViewContainerRef, ChangeDetectionStrategy } from '@angular/core';
 import { NoticeComponent } from '../notice/notice.component';
 import { ButtonComponent } from '../button/button.component';
 
@@ -6,6 +6,7 @@ import { ButtonComponent } from '../button/button.component';
     selector: 'app-address-edit',
     templateUrl: './address-edit.component.html',
     styleUrls: ['./address-edit.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [ButtonComponent]
 })
 export class AddressEditComponent {

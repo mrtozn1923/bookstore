@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 
 @Component({
@@ -8,6 +8,7 @@ import { CurrencyPipe } from '@angular/common';
     <h3>{{ title }}</h3>
     <p>{{ price | currency:'TRY' }}</p>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './book-card.component.css'
 })
 export class BookCardComponent {

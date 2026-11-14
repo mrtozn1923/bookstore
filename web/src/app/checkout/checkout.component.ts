@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, signal, ChangeDetectionStrategy } from '@angular/core';
 import { NgForm, FormsModule } from '@angular/forms';
 import { JsonPipe } from '@angular/common';
 import { ShippingPickerComponent } from '../shipping-picker/shipping-picker.component';
@@ -7,6 +7,7 @@ import { ShippingPickerComponent } from '../shipping-picker/shipping-picker.comp
     selector: 'app-checkout',
     templateUrl: './checkout.component.html',
     styleUrls: ['./checkout.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [FormsModule, JsonPipe, ShippingPickerComponent]
 })
 export class CheckoutComponent {

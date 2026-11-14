@@ -1,7 +1,8 @@
-import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { Component, NgZone, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
     selector: 'app-scroll-top',
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: `@if (visible) {<button (click)="scrollTop()">Back to top</button>}`,
 })
 export class ScrollTopComponent implements OnInit, OnDestroy {

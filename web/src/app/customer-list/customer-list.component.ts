@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Customer, CustomerService } from '../customer.service';
@@ -7,6 +7,7 @@ import { environment } from '../../environments/environment';
 @Component({
   selector: 'app-customer-list',
   templateUrl: './customer-list.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./customer-list.component.css']
 })
 export class CustomerListComponent {

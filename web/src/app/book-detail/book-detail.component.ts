@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild, computed, effect, signal } from '@angular/core';
+import { Component, Input, ViewChild, computed, effect, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Book } from '../book';
 import { QuantityPickerComponent } from '../quantity-picker/quantity-picker.component';
@@ -10,6 +10,7 @@ import { NgOptimizedImage } from '@angular/common';
     selector: 'app-book-detail',
     templateUrl: './book-detail.component.html',
     styleUrls: ['./book-detail.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [NgOptimizedImage, RouterLink, RouterLinkActive, RouterOutlet, FormsModule, QuantityPickerComponent, PriceTagComponent]
 })
 export class BookDetailComponent {

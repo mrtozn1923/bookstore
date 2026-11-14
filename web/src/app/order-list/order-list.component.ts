@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
 import { HighlightDirective } from '../highlight.directive';
 import { OrderTrackingComponent } from '../order-tracking/order-tracking.component';
 import { NgClass, NgStyle } from '@angular/common';
@@ -14,6 +14,7 @@ export interface Order {
     selector: 'app-order-list',
     templateUrl: './order-list.component.html',
     styleUrls: ['./order-list.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [HighlightDirective, NgClass, NgStyle, OrderTrackingComponent]
 })
 export class OrderListComponent {

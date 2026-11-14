@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { ScrollTopComponent } from './scroll-top/scroll-top.component';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { SaleCountdownComponent } from './sale-countdown/sale-countdown.component';
@@ -8,6 +8,7 @@ import { CartBadgeComponent } from './cart-badge/cart-badge.component';
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [SaleCountdownComponent, RouterLink, RouterLinkActive, RouterOutlet, ScrollTopComponent, CartBadgeComponent]
 })
 export class AppComponent {

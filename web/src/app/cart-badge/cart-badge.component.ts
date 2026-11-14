@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CartService } from '../cart.service';
 import { AsyncPipe } from '@angular/common';
 
@@ -13,6 +13,7 @@ import { AsyncPipe } from '@angular/common';
       <p>{{ item.title }}</p>
     }
   `,
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [AsyncPipe]
 })
 export class CartBadgeComponent {

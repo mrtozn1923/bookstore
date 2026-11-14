@@ -1,7 +1,8 @@
-import { Component, ElementRef, afterNextRender, viewChild } from '@angular/core';
+import { Component, ElementRef, afterNextRender, viewChild, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
     selector: 'app-search-box',
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: `<input #searchInput placeholder="Search books...">`,
 })
 export class SearchBoxComponent {

@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 
@@ -11,6 +11,7 @@ interface TrackedOrder {
 
 @Component({
   selector: 'app-order-tracking',
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     @if (order.error()) {
       <p>Order not found</p>

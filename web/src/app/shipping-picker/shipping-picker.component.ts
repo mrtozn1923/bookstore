@@ -1,7 +1,8 @@
-import { Component, input, linkedSignal } from '@angular/core';
+import { Component, input, linkedSignal, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-shipping-picker',
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     @for (option of options(); track option) {
       <button type="button" (click)="selected.set(option)">{{ option }}</button>

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Book } from '../book';
 import { BookEditorComponent } from './book-editor/book-editor.component';
@@ -9,6 +9,7 @@ import { SalesChartComponent } from './sales-chart/sales-chart.component';
     selector: 'app-admin',
     templateUrl: './admin.component.html',
     styleUrls: ['./admin.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RouterLink, SalesChartComponent, BookEditorComponent]
 })
 export class AdminComponent {

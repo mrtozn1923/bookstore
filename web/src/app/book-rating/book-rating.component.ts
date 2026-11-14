@@ -1,7 +1,8 @@
-import { Component, booleanAttribute, computed, input, model, output } from '@angular/core';
+import { Component, booleanAttribute, computed, input, model, output, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-book-rating',
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     @for (star of stars(); track star) {
       <button (click)="rate(star)" [class.filled]="star <= value()" [class.compact]="compact()">★</button>
