@@ -1,0 +1,8 @@
+erDiagram
+    Orders {
+        int Id PK
+        int? ClassCount
+        nvarchar(21) Discriminator
+        nvarchar(max)? DonationLetterPath
+        int Quantity
+    }

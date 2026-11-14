@@ -1,0 +1,15 @@
+erDiagram
+    ClassroomSetOrder {
+        int Id PK, FK
+        int ClassCount
+    }
+    DonationOrder {
+        int Id PK, FK
+        nvarchar(max)? DonationLetterPath
+    }
+    Orders {
+        int Id PK
+        int Quantity
+    }
+    Orders ||--o| ClassroomSetOrder : "Id (cascade)"
+    Orders ||--o| DonationOrder : "Id (cascade)"

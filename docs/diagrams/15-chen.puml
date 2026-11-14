@@ -1,0 +1,27 @@
+@startchen
+entity InstitutionUser {
+  StaffNumber <<key>>
+  FullName
+}
+entity Order {
+  Id <<key>>
+  Quantity
+}
+entity OrderAttachment <<weak>> {
+  FileName
+}
+relationship Places {
+}
+relationship Decides {
+  Decision
+  DecidedAt
+}
+relationship Has <<identifying>> {
+}
+InstitutionUser -1- Places
+Places =N= Order
+InstitutionUser -M- Decides
+Decides -N- Order
+Order -1- Has
+Has =1= OrderAttachment
+@endchen

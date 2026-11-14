@@ -1,0 +1,77 @@
+erDiagram
+    BudgetAdjustments {
+        int Id PK
+        datetimeoffset AdjustedAt
+        int AdjustedById
+        decimal(18,2) Amount
+        nvarchar(500) Reason
+        int UnitBudgetId
+    }
+    BudgetCategories {
+        int Id PK
+        nvarchar(32) Code UK
+        bit DeductsFromBudget
+        bit IsActive
+        nvarchar(100) Name
+    }
+    DiscountAgreements {
+        int Id PK
+        decimal(5,4) DiscountRate
+        date? EndDate
+        int InstitutionId
+        date StartDate
+    }
+    InstitutionUnits {
+        int Id PK
+        nvarchar(200) Name
+        int? PurchasingManagerId FK
+    }
+    InstitutionUsers {
+        int Id PK
+        int? ApproverId FK
+        nvarchar(256) Email
+        nvarchar(200) FullName
+        int InstitutionUnitId FK
+        nvarchar(16) StaffNumber UK
+    }
+    Orders {
+        int Id PK
+        nvarchar(100)? Attachment_ContentType
+        nvarchar(260)? Attachment_FileName
+        nvarchar(400)? Attachment_StoragePath
+        int BookId
+        int BudgetCategoryId FK
+        datetimeoffset CreatedAt
+        nvarchar(3) Currency
+        date DeliveryDate
+        nvarchar(500)? Note
+        int PlacedById FK
+        int Quantity
+        nvarchar(32) Status
+        datetimeoffset? SubmittedAt
+        decimal(18,2) TotalAmount
+    }
+    PurchaseApprovals {
+        int Id PK
+        int ApproverId FK
+        nvarchar(500)? Comment
+        datetimeoffset DecidedAt
+        nvarchar(16) Decision
+        int OrderId FK, UK
+        nvarchar(32) Step UK
+    }
+    UnitBudgets {
+        int Id PK
+        decimal(18,2) AllocatedAmount
+        int BudgetCategoryId UK
+        int InstitutionUnitId UK
+        decimal(18,2) SpentAmount
+        int Year UK
+    }
+    InstitutionUsers |o..o{ InstitutionUnits : "PurchasingManagerId (restrict)"
+    InstitutionUnits ||..o{ InstitutionUsers : "InstitutionUnitId (restrict)"
+    InstitutionUsers |o..o{ InstitutionUsers : "ApproverId (restrict)"
+    BudgetCategories ||..o{ Orders : "BudgetCategoryId (restrict)"
+    InstitutionUsers ||..o{ Orders : "PlacedById (restrict)"
+    InstitutionUsers ||..o{ PurchaseApprovals : "ApproverId (restrict)"
+    Orders ||..o{ PurchaseApprovals : "OrderId (cascade)"

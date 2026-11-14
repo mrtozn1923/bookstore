@@ -1,0 +1,19 @@
+erDiagram
+    InstitutionUsers ||..o{ Orders : "PlacedById"
+    BudgetCategories ||..o{ Orders : "BudgetCategoryId"
+    Orders ||..o{ PurchaseApprovals : "OrderId (cascade)"
+    InstitutionUsers ||..o{ PurchaseApprovals : "ApproverId"
+    Orders ||--o| OrderAttachments : "OrderId (cascade)"
+    Orders {
+        int Id PK
+        int PlacedById FK
+        int BudgetCategoryId FK
+        int Quantity
+        date DeliveryDate
+        decimal(18,2) TotalAmount
+        nvarchar(32) Status
+    }
+    OrderAttachments {
+        int OrderId PK, FK
+        nvarchar(260) FileName
+    }

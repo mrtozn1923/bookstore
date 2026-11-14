@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Bookstore.Institutional.Infrastructure\Bookstore.Institutional.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>
