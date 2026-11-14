@@ -6,12 +6,16 @@ import { AppComponent } from './app.component';
 import { BookCardComponent } from './book-card/book-card.component';
 import { CatalogModule } from './catalog/catalog.module';
 import { BookDetailComponent } from './book-detail/book-detail.component';
+import { OrderListComponent } from './order-list/order-list.component';
+import { HighlightDirective } from './highlight.directive';
 
 @NgModule({
   declarations: [
     AppComponent,
     BookCardComponent,
-    BookDetailComponent
+    BookDetailComponent,
+    OrderListComponent,
+    HighlightDirective
   ],
   imports: [
     BrowserModule,
