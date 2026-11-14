@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using Bookstore.Catalog;
 using Bookstore.Data;
+using Bookstore.Hosting;
 using Bookstore.Inventory;
 using Bookstore.Ordering;
 using Bookstore.Storage;
@@ -25,10 +26,12 @@ builder.Services
     .AddCatalogModule()
     .AddInventoryModule()
     .AddOrderingModule()
-    .AddBlobStorage(builder.Configuration);
+    .AddBlobStorage(builder.Configuration)
+    .AddCloudHosting(builder.Configuration);
 
 WebApplication app = builder.Build();
 
+app.UseForwardedHeaders();
 app.UseExceptionHandler();
 app.UseStatusCodePages();
 
@@ -41,6 +44,7 @@ if (app.Environment.IsDevelopment())
     }
 }
 
+app.MapCloudHealthChecks();
 app.MapCatalogEndpoints();
 app.MapOrderingEndpoints();
 
