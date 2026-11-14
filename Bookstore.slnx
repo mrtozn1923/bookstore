@@ -4,5 +4,6 @@
   </Folder>
   <Folder Name="/samples/">
     <Project Path="samples/Cd01.PatternTemplate/Cd01.PatternTemplate.csproj" />
+    <Project Path="samples/Cd02.VirtualRoot/Cd02.VirtualRoot.csproj" />
   </Folder>
 </Solution>
