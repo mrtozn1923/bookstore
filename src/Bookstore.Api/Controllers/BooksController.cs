@@ -1,23 +1,30 @@
 using Microsoft.AspNetCore.Mvc;
 using Bookstore.Api.Dtos;
+using Bookstore.Api.Filters;
 using Bookstore.Api.Services;
 
 namespace Bookstore.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[TraceFilter("Controller")]
 public class BooksController : ControllerBase
 {
     private readonly IBookService _bookService;
+    private readonly ILogger<BooksController> _logger;
 
-    public BooksController(IBookService bookService)
+    public BooksController(IBookService bookService, ILogger<BooksController> logger)
     {
         _bookService = bookService;
+        _logger = logger;
     }
 
     [HttpGet]
+    [TraceFilter("Action")]
+    [ServiceFilter(typeof(ExecutionTimeFilter))]
     public async Task<ActionResult<List<BookDto>>> GetAll(CancellationToken cancellationToken)
     {
+        _logger.LogInformation("GetAll action is running");
         return await _bookService.GetAllAsync(cancellationToken);
     }
 
@@ -42,9 +49,11 @@ public class BooksController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [TypeFilter(typeof(BookExistsFilter))]
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
-        bool deleted = await _bookService.DeleteAsync(id, cancellationToken);
-        return deleted ? NoContent() : NotFound();
+        _logger.LogInformation("Delete action is running for {Id}", id);
+        await _bookService.DeleteAsync(id, cancellationToken);
+        return NoContent();
     }
 }

@@ -3,6 +3,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Bookstore.Api.Data;
+using Bookstore.Api.Filters;
 using Bookstore.Api.Middleware;
 using Bookstore.Api.Options;
 using Bookstore.Api.Services;
@@ -17,7 +18,11 @@ builder.Host.UseSerilog((context, configuration) => configuration
     .WriteTo.Console()
     .WriteTo.File("logs/bookstore-.log", rollingInterval: RollingInterval.Day));
 
-builder.Services.AddControllers()
+builder.Services.AddControllers(options =>
+    {
+        options.Filters.Add(new TraceFilterAttribute("Global"));
+        options.Filters.Add<CatalogVersionHeaderFilter>();
+    })
     .ConfigureApiBehaviorOptions(options =>
     {
         options.ClientErrorMapping[StatusCodes.Status503ServiceUnavailable] = new ClientErrorData
@@ -31,6 +36,7 @@ ValidatorOptions.Global.LanguageManager.Culture = new CultureInfo("en");
 builder.Services.AddDbContext<BookstoreContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("Bookstore")));
 builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<ExecutionTimeFilter>();
 builder.Services.AddSingleton<SingletonOperation>();
 builder.Services.AddScoped<ScopedOperation>();
 builder.Services.AddTransient<TransientOperation>();
