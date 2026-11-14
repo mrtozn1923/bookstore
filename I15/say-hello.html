@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>First custom element</title>
+</head>
+<body>
+  <say-hello name="Ada"></say-hello>
+  <say-hello></say-hello>
+  <script>
+    class SayHello extends HTMLElement {
+      connectedCallback() {
+        const name = this.getAttribute("name") ?? "stranger";
+        this.textContent = `Hello, ${name}!`;
+      }
+    }
+
+    customElements.define("say-hello", SayHello);
+  </script>
+</body>
+</html>

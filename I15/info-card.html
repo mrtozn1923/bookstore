@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Slot</title>
+</head>
+<body>
+  <template id="card-template">
+    <style>
+      .card { border: 1px solid #ccc; border-radius: 8px; padding: 12px; margin: 8px; max-width: 280px; }
+      ::slotted(h3) { margin: 0 0 8px; color: #2563eb; }
+    </style>
+    <div class="card">
+      <slot name="title"><h3>Untitled card</h3></slot>
+      <slot></slot>
+    </div>
+  </template>
+
+  <info-card>
+    <h3 slot="title">Dune</h3>
+    <p>Frank Herbert · 450 TRY · 12 in stock</p>
+  </info-card>
+
+  <info-card>
+    <p>This card has no title.</p>
+  </info-card>
+
+  <script>
+    class InfoCard extends HTMLElement {
+      constructor() {
+        super();
+        const template = document.getElementById("card-template");
+        this.attachShadow({ mode: "open" }).append(template.content.cloneNode(true));
+      }
+    }
+
+    customElements.define("info-card", InfoCard);
+  </script>
+</body>
+</html>

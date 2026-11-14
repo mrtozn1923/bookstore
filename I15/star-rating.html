@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Star rating</title>
+  <style>
+    star-rating:not(:defined) { visibility: hidden; }
+  </style>
+</head>
+<body>
+  <star-rating value="3">Dune</star-rating>
+  <star-rating value="7" max="10" style="--star-size: 18px">Emma</star-rating>
+  <p id="last"></p>
+  <script>
+    const template = document.createElement("template");
+    template.innerHTML = `
+      <style>
+        :host { display: flex; align-items: center; gap: 8px; font-size: var(--star-size, 28px); }
+        button { all: unset; cursor: pointer; color: #d1d5db; }
+        button.filled { color: #f59e0b; }
+        button:focus-visible { outline: 2px solid #2563eb; border-radius: 4px; }
+      </style>
+      <slot></slot>
+      <div id="stars"></div>
+    `;
+
+    class StarRating extends HTMLElement {
+      static observedAttributes = ["value", "max"];
+
+      constructor() {
+        super();
+        this.attachShadow({ mode: "open" }).append(template.content.cloneNode(true));
+        this.shadowRoot.getElementById("stars").addEventListener("click", (event) => {
+          const button = event.target.closest("button");
+          if (!button) return;
+          this.value = Number(button.dataset.rating);
+          this.dispatchEvent(new CustomEvent("rating-change", {
+            detail: { value: this.value },
+            bubbles: true,
+          }));
+        });
+      }
+
+      get value() { return Number(this.getAttribute("value") ?? 0); }
+      set value(newValue) { this.setAttribute("value", String(newValue)); }
+      get max() { return Number(this.getAttribute("max") ?? 5); }
+      set max(newValue) { this.setAttribute("max", String(newValue)); }
+
+      connectedCallback() { this.#render(); }
+      attributeChangedCallback() { this.#render(); }
+
+      #render() {
+        const container = this.shadowRoot.getElementById("stars");
+        container.replaceChildren();
+        for (let i = 1; i <= this.max; i++) {
+          const button = document.createElement("button");
+          button.textContent = "★";
+          button.dataset.rating = i;
+          button.className = i <= this.value ? "filled" : "";
+          button.setAttribute("aria-label", `Rate ${i}`);
+          container.append(button);
+        }
+      }
+    }
+
+    customElements.define("star-rating", StarRating);
+
+    document.addEventListener("rating-change", (event) => {
+      document.getElementById("last").textContent =
+        `New rating for ${event.target.textContent}: ${event.detail.value}`;
+    });
+  </script>
+</body>
+</html>

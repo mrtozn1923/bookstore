@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Shadow DOM</title>
+  <style>
+    p { color: red; border: 2px solid red; }
+  </style>
+</head>
+<body>
+  <p>Paragraph on the page</p>
+  <shadow-box></shadow-box>
+  <script>
+    class ShadowBox extends HTMLElement {
+      constructor() {
+        super();
+        const shadow = this.attachShadow({ mode: "open" });
+        shadow.innerHTML = `
+          <style>
+            :host { display: block; padding: 12px; background: #eef; }
+            p { color: navy; }
+          </style>
+          <p>Paragraph inside the Shadow DOM</p>
+        `;
+      }
+    }
+
+    customElements.define("shadow-box", ShadowBox);
+    console.log(document.querySelectorAll("p").length); // 1
+  </script>
+</body>
+</html>

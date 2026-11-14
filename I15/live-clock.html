@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Live clock</title>
+</head>
+<body>
+  <button id="toggle">Add / remove clock</button>
+  <live-clock></live-clock>
+  <script>
+    class LiveClock extends HTMLElement {
+      #timer = null;
+
+      connectedCallback() {
+        this.#update();
+        this.#timer = setInterval(() => this.#update(), 1000);
+        console.log("Clock started");
+      }
+
+      disconnectedCallback() {
+        clearInterval(this.#timer);
+        console.log("Clock stopped");
+      }
+
+      #update() {
+        this.textContent = new Date().toLocaleTimeString();
+      }
+    }
+
+    customElements.define("live-clock", LiveClock);
+
+    const clock = document.querySelector("live-clock");
+    document.getElementById("toggle").addEventListener("click", () => {
+      if (clock.isConnected) clock.remove();
+      else document.body.append(clock);
+    });
+  </script>
+</body>
+</html>
