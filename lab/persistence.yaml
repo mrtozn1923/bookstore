@@ -1,0 +1,27 @@
+# Post 12: throwaway Redis instances for persistence and memory experiments
+name: bookstore-persistence
+services:
+  rdb:
+    # official image defaults: RDB snapshots only (save 3600 1 300 100 60 10000), no AOF
+    image: redis:8
+    ports:
+      - "127.0.0.1:6390:6379"
+    volumes:
+      - rdb-data:/data
+  aof:
+    image: redis:8
+    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec"]
+    ports:
+      - "127.0.0.1:6391:6379"
+    volumes:
+      - aof-data:/data
+  limited:
+    # container memory limit without maxmemory: what happens when the data outgrows it?
+    image: redis:8
+    profiles: ["oom"]
+    mem_limit: 128m
+    ports:
+      - "127.0.0.1:6392:6379"
+volumes:
+  rdb-data:
+  aof-data:

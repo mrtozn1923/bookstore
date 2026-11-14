@@ -143,11 +143,29 @@ switch (command)
     case "catalog-scale":
         await CatalogDemo.ScaleAsync(connectionString);
         break;
+    case "write-orders":
+        await PersistenceDemo.WriteOrdersAsync(connectionString, int.Parse(args[1]));
+        break;
+    case "check-orders":
+        await PersistenceDemo.CheckOrdersAsync(connectionString);
+        break;
+    case "fork-cost":
+        await PersistenceDemo.ForkCostAsync(connectionString);
+        break;
+    case "eviction":
+        await PersistenceDemo.EvictionAsync(connectionString);
+        break;
+    case "big-key-delete":
+        await PersistenceDemo.BigKeyDeleteAsync(connectionString);
+        break;
+    case "fill":
+        await PersistenceDemo.FillAsync(connectionString, int.Parse(args[1]));
+        break;
     case "sync-over-async":
         await SyncOverAsyncDemo.RunAsync(connectionString);
         break;
     default:
         Console.WriteLine("commands: seed-keys <n> | keys-vs-ping | incr | rtt | mux-per-request [--leak] | mux-singleton | " +
-                          "pipeline | pubsub-connection | scan-vs-ping | server-info | key-names | sync-over-async | lost-update | active-expire | ttl-reset | cart-storage | hash-encoding | big-hash | compact-hash | queue-crash | blpop | visitors | big-set | bestsellers | seed-week | zset-encoding | score-precision | page-drift | recent-orders | unique-visitors | unique-scale | probabilistic | stock-race | script-cache | busy-script | fcall | pubsub-delivery | pubsub-order | slow-subscriber | shared-subscription | queue-signal | expired-events | stream-crash | idempotent-xadd | stream-memory | catalog-scale");
+                          "pipeline | pubsub-connection | scan-vs-ping | server-info | key-names | sync-over-async | lost-update | active-expire | ttl-reset | cart-storage | hash-encoding | big-hash | compact-hash | queue-crash | blpop | visitors | big-set | bestsellers | seed-week | zset-encoding | score-precision | page-drift | recent-orders | unique-visitors | unique-scale | probabilistic | stock-race | script-cache | busy-script | fcall | pubsub-delivery | pubsub-order | slow-subscriber | shared-subscription | queue-signal | expired-events | stream-crash | idempotent-xadd | stream-memory | catalog-scale | write-orders <n> | check-orders | fork-cost | eviction | big-key-delete | fill <mb>");
         break;
 }

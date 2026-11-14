@@ -3,6 +3,8 @@ name: bookstore-redis-lab
 services:
   redis:
     image: redis:8
+    # post 12: AOF next to RDB, a memory limit, and noeviction (streams and queues must never be evicted)
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "512mb", "--maxmemory-policy", "noeviction"]
     ports:
       # only reachable from this machine
       - "127.0.0.1:6379:6379"
