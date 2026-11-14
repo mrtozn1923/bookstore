@@ -1,0 +1,11 @@
+{
+  "name": "bookstore-web-styles",
+  "private": true,
+  "scripts": {
+    "css:build": "sass Styles/site.scss wwwroot/css/site.css --style=compressed --no-source-map",
+    "css:watch": "sass Styles/site.scss wwwroot/css/site.css --watch"
+  },
+  "devDependencies": {
+    "sass": "1.108.2"
+  }
+}

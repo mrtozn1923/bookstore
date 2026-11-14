@@ -1,0 +1,11 @@
+{
+  "name": "bookstore-sass-lab",
+  "private": true,
+  "type": "module",
+  "scripts": {},
+  "devDependencies": {
+    "playwright": "1.65.0",
+    "sass": "1.108.2",
+    "sass-embedded": "1.108.2"
+  }
+}

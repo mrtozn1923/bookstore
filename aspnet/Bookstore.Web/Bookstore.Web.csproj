@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <SassSource Include="Styles/**/*.scss" />
+  </ItemGroup>
+
+  <!-- npm packages are installed once, before the first Sass compile -->
+  <Target Name="NpmInstall" BeforeTargets="CompileSass" Condition="!Exists('node_modules')">
+    <Exec Command="npm ci" />
+  </Target>
+
+  <!-- runs only when an .scss file is newer than site.css -->
+  <Target Name="CompileSass" BeforeTargets="BeforeBuild" Inputs="@(SassSource)" Outputs="wwwroot/css/site.css">
+    <Exec Command="npm run css:build" />
+    <ItemGroup>
+      <Content Include="wwwroot/css/site.css" Exclude="@(Content)" />
+    </ItemGroup>
+  </Target>
+
+</Project>

@@ -1,0 +1,18 @@
+$brand: #b45309;
+
+.book-card {
+    padding: 16px;
+    border: 1px solid $brand;
+
+    &:hover {
+        border-color: #1d4ed8;
+    }
+
+    &__title {
+        color: $brand;
+    }
+
+    .price {
+        font-weight: 700;
+    }
+}

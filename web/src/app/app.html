@@ -1,0 +1,10 @@
+<header class="site-header">
+  <h1>Bookstore</h1>
+</header>
+<main>
+  <section class="book-list">
+    @for (book of books; track book.isbn) {
+      <app-book-card [book]="book" />
+    }
+  </section>
+</main>

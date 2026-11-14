@@ -1,0 +1,15 @@
+$brand: #b45309;
+
+body {
+    margin: 0;
+    font-family: system-ui, sans-serif;
+}
+
+.book-card {
+    padding: 16px;
+    border: 1px solid $brand;
+
+    &__title {
+        color: $brand;
+    }
+}
