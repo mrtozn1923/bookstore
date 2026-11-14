@@ -48,6 +48,11 @@ export interface Usage {
   durationMs: number | null;
 }
 
+// instanceof DOMException yerine ada bakar: abort sebebi başka bir realm'den (test ortamı, iframe, worker) gelebilir
+function hasName(err: unknown, name: string): boolean {
+  return typeof err === 'object' && err !== null && (err as { name?: unknown }).name === name;
+}
+
 const FIRST_TOKEN_TIMEOUT_MS = 30_000;
 // Sunucu 5 saniyede bir ping gönderiyor; 15 saniye hiçbir event gelmezse bağlantı ölü sayılır
 const SILENCE_TIMEOUT_MS = 15_000;
@@ -272,10 +277,10 @@ export class ChatStore {
   }
 
   private handleError(id: number, err: unknown): void {
-    if (err instanceof DOMException && err.name === 'AbortError') {
+    if (hasName(err, 'AbortError')) {
       // Kullanıcı durdurdu: bu bir hata değil
       this.finish(id, 'stopped', 'aborted');
-    } else if (err instanceof DOMException && err.name === 'TimeoutError') {
+    } else if (hasName(err, 'TimeoutError')) {
       this.fail(id, { kind: 'timeout', message: 'The assistant did not start answering in time.' });
     } else if (err instanceof ChatHttpError && err.status === 429) {
       this.fail(id, { kind: 'rate-limit', message: err.detail });
