@@ -1,5 +1,6 @@
 using Bookstore.Catalog;
 using Bookstore.Data;
+using Bookstore.Ordering;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +15,7 @@ public static class WishlistsModule
         wishlists.MapGet("/{wishlistId:guid}", GetWishlist).WithName("GetWishlist");
         wishlists.MapPut("/{wishlistId:guid}/items/{isbn}", AddItem);
         wishlists.MapDelete("/{wishlistId:guid}/items/{isbn}", RemoveItem);
+        wishlists.MapPost("/{wishlistId:guid}/items/{isbn}/move-to-cart", MoveToCart);
         return app;
     }
 
@@ -75,6 +77,31 @@ public static class WishlistsModule
             wishlist.UpdatedAtUtc = clock.GetUtcNow().UtcDateTime;
             await db.SaveChangesAsync(ct);
         }
+        return TypedResults.Ok(await ToViewAsync(wishlist, catalog, ct));
+    }
+
+    // POST /api/wishlists/{id}/items/{isbn}/move-to-cart  { "cartId": "..." }
+    private static async Task<Results<Ok<WishlistView>, NotFound<string>>> MoveToCart(
+        Guid wishlistId, string isbn, MoveToCartRequest request,
+        BookstoreContext db, ICatalogService catalog, ICartService carts, TimeProvider clock, CancellationToken ct)
+    {
+        Wishlist? wishlist = await db.Wishlists.Include(w => w.Items).FirstOrDefaultAsync(w => w.Id == wishlistId, ct);
+        if (wishlist is null)
+        {
+            return TypedResults.NotFound("Wishlist not found.");
+        }
+        BookInfo? book = await catalog.FindByIsbnAsync(isbn, ct);
+        if (book is null || wishlist.Items.RemoveAll(i => i.BookId == book.Id) == 0)
+        {
+            return TypedResults.NotFound($"Book {isbn} is not on the wishlist.");
+        }
+        if (!await carts.TryAddOneAsync(request.CartId, book.Id, ct))
+        {
+            return TypedResults.NotFound("Cart not found.");
+        }
+
+        wishlist.UpdatedAtUtc = clock.GetUtcNow().UtcDateTime;
+        await db.SaveChangesAsync(ct);   // one SaveChanges: the cart and the wishlist change in one transaction
         return TypedResults.Ok(await ToViewAsync(wishlist, catalog, ct));
     }
 

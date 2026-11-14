@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using Bookstore.Ordering;
 using Bookstore.Wishlists;
 
 namespace Bookstore.Api.Tests;
@@ -73,6 +74,64 @@ public sealed class WishlistTests(BookstoreApiFactory factory)
         Assert.Equal(HttpStatusCode.NotFound, unknownWishlist.StatusCode);
         Assert.Equal(HttpStatusCode.NotFound, unknownBook.StatusCode);
         Assert.Equal(HttpStatusCode.NotFound, get.StatusCode);
+    }
+
+    [Fact]
+    public async Task Moving_a_book_puts_one_copy_in_the_cart_and_removes_it_from_the_wishlist()
+    {
+        Guid wishlistId = await CreateWishlistWithAsync(TheHobbit);
+        Guid cartId = await CreateCartAsync();
+
+        HttpResponseMessage response = await client.PostAsJsonAsync(
+            $"/api/wishlists/{wishlistId}/items/{TheHobbit}/move-to-cart", new MoveToCartRequest(cartId), ct);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        WishlistView? wishlist = await response.Content.ReadFromJsonAsync<WishlistView>(ct);
+        Assert.Empty(wishlist!.Items);
+        CartView? cart = await client.GetFromJsonAsync<CartView>($"/api/carts/{cartId}", ct);
+        Assert.Equal(1, Assert.Single(cart!.Items).Quantity);
+    }
+
+    [Fact]
+    public async Task Moving_a_book_that_is_already_in_the_cart_increases_its_quantity()
+    {
+        Guid wishlistId = await CreateWishlistWithAsync(TheHobbit);
+        Guid cartId = await CreateCartAsync();
+        await client.PutAsJsonAsync($"/api/carts/{cartId}/items/{TheHobbit}", new SetQuantityRequest(1), ct);
+
+        HttpResponseMessage response = await client.PostAsJsonAsync(
+            $"/api/wishlists/{wishlistId}/items/{TheHobbit}/move-to-cart", new MoveToCartRequest(cartId), ct);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        CartView? cart = await client.GetFromJsonAsync<CartView>($"/api/carts/{cartId}", ct);
+        Assert.Equal(2, Assert.Single(cart!.Items).Quantity);
+    }
+
+    [Fact]
+    public async Task Moving_to_an_unknown_cart_keeps_the_book_on_the_wishlist()
+    {
+        Guid wishlistId = await CreateWishlistWithAsync(TheHobbit);
+
+        HttpResponseMessage response = await client.PostAsJsonAsync(
+            $"/api/wishlists/{wishlistId}/items/{TheHobbit}/move-to-cart", new MoveToCartRequest(Guid.NewGuid()), ct);
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        WishlistView? wishlist = await client.GetFromJsonAsync<WishlistView>($"/api/wishlists/{wishlistId}", ct);
+        Assert.Single(wishlist!.Items);
+    }
+
+    private async Task<Guid> CreateWishlistWithAsync(string isbn)
+    {
+        Guid id = await CreateWishlistAsync();
+        (await client.PutAsync($"/api/wishlists/{id}/items/{isbn}", null, ct)).EnsureSuccessStatusCode();
+        return id;
+    }
+
+    private async Task<Guid> CreateCartAsync()
+    {
+        HttpResponseMessage response = await client.PostAsync("/api/carts", null, ct);
+        CartView? cart = await response.Content.ReadFromJsonAsync<CartView>(ct);
+        return cart!.Id;
     }
 
     private async Task<Guid> CreateWishlistAsync()

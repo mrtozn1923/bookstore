@@ -9,7 +9,9 @@ namespace Bookstore.Ordering;
 public static class OrderingModule
 {
     public static IServiceCollection AddOrderingModule(this IServiceCollection services) =>
-        services.AddScoped<OrderService>();
+        services
+            .AddScoped<OrderService>()
+            .AddScoped<ICartService, CartService>();
 
     public static IEndpointRouteBuilder MapOrderingEndpoints(this IEndpointRouteBuilder app)
     {

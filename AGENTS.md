@@ -16,7 +16,7 @@ Online bookstore: ASP.NET Core 10 Web API, EF Core 10 on SQL Server, Angular 22 
 
 ## Rules
 - Minimal APIs with route groups and `TypedResults`. No MVC controllers, no `Startup.cs`.
-- A module reads another module's data only through its interface (`ICatalogService`, `IInventoryService`).
+- A module reads another module's data only through its interface (`ICatalogService`, `ICartService`, `IInventoryService`).
 - Money is `decimal` in TRY; times are UTC and come from `TimeProvider`.
 - Schema change: edit the entity and its configuration, then
   `dotnet ef migrations add <Name> --project src/Bookstore.Api`. Never edit an existing migration.
