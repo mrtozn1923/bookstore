@@ -1,0 +1,21 @@
+info:
+  name: Read order
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: "{{orderUrl}}"
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "200"
+    - expression: res.body.status
+      operator: eq
+      value: Placed
+
+settings:
+  encodeUrl: true

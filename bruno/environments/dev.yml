@@ -1,0 +1,8 @@
+name: dev
+variables:
+  - name: baseUrl
+    value: http://localhost:5080
+  - name: email
+    value: ada@example.com
+  - name: password
+    value: "{{process.env.BOOKSTORE_PASSWORD}}"

@@ -1,0 +1,22 @@
+info:
+  name: Create cart
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/carts"
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "201"
+  scripts:
+    - type: after-response
+      code: |-
+        bru.setVar("cartId", res.body.id);
+
+settings:
+  encodeUrl: true

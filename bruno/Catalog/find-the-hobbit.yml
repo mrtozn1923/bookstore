@@ -1,0 +1,32 @@
+info:
+  name: Find The Hobbit
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/books?page=1&search=Hobbit"
+  params:
+    - name: page
+      value: "1"
+      type: query
+    - name: search
+      value: Hobbit
+      type: query
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "200"
+    - expression: res.body.total
+      operator: eq
+      value: "1"
+  scripts:
+    - type: after-response
+      code: |-
+        bru.setVar("isbn", res.body.items[0].isbn);
+        bru.setVar("unitPrice", res.body.items[0].price);
+
+settings:
+  encodeUrl: true

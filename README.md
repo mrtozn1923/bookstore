@@ -86,6 +86,11 @@ Postman collection'ı (`postman/`): Postman'de import et ya da komut satırında
 `npx newman run postman/Bookstore.postman_collection.json -e postman/dev.postman_environment.json --env-var password=Bookstore-Demo-1`
 (Postman CLI ile: `postman collection run ...` aynı parametrelerle).
 
+Bruno collection'ı (`bruno/`, OpenCollection YAML): Bruno'da aç ya da CLI ile koş
+(şifre `bruno/.env`'den, örnek `.env.example`):
+`cd bruno; npx @usebruno/cli@4.3.0 run --env dev`. GitHub Actions'taki `API tests` workflow'u aynı collection'ı koşar;
+repository secret olarak `CI_SQL_PASSWORD` (SQL Server sa şifresi) ve `BOOKSTORE_PASSWORD` (demo şifresi) gerekir.
+
 Migration'ları elle yönetmek istersen: `dotnet tool restore` sonra
 `dotnet ef database update --project src/Bookstore.Api`.
 
@@ -190,6 +195,11 @@ End-to-end smoke test (bash, curl 8.3+ and jq; on Windows use Git Bash or WSL):
 Postman collection (`postman/`): import it into Postman or run it from the command line:
 `npx newman run postman/Bookstore.postman_collection.json -e postman/dev.postman_environment.json --env-var password=Bookstore-Demo-1`
 (with the Postman CLI: `postman collection run ...` with the same parameters).
+
+Bruno collection (`bruno/`, OpenCollection YAML): open it in Bruno or run it with the CLI
+(password from `bruno/.env`, see `.env.example`):
+`cd bruno; npx @usebruno/cli@4.3.0 run --env dev`. The `API tests` GitHub Actions workflow runs the same collection;
+it needs the repository secrets `CI_SQL_PASSWORD` (SQL Server sa password) and `BOOKSTORE_PASSWORD` (demo password).
 
 To manage migrations by hand: `dotnet tool restore`, then
 `dotnet ef database update --project src/Bookstore.Api`.
