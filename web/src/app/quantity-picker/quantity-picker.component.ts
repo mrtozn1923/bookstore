@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, model } from '@angular/core';
 
 @Component({
     selector: 'app-quantity-picker',
@@ -7,16 +7,13 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
     standalone: true
 })
 export class QuantityPickerComponent {
-  @Input() quantity = 1;
-  @Output() quantityChange = new EventEmitter<number>();
+  quantity = model(1);
 
   change(delta: number): void {
-    this.quantity = Math.max(1, this.quantity + delta);
-    this.quantityChange.emit(this.quantity);
+    this.quantity.update(q => Math.max(1, q + delta));
   }
 
   reset(): void {
-    this.quantity = 1;
-    this.quantityChange.emit(this.quantity);
+    this.quantity.set(1);
   }
 }

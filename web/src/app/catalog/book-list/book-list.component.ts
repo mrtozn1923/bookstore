@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, computed, viewChildren } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AppConfig, APP_CONFIG } from '../../app-config';
 import { Book } from '../../book';
@@ -31,6 +31,8 @@ export class BookListComponent implements OnInit {
     }
   ];
   sort = 'title';
+  items = viewChildren(BookItemComponent);
+  itemCount = computed(() => this.items().length);
   page = 1;
 
   constructor(

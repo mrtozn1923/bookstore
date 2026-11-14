@@ -7,6 +7,7 @@
     (addToCart)="addToCart($event)">
   </app-book-item>
 }
+<p>Showing {{ itemCount() }} books</p>
 <button (click)="addBook()">Add a new book</button>
 <button (click)="goToPage(page + 1)">Next page</button>
 <button (click)="openBook('9780441172719')">Book of the week: Dune</button>

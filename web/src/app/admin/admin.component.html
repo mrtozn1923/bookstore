@@ -3,6 +3,12 @@
   Stock, returns and price changes are managed here.
   <a routerLink="customers">Customers</a>
 </p>
+<p>Book of the week: {{ featured.title }}</p>
+@if (editing) {
+  <app-book-editor [book]="featured" (saved)="onSaved($event)" (cancelled)="editing = false" />
+} @else {
+  <button (click)="editing = true">Edit</button>
+}
 
 @defer (on viewport) {
   <app-sales-chart [data]="sales" />

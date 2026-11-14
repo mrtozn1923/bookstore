@@ -2,6 +2,7 @@ import { Component, Input, ViewChild, computed, effect, signal } from '@angular/
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Book } from '../book';
 import { QuantityPickerComponent } from '../quantity-picker/quantity-picker.component';
+import { PriceTagComponent } from '../price-tag/price-tag.component';
 import { FormsModule } from '@angular/forms';
 import { NgOptimizedImage } from '@angular/common';
 
@@ -10,7 +11,7 @@ import { NgOptimizedImage } from '@angular/common';
     templateUrl: './book-detail.component.html',
     styleUrls: ['./book-detail.component.css'],
     standalone: true,
-    imports: [NgOptimizedImage, RouterLink, RouterLinkActive, RouterOutlet, FormsModule, QuantityPickerComponent]
+    imports: [NgOptimizedImage, RouterLink, RouterLinkActive, RouterOutlet, FormsModule, QuantityPickerComponent, PriceTagComponent]
 })
 export class BookDetailComponent {
   @ViewChild(QuantityPickerComponent) picker!: QuantityPickerComponent;
@@ -27,7 +28,7 @@ export class BookDetailComponent {
   rating = 90;
   coupon = '';
   giftNote = '';
-  amount = 1;
+  amount = signal(1);
 
   constructor() {
     effect(() => console.log('Copies in cart:', this.inCart()));

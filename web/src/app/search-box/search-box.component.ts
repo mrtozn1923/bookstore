@@ -1,18 +1,14 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, afterNextRender, viewChild } from '@angular/core';
 
 @Component({
     selector: 'app-search-box',
     template: `<input #searchInput placeholder="Search books...">`,
     standalone: true
 })
-export class SearchBoxComponent implements OnInit, AfterViewInit {
-  @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
+export class SearchBoxComponent {
+  searchInput = viewChild.required<ElementRef<HTMLInputElement>>('searchInput');
 
-  ngOnInit(): void {
-    console.log(this.searchInput); // undefined
-  }
-
-  ngAfterViewInit(): void {
-    this.searchInput.nativeElement.focus();
+  constructor() {
+    afterNextRender(() => this.searchInput().nativeElement.focus());
   }
 }

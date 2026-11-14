@@ -16,10 +16,17 @@ describe('PriceTagComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(PriceTagComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('price', 450);
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should apply the discount', () => {
+    fixture.componentRef.setInput('discount', 10);
+    fixture.detectChanges();
+    expect((fixture.nativeElement as HTMLElement).textContent).toBe('405 TRY');
   });
 });

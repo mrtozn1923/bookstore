@@ -1,6 +1,7 @@
 <h2>Book {{ isbn }}</h2>
 @if (book) {
   <p>{{ book.title }}: {{ book.price }} TRY</p>
+  <p>Campaign price: <app-price-tag [price]="book.price" [discount]="10" /></p>
 }
 <nav>
   <a routerLink="summary" routerLinkActive="active">Summary</a>
@@ -35,6 +36,6 @@
 <input [(ngModel)]="giftNote">
 <p>Gift note: {{ giftNote }}</p>
 
-<app-quantity-picker [(quantity)]="amount"></app-quantity-picker>
+<app-quantity-picker [(quantity)]="amount" />
 <button (click)="resetQuantity()">Reset</button>
-<p>Quantity: {{ amount }}</p>
+<p>Quantity: {{ amount() }} · Total: {{ amount() * price }} TRY</p>

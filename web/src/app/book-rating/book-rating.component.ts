@@ -1,20 +1,28 @@
-import { Component, Input, booleanAttribute, numberAttribute } from '@angular/core';
+import { Component, booleanAttribute, computed, input, model, output } from '@angular/core';
 
 @Component({
   selector: 'app-book-rating',
   standalone: true,
   template: `
-    @for (star of stars; track star) {
-      <span [class.filled]="star <= value" [class.compact]="compact">★</span>
+    @for (star of stars(); track star) {
+      <button (click)="rate(star)" [class.filled]="star <= value()" [class.compact]="compact()">★</button>
     }
   `
 })
 export class BookRatingComponent {
-  @Input({ required: true, transform: numberAttribute }) value!: number;
-  @Input({ transform: booleanAttribute }) compact = false;
-  @Input({ transform: numberAttribute }) max = 5;
+  max = input(5);
+  compact = input(false, { transform: booleanAttribute });
+  disabled = input(false, { transform: booleanAttribute });
+  value = model(0);
+  rated = output<number>();
 
-  get stars(): number[] {
-    return Array.from({ length: this.max }, (_, i) => i + 1);
+  stars = computed(() => Array.from({ length: this.max() }, (_, i) => i + 1));
+
+  rate(star: number): void {
+    if (this.disabled()) {
+      return;
+    }
+    this.value.set(star);
+    this.rated.emit(star);
   }
 }

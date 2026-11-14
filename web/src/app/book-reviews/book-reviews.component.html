@@ -1,1 +1,3 @@
 <p>Reviews for {{ isbn }}</p>
+<app-book-rating [(value)]="score" (rated)="saveScore($event)" />
+<p>Your rating: {{ score }}</p>
