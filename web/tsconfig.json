@@ -3,6 +3,10 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "paths": {
+      "@bookstore/ui": ["./dist/bookstore/ui"],
+      "@bookstore/ui/*": ["./dist/bookstore/ui/*"]
+    },
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
@@ -26,6 +30,12 @@
     },
     {
       "path": "./tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/bookstore/ui/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/bookstore/ui/tsconfig.spec.json"
     }
   ]
 }
