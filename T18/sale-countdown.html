@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sale Countdown</title>
+</head>
+<body>
+  <p id="today"></p>
+  <p id="remaining"></p>
+  <script>
+    const today = new Date();
+    const saleStart = new Date(today.getFullYear() + 1, 0, 1);
+
+    const diffMs = saleStart - today;
+    const oneDayMs = 1000 * 60 * 60 * 24;
+    const days = Math.ceil(diffMs / oneDayMs);
+
+    document.getElementById("today").textContent =
+      "Today: " + today.toLocaleDateString("en-US", { dateStyle: "full" });
+    document.getElementById("remaining").textContent = `${days} days until the New Year sale.`;
+  </script>
+</body>
+</html>
