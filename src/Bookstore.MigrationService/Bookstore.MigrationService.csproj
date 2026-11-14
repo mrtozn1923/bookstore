@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Bookstore.Data\Bookstore.Data.csproj" />
+    <ProjectReference Include="..\Bookstore.ServiceDefaults\Bookstore.ServiceDefaults.csproj" />
+  </ItemGroup>
+
+</Project>
