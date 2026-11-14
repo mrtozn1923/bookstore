@@ -14,7 +14,7 @@ describe('App', () => {
 
     const element: HTMLElement = fixture.nativeElement;
     expect(element.querySelector('.brand')?.textContent).toBe('Bookstore');
-    expect([...element.querySelectorAll('nav a')].map((link) => link.textContent)).toEqual(['Catalog', 'Cart']);
+    expect([...element.querySelectorAll('nav a')].map((link) => link.textContent)).toEqual(['Catalog', 'Cart (0)']);
   });
 
   it('runs with the locale the app uses', () => {

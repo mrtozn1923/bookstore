@@ -2,11 +2,8 @@ import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ApplicationRef } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { Book } from './book';
+import { dune, emma } from '../../testing/books';
 import { CatalogService } from './catalog-service';
-
-const dune: Book = { id: 1, isbn: '9780441013593', title: 'Dune', author: 'Frank Herbert', category: 'sci-fi', price: 450, stock: 3 };
-const emma: Book = { id: 2, isbn: '9780141439587', title: 'Emma', author: 'Jane Austen', category: 'classics', price: 320, stock: 0 };
 
 describe('CatalogService', () => {
   let catalog: CatalogService;
