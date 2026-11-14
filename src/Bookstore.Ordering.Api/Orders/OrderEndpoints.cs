@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Bookstore.Contracts;
 
 namespace Bookstore.Ordering.Api.Orders;
 
@@ -19,6 +20,7 @@ public static class OrderEndpoints
         PlaceOrderRequest request,
         CatalogClient catalog,
         OrderStore store,
+        OrderEventPublisher events,
         OrderingTelemetry telemetry,
         TimeProvider clock,
         ILoggerFactory loggerFactory,
@@ -50,6 +52,7 @@ public static class OrderEndpoints
 
         Order order = new(Guid.CreateVersion7(), request.CustomerEmail, lines, lines.Sum(l => l.LineTotal), "TRY", clock.GetUtcNow());
         store.Add(order);
+        await events.PublishAsync(new OrderPlaced(order.Id, [.. request.Items.Select(i => new OrderPlacedItem(i.Isbn, i.Quantity))], order.PlacedAtUtc), ct);
         telemetry.OrderPlaced(order);
         loggerFactory.CreateLogger("Bookstore.Ordering.Orders").LogInformation("Order {OrderId} placed with {ItemCount} items, total {Total} {Currency}",
             order.Id, order.Lines.Count, order.Total, order.Currency);

@@ -5,10 +5,13 @@
     <ProjectReference Include="..\Bookstore.MigrationService\Bookstore.MigrationService.csproj" />
     <ProjectReference Include="..\Bookstore.Ordering.Api\Bookstore.Ordering.Api.csproj" />
     <ProjectReference Include="..\Bookstore.Gateway\Bookstore.Gateway.csproj" />
+    <ProjectReference Include="..\Bookstore.Inventory\Bookstore.Inventory.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.JavaScript" />
+    <PackageReference Include="Aspire.Hosting.Keycloak" />
+    <PackageReference Include="Aspire.Hosting.RabbitMQ" />
     <PackageReference Include="Aspire.Hosting.Redis" />
     <PackageReference Include="Aspire.Hosting.SqlServer" />
   </ItemGroup>

@@ -1,12 +1,15 @@
 using Bookstore.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 
 namespace Bookstore.Api.Books;
 
 public static class BookEndpoints
 {
     private const int PageSize = 20;
+    private const string BookListTag = "books";
 
     public static IEndpointRouteBuilder MapBookEndpoints(this IEndpointRouteBuilder app)
     {
@@ -20,7 +23,7 @@ public static class BookEndpoints
                     .Take(PageSize)
                     .Select(b => new BookResponse(b.Isbn, b.Title, b.Author, b.Price, b.Currency))
                     .ToListAsync(ct))
-            .CacheOutput(policy => policy.Expire(TimeSpan.FromSeconds(30)).SetVaryByQuery("page"));
+            .CacheOutput(policy => policy.Expire(TimeSpan.FromSeconds(30)).SetVaryByQuery("page").Tag(BookListTag));
 
         // Price lookup for other services: one query for many books
         books.MapGet("/lookup", async ([FromQuery] string[] isbn, BookstoreContext db, CancellationToken ct) =>
@@ -28,6 +31,9 @@ public static class BookEndpoints
                 .Where(b => isbn.Contains(b.Isbn))
                 .Select(b => new BookResponse(b.Isbn, b.Title, b.Author, b.Price, b.Currency))
                 .ToListAsync(ct));
+
+        // Back office: only store staff may add books
+        books.MapPost("/", CreateBookAsync).RequireAuthorization("BackOffice");
 
         books.MapGet("/{isbn}", async (string isbn, BookstoreContext db, CancellationToken ct) =>
         {
@@ -53,5 +59,39 @@ public static class BookEndpoints
         });
 
         return app;
+    }
+
+    private static async Task<IResult> CreateBookAsync(
+        CreateBookRequest request,
+        BookstoreContext db,
+        IOutputCacheStore cache,
+        ILoggerFactory loggerFactory,
+        CancellationToken ct)
+    {
+        if (request.Isbn.Length != 13 || !request.Isbn.All(char.IsAsciiDigit))
+        {
+            return Results.Problem("ISBN must be 13 digits.", statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        if (await db.Books.AnyAsync(b => b.Isbn == request.Isbn, ct))
+        {
+            return Results.Conflict();
+        }
+
+        db.Books.Add(new Book { Isbn = request.Isbn, Title = request.Title, Author = request.Author, Price = request.Price });
+        await db.SaveChangesAsync(ct);
+
+        // A failed eviction must not fail the request; the list expires in 30 s anyway
+        try
+        {
+            await cache.EvictByTagAsync(BookListTag, ct);
+        }
+        catch (Exception ex) when (ex is RedisException or AggregateException { InnerException: RedisException })
+        {
+            loggerFactory.CreateLogger("Bookstore.Api.Books").LogWarning(ex, "Could not evict the book list cache");
+        }
+
+        BookResponse created = new(request.Isbn, request.Title, request.Author, request.Price, "TRY");
+        return Results.Created($"/api/books/{created.Isbn}", created);
     }
 }
