@@ -20,6 +20,10 @@ services:
       - ./otelcol-config.yaml:/otel-lgtm/otelcol-config.yaml:ro
       # Loki: service.instance.id is stored as structured metadata, not as a label
       - ./loki-config.yaml:/otel-lgtm/loki-config.yaml:ro
+      # Prometheus: recording rules, alerting rules and the Alertmanager on the host (alertmanager.yml)
+      - ./lgtm-prometheus.yaml:/otel-lgtm/prometheus.yaml:ro
+      - ./rules.yaml:/otel-lgtm/bookstore-rules/rules.yaml:ro
+      - ./alerts.yaml:/otel-lgtm/bookstore-rules/alerts.yaml:ro
       # Dashboards as code: the provider file tells Grafana where to look, the JSON files are the dashboards.
       - ./grafana/dashboards.yaml:/otel-lgtm/grafana/conf/provisioning/dashboards/bookstore.yaml:ro
       - ./grafana/dashboards:/otel-lgtm/bookstore-dashboards:ro

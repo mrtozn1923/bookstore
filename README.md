@@ -123,6 +123,12 @@ Bu branch, mertozen.com'daki Observability serisinin kodudur. Bu tag'e kadar ekl
 - `deploy/observability/grafana`: dashboard as code. `bookstore-api-red.json` (RED) ve `bookstore-api-runtime.json` (USE) dosyadan provisioning ile yüklenir (Grafana'da "Bookstore" klasörü); exemplar'lar açık (`SetExemplarFilter(ExemplarFilterType.TraceBased)`).
 - Checkout vakasının düzeltmesi: stok kontrolü sepetin tamamı için tek sorgu (`IInventoryService.GetAvailableAsync(IReadOnlyCollection<int>)`, N+1 testi `TracingTests`), ödeme çağrısında 4 sn attempt timeout, jitter'lı 2 retry ve 10 sn toplam timeout (`Payments/PaymentsModule.cs`).
 - Log'lar: OpenTelemetry log kaydının gövdesi biçimlenmiş mesaj (`IncludeFormattedMessage`); `deploy/observability/loki-config.yaml` Loki'de `service.instance.id`'yi label yerine structured metadata olarak saklar.
+- Alerting: `deploy/observability/alerts.yaml` (burn-rate, latency, retry, telemetry yok, Watchdog), `lgtm-prometheus.yaml` (kurallar + Alertmanager), `alertmanager.yml` (routing, gruplama, inhibition), `docs/runbooks/`, bildirimleri yazan `tools/Bookstore.AlertSink` (http://localhost:5095). Alertmanager 0.35 binary'si host'ta:
+
+  ```powershell
+  dotnet run --project tools/Bookstore.AlertSink
+  alertmanager.exe --config.file=deploy/observability/alertmanager.yml --cluster.listen-address=
+  ```
 
 ---
 
@@ -245,3 +251,9 @@ This branch holds the code of the Observability series on mertozen.com. Added up
 - `deploy/observability/grafana`: dashboards as code. `bookstore-api-red.json` (RED) and `bookstore-api-runtime.json` (USE) are provisioned from files (the "Bookstore" folder in Grafana); exemplars are on (`SetExemplarFilter(ExemplarFilterType.TraceBased)`).
 - The fix for the checkout case: one availability query for the whole cart (`IInventoryService.GetAvailableAsync(IReadOnlyCollection<int>)`, N+1 test in `TracingTests`), a 4 s attempt timeout, 2 jittered retries and a 10 s total timeout on the payment call (`Payments/PaymentsModule.cs`).
 - Logs: the body of an OpenTelemetry log record is the formatted message (`IncludeFormattedMessage`); `deploy/observability/loki-config.yaml` makes Loki store `service.instance.id` as structured metadata instead of a label.
+- Alerting: `deploy/observability/alerts.yaml` (burn rate, latency, retries, missing telemetry, Watchdog), `lgtm-prometheus.yaml` (rules + Alertmanager), `alertmanager.yml` (routing, grouping, inhibition), `docs/runbooks/`, and `tools/Bookstore.AlertSink` (http://localhost:5095), which prints the notifications. The Alertmanager 0.35 binary runs on the host:
+
+  ```powershell
+  dotnet run --project tools/Bookstore.AlertSink
+  alertmanager.exe --config.file=deploy/observability/alertmanager.yml --cluster.listen-address=
+  ```

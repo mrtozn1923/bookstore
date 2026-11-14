@@ -15,3 +15,10 @@ groups:
           sum(rate(http_server_request_duration_seconds_count{job="bookstore-api", http_route="/api/orders/", http_response_status_code=~"5.."}[5m]))
             /
           sum(rate(http_server_request_duration_seconds_count{job="bookstore-api", http_route="/api/orders/"}[5m]))
+
+      # The same ratio over 1 hour: the long window of the burn-rate alert (alerts.yaml)
+      - record: bookstore:orders_http_errors:ratio_rate1h
+        expr: |
+          sum(rate(http_server_request_duration_seconds_count{job="bookstore-api", http_route="/api/orders/", http_response_status_code=~"5.."}[1h]))
+            /
+          sum(rate(http_server_request_duration_seconds_count{job="bookstore-api", http_route="/api/orders/"}[1h]))

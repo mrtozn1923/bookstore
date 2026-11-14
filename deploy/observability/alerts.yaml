@@ -1,0 +1,64 @@
+# Bookstore's alerts. Symptoms the customer feels page someone; causes open a ticket.
+# Every alert links to its runbook; docs/runbooks is in this repo, use its full URL in production.
+groups:
+  - name: bookstore-alerts
+    rules:
+      # SLO: 99.5% of checkouts (POST /api/orders) do not end with 5xx, over 30 days (error budget 0.5%).
+      # Burning at 14.4x for an hour uses 2% of the 30-day budget: page. The 5-minute window makes it stop quickly.
+      - alert: CheckoutErrorBudgetBurn
+        expr: |
+          bookstore:orders_http_errors:ratio_rate1h > (14.4 * 0.005)
+            and
+          bookstore:orders_http_errors:ratio_rate5m > (14.4 * 0.005)
+        for: 2m
+        labels:
+          severity: page
+          service: bookstore-api
+        annotations:
+          summary: "Checkout is failing: {{ $value | humanizePercentage }} of orders end with 5xx"
+          runbook_url: "docs/runbooks/checkout-errors.md"
+
+      # Customers wait: p95 of checkout above 3 seconds for 10 minutes.
+      - alert: CheckoutLatencyHigh
+        expr: bookstore:checkout_duration_seconds:p95_5m > 3
+        for: 10m
+        labels:
+          severity: page
+          service: bookstore-api
+        annotations:
+          summary: "Checkout p95 is {{ $value | humanizeDuration }}"
+          runbook_url: "docs/runbooks/checkout-latency.md"
+
+      # A cause, not a symptom: retries per payment call above 0.2. Nobody is woken up for this.
+      - alert: PaymentProviderRetriesHigh
+        expr: |
+          sum(rate(resilience_polly_strategy_events_total{job="bookstore-api", event_name="OnRetry"}[10m]))
+            /
+          sum(rate(resilience_polly_strategy_events_total{job="bookstore-api", event_name="PipelineExecuting"}[10m]))
+            > 0.2
+        for: 15m
+        labels:
+          severity: ticket
+          service: bookstore-api
+        annotations:
+          summary: "Payment calls need {{ $value | humanize }} retries on average"
+          runbook_url: "docs/runbooks/payment-provider.md"
+
+      # No telemetry at all: the API is down, or the pipeline in front of it is.
+      - alert: BookstoreApiTelemetryMissing
+        expr: absent_over_time(target_info{job="bookstore-api"}[5m])
+        for: 2m
+        labels:
+          severity: page
+          service: bookstore-api
+        annotations:
+          summary: "No telemetry from bookstore-api for 7 minutes"
+          runbook_url: "docs/runbooks/api-down.md"
+
+      # Dead man's switch: always firing. If the heartbeat receiver stops getting it, alerting itself is broken.
+      - alert: Watchdog
+        expr: vector(1)
+        labels:
+          severity: heartbeat
+        annotations:
+          summary: "Alerting pipeline is alive"
