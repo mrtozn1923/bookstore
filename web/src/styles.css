@@ -1,0 +1,10 @@
+/* Bookstore asistanı için sade, okunur bir taban */
+:root {
+  font-family: system-ui, sans-serif;
+  color: #1f2937;
+  background: #f9fafb;
+}
+
+body {
+  margin: 0;
+}

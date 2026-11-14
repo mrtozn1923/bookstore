@@ -1,0 +1,16 @@
+.topbar {
+  padding: 12px 24px;
+  background: #111827;
+}
+
+.topbar a {
+  color: #f9fafb;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+main {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 24px;
+}
