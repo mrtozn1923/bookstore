@@ -1,14 +1,20 @@
 using Bookstore.Gateway.Configuration;
+using Bookstore.Gateway.LoadBalancing;
 using Bookstore.Gateway.Transforms;
 using Yarp.ReverseProxy.Configuration;
+using Yarp.ReverseProxy.LoadBalancing;
 using Yarp.ReverseProxy.Model;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddServiceDiscovery();
+builder.Services.AddSingleton<ILoadBalancingPolicy, PreferSameZonePolicy>();
+
 builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"))
     .AddTransforms(InternalHeaderTransforms.Apply)
-    .AddConfigFilter<DestinationAddressFilter>();
+    .AddConfigFilter<DestinationAddressFilter>()
+    .AddServiceDiscoveryDestinationResolver();
 
 string? gatewayDb = builder.Configuration.GetConnectionString("GatewayConfig");
 if (!string.IsNullOrEmpty(gatewayDb))

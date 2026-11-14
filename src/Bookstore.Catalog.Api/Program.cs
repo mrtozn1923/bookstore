@@ -1,7 +1,32 @@
 using Bookstore.Catalog;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
+
+InstanceInfo instance = new()
+{
+    Name = builder.Configuration["Catalog:Instance"] ?? "catalog",
+    ResponseDelayMs = builder.Configuration.GetValue<int>("Catalog:ResponseDelayMs"),
+};
+builder.Services.AddSingleton(instance);
+builder.Services.AddHealthChecks()
+    .AddCheck("self", () => instance.ForceUnhealthy
+        ? HealthCheckResult.Unhealthy("forced by /debug/health")
+        : HealthCheckResult.Healthy());
+
 var app = builder.Build();
+
+app.Use(async (context, next) =>
+{
+    context.Response.Headers[InstanceInfo.Header] = instance.Name;
+    if (instance.ResponseDelayMs > 0 && context.Request.Path.StartsWithSegments("/books"))
+    {
+        await Task.Delay(instance.ResponseDelayMs, context.RequestAborted);
+    }
+    await next();
+});
+
+app.MapHealthChecks("/health");
 
 Book[] books =
 [
@@ -34,6 +59,12 @@ if (app.Environment.IsDevelopment())
                 || h.Key.Equals("Forwarded", StringComparison.OrdinalIgnoreCase))
             .OrderBy(h => h.Key, StringComparer.OrdinalIgnoreCase)
             .ToDictionary(h => h.Key, h => h.Value.ToString()),
+    });
+
+    app.MapPost("/debug/health/{state}", (string state) =>
+    {
+        instance.ForceUnhealthy = state == "unhealthy";
+        return Results.Ok(new { instance.Name, instance.ForceUnhealthy });
     });
 }
 

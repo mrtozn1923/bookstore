@@ -5,6 +5,25 @@
       "commandName": "Project",
       "launchBrowser": false,
       "applicationUrl": "http://localhost:5301",
+      "commandLineArgs": "--Catalog:Instance=catalog-1",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "catalog-2": {
+      "commandName": "Project",
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5311",
+      "commandLineArgs": "--Catalog:Instance=catalog-2",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "catalog-3": {
+      "commandName": "Project",
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5312",
+      "commandLineArgs": "--Catalog:Instance=catalog-3",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
