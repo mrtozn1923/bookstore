@@ -1,0 +1,18 @@
+@use "sass:color";
+
+@use "sass:math";
+
+@use "sass:map";
+@use "old-tokens";
+
+.order-summary {
+    // slash-div: becomes a separator in 2.0
+    padding: old-tokens.$gap * 0.5;
+    width: math.percentage(math.div(1, old-tokens.$columns));
+    // color-functions: an error in 2.0
+    border-color: color.adjust(old-tokens.$brand, $lightness: -10%, $space: hsl);
+    // global-builtin: still a warning in 2.0
+    color: map.get((sale: #b91c1c), sale);
+    // legacy if(): removed only in 3.0
+    font-weight: if(sass(old-tokens.$columns > 3): 700; else: 400);
+}

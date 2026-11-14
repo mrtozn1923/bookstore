@@ -35,7 +35,17 @@
             "stylePreprocessorOptions": {
               "includePaths": [
                 "src/styles"
-              ]
+              ],
+              "sass": {
+                "fatalDeprecations": [
+                  "1.79.0",
+                  "compile-string-relative-url",
+                  "misplaced-rest",
+                  "with-private",
+                  "function-name",
+                  "adjacent-compounds"
+                ]
+              }
             }
           },
           "configurations": {

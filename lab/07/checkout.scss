@@ -1,0 +1,13 @@
+@import "old-tokens";
+
+.order-summary {
+    // slash-div: becomes a separator in 2.0
+    padding: $gap / 2;
+    width: percentage(1 / $columns);
+    // color-functions: an error in 2.0
+    border-color: darken($brand, 10%);
+    // global-builtin: still a warning in 2.0
+    color: map-get((sale: #b91c1c), sale);
+    // legacy if(): removed only in 3.0
+    font-weight: if($columns > 3, 700, 400);
+}

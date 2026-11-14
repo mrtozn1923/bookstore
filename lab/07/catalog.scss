@@ -1,0 +1,5 @@
+@use "legacy-grid" as grid;
+
+.book-list {
+    @include grid.row;
+}
