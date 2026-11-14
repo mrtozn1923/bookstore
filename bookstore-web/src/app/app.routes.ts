@@ -6,6 +6,7 @@ import { SharePanel } from './catalog/share-panel';
 import { CheckoutReview } from './checkout/checkout-review';
 import { CheckoutShipping } from './checkout/checkout-shipping';
 import { CheckoutStore } from './checkout/checkout-store';
+import { OrdersPage } from './orders/orders-page';
 
 export const routes: Routes = [
   { path: '', component: CatalogPage },
@@ -25,4 +26,5 @@ export const routes: Routes = [
       { path: 'review', component: CheckoutReview },
     ],
   },
+  { path: 'orders', component: OrdersPage },
 ];

@@ -10,8 +10,10 @@ import {
   updateEntity,
   withEntities,
 } from '@ngrx/signals/entities';
+import { on, withReducer } from '@ngrx/signals/events';
 import { firstValueFrom } from 'rxjs';
 import { apiUrl } from '../api';
+import { ordersApiEvents } from '../checkout/checkout-events';
 import type { Book, CartItem, Coupon } from '../models';
 import { withRequestLog } from '../shared/with-request-log';
 import { setError, setFulfilled, setPending, withRequestStatus } from '../shared/with-request-status';
@@ -81,6 +83,8 @@ export const CartStore = signalStore(
       }
     },
   })),
+  // The cart empties itself when an order is placed; it does not know who placed it
+  withReducer(on(ordersApiEvents.orderPlaced, () => [removeAllEntities(lineConfig), { coupon: null }])),
   withHooks({
     onInit(store) {
       const saved = readSavedCart(store._storageKey);

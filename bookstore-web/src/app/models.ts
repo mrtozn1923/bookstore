@@ -38,3 +38,13 @@ export interface Coupon {
   code: string;
   percent: number;
 }
+
+export interface OrderRequest {
+  items: CartItem[];
+  shipping: 'standard' | 'express';
+  total: number;
+}
+
+export interface PlacedOrder extends OrderRequest {
+  id: number;
+}
