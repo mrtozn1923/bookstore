@@ -8,18 +8,13 @@ public sealed record ReservationRequest(string OrderId, int Quantity);
 
 public static class InventoryEndpoints
 {
-    // Check the stock and reserve in one atomic step; the same order is never reserved twice
-    private static readonly LuaScript Reserve = LuaScript.Prepare("""
-        if redis.call('HEXISTS', @reservationsKey, @orderId) == 1 then
-            return -2
-        end
-        local stock = tonumber(redis.call('GET', @stockKey) or '0')
-        if stock < tonumber(@quantity) then
-            return -1
-        end
-        redis.call('HSET', @reservationsKey, @orderId, @quantity)
-        return redis.call('DECRBY', @stockKey, @quantity)
-        """);
+    // The reservation logic lives in the bookstore Functions library (lab/functions/bookstore.lua, post 08).
+    // Post 14: the application user may call FCALL but not EVAL, so no Lua text is sent from here any more.
+    public static async Task<bool> FunctionsLoadedAsync(IDatabase db)
+    {
+        RedisResult libraries = await db.ExecuteAsync("FUNCTION", "LIST", "LIBRARYNAME", "bookstore");
+        return ((RedisResult[])libraries!).Length > 0;
+    }
 
     public static IEndpointRouteBuilder MapInventory(this IEndpointRouteBuilder app)
     {
@@ -31,13 +26,9 @@ public static class InventoryEndpoints
 
         app.MapPost("/inventory/{isbn}/reservations", async (string isbn, ReservationRequest request, IConnectionMultiplexer redis) =>
         {
-            RedisResult result = await Reserve.EvaluateAsync(redis.GetDatabase(), new
-            {
-                stockKey = RedisKeys.Stock(isbn),
-                reservationsKey = RedisKeys.StockReservations(isbn),
-                orderId = request.OrderId,
-                quantity = request.Quantity
-            });
+            // FCALL reserve_stock 2 <stock> <reservations> <orderId> <quantity>
+            RedisResult result = await redis.GetDatabase().ExecuteAsync("FCALL", "reserve_stock", 2,
+                RedisKeys.Stock(isbn), RedisKeys.StockReservations(isbn), request.OrderId, request.Quantity);
             long left = (long)result;
             return left switch
             {

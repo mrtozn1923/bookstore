@@ -1,23 +1,4 @@
-# .NET
-bin/
-obj/
-*.user
-*.suo
-.vs/
+# lab-only secrets and copies (posts 12 and 14): never commit them
+lab/tls/
+backup/
 TestResults/
-*.trx
-BenchmarkDotNet.Artifacts/
-# Node / Angular
-node_modules/
-dist/
-.angular/
-coverage/
-# Python / misc
-__pycache__/
-.venv/
-.DS_Store
-.idea/
-*.log
-# local secrets
-.env
-appsettings.*.local.json

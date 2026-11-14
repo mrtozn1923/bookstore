@@ -1,4 +1,5 @@
 using Bookstore.Api;
+using OpenTelemetry.Trace;
 using StackExchange.Redis;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -12,9 +13,23 @@ builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddMemoryCache();
 builder.Services.AddHostedService<PriceInvalidationListener>();
 
+// Post 14: a span per Redis command under the ASP.NET Core request span; console output only when asked for
+builder.Services.AddOpenTelemetry().WithTracing(tracing =>
+{
+    tracing.AddAspNetCoreInstrumentation().AddRedisInstrumentation();
+    if (builder.Configuration.GetValue<bool>("Telemetry:Console"))
+    {
+        tracing.AddConsoleExporter();
+    }
+});
+
 WebApplication app = builder.Build();
 
 await CatalogEndpoints.EnsureIndexAsync(redis.GetDatabase());
+if (!await InventoryEndpoints.FunctionsLoadedAsync(redis.GetDatabase()))
+{
+    app.Logger.LogWarning("Redis Functions library 'bookstore' is not loaded: stock reservations will fail");
+}
 
 app.MapBookViews();
 app.MapVerification();

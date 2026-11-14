@@ -1,0 +1,10 @@
+# Post 14: the lab Redis with TLS only (certificates from: dotnet run --project src/Bookstore.RedisLab -- make-certs)
+# docker compose -f lab/compose.yaml -f lab/compose.tls.yaml up -d redis
+services:
+  redis:
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "512mb", "--maxmemory-policy", "noeviction",
+              "--port", "0", "--tls-port", "6379",
+              "--tls-cert-file", "/tls/redis.crt", "--tls-key-file", "/tls/redis.key",
+              "--tls-ca-cert-file", "/tls/ca.crt", "--tls-auth-clients", "no"]
+    volumes:
+      - ./tls:/tls:ro

@@ -4,4 +4,7 @@
     <Project Path="src/Bookstore.RedisLab/Bookstore.RedisLab.csproj" />
     <Project Path="src/Bookstore.Worker/Bookstore.Worker.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Bookstore.Integration.Tests/Bookstore.Integration.Tests.csproj" />
+  </Folder>
 </Solution>
