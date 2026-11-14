@@ -12,6 +12,11 @@ switch (command)
     case "webhook": HashCommands.WebhookDemo(); break;
     case "derive-keys": HashCommands.DeriveKeys(); break;
     case "kmac": HashCommands.Kmac(); break;
+    case "modes": EncryptionCommands.Modes(); break;
+    case "aead": EncryptionCommands.Aead(); break;
+    case "chacha": EncryptionCommands.ChaCha(); break;
+    case "envelope": EncryptionCommands.Envelope(); break;
+    case "customers": await EncryptionCommands.CustomersAsync(); break;
     default: Console.Error.WriteLine($"Unknown command: {command}"); return 1;
 }
 return 0;

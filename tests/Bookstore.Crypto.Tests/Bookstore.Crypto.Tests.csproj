@@ -11,5 +11,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/Bookstore.Crypto/Bookstore.Crypto.csproj" />
+    <ProjectReference Include="../../src/Bookstore.Customers/Bookstore.Customers.csproj" />
   </ItemGroup>
 </Project>

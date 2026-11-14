@@ -4,5 +4,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../Bookstore.Crypto/Bookstore.Crypto.csproj" />
+    <ProjectReference Include="../Bookstore.Customers/Bookstore.Customers.csproj" />
   </ItemGroup>
 </Project>
