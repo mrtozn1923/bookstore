@@ -31,15 +31,22 @@ public static class RedisKeys
 
     public static RedisKey Warehouses => $"{Prefix}:warehouses";
 
+    // {isbn} is a hash tag: a book's stock and reservations always land in the same cluster slot
+    public static RedisKey Stock(string isbn) => $"{Prefix}:stock:{{{isbn}}}";
+
+    public static RedisKey StockReservations(string isbn) => $"{Prefix}:stock:{{{isbn}}}:reservations";
+
+    public static RedisKey VerificationRequests(int customerId) => $"{Prefix}:verify:{customerId}:requests";
+
     public static RedisKey OrderIdSequence => $"{Prefix}:order:id-seq";
 
     public static RedisKey Bestsellers(DateOnly day) => $"{Prefix}:bestsellers:{day:yyyyMMdd}";
 
     public static RedisKey BestsellersWeek(DateOnly lastDay) => $"{Prefix}:bestsellers:week:{lastDay:yyyyMMdd}";
 
-    // Temporary input of one snapshot build, e.g. bookstore:bestsellers:week:20261114:sold:3f2a...
-    public static RedisKey BestsellersWeekPart(DateOnly lastDay, string part, string buildId) =>
-        $"{Prefix}:bestsellers:week:{lastDay:yyyyMMdd}:{part}:{buildId}";
+    // Temporary input of the snapshot build, e.g. bookstore:bestsellers:week:20261114:sold
+    public static RedisKey BestsellersWeekPart(DateOnly lastDay, string part) =>
+        $"{Prefix}:bestsellers:week:{lastDay:yyyyMMdd}:{part}";
 
     public static RedisKey RecentOrders => $"{Prefix}:orders:recent";
 }

@@ -21,5 +21,6 @@ app.MapTags();
 app.MapVisitors();
 app.MapBestsellers();
 app.MapWarehouses();
+app.MapInventory();
 
 app.Run();

@@ -1,0 +1,5 @@
+INCREX bookstore:verify:7:requests BYINT 1 UBOUND 3 EX 600 ENX
+INCREX bookstore:verify:7:requests BYINT 1 UBOUND 3 EX 600 ENX
+INCREX bookstore:verify:7:requests BYINT 1 UBOUND 3 EX 600 ENX
+INCREX bookstore:verify:7:requests BYINT 1 UBOUND 3 EX 600 ENX
+TTL bookstore:verify:7:requests

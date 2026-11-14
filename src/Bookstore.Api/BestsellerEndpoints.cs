@@ -61,19 +61,26 @@ public static class BestsellerEndpoints
     }
 
     // score = copies sold * 10 + days with sales (0-7): equal sales are ordered by how steadily the book sold
+    // MULTI/EXEC: the whole build runs as one unit, no other client sees the temporary keys
     private static async Task BuildWeekAsync(IDatabase db, DateOnly today, RedisKey week)
     {
         RedisKey[] days = [.. Enumerable.Range(0, 7).Select(i => RedisKeys.Bestsellers(today.AddDays(-i)))];
-        string buildId = Guid.NewGuid().ToString("N");                 // own temporary keys per build
-        RedisKey sold = RedisKeys.BestsellersWeekPart(today, "sold", buildId);
-        RedisKey daysWithSales = RedisKeys.BestsellersWeekPart(today, "days", buildId);
+        RedisKey sold = RedisKeys.BestsellersWeekPart(today, "sold");
+        RedisKey daysWithSales = RedisKeys.BestsellersWeekPart(today, "days");
 
-        await Task.WhenAll(
-            db.SortedSetCombineAndStoreAsync(SetOperation.Union, sold, days),                                 // ZUNIONSTORE (SUM)
-            db.SortedSetCombineAndStoreAsync(SetOperation.Union, daysWithSales, days, null, Aggregate.Count)); // AGGREGATE COUNT (8.8+)
-        await db.SortedSetCombineAndStoreAsync(SetOperation.Union, week, [sold, daysWithSales], [10, 1]);     // WEIGHTS 10 1
-        await Task.WhenAll(
-            db.KeyDeleteAsync([sold, daysWithSales]),
-            db.KeyExpireAsync(week, SnapshotLifetime));
+        ITransaction tx = db.CreateTransaction();
+        tx.AddCondition(Condition.KeyNotExists(week));                                                       // someone else built it already?
+        Task[] queued =
+        [
+            tx.SortedSetCombineAndStoreAsync(SetOperation.Union, sold, days),                                 // ZUNIONSTORE (SUM)
+            tx.SortedSetCombineAndStoreAsync(SetOperation.Union, daysWithSales, days, null, Aggregate.Count), // AGGREGATE COUNT (8.8+)
+            tx.SortedSetCombineAndStoreAsync(SetOperation.Union, week, [sold, daysWithSales], [10, 1]),       // WEIGHTS 10 1
+            tx.KeyDeleteAsync([sold, daysWithSales]),
+            tx.KeyExpireAsync(week, SnapshotLifetime),
+        ];
+        if (await tx.ExecuteAsync())
+        {
+            await Task.WhenAll(queued);
+        }
     }
 }

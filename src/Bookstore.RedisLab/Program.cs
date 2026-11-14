@@ -101,11 +101,23 @@ switch (command)
     case "probabilistic":
         await SpecialTypesDemo.ProbabilisticAsync(connectionString);
         break;
+    case "stock-race":
+        await AtomicityDemo.StockRaceAsync(connectionString);
+        break;
+    case "script-cache":
+        await AtomicityDemo.ScriptCacheAsync(connectionString);
+        break;
+    case "busy-script":
+        await AtomicityDemo.BusyScriptAsync(connectionString);
+        break;
+    case "fcall":
+        await AtomicityDemo.FunctionCallAsync(connectionString);
+        break;
     case "sync-over-async":
         await SyncOverAsyncDemo.RunAsync(connectionString);
         break;
     default:
         Console.WriteLine("commands: seed-keys <n> | keys-vs-ping | incr | rtt | mux-per-request [--leak] | mux-singleton | " +
-                          "pipeline | pubsub-connection | scan-vs-ping | server-info | key-names | sync-over-async | lost-update | active-expire | ttl-reset | cart-storage | hash-encoding | big-hash | compact-hash | queue-crash | blpop | visitors | big-set | bestsellers | seed-week | zset-encoding | score-precision | page-drift | recent-orders | unique-visitors | unique-scale | probabilistic");
+                          "pipeline | pubsub-connection | scan-vs-ping | server-info | key-names | sync-over-async | lost-update | active-expire | ttl-reset | cart-storage | hash-encoding | big-hash | compact-hash | queue-crash | blpop | visitors | big-set | bestsellers | seed-week | zset-encoding | score-precision | page-drift | recent-orders | unique-visitors | unique-scale | probabilistic | stock-race | script-cache | busy-script | fcall");
         break;
 }

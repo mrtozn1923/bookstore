@@ -1,0 +1,14 @@
+SET bookstore:stock:{9780441013593} 10
+MULTI
+DECRBY bookstore:stock:{9780441013593} 2
+LPUSH bookstore:stock:{9780441013593} oops
+INCR bookstore:order:id-seq
+EXEC
+GET bookstore:stock:{9780441013593}
+MULTI
+DECRBY bookstore:stock:{9780441013593} 2
+DECRBY bookstore:stock:{9780441013593}
+EXEC
+GET bookstore:stock:{9780441013593}
+EVAL "redis.call('DECRBY', KEYS[1], 2) redis.call('LPUSH', KEYS[1], 'oops') return 'unreachable'" 1 bookstore:stock:{9780441013593}
+GET bookstore:stock:{9780441013593}
