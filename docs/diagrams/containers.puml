@@ -1,0 +1,30 @@
+@startuml containers
+!include <C4/C4_Container>
+!include bookstore-style.iuml
+title Bookstore - institutional ordering containers
+
+Person(user, "Institution User", "Places and tracks orders")
+Person(approver, "Approver", "Approves or rejects orders")
+System_Ext(distributor, "Book Distributor", "Acme Book Distribution")
+System_Ext(mail, "E-mail Server", "SMTP relay")
+
+System_Boundary(bookstore, "Bookstore") {
+  Container(web, "Web App", "Angular 22", "bookstore-web single-page app")
+  Container(api, "Bookstore.Api", "ASP.NET Core, .NET 10", "Institutional, Billing, Notifications modules")
+  Container(worker, "Bookstore.Worker", ".NET 10 worker", "Notifications and approval reminders")
+  ContainerDb(db, "Bookstore Database", "SQL Server", "Orders, approvals, budgets")
+  ContainerDb(cache, "Cache", "Redis", "Discount agreements and lookup data")
+  ContainerQueue(broker, "Message Broker", "Azure Service Bus", "order-events topic")
+}
+
+Rel(user, web, "Creates and submits orders", "HTTPS")
+Rel(approver, web, "Approves or rejects orders", "HTTPS")
+Rel(web, api, "Calls", "JSON/HTTPS")
+Rel(api, db, "Reads from and writes to", "EF Core")
+Rel(api, cache, "Caches discount agreements in", "RESP")
+Rel(api, broker, "Publishes OrderApproved etc.", "AMQP")
+Rel(api, distributor, "Places and cancels distributor orders", "HTTPS")
+Rel(broker, worker, "Delivers events to", "AMQP")
+Rel(worker, mail, "Sends e-mails via", "SMTP")
+SHOW_LEGEND()
+@enduml

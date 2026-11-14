@@ -1,0 +1,72 @@
+@startuml domain-model
+!include bookstore-style.iuml
+title Institutional ordering - domain model
+hide empty members
+
+class InstitutionUser {
+  StaffNumber : string
+  FullName : string
+  Email : string
+}
+
+class InstitutionUnit {
+  Name : string
+}
+
+class Order {
+  Quantity : int
+  DeliveryDate : DateOnly
+  Total : Money
+  Note : string [0..1]
+  Status : OrderStatus
+  + Submit(total : Money, now : DateTimeOffset)
+  + Approve(approver : InstitutionUser, comment : string [0..1], now : DateTimeOffset)
+  + Reject(approver : InstitutionUser, comment : string, now : DateTimeOffset)
+  + Cancel(today : DateOnly)
+}
+
+class PurchaseApproval {
+  Step : ApprovalStep
+  Decision : ApprovalDecision
+  Comment : string [0..1]
+  DecidedAt : DateTimeOffset
+}
+
+class BudgetCategory {
+  Code : string
+  Name : string
+  DeductsFromBudget : bool
+}
+
+class UnitBudget {
+  Year : int
+  AllocatedAmount : decimal
+  SpentAmount : decimal
+  /RemainingAmount : decimal
+}
+
+class OrderAttachment {
+  FileName : string
+  StoragePath : string
+}
+
+enum OrderStatus {
+  Draft
+  PendingApprover
+  PendingPurchasingManager
+  Approved
+  Rejected
+  Cancelled
+}
+
+InstitutionUser "0..*" --> "0..1" InstitutionUser : approver
+InstitutionUser "0..*" --> "1" InstitutionUnit
+InstitutionUnit "0..*" --> "0..1" InstitutionUser : purchasingManager
+Order "0..*" --> "1" InstitutionUser : placedBy
+Order "0..*" --> "1" BudgetCategory
+Order *-- "0..1" OrderAttachment
+Order "1" *-- "0..2" PurchaseApproval : approvals
+PurchaseApproval "0..*" --> "1" InstitutionUser : approver
+UnitBudget "0..*" --> "1" InstitutionUnit
+UnitBudget "0..*" --> "1" BudgetCategory
+@enduml

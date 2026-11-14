@@ -1,0 +1,13 @@
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam roundCorner 8
+<style>
+title {
+  FontSize 16
+  FontStyle bold
+}
+note {
+  BackgroundColor #FFF8DC
+}
+</style>

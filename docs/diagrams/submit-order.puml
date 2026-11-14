@@ -1,0 +1,35 @@
+@startuml submit-order
+!include bookstore-style.iuml
+title UC-01 Submit order (R2, R3)
+autonumber
+
+actor "Institution User" as User
+participant "OrderForm\nComponent" as Form
+participant "Bookstore.Api" as Api
+participant "OrderService" as Service
+participant "IPrice\nCalculator" as Pricing
+participant "IBudget\nService" as Budget
+database "Bookstore Database" as Db
+
+User -> Form : Submit
+Form -> Api : POST /orders/42/submit
+activate Api
+Api -> Service : SubmitAsync(42)
+activate Service
+Service -> Db : load Order #42
+Service -> Pricing : CalculateTotal(420 TRY, 150, 10 %)
+Pricing --> Service : 56700 TRY
+Service -> Budget : HasEnoughBudgetAsync(7, classroom-sets, 2026, 56700)
+Budget --> Service : true (remaining 75000)
+alt enough budget
+  Service -> Service : order.Submit(total, now)
+  Service -> Db : SaveChangesAsync()
+  Service --> Api : PendingApprover
+  Api --> Form : 200 OK
+else insufficient budget
+  Service --> Api : InsufficientBudget
+  Api --> Form : 422 ProblemDetails
+end
+deactivate Service
+deactivate Api
+@enduml

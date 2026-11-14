@@ -1,0 +1,42 @@
+@startuml use-cases
+!include bookstore-style.iuml
+title Institutional ordering - use cases
+left to right direction
+
+actor "Institution User" as User
+actor "Approver" as Approver
+actor "Purchasing Manager" as PurchasingManager
+actor "Portal Admin" as Admin
+actor "Book Distributor" as Distributor <<system>>
+
+PurchasingManager -|> Approver
+
+rectangle "Bookstore - Institutional Ordering" {
+  usecase "UC-01 Place Order\n--\nextension points\nAttachment" as UC01
+  usecase "UC-02 Decide on Order" as UC02
+  usecase "UC-03 Cancel Order" as UC03
+  usecase "UC-04 View Budget" as UC04
+  usecase "UC-05 Adjust Budget" as UC05
+  usecase "UC-06 Manage Budget Policies" as UC06
+  usecase "Check Budget" as CheckBudget
+  usecase "Attach Donation Letter" as AttachLetter
+}
+
+User -- UC01
+User -- UC03
+User -- UC04
+Approver -- UC02
+Admin -- UC03
+Admin -- UC05
+Admin -- UC06
+UC02 -- Distributor
+UC03 -- Distributor
+
+UC01 ..> CheckBudget : <<include>>
+UC02 ..> CheckBudget : <<include>>
+AttachLetter ..> UC01 : <<extend>>
+note right of AttachLetter
+  condition: budget category = Donation
+  extension point: Attachment
+end note
+@enduml

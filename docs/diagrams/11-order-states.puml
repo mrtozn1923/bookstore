@@ -1,4 +1,5 @@
 @startuml order-states
+!include bookstore-style.iuml
 title Order state machine
 hide empty description
 
