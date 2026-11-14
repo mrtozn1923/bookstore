@@ -7,6 +7,10 @@
   },
   "scripts": {
     "api": "node api/server.ts",
-    "serve:app": "node api/server.ts --app bookstore-web/dist/bookstore-web/browser"
+    "serve:app": "node api/server.ts --app bookstore-web/dist/bookstore-web/browser",
+    "baseline": "node tools/baseline-report.ts"
+  },
+  "devDependencies": {
+    "web-features": "3.46.0"
   }
 }
