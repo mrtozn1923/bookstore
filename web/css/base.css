@@ -6,6 +6,7 @@
     --color-accent: #b91c1c;
     --color-surface: #ffffff;
     --color-border: #d1d5db;
+    --color-link: #1d4ed8;
     color-scheme: light;
 }
 
@@ -27,6 +28,18 @@ h1, h2, h3 {
 }
 h1 { font-size: 2.5rem; font-weight: 650; }
 h2 { font-size: 1.5rem; font-weight: 600; }
+
+a {
+    color: var(--color-link);
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    text-decoration-skip-ink: auto;
+}
+a:hover {
+    /* thicker, not a new color: the box does not move */
+    text-decoration-thickness: 2px;
+}
 
 .site-header, main { padding-inline: 1.5rem; }
 .site-header { display: flex; align-items: center; gap: 1rem; padding-block: 0.75rem; background: var(--color-surface); }

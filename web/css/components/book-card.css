@@ -19,5 +19,32 @@
     font-weight: 600;
 }
 
+.book-card h2 a {
+    color: inherit;
+    text-decoration-color: var(--color-border);
+}
+.book-card h2 a:hover { text-decoration-color: currentColor; }
+
 .book-card .author { margin: 0.25rem 0 0; color: var(--color-muted); }
+
+.badge {
+    display: inline-block;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.25rem;
+    background: var(--color-accent);
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    /* em, not px: grows with the badge's own font-size */
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
 .book-card .price { margin: 0.5rem 0 0; font-weight: 700; }
+.price svg {
+    inline-size: 1em;
+    block-size: 1em;
+    /* centers a 1em icon on the digits */
+    vertical-align: -0.125em;
+    fill: currentColor;
+}

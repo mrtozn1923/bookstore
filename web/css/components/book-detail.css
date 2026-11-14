@@ -11,3 +11,15 @@
     font-style: italic;
     font-weight: 400;
 }
+
+.book-summary::first-letter {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--color-accent);
+}
+@supports (initial-letter: 2) {
+    .book-summary::first-letter {
+        initial-letter: 2;
+        margin-inline-end: 0.5rem;
+    }
+}

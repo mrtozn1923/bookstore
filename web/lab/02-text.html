@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>02 text lab</title>
+    <style>
+        body { font: 16px/1.5 Georgia, serif; }
+
+        /* 1) letter-spacing in em: computed on the parent, inherited as px */
+        .badge, .badge-pct, .badge-none { font-size: 12px; text-transform: uppercase; }
+        .badge { letter-spacing: 0.1em; }
+        .badge-pct { letter-spacing: 10%; }
+        .big { font-size: 24px; }
+
+        /* 2) the shorthand after the longhands */
+        .link { text-decoration-thickness: 2px; text-underline-offset: 0.2em; }
+        .link.reset { text-decoration: underline; }
+
+        /* 3) hover: thicker underline, same box */
+        .link.hover-test:hover { text-decoration-thickness: 3px; }
+
+        /* 4) the gap under an inline svg */
+        .icon-box { inline-size: max-content; background: #eee; }
+        .icon-box svg { inline-size: 24px; block-size: 24px; }
+        .icon-box.block svg { display: block; }
+        .icon-box.middle svg { vertical-align: middle; }
+
+        /* 5) an icon next to the price */
+        .price { font: 700 20px/1.5 system-ui, sans-serif; }
+        .price svg { inline-size: 1em; block-size: 1em; }
+        .price .baseline svg { vertical-align: baseline; }
+        .price .middle svg { vertical-align: middle; }
+        .price .text-bottom svg { vertical-align: text-bottom; }
+        .price .em svg { vertical-align: -0.125em; }
+        .probe { display: inline-block; inline-size: 0; block-size: 0; }
+
+        .indent { inline-size: 16em; text-indent: 2em; }
+        .indent.hanging { text-indent: 2em hanging; }
+
+        .shadow { text-shadow: 0 1px 2px rgb(0 0 0 / 0.6), 0 0 8px #fbbf24; }
+    </style>
+</head>
+<body>
+    <p class="badge">New <span class="big">New</span></p>
+    <p class="badge-pct">New <span class="big">New</span></p>
+    <p class="badge-none"><span class="big">New</span></p>
+
+    <p><a class="link" href="#">Dune</a> <a class="link reset" href="#">Emma</a>
+        <a class="link hover-test" href="#">Middlemarch</a></p>
+
+    <div class="icon-box" id="gap"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg></div>
+    <div class="icon-box block"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg></div>
+    <div class="icon-box middle"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg></div>
+
+    <p class="price">
+        <span class="baseline"><span class="probe"></span><svg viewBox="0 0 24 24"><rect width="24" height="24"/></svg> ₺420.00</span><br>
+        <span class="middle"><span class="probe"></span><svg viewBox="0 0 24 24"><rect width="24" height="24"/></svg> ₺420.00</span><br>
+        <span class="text-bottom"><span class="probe"></span><svg viewBox="0 0 24 24"><rect width="24" height="24"/></svg> ₺420.00</span><br>
+        <span class="em"><span class="probe"></span><svg viewBox="0 0 24 24"><rect width="24" height="24"/></svg> ₺420.00</span>
+    </p>
+
+    <p>
+        <span lang="en" class="upper" style="text-transform: uppercase">yeni kitap</span> /
+        <span lang="tr" class="upper" style="text-transform: uppercase">yeni kitap</span> /
+        <span lang="tr" class="lower" style="text-transform: lowercase">ISBN İADE</span>
+    </p>
+
+    <p class="indent">A study of provincial life in a small English town before the Reform Act.</p>
+    <p class="indent hanging">A study of provincial life in a small English town before the Reform Act.</p>
+
+    <p class="shadow">Summer sale</p>
+</body>
+</html>
