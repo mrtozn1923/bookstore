@@ -13,5 +13,6 @@ builder.Services.AddSingleton<ElasticsearchClient>(_ => SearchClientFactory.Crea
 WebApplication app = builder.Build();
 
 app.MapBookEndpoints();
+app.MapBookSearchEndpoints();
 
 app.Run();

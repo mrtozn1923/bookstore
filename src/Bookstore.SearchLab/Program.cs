@@ -39,10 +39,13 @@ switch (command)
     case "concurrency":
         await BulkDemo.ConcurrencyAsync();
         break;
+    case "export":
+        await ExportDemo.RunAsync(rest);
+        break;
     case "seed-sql":
         await SqlSeeder.RunAsync(rest);
         break;
     default:
-        Console.WriteLine("Commands: inverted-index [query], seed-sql [syntheticCount], first-connection, create-index [name], translators [name], search <text>, bulk-compare, bulk-all [count], bulk-errors, refresh, concurrency");
+        Console.WriteLine("Commands: inverted-index [query], seed-sql [syntheticCount], first-connection, create-index [name], translators [name], search <text>, bulk-compare, bulk-all [count], bulk-errors, refresh, concurrency, export [pageSize]");
         break;
 }
