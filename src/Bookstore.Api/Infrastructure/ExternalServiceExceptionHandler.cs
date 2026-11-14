@@ -1,3 +1,4 @@
+using Bookstore.Ordering;
 using Bookstore.Payments;
 using Bookstore.Shipping;
 using Microsoft.AspNetCore.Diagnostics;
@@ -12,6 +13,8 @@ public sealed class ExternalServiceExceptionHandler(IProblemDetailsService probl
     {
         (int status, string title)? mapped = exception switch
         {
+            OrderStateException =>
+                (StatusCodes.Status409Conflict, exception.Message),
             PaymentAttemptConflictException =>
                 (StatusCodes.Status409Conflict, "A previous payment for this order is still being verified."),
             PaymentGatewayException { Kind: PaymentFailureKind.UnknownOutcome } =>

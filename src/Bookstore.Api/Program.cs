@@ -5,6 +5,7 @@ using Bookstore.Payments;
 using Bookstore.Payments.ExchangeRates;
 using Bookstore.Shipping;
 using Bookstore.Shipping.LegacyCarrier;
+using Bookstore.Webhooks;
 using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Options;
 using System.Net;
@@ -117,6 +118,24 @@ builder.Services.AddHealthChecks().AddCheck<CarrierCircuitHealthCheck>("legacy-c
 
 builder.Services.AddNotifications(builder.Configuration);
 
+// Outgoing webhooks to institutional customers: outbox + background delivery.
+builder.Services.AddSingleton<WebhookSubscriptionStore>();
+builder.Services.AddSingleton<WebhookOutbox>();
+builder.Services.AddSingleton<WebhookPublisher>();
+builder.Services.AddScoped<ShipOrderService>();
+builder.Services.Configure<WebhookDeliveryOptions>(builder.Configuration.GetSection("Webhooks:Delivery"));
+builder.Services.AddHostedService<WebhookDispatcher>();
+// Someone else's server: no redirects, short connect timeout, 15 s per attempt, no retries here
+// (the outbox schedule is the retry). SSRF filtering of the target address: API Security series, post 08.
+builder.Services.AddHttpClient(WebhookDispatcher.ClientName)
+    .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler
+    {
+        AllowAutoRedirect = false,
+        ConnectTimeout = TimeSpan.FromSeconds(5),
+        PooledConnectionLifetime = TimeSpan.FromMinutes(2)
+    })
+    .AddResilienceHandler("webhooks", pipeline => pipeline.AddTimeout(TimeSpan.FromSeconds(15)));
+
 // Polly and HttpClient publish metrics and spans; here they go to the console, in production to an OTLP collector.
 if (builder.Configuration.GetValue<bool>("Telemetry:ConsoleExporter"))
 {
@@ -168,6 +187,59 @@ app.MapGet("/api/orders/{id:int}", (int id, OrderStore orders, PaymentAttemptSto
         })
         : Results.NotFound());
 
+app.MapPost("/api/orders/{id:int}/ship", (int id, ShipRequest request, ShipOrderService shipping) =>
+    shipping.Ship(id, request.TrackingNumber) is { } result ? Results.Ok(result) : Results.NotFound());
+
+// Webhook administration (no auth in this sample; in Bookstore it sits behind the StoreStaff policy).
+app.MapPost("/admin/webhooks/subscriptions", (SubscriptionRequest request, WebhookSubscriptionStore store, IHostEnvironment environment) =>
+{
+    if (!Uri.TryCreate(request.Url, UriKind.Absolute, out var url)
+        || !(url.Scheme == Uri.UriSchemeHttps || (environment.IsDevelopment() && url.IsLoopback)))
+    {
+        return Results.ValidationProblem(new Dictionary<string, string[]> { ["url"] = ["An absolute https URL is required."] });
+    }
+
+    var subscription = store.Add(request.InstitutionId, url, request.EventTypes);
+    // The secret is shown once, at creation; afterwards only the institution has it.
+    return Results.Created($"/admin/webhooks/subscriptions/{subscription.Id}",
+        new { subscription.Id, subscription.Url, secret = subscription.Secrets[0].Value });
+});
+app.MapPost("/admin/webhooks/subscriptions/{id:guid}/rotate-secret", (Guid id, WebhookSubscriptionStore store, TimeProvider time) =>
+{
+    if (store.Find(id) is not { } subscription)
+    {
+        return Results.NotFound();
+    }
+
+    // The old secret keeps signing for 24 hours, so the institution can switch without losing events.
+    var old = subscription.Secrets.Single(s => s.ExpiresAt is null);
+    subscription.Secrets[subscription.Secrets.IndexOf(old)] = old with { ExpiresAt = time.GetUtcNow().AddHours(24) };
+    var secret = WebhookSignature.NewSecret();
+    subscription.Secrets.Add(new WebhookSecret(secret, null));
+    return Results.Ok(new { subscription.Id, secret, previousSecretExpiresAt = time.GetUtcNow().AddHours(24) });
+});
+app.MapGet("/admin/webhooks/messages", (WebhookOutbox outbox) => outbox.All().Select(m => new
+{
+    m.Id,
+    m.EventType,
+    m.Status,
+    m.NextAttemptAt,
+    Attempts = m.Attempts.Select(a => new { a.At, a.StatusCode, a.Error, DurationMs = (int)a.Duration.TotalMilliseconds })
+}));
+// The "resend" button: same webhook-id, so the customer can still deduplicate.
+app.MapPost("/admin/webhooks/messages/{id}/resend", (string id, WebhookOutbox outbox, TimeProvider time) =>
+{
+    if (outbox.Find(id) is not { } message)
+    {
+        return Results.NotFound();
+    }
+
+    message.Status = WebhookMessageStatus.Pending;
+    message.ConsecutiveFailures = 0;
+    message.NextAttemptAt = time.GetUtcNow();
+    return Results.Accepted();
+});
+
 app.MapHealthChecks("/health");
 
 // Maintenance window: hold the carrier circuit open, then close it again.
@@ -188,3 +260,7 @@ app.MapGet("/api/exchange-rates/{pair}", async (string pair, ExchangeRateClient 
 app.Run();
 
 public sealed record CheckoutRequest(string CardToken);
+
+public sealed record ShipRequest(string TrackingNumber);
+
+public sealed record SubscriptionRequest(string InstitutionId, string Url, string[] EventTypes);

@@ -20,3 +20,24 @@ Content-Type: application/json
 
 ### Order status and its payment attempts (after a 202 Accepted)
 GET {{Api}}/api/orders/1001
+
+### Institutional customer subscribes to order.shipped (the secret is shown only here)
+POST {{Api}}/admin/webhooks/subscriptions
+Content-Type: application/json
+
+{ "institutionId": "school-0042", "url": "http://localhost:9095/webhooks/bookstore", "eventTypes": ["order.shipped"] }
+
+### Pay and ship the institutional order 1003
+POST {{Api}}/api/orders/1003/checkout
+Content-Type: application/json
+
+{ "cardToken": "tok_visa" }
+
+###
+POST {{Api}}/api/orders/1003/ship
+Content-Type: application/json
+
+{ "trackingNumber": "LC-7781240" }
+
+### Delivery log
+GET {{Api}}/admin/webhooks/messages

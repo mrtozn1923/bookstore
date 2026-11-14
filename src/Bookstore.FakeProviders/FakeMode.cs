@@ -9,5 +9,7 @@ public enum FakeMode
     Maintenance,
     SchemaChanged,
     // Payments only: the request never reaches the provider's logic.
-    Drop
+    Drop,
+    // Webhook receiver only: 410, "stop sending me events".
+    Gone
 }
