@@ -23,3 +23,18 @@
         margin-inline-end: 0.5rem;
     }
 }
+
+/* three lines until "Read more" is pressed */
+.book-summary.is-clamped {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+}
+
+.review-text {
+    /* keep the customer's line breaks, collapse extra spaces */
+    white-space: pre-line;
+    /* long URLs and ISBNs may break anywhere */
+    overflow-wrap: anywhere;
+}

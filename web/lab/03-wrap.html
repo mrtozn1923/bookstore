@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>03 wrapping lab</title>
+    <style>
+        body { font: 16px/1.5 Georgia, serif; }
+        .row { display: flex; gap: 1rem; align-items: start; }
+        .row > p { margin: 0; outline: 1px solid #ccc; }
+
+        /* 1) a long URL in a shrink-to-fit box */
+        .fit { inline-size: min-content; }
+        .break-word { overflow-wrap: break-word; }
+        .anywhere { overflow-wrap: anywhere; }
+        .break-all { word-break: break-all; }
+
+        /* 2) the same rules in a fixed 12em column */
+        .narrow { inline-size: 12em; }
+
+        /* 3) keep the line breaks a customer typed */
+        .review { inline-size: 24em; }
+        .review.pre { white-space: pre-wrap; }
+
+        /* 4) hyphenation depends on lang */
+        .hyphen { inline-size: 9em; hyphens: auto; }
+        .hyphen.manual { hyphens: manual; }
+
+        /* 5) balance and pretty */
+        .title { inline-size: 20em; font-size: 24px; margin: 0; }
+        .title.balance { text-wrap: balance; }
+        .para { inline-size: 20em; }
+        .para.pretty { text-wrap: pretty; }
+
+        /* 6) three-line clamp */
+        .summary { inline-size: 20em; }
+        .clamp {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+            overflow: hidden;
+        }
+        .clamp-block { -webkit-line-clamp: 3; overflow: hidden; }
+
+        /* 7) trimming the half-leading inside a button */
+        .btn { font: 600 16px/1.5 system-ui, sans-serif; padding: 0.5em 1em; border: 0; }
+        .btn.trim { text-box: trim-both cap alphabetic; }
+    </style>
+</head>
+<body>
+    <div class="row">
+        <p class="fit break-word">https://bookstore.test/books/9780141439549/reviews</p>
+        <p class="fit anywhere">https://bookstore.test/books/9780141439549/reviews</p>
+    </div>
+    <div class="row">
+        <p class="narrow break-word">See https://bookstore.test/books/9780141439549/reviews for more reviews.</p>
+        <p class="narrow anywhere">See https://bookstore.test/books/9780141439549/reviews for more reviews.</p>
+        <p class="narrow break-all">See https://bookstore.test/books/9780141439549/reviews for more reviews.</p>
+    </div>
+
+    <p class="review">Great translation.
+Shipping took two days.
+Would buy again.</p>
+    <p class="review pre">Great translation.
+Shipping took two days.
+Would buy again.</p>
+
+    <div class="row">
+        <p class="hyphen" lang="en">Characteristically, internationalization requires extraordinary responsibility.</p>
+        <p class="hyphen manual" lang="en">Characteristically, internationalization requires extraordinary responsibility.</p>
+        <p class="hyphen" lang="tr">Kütüphanelerimizdeki karşılaştırmalı edebiyat koleksiyonlarını güncelleyemiyoruz.</p>
+        <p class="hyphen manual" lang="tr">Kütüphanelerimizdeki karşılaştırmalı edebiyat koleksiyonlarını güncelleyemiyoruz.</p>
+        <p class="hyphen manual shy" lang="tr">Kütüp&shy;hane&shy;lerimiz&shy;deki karşılaştırmalı edebiyat koleksiyonlarını güncelleyemiyoruz.</p>
+    </div>
+
+    <h2 class="title">Twenty Thousand Leagues Under the Seas: An Underwater Tour of the World</h2>
+    <h2 class="title balance">Twenty Thousand Leagues Under the Seas: An Underwater Tour of the World</h2>
+
+    <p class="para">Middlemarch follows the lives of the people of a small English town in the years before the Reform Act of 1832, with Dorothea at its centre.</p>
+    <p class="para pretty">Middlemarch follows the lives of the people of a small English town in the years before the Reform Act of 1832, with Dorothea at its centre.</p>
+
+    <p class="summary clamp">Middlemarch follows the lives of the people of a small English town in the years before the 1832 Reform Act: Dorothea Brooke, who marries an elderly scholar, the young doctor Tertius Lydgate, who wants to reform medicine, and the families around them, whose ambitions and mistakes slowly change the town.</p>
+    <p class="summary clamp-block">Middlemarch follows the lives of the people of a small English town in the years before the 1832 Reform Act: Dorothea Brooke, who marries an elderly scholar, the young doctor Tertius Lydgate, who wants to reform medicine, and the families around them, whose ambitions and mistakes slowly change the town.</p>
+
+    <button class="btn">Add to cart</button>
+    <button class="btn trim">Add to cart</button>
+</body>
+</html>
