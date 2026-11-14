@@ -19,7 +19,14 @@ import { CartStore } from './cart-store';
         <li>Your cart is empty.</li>
       }
     </ul>
-    <p class="total">Total: {{ cart.totalPrice() }} TRY</p>
+    <p>
+      <input class="coupon-code" placeholder="Coupon" #code />
+      <button class="apply" (click)="cart.applyCoupon(code.value)">Apply</button>
+    </p>
+    @if (cart.coupon(); as coupon) {
+      <p class="discount">{{ coupon.code }}: -{{ cart.discount() }} TRY</p>
+    }
+    <p class="total">Total: {{ cart.payable() }} TRY</p>
     @if (cart.count() > 0) {
       <a class="checkout-link" routerLink="/checkout">Checkout</a>
     }

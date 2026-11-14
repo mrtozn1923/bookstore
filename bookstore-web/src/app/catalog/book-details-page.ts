@@ -1,6 +1,7 @@
 import { HttpClient, httpResource } from '@angular/common/http';
-import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
+import { patchState, signalState } from '@ngrx/signals';
 import { firstValueFrom } from 'rxjs';
 import { apiUrl } from '../api';
 import type { Book, BookPage, Review } from '../models';
@@ -27,10 +28,10 @@ import type { Book, BookPage, Review } from '../models';
       }
     </ul>
     <p>
-      <input class="review-text" [value]="text()" (input)="text.set($any($event.target).value)" />
-      <button class="send" [disabled]="saving()" (click)="addReview()">Add review</button>
+      <input class="review-text" [value]="form.text()" (input)="setText($any($event.target).value)" />
+      <button class="send" [disabled]="form.saving()" (click)="addReview()">Add review</button>
     </p>
-    @if (saveError(); as message) {
+    @if (form.error(); as message) {
       <p class="save-error">{{ message }}</p>
     }
 
@@ -60,33 +61,35 @@ export class BookDetailsPage {
     this.related.hasValue() ? this.related.value().items.filter((b) => b.isbn !== this.isbn()) : [],
   );
 
-  protected readonly text = signal('');
-  protected readonly saving = signal(false);
-  protected readonly saveError = signal<string | null>(null);
+  // Small local state: one signalState instead of three separate signals
+  protected readonly form = signalState({ text: '', saving: false, error: null as string | null });
 
   constructor() {
     effect(() => console.log(`[book] ${this.book.status()} | [related] ${this.related.status()}`));
     effect(() => console.log(`[reviews] ${this.reviews.status()}: ${this.reviews.value().length} reviews`));
   }
 
+  protected setText(text: string): void {
+    patchState(this.form, { text });
+  }
+
   async addReview(): Promise<void> {
-    const draft = { author: 'Ada', rating: 5, text: this.text() };
+    const draft = { author: 'Ada', rating: 5, text: this.form.text() };
     const before = this.reviews.value();
-    this.saving.set(true);
-    this.saveError.set(null);
+    patchState(this.form, { saving: true, error: null });
     // Optimistic update: show the review now; the resource's status becomes 'local'
     this.reviews.update((list) => [...list, { ...draft, id: -1, isbn: this.isbn() }]);
     try {
       await firstValueFrom(this.#http.post<Review>(`${apiUrl}/books/${this.isbn()}/reviews`, draft));
-      this.text.set('');
+      patchState(this.form, { text: '' });
       // The server is the source of truth again: fetch the list with the real id
       this.reviews.reload();
     } catch {
       // Roll back to the list we had before the optimistic update
       this.reviews.set(before);
-      this.saveError.set('Could not save your review. Please try again.');
+      patchState(this.form, { error: 'Could not save your review. Please try again.' });
     } finally {
-      this.saving.set(false);
+      patchState(this.form, { saving: false });
     }
   }
 }

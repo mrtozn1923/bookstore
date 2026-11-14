@@ -7,7 +7,7 @@ import { CheckoutStore } from './checkout-store';
   template: `
     <h1>Checkout: review</h1>
     <p class="review">
-      Books {{ cart.totalPrice() }} TRY + {{ checkout.shipping() }} shipping
+      Books {{ cart.payable() }} TRY + {{ checkout.shipping() }} shipping
       {{ checkout.shippingPrice() }} TRY = {{ checkout.payable() }} TRY
     </p>
   `,

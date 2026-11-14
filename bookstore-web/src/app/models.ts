@@ -33,3 +33,8 @@ export interface Review {
   rating: number;
   text: string;
 }
+
+export interface Coupon {
+  code: string;
+  percent: number;
+}
