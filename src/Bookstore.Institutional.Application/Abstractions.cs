@@ -14,9 +14,9 @@ public interface IOrderRepository
 
 public interface IBudgetService
 {
-    Task<bool> HasEnoughBudgetAsync(Order order, CancellationToken ct);
-    Task DeductAsync(Order order, CancellationToken ct);
-    Task RefundAsync(Order order, CancellationToken ct);
+    Task<bool> HasEnoughBudgetAsync(int unitId, BudgetCategory category, int year, decimal amount, CancellationToken ct);
+    Task DeductAsync(int unitId, BudgetCategory category, int year, decimal amount, CancellationToken ct);
+    Task RefundAsync(int unitId, BudgetCategory category, int year, decimal amount, CancellationToken ct);
 }
 
 public interface IPriceCalculator

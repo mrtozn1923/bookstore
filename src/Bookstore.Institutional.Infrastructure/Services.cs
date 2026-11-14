@@ -11,7 +11,7 @@ internal sealed class OrderRepository(BookstoreContext db) : IOrderRepository
         [OrderStatus.PendingApprover, OrderStatus.PendingPurchasingManager, OrderStatus.Approved];
 
     public Task<Order?> FindAsync(int id, CancellationToken ct) =>
-        db.Orders.Include(o => o.PlacedBy).Include(o => o.Approvals).FirstOrDefaultAsync(o => o.Id == id, ct);
+        db.Orders.Include(o => o.PlacedBy).Include(o => o.BudgetCategory).Include(o => o.Approvals).FirstOrDefaultAsync(o => o.Id == id, ct);
 
     public Task<InstitutionUser?> FindUserAsync(int id, CancellationToken ct) =>
         db.InstitutionUsers.FirstOrDefaultAsync(u => u.Id == id, ct);
@@ -29,29 +29,22 @@ internal sealed class OrderRepository(BookstoreContext db) : IOrderRepository
 
 internal sealed class BudgetService(BookstoreContext db) : IBudgetService
 {
-    public async Task<bool> HasEnoughBudgetAsync(Order order, CancellationToken ct)
+    public async Task<bool> HasEnoughBudgetAsync(int unitId, BudgetCategory category, int year, decimal amount,
+        CancellationToken ct)
     {
-        if (!order.BudgetCategory.DeductsFromBudget)
-            return true;
-        UnitBudget? budget = await FindAsync(order, ct);
-        return budget is not null && budget.RemainingAmount >= order.Total.Amount;
+        UnitBudget? budget = await FindAsync(unitId, category, year, ct);
+        return budget is not null && budget.RemainingAmount >= amount;
     }
 
-    public async Task DeductAsync(Order order, CancellationToken ct)
-    {
-        if (order.BudgetCategory.DeductsFromBudget)
-            (await FindAsync(order, ct))?.Deduct(order.Total.Amount);
-    }
+    public async Task DeductAsync(int unitId, BudgetCategory category, int year, decimal amount, CancellationToken ct) =>
+        (await FindAsync(unitId, category, year, ct))?.Deduct(amount);
 
-    public async Task RefundAsync(Order order, CancellationToken ct)
-    {
-        if (order.BudgetCategory.DeductsFromBudget)
-            (await FindAsync(order, ct))?.Refund(order.Total.Amount);
-    }
+    public async Task RefundAsync(int unitId, BudgetCategory category, int year, decimal amount, CancellationToken ct) =>
+        (await FindAsync(unitId, category, year, ct))?.Refund(amount);
 
-    private Task<UnitBudget?> FindAsync(Order order, CancellationToken ct) =>
-        db.UnitBudgets.FirstOrDefaultAsync(b => b.InstitutionUnitId == order.PlacedBy.InstitutionUnitId
-            && b.BudgetCategoryId == order.BudgetCategoryId && b.Year == order.DeliveryDate.Year, ct);
+    private Task<UnitBudget?> FindAsync(int unitId, BudgetCategory category, int year, CancellationToken ct) =>
+        db.UnitBudgets.FirstOrDefaultAsync(b => b.InstitutionUnitId == unitId
+            && b.BudgetCategoryId == category.Id && b.Year == year, ct);
 }
 
 internal sealed class DiscountAgreements(BookstoreContext db) : IDiscountAgreements

@@ -1,0 +1,33 @@
+sequenceDiagram
+    autonumber
+    participant SPA as :OrderApi (Angular)
+    participant Api as :Bookstore.Api
+    participant Svc as :OrderService
+    participant Repo as :IOrderRepository
+    participant Bud as :IBudgetService
+    participant Db as :SQL Server
+
+    SPA->>+Api: POST /orders
+    Api->>+Svc: CreateAsync(command)
+    Svc->>+Repo: FindUserAsync(4)
+    Repo->>+Db: SELECT ... FROM InstitutionUsers
+    Db-->>-Repo: 1 row
+    Repo-->>-Svc: ada
+    Svc->>+Repo: FindBudgetCategoryAsync("classroom-sets")
+    Repo-->>-Svc: classroomSets
+    create participant Ord as order42:Order
+    Svc->>Ord: new(ada, classroomSets, 1, 150, deliveryDate, note, now)
+    Svc->>+Bud: HasEnoughBudgetAsync(7, classroomSets, 2026, 56700)
+    Bud->>+Db: SELECT ... FROM UnitBudgets
+    Db-->>-Bud: AllocatedAmount 120000, SpentAmount 45000
+    Bud-->>-Svc: true
+    Svc->>+Repo: HasActiveOrderAsync(4, 1)
+    Repo-->>-Svc: false
+    Svc->>Ord: Submit(total, now)
+    Svc->>Repo: Add(order42)
+    Svc->>+Repo: SaveChangesAsync()
+    Repo->>+Db: INSERT INTO Orders ...
+    Db-->>-Repo: Id = 42
+    Repo-->>-Svc:
+    Svc-->>-Api: OrderResult(42, PendingApprover, 56700)
+    Api-->>-SPA: 201 Created
