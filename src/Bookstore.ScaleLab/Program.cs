@@ -10,6 +10,9 @@ return args switch
     ["pool-leak", .. var rest] => await PoolCommands.LeakAsync(LabOptions.Parse(rest)),
     ["pool-frag", .. var rest] => await PoolCommands.FragmentAsync(LabOptions.Parse(rest)),
     ["archive", .. var rest] => await ArchiveCommand.RunAsync(LabOptions.Parse(rest)),
+    ["failover", .. var rest] => await FailoverCommand.RunAsync(LabOptions.Parse(rest)),
+    ["reconnect", .. var rest] => await ResiliencyCommands.ReconnectAsync(LabOptions.Parse(rest)),
+    ["user-tx", .. var rest] => await ResiliencyCommands.UserTransactionAsync(LabOptions.Parse(rest)),
     _ => Usage()
 };
 
