@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>09 images and SVG icons</title>
+    <style>
+        :root { color-scheme: light dark; }
+        body { margin: 0; padding: 20px; font: 20px/1.5 system-ui, sans-serif; background: #ffffff; color: #1f2937; }
+        section { margin-block-end: 24px; }
+        .frame { inline-size: 300px; background: #e5e7eb; }
+
+        /* 1) an inline img sits on the baseline */
+        #inline-img img { inline-size: 100px; block-size: 100px; }
+        #block-img img { display: block; inline-size: 100px; block-size: 100px; }
+
+        /* 2) the reset: never wider than the container, height from the aspect ratio */
+        #max-only img { max-inline-size: 100%; }
+        #reset img, #pending img { display: block; max-inline-size: 100%; block-size: auto; }
+
+        /* 3) object-fit crops, object-position picks the part that stays */
+        .portrait { display: block; inline-size: 96px; block-size: 96px; object-fit: cover; }
+        #focus-top { object-position: top; }
+
+        /* 4) a small code image scaled up eight times */
+        .code { display: block; inline-size: 64px; block-size: 64px; }
+        #code-pixelated { image-rendering: pixelated; }
+
+        /* 6) inline SVG takes its color from the text */
+        .icon { display: inline-block; inline-size: 1em; block-size: 1em; fill: currentColor; }
+        .links { color: #1d4ed8; }
+        img.icon { fill: #b91c1c; }
+
+        /* 7) a logo color for each color scheme, and what invert() does instead */
+        .logo { inline-size: 48px; block-size: 48px; fill: light-dark(#b91c1c, #fca5a5); }
+        #logo-inverted { fill: #b91c1c; filter: invert(1); }
+    </style>
+</head>
+<body>
+    <section class="frame" id="inline-img"><img src="../img/square.png" alt="" width="300" height="300"></section>
+    <section class="frame" id="block-img"><img src="../img/square.png" alt="" width="300" height="300"></section>
+    <section class="frame" id="max-only"><img src="../img/banner-1x.webp" alt="" width="1200" height="400"></section>
+    <section class="frame" id="reset"><img src="../img/banner-1x.webp" alt="" width="1200" height="400"></section>
+    <section class="frame" id="pending"><img alt="" width="1200" height="400"></section>
+    <section>
+        <img class="portrait" id="focus-center" src="../img/author-eliot.webp" alt="" width="240" height="360">
+        <img class="portrait" id="focus-top" src="../img/author-eliot.webp" alt="" width="240" height="360">
+    </section>
+    <section>
+        <img class="code" id="code-smooth" src="../img/pickup-code.png" alt="" width="8" height="8">
+        <img class="code" id="code-pixelated" src="../img/pickup-code.png" alt="" width="8" height="8">
+    </section>
+    <section>
+        <img id="photo-auto" src="../img/shelf-photo.jpg" alt="">
+        <img id="photo-none" src="../img/shelf-photo.jpg" alt="" style="image-orientation: none">
+    </section>
+    <!-- 5) the sprite: symbols are defined once, then used by id -->
+    <svg hidden>
+        <symbol id="heart" viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.4-9.3C1.2 8.3 3.4 4.5 7 4.5c2 0 3.6 1.1 5 2.8 1.4-1.7 3-2.8 5-2.8 3.6 0 5.8 3.8 4.4 7.2C19.5 16.4 12 21 12 21z"/></symbol>
+        <symbol id="heart-fixed" viewBox="0 0 24 24"><path fill="#f59e0b" d="M12 21s-7.5-4.6-9.4-9.3C1.2 8.3 3.4 4.5 7 4.5c2 0 3.6 1.1 5 2.8 1.4-1.7 3-2.8 5-2.8 3.6 0 5.8 3.8 4.4 7.2C19.5 16.4 12 21 12 21z"/></symbol>
+    </svg>
+    <section class="links">
+        <svg class="icon" id="icon-use" aria-hidden="true"><use href="#heart"/></svg>
+        <svg class="icon" id="icon-fixed" aria-hidden="true"><use href="#heart-fixed"/></svg>
+        <img class="icon" id="icon-img" src="../img/heart.svg" alt="">
+    </section>
+    <section>
+        <svg class="logo" id="logo" viewBox="0 0 24 24" aria-hidden="true"><use href="#heart"/></svg>
+        <svg class="logo" id="logo-inverted" viewBox="0 0 24 24" aria-hidden="true"><use href="#heart"/></svg>
+    </section>
+</body>
+</html>

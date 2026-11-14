@@ -17,6 +17,28 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
+/* images: block, never wider than their container, height from the width/height ratio */
+img, picture, video {
+    display: block;
+    max-inline-size: 100%;
+    block-size: auto;
+}
+
+/* icons from img/icons.svg: as big as the text, painted in the text color */
+.icon {
+    inline-size: 1em;
+    block-size: 1em;
+    flex: none;
+    fill: currentColor;
+}
+/* line icons: no fill, the stroke takes the text color */
+.icon-line {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linejoin: round;
+}
+
 body {
     margin: 0;
     font-family: var(--font-body);

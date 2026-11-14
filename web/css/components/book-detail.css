@@ -62,9 +62,7 @@
 .cover-flip.is-flipped .cover-flip-inner { rotate: y 180deg; }
 .cover-face {
     grid-area: 1 / 1;
-    display: block;
     inline-size: 100%;
-    block-size: auto;
     border-radius: 0.25rem;
     backface-visibility: hidden;
 }
@@ -80,6 +78,8 @@
     inline-size: 6rem;
     block-size: 6rem;
     object-fit: cover;
+    /* the face is in the top third of the portrait */
+    object-position: top;
     /* same result as border-radius: 50% here, but it also clips outline and shadows */
     clip-path: circle(50%);
 }
@@ -87,7 +87,6 @@
 .edition-cover {
     float: left;
     inline-size: 180px;
-    block-size: auto;
     /* the text follows the edge of the book, not the square image box */
     shape-outside: url("../../img/book-tilted.png");
     shape-margin: 0.75rem;

@@ -9,4 +9,4 @@
     /* faded edges: a hint that the row scrolls sideways */
     mask-image: linear-gradient(to right, transparent, #000000 2rem, #000000 calc(100% - 2rem), transparent);
 }
-.book-strip img { display: block; inline-size: 10rem; block-size: auto; border-radius: 0.25rem; }
+.book-strip img { inline-size: 10rem; border-radius: 0.25rem; }

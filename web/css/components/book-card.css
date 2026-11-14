@@ -51,12 +51,9 @@
 }
 
 .book-card .price { margin: 0.5rem 0 0; font-weight: 700; }
-.price svg {
-    inline-size: 1em;
-    block-size: 1em;
+.price .icon {
     /* centers a 1em icon on the digits */
     vertical-align: -0.125em;
-    fill: currentColor;
 }
 
 .book-card .cover {
@@ -66,9 +63,7 @@
     overflow: hidden;
 }
 .book-card .cover img {
-    display: block;
     inline-size: 100%;
-    block-size: auto;
     transition: scale 200ms ease-out;
 }
 .book-card:hover .cover img { scale: 1.05; }
@@ -81,3 +76,17 @@
     filter: grayscale(1);
     opacity: 0.6;
 }
+
+.fav {
+    margin-block-start: 0.5rem;
+    padding: 0.25rem;
+    border: 0;
+    background: none;
+    color: var(--color-muted);
+    font-size: 1.5rem;
+    line-height: 0;
+    cursor: pointer;
+}
+.fav:hover, .fav[aria-pressed="true"] { color: var(--color-accent); }
+/* the same symbol, filled: fill is a CSS property */
+.fav[aria-pressed="true"] .icon { fill: currentColor; }
