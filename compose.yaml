@@ -18,6 +18,7 @@ services:
     build:
       context: .
       dockerfile: src/Bookstore.Api/Dockerfile
+      target: ${API_TARGET:-runtime}
     environment:
       ConnectionStrings__BookstoreDb: "Server=sql;Database=BookstoreDb;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True"
       Database__MigrateOnStartup: "true"
