@@ -1,11 +1,12 @@
 // A tiny mock of Bookstore.Api for the RxJS series: no framework, no database.
 // Run: node api/server.ts   (PORT defaults to 5180)
 import { createServer } from "node:http";
-import { books } from "../data/books.ts";
+import { books, orders } from "../data/books.ts";
 
 const port = Number(process.env.PORT ?? 5180);
 const delayMs = Number(process.env.DELAY_MS ?? 200);
 const failures = new Map<string, number>();
+const statusPolls = new Map<number, number>();
 let requestNo = 0;
 
 const server = createServer((req, res) => {
@@ -28,6 +29,18 @@ const server = createServer((req, res) => {
       failures.set(url.pathname, seen + 1);
       res.writeHead(503).end();
       console.log(`[api] #${no} 503`);
+      return;
+    }
+
+    // order status for polling (06): Paid on the first 3 requests, then Shipped twice, then Delivered
+    const orderMatch = url.pathname.match(/^\/api\/orders\/(\d+)\/status$/);
+    const order = orders.find((o) => o.id === Number(orderMatch?.[1]));
+    if (order) {
+      const polls = (statusPolls.get(order.id) ?? 0) + 1;
+      statusPolls.set(order.id, polls);
+      const status = polls <= 3 ? "Paid" : polls <= 5 ? "Shipped" : "Delivered";
+      res.writeHead(200, { "Content-Type": "application/json" }).end(JSON.stringify({ id: order.id, status }));
+      console.log(`[api] #${no} 200 ${status}`);
       return;
     }
 

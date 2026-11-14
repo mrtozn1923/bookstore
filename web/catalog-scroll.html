@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Bookstore - catalog</title>
+    <style>
+      #progress { position: fixed; top: 0; left: 0; width: 100%; }
+      #to-top { position: fixed; right: 16px; bottom: 16px; }
+      li { height: 48px; }
+    </style>
+  </head>
+  <body>
+    <progress id="progress" max="1" value="0"></progress>
+    <h1>Catalog</h1>
+    <ul id="books"></ul>
+    <p id="scroll-stats">scroll events: 0, screen updates: 0</p>
+    <button id="simulate" type="button">Simulate 200 stock messages</button>
+    <p id="stock">Dune stock: 12</p>
+    <p id="stock-stats">stock messages: 0, screen updates: 0</p>
+    <button id="to-top" type="button" hidden>Back to top</button>
+    <script type="module" src="./catalog-scroll.ts"></script>
+  </body>
+</html>
