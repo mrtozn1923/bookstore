@@ -353,7 +353,39 @@ switch (command)
         Console.WriteLine($"{args[1]}: {File.ReadAllText(args[1])}");
         break;
 
+    case "connections":
+    {
+        ConnectionReport r = await IoLab.IdleConnectionsAsync(int.Parse(args[1]), args[2] == "blocking");
+        Console.WriteLine($"{r.Connections} idle connections ({r.Mode,-8}): os threads={r.OsThreads,5}, setup {r.Milliseconds,6:F0} ms");
+        if (args.Length > 3 && args[3] == "--names")
+        {
+            foreach (string name in IoLab.ThreadNames())
+            {
+                Console.WriteLine($"  {name}");
+            }
+        }
+        break;
+    }
+
+    case "uds":
+        foreach (string line in await IoLab.UnixSocketRoundTripAsync(args[1]))
+        {
+            Console.WriteLine(line);
+        }
+        break;
+
+    case "named-pipe":
+        foreach (string line in await IoLab.NamedPipeRoundTripAsync(args[1]))
+        {
+            Console.WriteLine(line);
+        }
+        break;
+
+    case "serve":
+        Environment.ExitCode = await IoLab.WaitForShutdownAsync(TimeSpan.FromSeconds(int.Parse(args[1])));
+        break;
+
     default:
-        Console.WriteLine("usage: read-catalog | log-naive N | log-buffered N | proc-info S | report-naive N | report N [--fail] | report-timeout | shell-demo TEXT | env-demo | threads S | thread-cost N [stackKB] | task-cost N | context | cpu-info | workers N S | spin S [PriorityClass] | pingpong N | nice | paging MB | mem-info | overcommit GB | oom MB | gc-config | gc-limits | fill MB | churn MB | map-share FILE MB S | cow FILE MB | layout | big-maps MB | wx | flush N | fd-limit DIR | open-delete FILE | lock FILE S | open FILE | case-check | atomic-save FILE TEXT");
+        Console.WriteLine("usage: read-catalog | log-naive N | log-buffered N | proc-info S | report-naive N | report N [--fail] | report-timeout | shell-demo TEXT | env-demo | threads S | thread-cost N [stackKB] | task-cost N | context | cpu-info | workers N S | spin S [PriorityClass] | pingpong N | nice | paging MB | mem-info | overcommit GB | oom MB | gc-config | gc-limits | fill MB | churn MB | map-share FILE MB S | cow FILE MB | layout | big-maps MB | wx | flush N | fd-limit DIR | open-delete FILE | lock FILE S | open FILE | case-check | atomic-save FILE TEXT | connections N async|blocking [--names] | uds PATH | named-pipe NAME | serve CLEANUP_S");
         break;
 }
