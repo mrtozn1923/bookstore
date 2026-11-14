@@ -1,0 +1,11 @@
+{
+  "name": "bookstore-pricing",
+  "type": "module",
+  "exports": {
+    ".": "./price.js",
+    "./cache": {
+      "import": "./price-cache.mjs",
+      "require": "./price-cache.cjs"
+    }
+  }
+}

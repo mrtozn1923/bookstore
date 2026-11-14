@@ -5,6 +5,11 @@
   "description": "Bookstore API on Node.js",
   "type": "module",
   "main": "src/server.js",
+  "imports": {
+    "#routes/*": "./src/routes/*.js",
+    "#services/*": "./src/services/*.js",
+    "#db/*": "./src/db/*"
+  },
   "engines": {
     "node": "^26.13.0"
   },
