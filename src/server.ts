@@ -2,7 +2,7 @@ import { createServer } from "node:http";
 import { handleHealth } from "#routes/health";
 import { handleListBooks } from "#routes/books";
 
-const port = Number(process.env.PORT ?? 3000);
+const port: number = Number(process.env.PORT ?? 3000);
 
 const server = createServer((req, res) => {
     if (req.method === "GET" && req.url === "/health") {

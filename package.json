@@ -4,10 +4,11 @@
   "private": true,
   "description": "Bookstore API on Node.js",
   "type": "module",
-  "main": "src/server.js",
+  "main": "src/server.ts",
   "imports": {
-    "#routes/*": "./src/routes/*.js",
-    "#services/*": "./src/services/*.js",
+    "#routes/*": "./src/routes/*.ts",
+    "#services/*": "./src/services/*.ts",
+    "#domain/*": "./src/domain/*.ts",
     "#db/*": "./src/db/*"
   },
   "workspaces": [
@@ -17,11 +18,16 @@
     "node": "^26.13.0"
   },
   "scripts": {
-    "start": "node src/server.js",
-    "dev": "node --watch --env-file-if-exists=.env src/server.js",
+    "start": "node src/server.ts",
+    "dev": "node --watch --env-file-if-exists=.env src/server.ts",
+    "typecheck": "tsc",
     "versions": "node -p process.versions.node"
   },
   "dependencies": {
     "@bookstore/contracts": "^0.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "typescript": "^7.0.2"
   }
 }

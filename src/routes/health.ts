@@ -1,5 +1,7 @@
+import type { IncomingMessage, ServerResponse } from "node:http";
+
 // GET /health: is the process up, and which Node version is it running on?
-export function handleHealth(req, res) {
+export function handleHealth(req: IncomingMessage, res: ServerResponse): void {
     const body = {
         status: "ok",
         service: "bookstore-api",
