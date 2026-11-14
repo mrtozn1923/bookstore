@@ -1,0 +1,8 @@
+# Production-like: docker compose -f compose.yaml -f compose.prod.yaml up -d (post 6 goes further)
+services:
+  web:
+    environment:
+      APP_ENVIRONMENT: production
+    # !override: replace the base list instead of appending to it (8080 must not stay open)
+    ports: !override
+      - "80:8080"

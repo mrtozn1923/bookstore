@@ -1,47 +1,11 @@
-# Bookstore with one command: SQL Server, schema migration, Bookstore.Api and bookstore-web
+# Bookstore: the parts every environment shares. Development additions are in compose.override.yaml,
+# CI in compose.ci.yaml, a production-like setup in compose.prod.yaml.
 name: composeseries
 
+include:
+  - compose.db.yaml
+
 services:
-  db:
-    image: mcr.microsoft.com/mssql/server:2025-latest
-    environment:
-      ACCEPT_EULA: "Y"
-      # Not in the documented variable list, but SQL Server 2025 reads the sa password from this file
-      MSSQL_SA_PASSWORD_FILE: /run/secrets/sa-password
-    secrets:
-      - sa-password
-    volumes:
-      - db-data:/var/opt/mssql
-    ports:
-      - "127.0.0.1:1433:1433"
-    healthcheck:
-      test: SQLCMDPASSWORD="$$(cat /run/secrets/sa-password)" /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -b -Q "SELECT 1" -o /dev/null
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 60s
-      start_interval: 2s
-    restart: unless-stopped
-
-  # One-off: creates BookstoreDb and the app login, then exits with 0
-  migrate:
-    image: mcr.microsoft.com/mssql/server:2025-latest
-    entrypoint: ["/bin/bash", "-c"]
-    command:
-      - >-
-        SQLCMDPASSWORD="$$(cat /run/secrets/sa-password)"
-        BOOKSTORE_DB_PASSWORD="$$(cat /run/secrets/db-app-password)"
-        exec /opt/mssql-tools18/bin/sqlcmd -C -S db -U sa -b
-        -i /scripts/01-bookstore.sql -i /scripts/02-app-login.sql
-    secrets:
-      - sa-password
-      - db-app-password
-    volumes:
-      - ./db:/scripts:ro
-    depends_on:
-      db:
-        condition: service_healthy
-
   api:
     build:
       context: .
@@ -66,91 +30,27 @@ services:
         aliases:
           - bookstore-api
     restart: unless-stopped
-    develop:
-      watch:
-        # A change in the API's code: build the image again and recreate the container
-        - path: src/Bookstore.Api
-          action: rebuild
-          ignore:
-            - bin/
-            - obj/
 
   web:
     build: ./web
     environment:
       API_BASE_URL: /api
-      APP_ENVIRONMENT: compose
+      APP_ENVIRONMENT: ${APP_ENVIRONMENT:-compose}
     ports:
       - "8080:8080"
-    depends_on:
-      api:
-        condition: service_healthy
-    restart: unless-stopped
-
-  # Angular dev server: docker compose --profile dev up --watch web-dev
-  web-dev:
-    build:
-      context: ./web
-      target: dev
-    profiles: [dev]
-    environment:
-      API_PROXY_TARGET: http://bookstore-api:8080
-    ports:
-      - "4200:4200"
-    depends_on:
-      api:
-        condition: service_healthy
-    develop:
-      watch:
-        # Source files are copied into the running container; ng serve rebuilds and reloads the browser
-        - path: web/src
-          target: /app/src
-          action: sync
-        - path: web/public
-          target: /app/public
-          action: sync
-        # New packages: build the dev image again (npm ci runs inside it)
-        - path: web/package-lock.json
-          action: rebuild
-
-  # Optional services: docker compose --profile cache / --profile tools
-  redis:
-    image: redis:8-alpine
-    profiles: [cache]
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/"]
       interval: 10s
-    restart: unless-stopped
-
-  mailpit:
-    image: axllent/mailpit:v1.33
-    profiles: [tools]
-    ports:
-      - "127.0.0.1:8025:8025"
-
-  # Ad-hoc queries, never started by up: docker compose run --rm sqlcmd -Q "SELECT COUNT(*) FROM dbo.Books"
-  sqlcmd:
-    image: mcr.microsoft.com/mssql/server:2025-latest
-    profiles: [cli]
-    entrypoint:
-      - /bin/bash
-      - -c
-      - SQLCMDPASSWORD="$$(cat /run/secrets/sa-password)" exec /opt/mssql-tools18/bin/sqlcmd -C -S db -U sa -d BookstoreDb "$$@"
-      - sqlcmd
-    secrets:
-      - sa-password
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+      start_interval: 1s
     depends_on:
-      db:
+      api:
         condition: service_healthy
-
-volumes:
-  db-data:
+    restart: unless-stopped
 
 secrets:
-  sa-password:
-    file: ./secrets/sa-password.txt
-  db-app-password:
-    file: ./secrets/db-app-password.txt
   api-connection-string:
     file: ./secrets/api-connection-string.txt
 

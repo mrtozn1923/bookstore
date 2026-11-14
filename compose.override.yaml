@@ -1,0 +1,55 @@
+# Development (loaded automatically by docker compose up/watch when no -f is given)
+services:
+  db:
+    ports:
+      # SSMS / sqlcmd on the host
+      - "127.0.0.1:1433:1433"
+
+  api:
+    develop:
+      watch:
+        # A change in the API's code: build the image again and recreate the container
+        - path: src/Bookstore.Api
+          action: rebuild
+
+  # Angular dev server: docker compose --profile dev watch
+  web-dev:
+    build:
+      context: ./web
+      target: dev
+    profiles: [dev]
+    environment:
+      API_PROXY_TARGET: http://bookstore-api:8080
+    ports:
+      - "4200:4200"
+    depends_on:
+      api:
+        condition: service_healthy
+    develop:
+      watch:
+        # Source files are copied into the running container; ng serve rebuilds and reloads the browser
+        - path: web/src
+          target: /app/src
+          action: sync
+          initial_sync: true
+        - path: web/public
+          target: /app/public
+          action: sync
+          initial_sync: true
+        # New packages: build the dev image again (npm ci runs inside it)
+        - path: web/package-lock.json
+          action: rebuild
+
+  # Optional services: docker compose --profile cache / --profile tools
+  redis:
+    image: redis:8-alpine
+    profiles: [cache]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+
+  mailpit:
+    image: axllent/mailpit:v1.33
+    profiles: [tools]
+    ports:
+      - "127.0.0.1:8025:8025"

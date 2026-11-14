@@ -1,0 +1,25 @@
+# CI: docker compose -f compose.yaml -f compose.ci.yaml up -d --wait, then run --rm smoke
+services:
+  db:
+    # A clean database on every run: data lives in memory and is gone after down
+    volumes: !override
+      - type: tmpfs
+        target: /var/opt/mssql
+        tmpfs:
+          size: 2g
+          # SQL Server runs as uid 10001; a fresh tmpfs belongs to root
+          mode: 01777
+
+  web:
+    # Nothing is published on the CI runner; the smoke test runs on the project network
+    ports: !reset []
+
+  smoke:
+    image: alpine:3
+    profiles: [test]
+    command:
+      - sh
+      - -c
+      - >-
+        n=$$(wget -qO- http://web:8080/api/books | grep -o '"isbn"' | wc -l);
+        echo "books: $$n"; test "$$n" -eq 6
