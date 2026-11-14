@@ -18,6 +18,8 @@ class Order {
   DeliveryDate : DateOnly
   Total : Money
   Note : string [0..1]
+  ShipmentPreference : ShipmentPreference
+  MinFirstShipment : int [0..1]
   Status : OrderStatus
   + Submit(total : Money, now : DateTimeOffset)
   + Approve(approver : InstitutionUser, comment : string [0..1], now : DateTimeOffset)
@@ -48,6 +50,11 @@ class UnitBudget {
 class OrderAttachment {
   FileName : string
   StoragePath : string
+}
+
+enum ShipmentPreference {
+  SingleShipment
+  PartialAllowed
 }
 
 enum OrderStatus {

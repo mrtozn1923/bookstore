@@ -15,10 +15,10 @@ public static class DemoServices
     }
 }
 
-// Catalog module'ünün liste fiyatları (Dune, Emma, The Hobbit)
+// Catalog module'ünün liste fiyatları (Dune, Emma, The Hobbit, Middlemarch)
 internal sealed class DemoCatalogPrices : ICatalogPrices
 {
-    private static readonly Dictionary<int, decimal> Prices = new() { [1] = 420m, [2] = 380m, [3] = 450m };
+    private static readonly Dictionary<int, decimal> Prices = new() { [1] = 420m, [2] = 380m, [3] = 450m, [4] = 400m };
 
     public Task<Money?> GetListPriceAsync(int bookId, CancellationToken ct) =>
         Task.FromResult<Money?>(Prices.TryGetValue(bookId, out decimal price) ? Money.Try(price) : null);
@@ -29,8 +29,8 @@ internal sealed class LoggingDistributorGateway(ILogger<LoggingDistributorGatewa
 {
     public Task PlaceOrderAsync(Order order, CancellationToken ct)
     {
-        logger.LogInformation("Distributor: place order {Id} (book {BookId} x{Quantity}, delivery {DeliveryDate:yyyy-MM-dd})",
-            order.Id, order.BookId, order.Quantity, order.DeliveryDate);
+        logger.LogInformation("Distributor: place order {Id} (book {BookId} x{Quantity}, delivery {DeliveryDate:yyyy-MM-dd}, {ShipmentPreference}, min first shipment {MinFirstShipment})",
+            order.Id, order.BookId, order.Quantity, order.DeliveryDate, order.ShipmentPreference, order.MinFirstShipment);
         return Task.CompletedTask;
     }
 

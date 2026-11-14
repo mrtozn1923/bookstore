@@ -11,7 +11,7 @@ internal sealed class OrderRepository(BookstoreContext db) : IOrderRepository
         [OrderStatus.PendingApprover, OrderStatus.PendingPurchasingManager, OrderStatus.Approved];
 
     public Task<Order?> FindAsync(int id, CancellationToken ct) =>
-        db.Orders.Include(o => o.PlacedBy).Include(o => o.BudgetCategory).Include(o => o.Approvals).FirstOrDefaultAsync(o => o.Id == id, ct);
+        db.Orders.Include(o => o.PlacedBy).ThenInclude(u => u.InstitutionUnit).Include(o => o.BudgetCategory).Include(o => o.Approvals).FirstOrDefaultAsync(o => o.Id == id, ct);
 
     public Task<InstitutionUser?> FindUserAsync(int id, CancellationToken ct) =>
         db.InstitutionUsers.FirstOrDefaultAsync(u => u.Id == id, ct);
@@ -66,7 +66,12 @@ internal sealed class CatalogPrices(HttpClient http) : ICatalogPrices
 internal sealed class DistributorGateway(HttpClient http) : IDistributorGateway
 {
     public async Task PlaceOrderAsync(Order order, CancellationToken ct) =>
-        (await http.PostAsJsonAsync("/orders", new { order.Id, order.BookId, order.Quantity, order.DeliveryDate }, ct))
+        (await http.PostAsJsonAsync("/orders", new
+        {
+            order.Id, order.BookId, order.Quantity, order.DeliveryDate,
+            AllowPartialShipment = order.ShipmentPreference == ShipmentPreference.PartialAllowed,
+            order.MinFirstShipment
+        }, ct))
             .EnsureSuccessStatusCode();
 
     public async Task CancelOrderAsync(int orderId, CancellationToken ct) =>

@@ -8,6 +8,8 @@ internal sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
 {
     public void Configure(EntityTypeBuilder<Order> b)
     {
+        // Sipariş numaraları 42'den başlar (serinin örnek verisi)
+        b.Property(o => o.Id).UseIdentityColumn(42);
         // «dataType» Money: kimliği yok, tabloda iki kolon olur
         b.ComplexProperty(o => o.Total, m =>
         {
@@ -16,6 +18,7 @@ internal sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
         });
         b.Property(o => o.Status).HasConversion<string>().HasMaxLength(32);
         b.Property(o => o.Note).HasMaxLength(500);
+        b.Property(o => o.ShipmentPreference).HasConversion<string>().HasMaxLength(20);
         // composition [0..1]: owned type, aynı tabloda
         b.OwnsOne(o => o.Attachment, a =>
         {

@@ -1,7 +1,18 @@
+using System.Text.Json.Serialization;
+using Bookstore.Api;
 using Bookstore.Api.Demo;
-using Bookstore.Institutional.Application;
 using Bookstore.Institutional.Infrastructure;
+using Bookstore.Tools;
 using Microsoft.EntityFrameworkCore;
+
+// Koddan üretilen diyagram: dotnet run --project src/Bookstore.Api --no-launch-profile -- --er
+if (args is ["--er"])
+{
+    DbContextOptions<BookstoreContext> options = new DbContextOptionsBuilder<BookstoreContext>().UseSqlServer().Options;
+    using BookstoreContext model = new(options);
+    Console.Write(MermaidErWriter.Write(model.Model));
+    return;
+}
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 string connectionString = builder.Configuration.GetConnectionString("Bookstore")
@@ -9,6 +20,9 @@ string connectionString = builder.Configuration.GetConnectionString("Bookstore")
 builder.Services.AddInstitutionalOrdering(connectionString);
 if (args.Contains("--demo"))
     builder.Services.AddDemoServices();
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<OrderExceptionHandler>();
+builder.Services.ConfigureHttpJsonOptions(o => o.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 WebApplication app = builder.Build();
 
 if (args.Contains("--script"))
@@ -18,50 +32,15 @@ if (args.Contains("--script"))
     return;
 }
 
-if (args.Contains("--demo"))
+// --demo: örnek veriyi sıfırdan kurar; --keep-data ile mevcut veriyi koruyup yalnız migration'ları uygular
+if (args.Contains("--demo") && !args.Contains("--keep-data"))
     await DemoData.ResetAsync(app.Services);
-
-app.MapPost("/orders", async (CreateOrderCommand command, IOrderService service, CancellationToken ct) =>
+else
 {
-    try
-    {
-        OrderResult result = await service.CreateAsync(command, ct);
-        return Results.Created($"/orders/{result.Id}", result);
-    }
-    catch (OrderRuleException ex)
-    {
-        return Results.Problem(ex.Message, statusCode: StatusCodes.Status409Conflict);
-    }
-});
-
-RouteGroupBuilder orders = app.MapGroup("/orders/{id:int}");
-orders.MapPost("/submit", (int id, IOrderService service, CancellationToken ct) =>
-    Decide(() => service.SubmitAsync(id, ct)));
-orders.MapPost("/approve", (int id, DecisionBody body, IOrderService service, ILogger<Program> log,
-    CancellationToken ct) => Decide(async () =>
-    {
-        OrderResult result = await service.ApproveAsync(new DecideOrderCommand(id, body.ApproverId, body.Comment), ct);
-        log.LogInformation("User {ApproverId} approved #{Id} -> {Status}", body.ApproverId, id, result.Status);
-        return result;
-    }));
-orders.MapPost("/reject", (int id, DecisionBody body, IOrderService service, CancellationToken ct) =>
-    Decide(() => service.RejectAsync(new DecideOrderCommand(id, body.ApproverId, body.Comment), ct)));
-orders.MapPost("/cancel", (int id, IOrderService service, CancellationToken ct) =>
-    Decide(() => service.CancelAsync(id, ct)));
-
-app.Run();
-
-// Kural ihlali 409, diğer her şey 200
-static async Task<IResult> Decide(Func<Task<OrderResult>> action)
-{
-    try
-    {
-        return Results.Ok(await action());
-    }
-    catch (OrderRuleException ex)
-    {
-        return Results.Problem(ex.Message, statusCode: StatusCodes.Status409Conflict);
-    }
+    using IServiceScope scope = app.Services.CreateScope();
+    await scope.ServiceProvider.GetRequiredService<BookstoreContext>().Database.MigrateAsync();
 }
 
-public sealed record DecisionBody(int ApproverId, string? Comment);
+app.UseExceptionHandler();
+app.MapOrderEndpoints();
+app.Run();

@@ -1,0 +1,10 @@
+@startuml
+class InvalidOrderTransitionException <<sealed>> {
+}
+class OrderRuleException <<sealed>> {
+    + Rule : string <<get>>
+}
+InvalidOperationException <|-- InvalidOrderTransitionException
+InvalidOrderTransitionException o-> "Status" OrderStatus
+Exception <|-- OrderRuleException
+@enduml

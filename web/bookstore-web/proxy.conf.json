@@ -1,0 +1,4 @@
+{
+  "/orders": { "target": "http://localhost:5281", "secure": false },
+  "/institution-units": { "target": "http://localhost:5281", "secure": false }
+}

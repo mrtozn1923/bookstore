@@ -17,6 +17,7 @@ activate Api
 Api -> Service : SubmitAsync(42)
 activate Service
 Service -> Db : load Order #42
+Service -> Service : guard Status == Draft (else 409)
 Service -> Pricing : CalculateTotal(420 TRY, 150, 10 %)
 Pricing --> Service : 56700 TRY
 Service -> Budget : HasEnoughBudgetAsync(7, classroom-sets, 2026, 56700)

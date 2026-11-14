@@ -2,4 +2,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Bookstore.Institutional.Infrastructure\Bookstore.Institutional.Infrastructure.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.15" PrivateAssets="all" />
+  </ItemGroup>
 </Project>

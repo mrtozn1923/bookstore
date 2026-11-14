@@ -16,7 +16,7 @@ sequenceDiagram
     Svc->>+Repo: FindBudgetCategoryAsync("classroom-sets")
     Repo-->>-Svc: classroomSets
     create participant Ord as order42:Order
-    Svc->>Ord: new(ada, classroomSets, 1, 150, deliveryDate, note, now)
+    Svc->>Ord: new(ada, classroomSets, 1, 150, deliveryDate, note, now, shipmentPreference, minFirstShipment)
     Svc->>+Bud: HasEnoughBudgetAsync(7, classroomSets, 2026, 56700)
     Bud->>+Db: SELECT ... FROM UnitBudgets
     Db-->>-Bud: AllocatedAmount 120000, SpentAmount 45000

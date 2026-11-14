@@ -15,4 +15,8 @@ enum ApprovalDecision {
     Approved,
     Rejected,
 }
+enum ShipmentPreference {
+    SingleShipment,
+    PartialAllowed,
+}
 @enduml

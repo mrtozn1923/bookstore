@@ -1,13 +1,15 @@
 @startuml
 class Order {
     + <<const>> PurchasingApprovalThreshold : decimal = 50_000m
-    + Order(placedBy:InstitutionUser, budgetCategory:BudgetCategory, bookId:int, quantity:int, deliveryDate:DateOnly, note:string?, now:DateTimeOffset)
+    + <<const>> MinimumQuantity : int = 20
+    + Order(placedBy:InstitutionUser, budgetCategory:BudgetCategory, bookId:int, quantity:int, deliveryDate:DateOnly, note:string?, now:DateTimeOffset, shipmentPreference:ShipmentPreference, minFirstShipment:int?)
     + Id : int <<get>>
     + PlacedById : int <<get>>
     + BudgetCategoryId : int <<get>>
     + BookId : int <<get>>
     + Quantity : int <<get>>
     + Note : string? <<get>>
+    + MinFirstShipment : int? <<get>>
     + RequiresPurchasingApproval : bool <<get>>
     + Submit(total:Money, now:DateTimeOffset) : void
     + Approve(approver:InstitutionUser, comment:string?, now:DateTimeOffset) : void
@@ -21,6 +23,7 @@ Order o-> "PlacedBy" InstitutionUser
 Order o-> "BudgetCategory" BudgetCategory
 Order --> "DeliveryDate" DateOnly
 Order --> "Total" Money
+Order --> "ShipmentPreference" ShipmentPreference
 Order --> "Status" OrderStatus
 Order --> "CreatedAt" DateTimeOffset
 Order --> "SubmittedAt" DateTimeOffset

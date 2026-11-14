@@ -11,7 +11,8 @@ public static class DemoData
         using IServiceScope scope = services.CreateScope();
         BookstoreContext db = scope.ServiceProvider.GetRequiredService<BookstoreContext>();
         await db.Database.EnsureDeletedAsync();
-        await db.Database.EnsureCreatedAsync();
+        await db.Database.MigrateAsync();
+        // Birim önce satın alma müdürü olmadan eklenir, müdür kullanıcı eklendikten sonra atanır (ER yazısı)
         await db.Database.ExecuteSqlRawAsync("""
             SET IDENTITY_INSERT InstitutionUnits ON;
             INSERT INTO InstitutionUnits (Id, Name, PurchasingManagerId) VALUES (7, N'Science', NULL);
@@ -31,7 +32,6 @@ public static class DemoData
                 VALUES (7, 2, 2026, 120000, 45000);
             INSERT INTO DiscountAgreements (InstitutionId, DiscountRate, StartDate, EndDate)
                 VALUES (1, 0.10, '2025-09-01', NULL);
-            DBCC CHECKIDENT ('Orders', RESEED, 42) WITH NO_INFOMSGS;
             """);
     }
 }
