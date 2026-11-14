@@ -5,14 +5,17 @@ using Asp.Versioning;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Bookstore.Api.Auth;
 using Bookstore.Api.Data;
 using Bookstore.Api.Filters;
+using Bookstore.Api.Health;
 using Bookstore.Api.Middleware;
 using Bookstore.Api.Options;
 using Bookstore.Api.Security;
@@ -136,6 +139,11 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.InstanceName = "Bookstore:";
 });
 builder.Services.AddResponseCaching();
+
+builder.Services.AddHealthChecks()
+    .AddCheck("self", () => HealthCheckResult.Healthy(), tags: new[] { "live" })
+    .AddDbContextCheck<BookstoreContext>("database", tags: new[] { "ready" })
+    .AddCheck<CacheHealthCheck>("cache", tags: new[] { "ready" }, timeout: TimeSpan.FromSeconds(2));
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<ExecutionTimeFilter>();
 builder.Services.AddSingleton<SingletonOperation>();
@@ -261,6 +269,20 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// probes carry no token: the FallbackPolicy would answer them with 401
+app.MapHealthChecks("/health").AllowAnonymous();
+
+app.MapHealthChecks("/health/live", new HealthCheckOptions
+{
+    Predicate = check => check.Tags.Contains("live")
+}).AllowAnonymous();
+
+app.MapHealthChecks("/health/ready", new HealthCheckOptions
+{
+    Predicate = check => check.Tags.Contains("ready"),
+    ResponseWriter = HealthResponseWriter.WriteJsonAsync
+}).AllowAnonymous();
 
 app.MapGet("/api/orders/{orderId:guid}", (Guid orderId) => new { orderId, Status = "Pending" });
 
