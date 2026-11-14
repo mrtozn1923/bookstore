@@ -1,0 +1,9 @@
+CF.RESERVE bookstore:coupons:used 100000
+CF.ADD bookstore:coupons:used WELCOME-7F3C
+CF.EXISTS bookstore:coupons:used WELCOME-7F3C
+CF.DEL bookstore:coupons:used WELCOME-7F3C
+CF.EXISTS bookstore:coupons:used WELCOME-7F3C
+BF.ADD bookstore:catalog:demo 9780441013593
+BF.EXISTS bookstore:catalog:demo 9780441013593
+BF.EXISTS bookstore:catalog:demo 9780000000000
+BF.INFO bookstore:catalog:demo

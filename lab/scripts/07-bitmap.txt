@@ -1,0 +1,19 @@
+SETBIT bookstore:active:20261114 7 1
+SETBIT bookstore:active:20261114 42 1
+GETBIT bookstore:active:20261114 42
+GETBIT bookstore:active:20261114 43
+BITCOUNT bookstore:active:20261114
+BITPOS bookstore:active:20261114 1
+STRLEN bookstore:active:20261114
+SETBIT bookstore:active:20261114 100000000 1
+STRLEN bookstore:active:20261114
+MEMORY USAGE bookstore:active:20261114
+ARSET bookstore:book:9780441013593:daily-sales 317 12
+ARSET bookstore:book:9780441013593:daily-sales 100000000 1
+ARGET bookstore:book:9780441013593:daily-sales 317
+ARLEN bookstore:book:9780441013593:daily-sales
+ARCOUNT bookstore:book:9780441013593:daily-sales
+MEMORY USAGE bookstore:book:9780441013593:daily-sales
+BITFIELD bookstore:book:9780441013593:ratings INCRBY u32 #4 1 INCRBY u32 #4 1 INCRBY u32 #2 1
+BITFIELD bookstore:book:9780441013593:ratings GET u32 #0 GET u32 #1 GET u32 #2 GET u32 #3 GET u32 #4
+STRLEN bookstore:book:9780441013593:ratings

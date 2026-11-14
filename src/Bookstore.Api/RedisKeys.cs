@@ -25,6 +25,12 @@ public static class RedisKeys
 
     public static RedisKey DailyVisitors(DateOnly day) => $"{Prefix}:visitors:{day:yyyyMMdd}";
 
+    public static RedisKey DailyVisitorsHll(DateOnly day) => $"{Prefix}:visitors:hll:{day:yyyyMMdd}";
+
+    public static RedisKey ActiveCustomers(DateOnly day) => $"{Prefix}:active:{day:yyyyMMdd}";
+
+    public static RedisKey Warehouses => $"{Prefix}:warehouses";
+
     public static RedisKey OrderIdSequence => $"{Prefix}:order:id-seq";
 
     public static RedisKey Bestsellers(DateOnly day) => $"{Prefix}:bestsellers:{day:yyyyMMdd}";

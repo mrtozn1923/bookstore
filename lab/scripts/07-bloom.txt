@@ -1,0 +1,4 @@
+BF.RESERVE bookstore:catalog:scaling 0.01 1000000
+BF.DEBUG bookstore:catalog:scaling
+BF.RESERVE bookstore:catalog:fixed 0.01 1000000 NONSCALING
+BF.DEBUG bookstore:catalog:fixed

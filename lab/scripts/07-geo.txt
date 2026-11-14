@@ -1,0 +1,7 @@
+GEOADD bookstore:warehouses 28.9784 41.0082 istanbul 32.8597 39.9334 ankara 27.1428 38.4237 izmir
+GEOSEARCH bookstore:warehouses FROMLONLAT 29.0610 40.1885 BYRADIUS 400 km ASC WITHDIST COUNT 2
+GEOSEARCH bookstore:warehouses FROMLONLAT 30.5206 39.7767 BYRADIUS 400 km ASC WITHDIST
+GEODIST bookstore:warehouses istanbul ankara km
+GEOPOS bookstore:warehouses izmir
+TYPE bookstore:warehouses
+ZSCORE bookstore:warehouses istanbul
