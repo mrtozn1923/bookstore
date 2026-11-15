@@ -16,6 +16,8 @@ public sealed class PurchaseApprovalTests(BookstoreApiFactory factory)
 
     [Fact]
     [Trait("threat", "T11")]
+    [Trait("asvs", "v5.0.0-2.3.1")]
+    [Trait("asvs", "v5.0.0-8.3.1")]
     public async Task Request_above_the_unit_limit_waits_for_approval_and_cannot_be_ordered()
     {
         HttpClient ada = factory.CreateClientAs(TestUsers.Ada);
@@ -28,6 +30,7 @@ public sealed class PurchaseApprovalTests(BookstoreApiFactory factory)
 
     [Fact]
     [Trait("threat", "T09")]
+    [Trait("asvs", "v5.0.0-2.3.5")]
     public async Task Buyer_with_both_roles_cannot_approve_own_request()
     {
         HttpClient linus = factory.CreateClientAs(TestUsers.Linus);
@@ -41,7 +44,20 @@ public sealed class PurchaseApprovalTests(BookstoreApiFactory factory)
     }
 
     [Fact]
+    [Trait("asvs", "v5.0.0-8.2.1")]
+    public async Task Buyer_without_the_approver_role_cannot_approve()
+    {
+        PurchaseRequestView request = await CreateAsync(factory.CreateClientAs(TestUsers.Linus), (Middlemarch, 20));
+
+        HttpResponseMessage approve = await factory.CreateClientAs(TestUsers.Ada)
+            .PostAsync($"/api/institutions/me/purchase-requests/{request.Id}/approve", null, ct);
+
+        Assert.Equal(HttpStatusCode.Forbidden, approve.StatusCode);
+    }
+
+    [Fact]
     [Trait("threat", "T09")]
+    [Trait("asvs", "v5.0.0-8.2.2")]
     public async Task Approver_of_another_institution_does_not_see_the_request()
     {
         PurchaseRequestView request = await CreateAsync(factory.CreateClientAs(TestUsers.Ada), (Middlemarch, 20));
@@ -90,6 +106,7 @@ public sealed class PurchaseApprovalTests(BookstoreApiFactory factory)
     }
 
     [Fact]
+    [Trait("asvs", "v5.0.0-2.3.2")]
     public async Task Fewer_than_twenty_copies_is_not_an_institutional_order()
     {
         HttpResponseMessage response = await factory.CreateClientAs(TestUsers.Ada).PostAsJsonAsync(

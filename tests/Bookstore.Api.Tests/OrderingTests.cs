@@ -49,6 +49,7 @@ public sealed class OrderingTests(BookstoreApiFactory factory)
     }
 
     [Fact]
+    [Trait("asvs", "v5.0.0-2.3.4")]
     public async Task Two_parallel_orders_cannot_reserve_more_than_the_stock()
     {
         // Four copies are wanted in total, three are in stock; exactly one of the two orders can succeed.
