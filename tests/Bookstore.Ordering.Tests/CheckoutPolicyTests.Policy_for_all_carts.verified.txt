@@ -1,0 +1,262 @@
+﻿{
+  guest, empty  , Card          , 2026-11-20: {
+    Greeting: Welcome, guest!,
+    Badge: 0 points,
+    Error: The cart is empty.,
+    Label: Credit or debit card,
+    Note: Your card has been charged.
+  },
+  guest, empty  , Card          , 2026-11-25: {
+    Greeting: Welcome, guest!,
+    Badge: 0 points,
+    Error: The cart is empty.,
+    Label: Credit or debit card,
+    Note: Your card has been charged.
+  },
+  guest, empty  , BankTransfer  , 2026-11-20: {
+    Greeting: Welcome, guest!,
+    Badge: 0 points,
+    Error: The cart is empty.,
+    Label: Bank transfer,
+    Note: Your order ships after we receive the transfer.
+  },
+  guest, empty  , BankTransfer  , 2026-11-25: {
+    Greeting: Welcome, guest!,
+    Badge: 0 points,
+    Error: The cart is empty.,
+    Label: Bank transfer,
+    Note: Your order ships after we receive the transfer.
+  },
+  guest, empty  , CashOnDelivery, 2026-11-20: {
+    Greeting: Welcome, guest!,
+    Badge: 0 points,
+    Error: The cart is empty.,
+    Fee: 15.0,
+    Label: Cash on delivery,
+    Note: Please have 15.00 TRY ready for the courier.
+  },
+  guest, empty  , CashOnDelivery, 2026-11-25: {
+    Greeting: Welcome, guest!,
+    Badge: 0 points,
+    Error: The cart is empty.,
+    Fee: 15.0,
+    Label: Cash on delivery,
+    Note: Please have 15.00 TRY ready for the courier.
+  },
+  guest, Dune   , Card          , 2026-11-20: {
+    Greeting: Welcome, guest!,
+    Badge: 0 points,
+    Label: Credit or debit card,
+    Note: Your card has been charged.
+  },
+  guest, Dune   , Card          , 2026-11-25: {
+    Greeting: Welcome, guest!,
+    Badge: 0 points,
+    Label: Credit or debit card,
+    Note: Your card has been charged.
+  },
+  guest, Dune   , BankTransfer  , 2026-11-20: {
+    Greeting: Welcome, guest!,
+    Badge: 0 points,
+    Error: Guests cannot pay by bank transfer.,
+    Label: Bank transfer,
+    Note: Your order ships after we receive the transfer.
+  },
+  guest, Dune   , BankTransfer  , 2026-11-25: {
+    Greeting: Welcome, guest!,
+    Badge: 0 points,
+    Error: Guests cannot pay by bank transfer.,
+    Label: Bank transfer,
+    Note: Your order ships after we receive the transfer.
+  },
+  guest, Dune   , CashOnDelivery, 2026-11-20: {
+    Greeting: Welcome, guest!,
+    Badge: 0 points,
+    Fee: 15.0,
+    Label: Cash on delivery,
+    Note: Please have 135.00 TRY ready for the courier.
+  },
+  guest, Dune   , CashOnDelivery, 2026-11-25: {
+    Greeting: Welcome, guest!,
+    Badge: 0 points,
+    Fee: 15.0,
+    Label: Cash on delivery,
+    Note: Please have 135.00 TRY ready for the courier.
+  },
+  Ada, empty    , Card          , 2026-11-20: {
+    Greeting: Welcome back, Ada!,
+    Badge: 0 points,
+    Error: The cart is empty.,
+    Label: Credit or debit card,
+    Note: Your card has been charged.
+  },
+  Ada, empty    , Card          , 2026-11-25: {
+    Greeting: Welcome back, Ada!,
+    Badge: 0 points,
+    Error: The cart is empty.,
+    Label: Credit or debit card,
+    Note: Your card has been charged.
+  },
+  Ada, empty    , BankTransfer  , 2026-11-20: {
+    Greeting: Welcome back, Ada!,
+    Badge: 0 points,
+    Error: The cart is empty.,
+    Label: Bank transfer,
+    Note: Your order ships after we receive the transfer.
+  },
+  Ada, empty    , BankTransfer  , 2026-11-25: {
+    Greeting: Welcome back, Ada!,
+    Badge: 0 points,
+    Error: The cart is empty.,
+    Label: Bank transfer,
+    Note: Your order ships after we receive the transfer.
+  },
+  Ada, empty    , CashOnDelivery, 2026-11-20: {
+    Greeting: Welcome back, Ada!,
+    Badge: 0 points,
+    Error: The cart is empty.,
+    Fee: 15.0,
+    Label: Cash on delivery,
+    Note: Please have 15.00 TRY ready for the courier.
+  },
+  Ada, empty    , CashOnDelivery, 2026-11-25: {
+    Greeting: Welcome back, Ada!,
+    Badge: 0 points,
+    Error: The cart is empty.,
+    Fee: 15.0,
+    Label: Cash on delivery,
+    Note: Please have 15.00 TRY ready for the courier.
+  },
+  Ada, Dune     , Card          , 2026-11-20: {
+    Greeting: Welcome back, Ada!,
+    Badge: 40 points,
+    Discount: 6.00,
+    Label: Credit or debit card,
+    Note: Your card has been charged.
+  },
+  Ada, Dune     , Card          , 2026-11-25: {
+    Greeting: Welcome back, Ada!,
+    Badge: 40 points,
+    Discount: 6.00,
+    Label: Credit or debit card,
+    Note: Your card has been charged.
+  },
+  Ada, Dune     , BankTransfer  , 2026-11-20: {
+    Greeting: Welcome back, Ada!,
+    Badge: 40 points,
+    Discount: 6.00,
+    Label: Bank transfer,
+    Note: Your order ships after we receive the transfer.
+  },
+  Ada, Dune     , BankTransfer  , 2026-11-25: {
+    Greeting: Welcome back, Ada!,
+    Badge: 40 points,
+    Discount: 6.00,
+    Label: Bank transfer,
+    Note: Your order ships after we receive the transfer.
+  },
+  Ada, Dune     , CashOnDelivery, 2026-11-20: {
+    Greeting: Welcome back, Ada!,
+    Badge: 40 points,
+    Fee: 15.0,
+    Label: Cash on delivery,
+    Note: Please have 135.00 TRY ready for the courier.
+  },
+  Ada, Dune     , CashOnDelivery, 2026-11-25: {
+    Greeting: Welcome back, Ada!,
+    Badge: 40 points,
+    Fee: 15.0,
+    Label: Cash on delivery,
+    Note: Please have 135.00 TRY ready for the courier.
+  },
+  Ada, Hobbit x2, Card          , 2026-11-20: {
+    Greeting: Welcome back, Ada!,
+    Badge: 0 points,
+    Discount: 14.99,
+    Label: Credit or debit card,
+    Note: Your card has been charged.
+  },
+  Ada, Hobbit x2, Card          , 2026-11-25: {
+    Greeting: Welcome back, Ada!,
+    Badge: 0 points,
+    Discount: 44.97,
+    Label: Credit or debit card,
+    Note: Your card has been charged.
+  },
+  Ada, Hobbit x2, BankTransfer  , 2026-11-20: {
+    Greeting: Welcome back, Ada!,
+    Badge: 0 points,
+    Discount: 14.99,
+    Label: Bank transfer,
+    Note: Your order ships after we receive the transfer.
+  },
+  Ada, Hobbit x2, BankTransfer  , 2026-11-25: {
+    Greeting: Welcome back, Ada!,
+    Badge: 0 points,
+    Discount: 44.97,
+    Label: Bank transfer,
+    Note: Your order ships after we receive the transfer.
+  },
+  Ada, Hobbit x2, CashOnDelivery, 2026-11-20: {
+    Greeting: Welcome back, Ada!,
+    Badge: 0 points,
+    Fee: 15.0,
+    Label: Cash on delivery,
+    Note: Please have 314.80 TRY ready for the courier.
+  },
+  Ada, Hobbit x2, CashOnDelivery, 2026-11-25: {
+    Greeting: Welcome back, Ada!,
+    Badge: 0 points,
+    Fee: 15.0,
+    Label: Cash on delivery,
+    Note: Please have 314.80 TRY ready for the courier.
+  },
+  Ada, 12 Emmas , Card          , 2026-11-20: {
+    Greeting: Welcome back, Ada!,
+    Badge: 0 points,
+    Discount: 35.94,
+    Error: At most 10 copies per line.,
+    Label: Credit or debit card,
+    Note: Your card has been charged.
+  },
+  Ada, 12 Emmas , Card          , 2026-11-25: {
+    Greeting: Welcome back, Ada!,
+    Badge: 0 points,
+    Discount: 107.82,
+    Error: At most 10 copies per line.,
+    Label: Credit or debit card,
+    Note: Your card has been charged.
+  },
+  Ada, 12 Emmas , BankTransfer  , 2026-11-20: {
+    Greeting: Welcome back, Ada!,
+    Badge: 0 points,
+    Discount: 35.94,
+    Error: At most 10 copies per line.,
+    Label: Bank transfer,
+    Note: Your order ships after we receive the transfer.
+  },
+  Ada, 12 Emmas , BankTransfer  , 2026-11-25: {
+    Greeting: Welcome back, Ada!,
+    Badge: 0 points,
+    Discount: 107.82,
+    Error: At most 10 copies per line.,
+    Label: Bank transfer,
+    Note: Your order ships after we receive the transfer.
+  },
+  Ada, 12 Emmas , CashOnDelivery, 2026-11-20: {
+    Greeting: Welcome back, Ada!,
+    Badge: 0 points,
+    Error: At most 10 copies per line.,
+    Fee: 15.0,
+    Label: Cash on delivery,
+    Note: Please have 733.80 TRY ready for the courier.
+  },
+  Ada, 12 Emmas , CashOnDelivery, 2026-11-25: {
+    Greeting: Welcome back, Ada!,
+    Badge: 0 points,
+    Error: At most 10 copies per line.,
+    Fee: 15.0,
+    Label: Cash on delivery,
+    Note: Please have 733.80 TRY ready for the courier.
+  }
+}

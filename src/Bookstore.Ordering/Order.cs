@@ -27,7 +27,20 @@ public class Customer
     public int Id { get; init; }
     public string Name { get; init; } = "";
     public Address Address { get; set; } = new("", "", "");
-    public int LoyaltyPoints { get; set; }
+    private int _loyaltyPoints;
+
+    public int LoyaltyPoints { get => _loyaltyPoints; init => _loyaltyPoints = value; }
+    public bool IsGuest { get; private init; }
+
+    public static Customer CreateGuest() => new() { Name = "guest", IsGuest = true };
+
+    public void EarnPoints(int points)
+    {
+        // Guests see how many points they would earn but never collect them.
+        if (IsGuest)
+            return;
+        _loyaltyPoints += points;
+    }
 }
 
 public class Order

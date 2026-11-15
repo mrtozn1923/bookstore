@@ -7,7 +7,7 @@ public class CustomerReferenceTests
     private static void AwardPoints(IEnumerable<Order> orders)
     {
         foreach (Order order in orders)
-            order.Customer.LoyaltyPoints += 10;
+            order.Customer.EarnPoints(10);
     }
 
     [Fact]
