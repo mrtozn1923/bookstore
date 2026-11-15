@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/Bookstore.Analytics.Cli/Bookstore.Analytics.Cli.csproj" />
+    <Project Path="src/Bookstore.Analytics.Web/Bookstore.Analytics.Web.csproj" />
     <Project Path="src/Bookstore.Analytics/Bookstore.Analytics.csproj" />
   </Folder>
   <Folder Name="/tests/">

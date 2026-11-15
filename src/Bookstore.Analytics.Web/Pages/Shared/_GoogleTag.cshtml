@@ -1,0 +1,15 @@
+@using Microsoft.Extensions.Options
+@using Bookstore.Analytics.Web.Analytics
+@using Bookstore.Analytics.Web.Security
+@inject IOptions<AnalyticsOptions> Analytics
+@inject CspNonce Nonce
+@if (Analytics.Value.MeasurementId is { Length: > 0 } id)
+{
+    <script async src="https://www.googletagmanager.com/gtag/js?id=@id"></script>
+    <script nonce="@Nonce.Value">
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', '@id');
+    </script>
+}

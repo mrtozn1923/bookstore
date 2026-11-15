@@ -4,6 +4,7 @@ Every dataset under `data/` is synthetic, made for the examples; none of it is r
 
 ## Requirements
 - .NET 10 SDK
+- Node.js 24 (Angular 22.2, from post 04)
 
 ## Build and test
     dotnet build
@@ -31,3 +32,15 @@ Every dataset under `data/` is synthetic, made for the examples; none of it is r
 
     # 03: BigQuery bulk export query (run in your own Google Cloud project)
     sql/bigquery-weekly-pages.sql
+
+## 04: GA4 in the Razor pages and in the Angular app
+    # Razor: the Google tag with a CSP nonce; G-TEST123 is a placeholder ID
+    Analytics__MeasurementId=G-TEST123 dotnet run --project src/Bookstore.Analytics.Web --urls http://127.0.0.1:52704
+
+    # Angular 22.2 (TypeScript 6.0)
+    cd web/bookstore-web && npm ci && npx ng build
+
+    # page_view check in headless Chromium; requests to Google are blocked
+    cd web/lab && npm ci && npx playwright install chromium
+    node serve.mjs ../bookstore-web/dist/bookstore-web/browser 52714 &
+    node spa-pageviews.mjs http://127.0.0.1:52714
