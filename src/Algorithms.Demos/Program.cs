@@ -17,5 +17,10 @@ switch (demo)
     case "authors": StringDemos.Authors(); break;
     case "turkish": StringDemos.Turkish(); break;
     case "plagiarism": StringDemos.Plagiarism(); break;
+    case "campaigns": IntervalDemos.Campaigns(); break;
+    case "slots": IntervalDemos.DeliverySlots(); break;
+    case "shifts": IntervalDemos.Shifts(); break;
+    case "lowest-price": IntervalDemos.LowestPrice(); break;
+    case "timezones": IntervalDemos.TimeZones(); break;
     default: Console.WriteLine("usage: dotnet run --project src/Algorithms.Demos -- <demo>"); break;
 }
