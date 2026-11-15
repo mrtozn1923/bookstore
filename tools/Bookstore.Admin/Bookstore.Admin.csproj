@@ -3,6 +3,8 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <AssemblyName>bookstore-admin</AssemblyName>
+    <!-- Trim, single-file and AOT analyzers run on every build, not only on publish. -->
+    <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
 
   <ItemGroup>
