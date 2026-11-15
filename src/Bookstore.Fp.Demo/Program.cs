@@ -38,5 +38,6 @@ switch (post)
     case "07-place": await Post07.Place(); break;
     case "07-cancel": Post07.Cancel(); break;
     case "07-stack": Post07.StackTrace(); break;
+    case "09-trace": Post09.Trace(); break;
     default: Console.WriteLine("usage: dotnet run --project src/Bookstore.Fp.Demo -- <post-key>"); break;
 }

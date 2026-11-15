@@ -4,6 +4,9 @@
     <Project Path="src/Bookstore.Fp.Demo/Bookstore.Fp.Demo.csproj" />
     <Project Path="src/Bookstore.Fp.Api/Bookstore.Fp.Api.csproj" />
   </Folder>
+  <Folder Name="/benchmarks/">
+    <Project Path="benchmarks/Bookstore.Fp.Benchmarks/Bookstore.Fp.Benchmarks.csproj" />
+  </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Bookstore.Ordering.Tests/Bookstore.Ordering.Tests.csproj" />
   </Folder>
