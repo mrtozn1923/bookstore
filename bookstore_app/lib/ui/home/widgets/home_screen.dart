@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/widget_previews.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../data/sample_books.dart';
+import '../../../domain/models/book.dart';
+import '../../book_details/widgets/book_details_screen.dart';
 import '../../catalog/widgets/book_card.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -16,6 +20,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _addBook() {
     setState(() => _booksInCart++);
+  }
+
+  // Navigator and go_router come in the navigation post; for now a plain push
+  void _openDetails(Book book) {
+    unawaited(
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => BookDetailsScreen(book: book, onAddToCart: _addBook),
+        ),
+      ),
+    );
   }
 
   @override
@@ -38,6 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
               key: ValueKey(book.isbn),
               book: book,
               onAddToCart: _addBook,
+              onTap: () => _openDetails(book),
             ),
         ],
       ),

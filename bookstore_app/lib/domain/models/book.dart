@@ -12,6 +12,7 @@ class Book {
     required this.publishedYear,
     this.subtitle,
     this.coverUrl,
+    this.description,
     this.format = .paperback,
   });
 
@@ -23,6 +24,7 @@ class Book {
   final Money price;
   final int publishedYear;
   final String? coverUrl;
+  final String? description;
   final BookFormat format;
 
   String get displayTitle => subtitle == null ? title : '$title: $subtitle';
