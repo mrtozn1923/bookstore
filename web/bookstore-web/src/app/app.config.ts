@@ -2,6 +2,7 @@ import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/
 import { IMAGE_LOADER, ImageLoaderConfig } from '@angular/common';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { provideClientHydration } from '@angular/platform-browser';
+import { provideHttpClient, withFetch } from '@angular/common/http';
 import { routes } from './app.routes';
 
 // kapaklar CDN'de {stem}-{width}.jpg adıyla duruyor: 320, 640 ve 1200 px
@@ -12,6 +13,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes, withComponentInputBinding()),
     provideClientHydration(),
+    provideHttpClient(withFetch()),
     {
       provide: IMAGE_LOADER,
       useValue: (config: ImageLoaderConfig) => {

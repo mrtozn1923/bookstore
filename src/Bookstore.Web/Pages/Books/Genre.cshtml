@@ -1,0 +1,45 @@
+@page "/books/genre/{genre}/{language?}"
+@model Bookstore.Web.Pages.Books.GenreModel
+@{
+    string p = Model.Prefix;
+    bool tr = Model.Lang == "tr";
+}
+<h1>@Model.Heading</h1>
+<ul>
+    @foreach (Book book in Model.Items)
+    {
+        <li><a href="@p/books/@book.Slug">@book.Title</a>, @book.Author</li>
+    }
+</ul>
+@* sayfalama: her sayfa gerçek bir <a href>; birinci sayfaya her zaman link *@
+<nav aria-label="@(tr ? "Sayfalar" : "Pages")">
+    @if (Model.Query.Page > 1)
+    {
+        <a href="@Model.Query.WithPage(1).ToUrl(p)">@(tr ? "İlk sayfa" : "First page")</a>
+        <a href="@Model.Query.WithPage(Model.Query.Page - 1).ToUrl(p)">@(tr ? "Önceki" : "Previous")</a>
+    }
+    @for (int i = 1; i <= Model.TotalPages; i++)
+    {
+        @if (i == Model.Query.Page)
+        {
+            <span aria-current="page">@i</span>
+        }
+        else
+        {
+            <a href="@Model.Query.WithPage(i).ToUrl(p)">@i</a>
+        }
+    }
+    @if (Model.Query.Page < Model.TotalPages)
+    {
+        <a href="@Model.Query.WithPage(Model.Query.Page + 1).ToUrl(p)" data-load-more>@(tr ? "Sonraki" : "Next")</a>
+    }
+</nav>
+@* kullanıcı filtreleri: link olarak duruyor ama robots.txt bu URL'leri crawl dışında tutuyor *@
+<p>
+    @foreach (BookFormat f in Enum.GetValues<BookFormat>())
+    {
+        <a href="@((Model.Query with { Format = f, Page = 1 }).ToUrl(p))">@f</a>
+    }
+    <a href="@((Model.Query with { Sort = "price", Page = 1 }).ToUrl(p))">@(tr ? "Fiyata göre" : "By price")</a>
+</p>
+<script src="/js/load-more.js" defer></script>

@@ -45,6 +45,51 @@ public static class SitemapWriter
         await xml.WriteEndElementAsync();
     }
 
+    public static async Task WriteIndexAsync(Stream output, SiteOptions site, string[] parts, CancellationToken ct)
+    {
+        await using XmlWriter xml = XmlWriter.Create(output, Settings);
+        await xml.WriteStartDocumentAsync();
+        await xml.WriteStartElementAsync(null, "sitemapindex", Ns);
+        foreach (string part in parts)
+        {
+            await xml.WriteStartElementAsync(null, "sitemap", Ns);
+            await xml.WriteElementStringAsync(null, "loc", Ns, $"{site.BaseUrl}/sitemaps/{part}.xml");
+            await xml.WriteEndElementAsync();
+        }
+        await xml.WriteEndElementAsync();
+    }
+
+    // index'lenmesini istediğimiz filtre sayfaları: yalnız tür ve tür + dil, her birinin ilk sayfası
+    public static async Task WriteGenresAsync(Stream output, BookCatalog catalog, SiteOptions site, CancellationToken ct)
+    {
+        await using XmlWriter xml = XmlWriter.Create(output, Settings);
+        await xml.WriteStartDocumentAsync();
+        await xml.WriteStartElementAsync(null, "urlset", Ns);
+        await xml.WriteAttributeStringAsync("xmlns", "xhtml", null, Xhtml);
+        foreach (Genre genre in BookCatalog.Genres)
+        {
+            foreach (string? language in (string?[])[null, "tr", "en"])
+            {
+                // sonuçsuz kombinasyon (404) ve listeyi daraltmayan filtre (aynı içerik) sitemap'e girmez
+                int count = catalog.Books.Count(b => b.Genre == genre.Slug && (language is null || b.Language == language));
+                int all = catalog.Books.Count(b => b.Genre == genre.Slug);
+                if (count == 0 || (language is not null && count == all))
+                    continue;
+                string path = new CatalogQuery(genre.Slug, language, null, "title", 1).ToUrl();
+                foreach (string loc in (string[])[site.BaseUrl + path, site.BaseUrl + "/en" + path])
+                {
+                    await xml.WriteStartElementAsync(null, "url", Ns);
+                    await xml.WriteElementStringAsync(null, "loc", Ns, loc);
+                    await WriteAlternateAsync(xml, "tr", site.BaseUrl + path);
+                    await WriteAlternateAsync(xml, "en", site.BaseUrl + "/en" + path);
+                    await WriteAlternateAsync(xml, "x-default", site.BaseUrl + path);
+                    await xml.WriteEndElementAsync();
+                }
+            }
+        }
+        await xml.WriteEndElementAsync();
+    }
+
     // image sitemap: yalnız image:image ve image:loc; caption, title, license 2022'de kaldırıldı
     private static async Task WriteImageAsync(XmlWriter xml, string imageUrl)
     {
