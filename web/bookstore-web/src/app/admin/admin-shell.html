@@ -11,7 +11,7 @@
     <button matButton type="button" cdkOverlayOrigin #userOrigin="cdkOverlayOrigin" aria-haspopup="dialog"
             [attr.aria-expanded]="accountOpen()" (click)="accountOpen.set(!accountOpen())">
       <mat-icon>account_circle</mat-icon>
-      {{ user.name }}
+      <span class="user-name">{{ user.name }}</span>
     </button>
   </mat-toolbar>
 

@@ -78,3 +78,12 @@ export interface InstitutionalOrder {
   unit: string;
   lines: InstitutionalOrderLine[];
 }
+
+export interface StockRow {
+  id: number;
+  isbn: string;
+  title: string;
+  warehouse: string;
+  onHand: number;
+  reserved: number;
+}

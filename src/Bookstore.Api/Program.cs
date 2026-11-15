@@ -61,5 +61,6 @@ app.MapOrderAdminEndpoints();
 app.MapInstitutionalEndpoints();
 app.MapReadingListEndpoints();
 app.MapInstitutionalOrderEndpoints();
+app.MapStockListEndpoints();
 
 app.Run();

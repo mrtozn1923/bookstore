@@ -1,12 +1,16 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { TestBed } from '@angular/core/testing';
+import { MatBottomSheetHarness } from '@angular/material/bottom-sheet/testing';
 import { MatCheckboxHarness } from '@angular/material/checkbox/testing';
+import { MatMenuHarness } from '@angular/material/menu/testing';
 import { MatPaginatorHarness } from '@angular/material/paginator/testing';
 import { MatSelectHarness } from '@angular/material/select/testing';
 import { MatSortHarness } from '@angular/material/sort/testing';
 import { provideRouter, Router } from '@angular/router';
+import { of } from 'rxjs';
 import { OrderRow } from '../../core/api-models';
 import { OrdersPage } from './orders-page';
 
@@ -14,10 +18,14 @@ function row(id: number): OrderRow {
   return { id, placedAtUtc: '2026-11-01T10:00:00Z', customerName: 'Ada Lovelace', status: 'Shipped', itemCount: 1, total: 489, currency: 'TRY' };
 }
 
-async function render(inputs: Record<string, unknown> = {}) {
+async function render(inputs: Record<string, unknown> = {}, handset = false) {
+  const state: BreakpointState = { matches: handset, breakpoints: {} };
   TestBed.configureTestingModule({
     imports: [OrdersPage],
-    providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
+    providers: [
+      provideRouter([]), provideHttpClient(), provideHttpClientTesting(),
+      { provide: BreakpointObserver, useValue: { observe: () => of(state), isMatched: () => handset } },
+    ],
   });
   const fixture = TestBed.createComponent(OrdersPage);
   for (const [name, value] of Object.entries(inputs)) {
@@ -77,5 +85,28 @@ describe('OrdersPage', () => {
     expect(selected()).toBe('3 selected');
     await all.uncheck();
     expect(selected()).toBe('0 selected');
+  });
+
+  it('offers the bulk actions as a menu on wide screens and as a bottom sheet on handsets', async () => {
+    for (const handset of [false, true]) {
+      TestBed.resetTestingModule();
+      const { fixture, http, loader } = await render({}, handset);
+      http.expectOne(r => r.url === '/api/admin/orders').flush({ items: [row(1), row(2)], total: 2, page: 1, pageSize: 25 });
+      await fixture.whenStable();
+      const [all] = await loader.getAllHarnesses(MatCheckboxHarness);
+      await all.check();
+      const actions = (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('.toolbar button')!;
+      actions.click();
+      await fixture.whenStable();
+      const root = TestbedHarnessEnvironment.documentRootLoader(fixture);
+      if (handset) {
+        expect(await root.getAllHarnesses(MatMenuHarness)).toHaveLength(0);
+        expect(await (await root.getHarness(MatBottomSheetHarness)).getAriaLabel()).toBeNull();
+      } else {
+        const menu = await loader.getHarness(MatMenuHarness);
+        expect(await menu.isOpen()).toBe(true);
+        expect(await Promise.all((await menu.getItems()).map(item => item.getText()))).toEqual(['Cancel 2 orders', 'Clear selection']);
+      }
+    }
   });
 });

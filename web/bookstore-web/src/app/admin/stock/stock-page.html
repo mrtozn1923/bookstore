@@ -1,0 +1,39 @@
+<h1>Stock</h1>
+
+<div class="filters">
+  <mat-form-field subscriptSizing="dynamic">
+    <mat-label>Search title or ISBN</mat-label>
+    <input matInput type="search" [value]="search()" (input)="search.set($any($event.target).value)" />
+  </mat-form-field>
+  <!-- CdkListbox: role="listbox", arrow keys and selection come from the CDK, the look is ours -->
+  <ul class="warehouses" cdkListbox cdkListboxOrientation="horizontal" aria-label="Warehouse"
+      [cdkListboxValue]="[warehouse()]" (cdkListboxValueChange)="warehouseChanged($event.value)">
+    @for (w of warehouses; track w) {
+      <li class="chip" [cdkOption]="w">{{ w || 'All' }}</li>
+    }
+  </ul>
+  <span class="count" data-testid="row-count">{{ rows().length }} rows</span>
+</div>
+
+@if (stock.isLoading()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+<div class="header" aria-hidden="true">
+  <span>Title</span><span>ISBN</span><span>Warehouse</span><span class="num">On hand</span><span class="num">Reserved</span>
+</div>
+<!-- itemSize must equal the real row height: the viewport computes positions from it -->
+<cdk-virtual-scroll-viewport itemSize="48" class="viewport" role="list" aria-label="Stock">
+  <div class="row" role="listitem" *cdkVirtualFor="let row of rows(); trackBy: trackById">
+    <span class="title">{{ row.title }}</span>
+    <span class="isbn">
+      {{ row.isbn }}
+      <button matIconButton type="button" [cdkCopyToClipboard]="row.isbn" (cdkCopyToClipboardCopied)="copied($event, row.isbn)"
+              [attr.aria-label]="'Copy ISBN ' + row.isbn">
+        <mat-icon>content_copy</mat-icon>
+      </button>
+    </span>
+    <span>{{ row.warehouse }}</span>
+    <span class="num">{{ row.onHand }}</span>
+    <span class="num">{{ row.reserved }}</span>
+  </div>
+</cdk-virtual-scroll-viewport>

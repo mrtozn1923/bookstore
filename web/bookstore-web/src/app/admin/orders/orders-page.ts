@@ -1,7 +1,9 @@
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { SelectionModel } from '@angular/cdk/collections';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { HttpClient, httpResource } from '@angular/common/http';
 import { Component, inject, input, linkedSignal, numberAttribute } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatCheckbox } from '@angular/material/checkbox';
@@ -9,6 +11,7 @@ import { MatOption } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
+import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { MatSelect } from '@angular/material/select';
@@ -16,7 +19,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortHeader, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { Router } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, map } from 'rxjs';
 import { OrderRow, PagedResult } from '../../core/api-models';
 import { CancelOrderData, CancelOrderDialog, CancelOrderResult } from './cancel-order-dialog';
 import { OrderAction, OrderActionsSheet } from './order-actions-sheet';
@@ -29,7 +32,7 @@ const cancellable = ['Placed', 'PaymentPending', 'Paid'];
   selector: 'app-orders-page',
   imports: [
     MatTableModule, MatSort, MatSortHeader, MatPaginator, MatCheckbox, MatProgressBar, MatFormField, MatLabel, MatSelect,
-    MatOption, MatButton, MatIconButton, MatIcon, CurrencyPipe, DatePipe,
+    MatOption, MatButton, MatIconButton, MatIcon, MatMenu, MatMenuItem, MatMenuTrigger, CurrencyPipe, DatePipe,
   ],
   templateUrl: './orders-page.html',
   styleUrl: './orders-page.scss',
@@ -41,6 +44,12 @@ export class OrdersPage {
   private readonly bottomSheet = inject(MatBottomSheet);
   private readonly snackBar = inject(MatSnackBar);
   private readonly money = new CurrencyPipe('en-US');
+
+  // The same actions as a bottom sheet on a phone (thumb reach) and as a menu next to the button on a wide screen
+  protected readonly handset = toSignal(
+    inject(BreakpointObserver).observe(Breakpoints.Handset).pipe(map(state => state.matches)),
+    { initialValue: false },
+  );
 
   // The URL is the state: ?status=Cancelled&sort=total&dir=desc&page=3 (withComponentInputBinding).
   // A missing query param arrives as undefined, not as the input's default, hence the transforms.
@@ -116,13 +125,15 @@ export class OrdersPage {
     this.bottomSheet
       .open<OrderActionsSheet, { count: number }, OrderAction>(OrderActionsSheet, { data: { count: ids.length } })
       .afterDismissed()
-      .subscribe(action => {
-        if (action === 'cancel') {
-          this.cancelOrders(ids, `${ids.length} selected orders`);
-        } else if (action === 'clear') {
-          this.selection.clear();
-        }
-      });
+      .subscribe(action => this.runAction(action, ids));
+  }
+
+  protected runAction(action: OrderAction | undefined, ids: number[] = [...this.selection.selected]): void {
+    if (action === 'cancel') {
+      this.cancelOrders(ids, `${ids.length} selected orders`);
+    } else if (action === 'clear') {
+      this.selection.clear();
+    }
   }
 
   private cancelOrders(orderIds: number[], summary: string): void {

@@ -15,6 +15,11 @@ export const adminRoutes: Routes = [
         title: 'Orders · Bookstore Admin',
       },
       {
+        path: 'stock',
+        loadComponent: () => import('./stock/stock-page').then(m => m.StockPage),
+        title: 'Stock · Bookstore Admin',
+      },
+      {
         path: 'institutional-orders/1042/shipments',
         loadComponent: () => import('./shipments/shipment-plan-page').then(m => m.ShipmentPlanPage),
         title: 'Shipments · Bookstore Admin',

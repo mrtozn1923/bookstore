@@ -12,8 +12,18 @@
   </mat-form-field>
   <span class="selected" data-testid="selected">{{ selection.selected.length }} selected</span>
   @if (selection.selected.length) {
-    <button matButton="tonal" type="button" (click)="openActions()">Actions</button>
+    @if (handset()) {
+      <button matButton="tonal" type="button" (click)="openActions()">Actions</button>
+    } @else {
+      <button matButton="tonal" type="button" [matMenuTriggerFor]="actionsMenu">Actions</button>
+    }
   }
+  <mat-menu #actionsMenu="matMenu">
+    <button mat-menu-item type="button" (click)="runAction('cancel')">
+      Cancel {{ selection.selected.length }} {{ selection.selected.length === 1 ? 'order' : 'orders' }}
+    </button>
+    <button mat-menu-item type="button" (click)="runAction('clear')">Clear selection</button>
+  </mat-menu>
 </div>
 
 <div class="table-container">

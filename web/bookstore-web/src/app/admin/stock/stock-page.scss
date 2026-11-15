@@ -1,0 +1,83 @@
+h1 {
+  font: var(--mat-sys-headline-small);
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.warehouses {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chip {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  cursor: pointer;
+
+  &[aria-selected='true'] {
+    background: var(--mat-sys-secondary-container);
+    color: var(--mat-sys-on-secondary-container);
+  }
+
+  &.cdk-option-active {
+    outline: 2px solid var(--mat-sys-primary);
+  }
+}
+
+.count {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.header,
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) 2fr 1fr 80px 80px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+}
+
+.header {
+  height: 40px;
+  font: var(--mat-sys-title-small);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.viewport {
+  height: 60vh;
+}
+
+// Fixed height: the same 48px as itemSize, long titles are cut instead of wrapping
+.row {
+  height: 48px;
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--mat-sys-surface-container-high);
+
+  .title {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
+
+.isbn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
