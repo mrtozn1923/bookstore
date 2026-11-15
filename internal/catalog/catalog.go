@@ -1,7 +1,10 @@
 // Package catalog holds the books Bookstore sells.
 package catalog
 
-import "slices"
+import (
+	"fmt"
+	"slices"
+)
 
 // Money is an amount in kuruş: 34990 means 349.90 TRY.
 type Money int64
@@ -40,4 +43,9 @@ func (Store) CheaperThan(limit Money) []Book {
 		}
 	}
 	return result
+}
+
+// String formats the amount for people: Money(34990) prints as "349.90 TRY".
+func (m Money) String() string {
+	return fmt.Sprintf("%d.%02d TRY", m/100, m%100)
 }
