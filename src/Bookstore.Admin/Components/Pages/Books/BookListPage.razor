@@ -1,0 +1,33 @@
+@page "/books"
+@inject BookstoreApiClient Api
+
+<PageTitle>Books</PageTitle>
+
+<h1>Books</h1>
+
+<table class="table">
+    <thead>
+        <tr><th>Title</th><th>Author</th><th>Category</th><th class="text-end">Price</th></tr>
+    </thead>
+    <tbody>
+        @foreach (BookSummary book in books)
+        {
+            <tr>
+                <td><a href="books/@book.Isbn">@book.Title</a></td>
+                <td>@book.Author</td>
+                <td>@book.Category</td>
+                <td class="text-end">@book.Price.ToString("N2") TRY</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private IReadOnlyList<BookSummary> books = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        PagedResult<BookSummary> result = await Api.GetBooksAsync(page: 1, pageSize: 50);
+        books = result.Items;
+    }
+}

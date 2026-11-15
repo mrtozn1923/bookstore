@@ -1,0 +1,31 @@
+@page "/orders/{OrderId:int}"
+@inject BookstoreApiClient Api
+
+<PageTitle>Order @OrderId</PageTitle>
+
+<h1>Order @OrderId</h1>
+
+@if (order is null)
+{
+    <p>No order with this number.</p>
+}
+else
+{
+    <p>@order.Status, placed @order.PlacedAtUtc.ToString("u")</p>
+    <ul>
+        @foreach (OrderLineView line in order.Items)
+        {
+            <li>@line.Quantity x @line.Title = @line.LineTotal.ToString("N2") @order.Currency</li>
+        }
+    </ul>
+    <p>Total: <strong>@order.Total.ToString("N2") @order.Currency</strong></p>
+}
+
+@code {
+    private OrderView? order;
+
+    [Parameter]
+    public int OrderId { get; set; }
+
+    protected override async Task OnParametersSetAsync() => order = await Api.GetOrderAsync(OrderId);
+}

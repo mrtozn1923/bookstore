@@ -1,7 +1,18 @@
-﻿@page "/"
+@page "/"
+@inject BookstoreApiClient Api
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Dashboard</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Bookstore Admin</h1>
 
-Welcome to your new app.
+<p>The catalog has <strong>@totalBooks</strong> books.</p>
+
+@code {
+    private int totalBooks;
+
+    protected override async Task OnInitializedAsync()
+    {
+        PagedResult<BookSummary> firstPage = await Api.GetBooksAsync(page: 1, pageSize: 1);
+        totalBooks = firstPage.Total;
+    }
+}

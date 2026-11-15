@@ -1,0 +1,29 @@
+@page "/books/{Isbn}"
+@inject BookstoreApiClient Api
+
+<PageTitle>@(book?.Title ?? "Book")</PageTitle>
+
+@if (book is null)
+{
+    <h1>Book not found</h1>
+    <p>No book with ISBN <code>@Isbn</code>.</p>
+}
+else
+{
+    <h1>@book.Title</h1>
+    <dl>
+        <dt>Author</dt><dd>@book.Author</dd>
+        <dt>ISBN</dt><dd>@book.Isbn</dd>
+        <dt>Price</dt><dd>@book.Price.ToString("N2") TRY</dd>
+        <dt>Available</dt><dd>@book.Available</dd>
+    </dl>
+}
+
+@code {
+    private BookDetails? book;
+
+    [Parameter]
+    public string Isbn { get; set; } = "";
+
+    protected override async Task OnParametersSetAsync() => book = await Api.GetBookAsync(Isbn);
+}
