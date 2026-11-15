@@ -1,0 +1,4 @@
+ConnectionStrings:
+  BookstoreDb:
+Catalog:
+  PageSize: ""

@@ -1,0 +1,9 @@
+{
+  "name": "fmtseries-02-yaml",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "js-yaml": "5.5.0",
+    "yaml": "2.9.1"
+  }
+}

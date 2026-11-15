@@ -1,0 +1,12 @@
+# env written as a mapping instead of a list
+apiVersion: v1
+kind: Pod
+metadata:
+  name: api
+spec:
+  containers:
+    - name: api
+      image: bookstore-api:1.10.0
+      env:
+        name: Shipping__DefaultCountry
+        value: "NO"

@@ -1,0 +1,12 @@
+# First draft of Bookstore's compose file: values without quotes
+name: bookstore
+
+services:
+  api:
+    image: bookstore-api:dev
+    environment:
+      Shipping__DefaultCountry: NO
+      Shipping__Express: yes
+      Shipping__ApiVersion: 1.10
+      Shipping__LabelFileMode: 0755
+      Catalog__PageSize: 20

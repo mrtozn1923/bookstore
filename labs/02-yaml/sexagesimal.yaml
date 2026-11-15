@@ -1,0 +1,19 @@
+# 12:30 and 0755 without quotes, read by Kubernetes tooling
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+spec:
+  replicas: 12:30
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      terminationGracePeriodSeconds: 0755
+      containers:
+        - name: api
+          image: bookstore-api:1.10.0

@@ -1,0 +1,10 @@
+# Bookstore shipping settings
+shipping:
+  countries: [TR, DE, NO]
+  cutoff: 12:30
+  express: yes
+  giftWrap: on
+  labelFileMode: 0755
+  maxWeightGrams: 1e3
+  apiVersion: 1.10
+  note: ~

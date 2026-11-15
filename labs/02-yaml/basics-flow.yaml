@@ -1,0 +1,5 @@
+{shipping: {
+  countries:
+    [TR, DE, "NO"],
+  express: true,
+  cutoff: "12:30"}}
