@@ -7,7 +7,12 @@
     <h1>{{ b.title }}</h1>
     <p class="muted">{{ b.author }} · {{ b.publishedYear }} · {{ b.category }}</p>
     <p>{{ b.description }}</p>
-    <p class="muted">ISBN {{ b.isbn }}</p>
+    <p class="muted" data-testid="isbn">
+      ISBN {{ b.isbn }}
+      @if (b.isbn10) {
+        · ISBN-10 {{ b.isbn10 }}
+      }
+    </p>
     <p><strong>{{ b.price | currency: 'TRY' : 'symbol-narrow' }}</strong></p>
 
     @if (b.available > 0) {

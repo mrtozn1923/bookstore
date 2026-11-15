@@ -8,7 +8,7 @@ namespace Bookstore.Catalog;
 public sealed record BookSummary(string Isbn, string Title, string Author, string Category, decimal Price, int PublishedYear);
 
 public sealed record BookDetails(
-    string Isbn, string Title, string Author, string Category, decimal Price, int PublishedYear, string Description, int Available);
+    string Isbn, string Title, string Author, string Category, decimal Price, int PublishedYear, string Description, int Available, string? Isbn10);
 
 public sealed record CategoryView(string Name, string Slug);
 
@@ -71,7 +71,8 @@ public static class CatalogModule
 
         int available = await inventory.GetAvailableAsync(book.Id, ct);
         return TypedResults.Ok(new BookDetails(
-            book.Isbn, book.Title, book.Author, book.Category, book.Price, book.PublishedYear, book.Description, available));
+            book.Isbn, book.Title, book.Author, book.Category, book.Price, book.PublishedYear, book.Description, available,
+            Isbn.ToIsbn10(book.Isbn)));
     }
 
     private static async Task<Ok<List<CategoryView>>> GetCategories(BookstoreContext db, CancellationToken ct) =>

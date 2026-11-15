@@ -30,6 +30,15 @@ public sealed class CatalogTests(BookstoreApiFactory factory)
     }
 
     [Fact]
+    public async Task Book_details_include_the_isbn10()
+    {
+        BookDetails? dune = await client.GetFromJsonAsync<BookDetails>(
+            "/api/books/9780441172719", TestContext.Current.CancellationToken);
+
+        Assert.Equal("0441172717", dune?.Isbn10);
+    }
+
+    [Fact]
     public async Task Unknown_isbn_returns_404()
     {
         HttpResponseMessage response = await client.GetAsync("/api/books/9780000000000", TestContext.Current.CancellationToken);

@@ -1,5 +1,5 @@
 #:property PublishAot=false
-// Checks Copilot instruction and prompt files: frontmatter, applyTo globs, AGENTS.md copy, size.
+// Checks Copilot instruction, prompt, skill, agent, hook and setup-steps files: frontmatter, applyTo globs, AGENTS.md copy, size.
 // Run from the repository root: dotnet run eng/check-instructions.cs
 using System.Diagnostics;
 using System.Text.Json;
@@ -95,6 +95,41 @@ foreach (string file in tracked.Where(f => f.StartsWith(".github/hooks/") && f.E
             }
         }
         Console.WriteLine($"{file}: {hookEvent.Name} -> {hookEvent.Value.GetArrayLength()} hook(s)");
+    }
+}
+
+const string SetupSteps = ".github/workflows/copilot-setup-steps.yml";
+if (File.Exists(SetupSteps))
+{
+    // Copilot reads only these keys of the copilot-setup-steps job and silently ignores the rest.
+    string[] allowed = ["steps", "permissions", "runs-on", "services", "snapshot", "timeout-minutes"];
+    string[] lines = File.ReadAllLines(SetupSteps);
+    int job = Array.IndexOf(lines, "  copilot-setup-steps:");
+    if (job < 0)
+    {
+        errors.Add($"{SetupSteps}: no job named copilot-setup-steps, Copilot will not run these steps");
+    }
+    else
+    {
+        List<string> keys = [];
+        foreach (string line in lines.Skip(job + 1).TakeWhile(l => l.Length == 0 || l.StartsWith("    ") || l.TrimStart().StartsWith('#')))
+        {
+            Match key = Regex.Match(line, @"^    ([a-z-]+):\s*(.*)$");
+            if (!key.Success)
+            {
+                continue;
+            }
+            keys.Add(key.Groups[1].Value);
+            if (!allowed.Contains(key.Groups[1].Value))
+            {
+                errors.Add($"{SetupSteps}: '{key.Groups[1].Value}' is ignored by Copilot (allowed: {string.Join(", ", allowed)})");
+            }
+            if (key.Groups[1].Value == "timeout-minutes" && int.TryParse(key.Groups[2].Value, out int minutes) && minutes > 59)
+            {
+                errors.Add($"{SetupSteps}: timeout-minutes is {minutes}, the maximum is 59");
+            }
+        }
+        Console.WriteLine($"{SetupSteps}: job copilot-setup-steps ({string.Join(", ", keys)})");
     }
 }
 

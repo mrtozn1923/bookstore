@@ -14,6 +14,8 @@ export interface BookSummary {
 export interface BookDetails extends BookSummary {
   description: string;
   available: number;
+  // null when the ISBN-13 has no ISBN-10 (979 prefix)
+  isbn10: string | null;
 }
 
 export interface CategoryView {
