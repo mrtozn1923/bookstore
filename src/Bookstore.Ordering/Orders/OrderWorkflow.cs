@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Bookstore.Ordering.Functional;
 using static Bookstore.Ordering.Orders.OrderStatus;
 
 namespace Bookstore.Ordering.Orders;
@@ -22,6 +23,18 @@ public static class OrderWorkflow
         Paid paid => $"paid with {paid.PaymentId}",
         Shipped shipped => $"shipped with {shipped.TrackingNo}",
         Cancelled cancelled => $"cancelled: {cancelled.Reason}",
+        _ => throw new UnreachableException($"Unknown status {status.GetType().Name}")
+    };
+}
+
+public static class OrderCancellation
+{
+    // The status comes from the database as OrderStatus, so the check happens at run time
+    public static Result<Cancelled> TryCancel(OrderStatus status, string reason) => status switch
+    {
+        Pending or Paid => new Cancelled(reason),
+        Shipped shipped => new Error("order.shipped", $"Already shipped with {shipped.TrackingNo}; start a return instead."),
+        Cancelled => new Error("order.cancelled", "The order is already cancelled."),
         _ => throw new UnreachableException($"Unknown status {status.GetType().Name}")
     };
 }

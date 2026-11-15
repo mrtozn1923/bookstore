@@ -33,5 +33,10 @@ switch (post)
     case "06-nested": Post06.Nested(); break;
     case "06-shapes": await Post06.Shapes(); break;
     case "06-pitfalls": Post06.Pitfalls(); break;
+    case "07-guess": Post07.Guess(); break;
+    case "07-combine": Post07.Combine(); break;
+    case "07-place": await Post07.Place(); break;
+    case "07-cancel": Post07.Cancel(); break;
+    case "07-stack": Post07.StackTrace(); break;
     default: Console.WriteLine("usage: dotnet run --project src/Bookstore.Fp.Demo -- <post-key>"); break;
 }

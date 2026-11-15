@@ -1,0 +1,19 @@
+@api = http://127.0.0.1:52107
+
+### Valid order with a coupon
+POST {{api}}/orders
+Content-Type: application/json
+
+{"email":"ada@example.com","isbn":"9780441013593","quantity":2,"couponCode":"autumn10"}
+
+### Three invalid fields
+POST {{api}}/orders
+Content-Type: application/json
+
+{"email":"ada.example.com","isbn":"9780441013599","quantity":0}
+
+### Not enough stock after the first order
+POST {{api}}/orders
+Content-Type: application/json
+
+{"email":"grace@example.com","isbn":"9780441013593","quantity":2}
