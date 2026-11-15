@@ -1,3 +1,4 @@
+using Bookstore.Api.Agents;
 using Bookstore.Api.Ai;
 using Bookstore.Api.Assistant;
 using Bookstore.Api.Catalog;
@@ -35,6 +36,8 @@ builder.Services.AddSingleton<IPublisherCatalogStore, InMemoryPublisherCatalogSt
 builder.Services.AddScoped<PublisherCatalogService>();
 builder.Services.AddOptions<SalesReportOptions>().Bind(builder.Configuration.GetSection(SalesReportOptions.SectionName));
 builder.Services.AddScoped<SalesReportService>();
+builder.Services.AddSingleton<IAgentRegistry, InMemoryAgentRegistry>();
+builder.Services.AddScoped<IssueDigestAgent>();
 
 WebApplication app = builder.Build();
 
