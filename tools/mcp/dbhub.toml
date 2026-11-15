@@ -1,0 +1,15 @@
+# Local SQL Server, read-only login (tools/mcp/sql/create-readonly-login.sql).
+# The password comes from the BOOKSTORE_RO_PASSWORD environment variable.
+[[sources]]
+id = "bookstore"
+dsn = "sqlserver://bookstore_readonly:${BOOKSTORE_RO_PASSWORD}@localhost:1433/BookstoreDb"
+
+[[tools]]
+name = "execute_sql"
+source = "bookstore"
+readonly = true
+max_rows = 200
+
+[[tools]]
+name = "search_objects"
+source = "bookstore"

@@ -1,0 +1,34 @@
+{
+  "mcpServers": {
+    "bookstore": {
+      "type": "stdio",
+      "command": "dotnet",
+      "args": ["${CLAUDE_PROJECT_DIR:-.}/src/Bookstore.Mcp.Server/bin/Debug/net10.0/Bookstore.Mcp.Server.dll"],
+      "env": {
+        "Bookstore__CustomerId": "7"
+      }
+    },
+    "bookstore-db": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "${CLAUDE_PROJECT_DIR:-.}/tools/mcp/node_modules/@bytebase/dbhub/dist/index.js",
+        "--transport", "stdio",
+        "--config=${CLAUDE_PROJECT_DIR:-.}/tools/mcp/dbhub.toml"
+      ],
+      "env": {
+        "BOOKSTORE_RO_PASSWORD": "${BOOKSTORE_RO_PASSWORD}"
+      }
+    },
+    "playwright": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "${CLAUDE_PROJECT_DIR:-.}/tools/mcp/node_modules/@playwright/mcp/cli.js",
+        "--browser", "msedge",
+        "--isolated",
+        "--allowed-origins", "http://localhost:4200"
+      ]
+    }
+  }
+}

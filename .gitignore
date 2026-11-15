@@ -1,3 +1,6 @@
 # Personal Claude Code files
 CLAUDE.local.md
 .claude/settings.local.json
+
+# Packages for local MCP servers
+tools/mcp/node_modules/

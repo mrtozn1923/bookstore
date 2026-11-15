@@ -9,7 +9,10 @@
       "PowerShell(dotnet build *)",
       "PowerShell(dotnet test *)",
       "PowerShell(npm test *)",
-      "PowerShell(npm run build *)"
+      "PowerShell(npm run build *)",
+      "mcp__bookstore__search_books",
+      "mcp__bookstore__check_stock",
+      "mcp__bookstore-db__search_objects"
     ],
     "ask": [
       "Bash(dotnet ef database update *)",
@@ -22,7 +25,9 @@
       "Read(**/.env.*)",
       "Read(**/appsettings.Production.json)",
       "Bash(dotnet user-secrets *)",
-      "PowerShell(dotnet user-secrets *)"
+      "PowerShell(dotnet user-secrets *)",
+      "mcp__playwright__browser_run_code_unsafe",
+      "mcp__playwright__browser_file_upload"
     ]
   },
   "hooks": {
