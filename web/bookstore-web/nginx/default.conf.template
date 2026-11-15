@@ -1,0 +1,24 @@
+server {
+    listen 8080;
+    root /usr/share/nginx/html;
+
+    # API_UPSTREAM comes from the pod spec (e.g. http://api.bookstore-dev.svc.cluster.local).
+    # A variable in proxy_pass makes nginx resolve the name per request, so the web pod
+    # starts even before the api Service exists.
+    resolver ${NGINX_LOCAL_RESOLVERS} valid=10s;
+    set $api_upstream ${API_UPSTREAM};
+
+    location /api/ {
+        proxy_pass $api_upstream;
+    }
+
+    location = /healthz {
+        access_log off;
+        default_type text/plain;
+        return 200 "ok\n";
+    }
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}

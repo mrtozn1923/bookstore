@@ -1,0 +1,51 @@
+:root {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: #111827;
+  background: #ffffff;
+}
+
+a { color: #1d4ed8; }
+.muted { color: #6b7280; }
+.error { color: #b91c1c; }
+.success { color: #047857; }
+
+button {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid #1d4ed8;
+  border-radius: 6px;
+  background: #1d4ed8;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+input, select {
+  padding: 0.4rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+}
+
+.toolbar { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.toolbar form { display: flex; gap: 0.5rem; }
+
+.book-grid {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.book-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.cart { width: 100%; border-collapse: collapse; }
+.cart th, .cart td { text-align: left; padding: 0.5rem; border-bottom: 1px solid #e5e7eb; }
+.cart input { width: 4rem; }
+.total { font-weight: 700; }
+.checkout { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem; }

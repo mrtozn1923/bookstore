@@ -1,0 +1,10 @@
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane
+    # The GitOps config repo (a local Git repository) is visible inside the node at /srv/git/bookstore-config.
+    # Replace the hostPath with your clone of the config repo (on Windows e.g. C:/work/bookstore-config).
+    extraMounts:
+      - hostPath: /path/to/bookstore-config
+        containerPath: /srv/git/bookstore-config
+        readOnly: true
