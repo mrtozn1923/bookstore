@@ -40,6 +40,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapCatalogEndpoints();
+app.MapAuthorEndpoints();
 app.MapOrderingEndpoints();
 app.MapInventoryEndpoints();
 

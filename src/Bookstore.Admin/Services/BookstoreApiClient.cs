@@ -48,6 +48,23 @@ public sealed class BookstoreApiClient(HttpClient http)
         return true;
     }
 
+    public async Task<IReadOnlyList<AuthorView>> GetAuthorsAsync(CancellationToken ct = default) =>
+        await http.GetFromJsonAsync<List<AuthorView>>("api/authors", ct) ?? [];
+
+    // Null when the author was created; otherwise the API's validation errors by key, for example "Books[1].Isbn".
+    public async Task<IDictionary<string, string[]>?> CreateAuthorAsync(NewAuthorRequest request, CancellationToken ct = default)
+    {
+        using HttpResponseMessage response = await http.PostAsJsonAsync("api/authors", request, ct);
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            HttpValidationProblemDetails? problem = await response.Content.ReadFromJsonAsync<HttpValidationProblemDetails>(ct);
+            return problem?.Errors ?? new Dictionary<string, string[]>();
+        }
+
+        response.EnsureSuccessStatusCode();
+        return null;
+    }
+
     private async Task<T?> GetOrNullAsync<T>(string uri, CancellationToken ct) where T : class
     {
         using HttpResponseMessage response = await http.GetAsync(uri, ct);

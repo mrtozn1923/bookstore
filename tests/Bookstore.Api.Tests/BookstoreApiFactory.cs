@@ -12,9 +12,16 @@ namespace Bookstore.Api.Tests;
 
 // One API host and one fresh database for the whole test run.
 // The database is the development one with a "_Tests" suffix: BookstoreDb → BookstoreDb_Tests.
-public sealed class BookstoreApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
+// Tests that add catalog rows use their own database (see AuthorTestsFactory) so seed counts stay exact.
+public class BookstoreApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
-    private readonly string connectionString = TestConnectionString();
+    private readonly string connectionString;
+
+    public BookstoreApiFactory() : this("_Tests")
+    {
+    }
+
+    protected BookstoreApiFactory(string databaseSuffix) => connectionString = TestConnectionString(databaseSuffix);
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -30,7 +37,7 @@ public sealed class BookstoreApiFactory : WebApplicationFactory<Program>, IAsync
         await db.Database.MigrateAsync();
     }
 
-    private static string TestConnectionString()
+    private static string TestConnectionString(string databaseSuffix)
     {
         IConfiguration configuration = new ConfigurationBuilder()
             .AddUserSecrets<Program>(optional: true)
@@ -41,7 +48,7 @@ public sealed class BookstoreApiFactory : WebApplicationFactory<Program>, IAsync
             : throw new InvalidOperationException("Connection string 'BookstoreDb' is missing (see README.md).");
 
         SqlConnectionStringBuilder csb = new(baseConnection);
-        csb.InitialCatalog += "_Tests";
+        csb.InitialCatalog += databaseSuffix;
         return csb.ConnectionString;
     }
 }

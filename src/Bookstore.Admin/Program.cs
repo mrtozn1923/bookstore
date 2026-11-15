@@ -12,6 +12,8 @@ string apiBaseUrl = builder.Configuration["BookstoreApi:BaseUrl"]
 builder.Services.AddHttpClient<BookstoreApiClient>(client => client.BaseAddress = new Uri(apiBaseUrl));
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<StaffNoteStore>();
+// Source-generated validation metadata: nested objects and collections in [ValidatableType] form models.
+builder.Services.AddValidation();
 
 WebApplication app = builder.Build();
 

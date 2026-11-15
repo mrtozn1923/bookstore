@@ -12,3 +12,9 @@ public sealed record CategoryView(string Name, string Slug);
 
 // The minimum a browser-side price calculation needs; passed as a serialized component parameter.
 public sealed record BookPrice(string Isbn, string Title, decimal Price);
+
+public sealed record AuthorView(int Id, string Name, int BookCount);
+
+public sealed record NewBookRequest(string Isbn, string Title, decimal Price, int PublishedYear, string CategorySlug);
+
+public sealed record NewAuthorRequest(string Name, IReadOnlyList<NewBookRequest> Books);

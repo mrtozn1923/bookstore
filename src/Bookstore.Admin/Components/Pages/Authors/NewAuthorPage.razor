@@ -1,0 +1,103 @@
+@page "/authors/new"
+@rendermode InteractiveServer
+@using System.Text.RegularExpressions
+@using Bookstore.Admin.Components.Catalog
+@using Bookstore.Admin.Validation
+@inject BookstoreApiClient Api
+@inject NavigationManager Navigation
+
+<PageTitle>New author</PageTitle>
+
+<h1>New author</h1>
+
+<EditForm EditContext="editContext" OnValidSubmit="SaveAsync">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label class="form-label">Name <InputText @bind-Value="form.Name" class="form-control" /></label>
+        <ValidationMessage For="() => form.Name" />
+    </div>
+
+    @for (int i = 0; i < form.Books.Count; i++)
+    {
+        NewBookForm book = form.Books[i];
+        <fieldset class="border rounded p-2 mb-2">
+            <legend class="fs-6">Book @(i + 1)</legend>
+            <label>ISBN <InputText @bind-Value="book.Isbn" class="form-control" /></label>
+            <ValidationMessage For="() => book.Isbn" />
+            <label>Title <InputText @bind-Value="book.Title" class="form-control" /></label>
+            <ValidationMessage For="() => book.Title" />
+            <label>Price (TRY) <InputNumber @bind-Value="book.Price" class="form-control" /></label>
+            <ValidationMessage For="() => book.Price" />
+            <label>Year <InputNumber @bind-Value="book.PublishedYear" class="form-control" /></label>
+            <ValidationMessage For="() => book.PublishedYear" />
+            <label>Category
+                <InputSelect @bind-Value="book.CategorySlug" class="form-select">
+                    <option value="">(choose)</option>
+                    @foreach (CategoryView category in categories)
+                    {
+                        <option value="@category.Slug">@category.Name</option>
+                    }
+                </InputSelect>
+            </label>
+            <ValidationMessage For="() => book.CategorySlug" />
+            <button type="button" class="btn btn-sm btn-outline-danger" disabled="@(form.Books.Count == 1)"
+                    @onclick="() => form.Books.Remove(book)">Remove</button>
+        </fieldset>
+    }
+
+    <button type="button" class="btn btn-outline-secondary" @onclick="() => form.Books.Add(new())">Add another book</button>
+    <button type="submit" class="btn btn-primary" disabled="@saving">Save</button>
+</EditForm>
+
+@code {
+    private readonly NewAuthorForm form = new();
+    private EditContext editContext = null!;
+    private ValidationMessageStore serverErrors = null!;
+    private IReadOnlyList<CategoryView> categories = [];
+    private bool saving;
+
+    protected override async Task OnInitializedAsync()
+    {
+        editContext = new EditContext(form);
+        serverErrors = new ValidationMessageStore(editContext);
+        // A server error disappears as soon as the user edits that field.
+        editContext.OnFieldChanged += (_, e) => serverErrors.Clear(e.FieldIdentifier);
+        editContext.OnValidationRequested += (_, _) => serverErrors.Clear();
+        categories = await Api.GetCategoriesAsync();
+    }
+
+    private async Task SaveAsync()
+    {
+        saving = true;
+        NewAuthorRequest request = new(form.Name,
+            [.. form.Books.Select(b => new NewBookRequest(
+                Isbn13Attribute.Normalize(b.Isbn), b.Title, b.Price, b.PublishedYear, b.CategorySlug))]);
+        IDictionary<string, string[]>? errors = await Api.CreateAuthorAsync(request);
+        saving = false;
+        if (errors is null)
+        {
+            // New books start with 0 copies; the inventory page lists them first.
+            Navigation.NavigateTo("inventory");
+            return;
+        }
+
+        foreach ((string key, string[] messages) in errors)
+        {
+            serverErrors.Add(ToField(key), messages);
+        }
+        editContext.NotifyValidationStateChanged();
+    }
+
+    // "Books[1].Isbn" -> the Isbn field of the second book; "Name" -> the form's Name; anything else -> the whole form.
+    private FieldIdentifier ToField(string key)
+    {
+        Match match = Regex.Match(key, @"^Books\[(\d+)\]\.(\w+)$");
+        if (match.Success && int.Parse(match.Groups[1].Value) is int index && index < form.Books.Count)
+        {
+            return new FieldIdentifier(form.Books[index], match.Groups[2].Value);
+        }
+        return key == nameof(NewAuthorForm.Name) ? new FieldIdentifier(form, key) : new FieldIdentifier(form, string.Empty);
+    }
+}

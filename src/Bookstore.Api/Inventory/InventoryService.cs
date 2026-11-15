@@ -13,6 +13,9 @@ public interface IInventoryService
 
     // Must run inside the caller's transaction: a failed reservation is undone by rolling it back.
     Task<ReservationResult> ReserveAsync(IReadOnlyCollection<StockLine> lines, CancellationToken ct);
+
+    // New books start with no copies on hand until the first stock count.
+    Task StartTrackingAsync(IReadOnlyCollection<int> bookIds, CancellationToken ct);
 }
 
 internal sealed class InventoryService(BookstoreContext db) : IInventoryService
@@ -40,6 +43,12 @@ internal sealed class InventoryService(BookstoreContext db) : IInventoryService
         }
 
         return new ReservationResult(unavailable.Count == 0, unavailable);
+    }
+
+    public async Task StartTrackingAsync(IReadOnlyCollection<int> bookIds, CancellationToken ct)
+    {
+        db.StockItems.AddRange(bookIds.Select(id => new StockItem { BookId = id }));
+        await db.SaveChangesAsync(ct);
     }
 }
 

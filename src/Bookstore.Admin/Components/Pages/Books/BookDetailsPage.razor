@@ -1,4 +1,5 @@
 @page "/books/{Isbn}"
+@using System.ComponentModel.DataAnnotations
 @inject BookstoreApiClient Api
 @inject NavigationManager Navigation
 @inject ILogger<BookDetailsPage> Logger
@@ -24,11 +25,13 @@
     {
         <p class="alert alert-danger">@error</p>
     }
-    <EditForm Model="StockCount" FormName="stock-count" OnSubmit="SaveStockAsync" Enhance>
+    <EditForm Model="StockCount" FormName="stock-count" OnValidSubmit="SaveStockAsync" Enhance>
+        <DataAnnotationsValidator />
         <label>
             Counted quantity on hand
             <InputNumber @bind-Value="StockCount!.QuantityOnHand" class="form-control w-auto" />
         </label>
+        <ValidationMessage For="() => StockCount!.QuantityOnHand" />
         <button type="submit" class="btn btn-primary">Save</button>
     </EditForm>
 
@@ -73,6 +76,8 @@
 
     public sealed class StockCountForm
     {
+        // Same limits as Bookstore.Api's SetStockRequest; checked on the server after the POST.
+        [Range(0, 10_000), Display(Name = "Quantity on hand")]
         public int QuantityOnHand { get; set; }
     }
 }
