@@ -4,10 +4,11 @@ import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { BookSummary, CategoryView, PagedResult } from '../core/api-models';
 import { CartStore } from '../cart/cart-store';
+import { PageHeading } from '../core/page-heading';
 
 @Component({
   selector: 'app-catalog-page',
-  imports: [CurrencyPipe, RouterLink],
+  imports: [CurrencyPipe, RouterLink, PageHeading],
   templateUrl: './catalog-page.html',
 })
 export class CatalogPage {

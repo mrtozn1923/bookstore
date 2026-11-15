@@ -4,7 +4,7 @@
   <p class="error">Book not found.</p>
 } @else if (book.value(); as b) {
   <article class="book-detail">
-    <h1>{{ b.title }}</h1>
+    <h1 appPageHeading>{{ b.title }}</h1>
     <p class="muted">{{ b.author }} · {{ b.publishedYear }} · {{ b.category }}</p>
     <p>{{ b.description }}</p>
     <p class="muted">ISBN {{ b.isbn }}</p>

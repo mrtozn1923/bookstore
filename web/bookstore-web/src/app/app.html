@@ -1,3 +1,4 @@
+<a class="skip-link" href="#main-content" (click)="skipToMain($event)">Skip to main content</a>
 <header class="site-header">
   <a routerLink="/" class="brand">Bookstore</a>
   <nav>
@@ -5,7 +6,7 @@
     <a routerLink="/cart" data-testid="cart-link">Cart ({{ cartStore.itemCount() }})</a>
   </nav>
 </header>
-<main>
+<main #main id="main-content" tabindex="-1">
   <router-outlet />
 </main>
 <footer class="site-footer">

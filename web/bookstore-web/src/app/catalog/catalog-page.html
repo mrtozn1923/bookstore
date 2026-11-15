@@ -1,16 +1,20 @@
-<h1>Catalog</h1>
+<h1 appPageHeading>Catalog</h1>
 
 <section class="toolbar">
   <form (submit)="applySearch($event, searchBox.value)">
     <input #searchBox type="search" placeholder="Search by title, author or ISBN" aria-label="Search books" />
     <button type="submit">Search</button>
   </form>
-  <select aria-label="Category" (change)="category.set($any($event.target).value)">
-    <option value="">All categories</option>
+  <fieldset class="chips">
+    <legend>Category</legend>
+    <label><input type="radio" name="category" value="" [checked]="category() === ''" (change)="category.set('')" /> All</label>
     @for (c of categories.value(); track c.slug) {
-      <option [value]="c.slug">{{ c.name }}</option>
+      <label>
+        <input type="radio" name="category" [value]="c.slug" [checked]="category() === c.slug" (change)="category.set(c.slug)" />
+        {{ c.name }}
+      </label>
     }
-  </select>
+  </fieldset>
 </section>
 
 @if (books.isLoading()) {

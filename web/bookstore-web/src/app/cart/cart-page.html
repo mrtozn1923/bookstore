@@ -1,4 +1,4 @@
-<h1>Your cart</h1>
+<h1 #heading appPageHeading>Your cart</h1>
 
 @if (placedOrder(); as order) {
   <p class="success" data-testid="order-confirmation">
@@ -21,7 +21,7 @@
                    (change)="changeQuantity(line.isbn, $any($event.target).valueAsNumber)" />
           </td>
           <td>{{ line.lineTotal | currency: 'TRY' : 'symbol-narrow' }}</td>
-          <td><button type="button" (click)="store.remove(line.isbn)">Remove</button></td>
+          <td><button type="button" (click)="askToRemove(line)">Remove</button></td>
         </tr>
       }
     </tbody>
@@ -45,3 +45,11 @@
 } @else {
   <p class="muted">Your cart is empty. <a routerLink="/">Browse the catalog</a></p>
 }
+
+<dialog #removeDialog class="confirm" aria-labelledby="remove-title" (close)="onRemoveDialogClosed()">
+  <h2 id="remove-title">Remove {{ pendingRemoval()?.title }} from your cart?</h2>
+  <form method="dialog">
+    <button value="keep" autofocus>Keep it</button>
+    <button value="remove" class="danger">Remove</button>
+  </form>
+</dialog>

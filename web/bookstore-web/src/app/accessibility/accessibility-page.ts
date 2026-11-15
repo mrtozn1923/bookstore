@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { PageHeading } from '../core/page-heading';
 
 interface KnownLimitation {
   problem: string;
@@ -9,6 +10,7 @@ interface KnownLimitation {
 // Keep this page in step with the audit: update it whenever a limitation is fixed or found.
 @Component({
   selector: 'app-accessibility-page',
+  imports: [PageHeading],
   templateUrl: './accessibility-page.html',
 })
 export class AccessibilityPage {
@@ -16,11 +18,6 @@ export class AccessibilityPage {
   protected readonly contactEmail = 'accessibility@example.com';
 
   protected readonly limitations: KnownLimitation[] = [
-    {
-      problem: 'After moving to another page, keyboard focus stays where it was and the page title does not name the book.',
-      criteria: '2.4.2, 2.4.3',
-      plannedFix: 'December 2026',
-    },
     {
       problem: 'Messages such as "Added" and the number of search results are not announced by screen readers.',
       criteria: '4.1.3',

@@ -1,3 +1,8 @@
+html {
+  /* Room for the sticky header when the browser scrolls a focused element into view (WCAG 2.4.11) */
+  scroll-padding-top: 4.5rem;
+}
+
 :root {
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   color: #111827;
@@ -5,6 +10,40 @@
 }
 
 a { color: #1d4ed8; }
+
+/* One visible focus style for every control; 3px with an offset stays visible on the blue buttons too */
+:focus-visible {
+  outline: 3px solid #1d4ed8;
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -3rem;
+  z-index: 20;
+  padding: 0.5rem 1rem;
+  background: #ffffff;
+}
+
+.skip-link:focus {
+  top: 0.5rem;
+}
+
+/* main and h1 only receive focus from script (tabindex="-1"); they are not controls */
+main:focus, h1:focus { outline: none; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 0.5rem; border: 0; padding: 0; margin: 0; }
+.chips legend { float: left; margin-right: 0.5rem; padding: 0.3rem 0; }
+.chips label { padding: 0.3rem 0.8rem; border: 1px solid #6b7280; border-radius: 999px; cursor: pointer; }
+.chips input { position: absolute; opacity: 0; }
+.chips label:has(:checked) { background: #1d4ed8; border-color: #1d4ed8; color: #ffffff; }
+.chips label:has(:focus-visible) { outline: 3px solid #1d4ed8; outline-offset: 2px; }
+
+.confirm { border: 1px solid #6b7280; border-radius: 8px; padding: 1.5rem; }
+.confirm form { display: flex; gap: 0.5rem; justify-content: flex-end; }
+.confirm button[value="keep"] { background: #ffffff; color: #1d4ed8; }
+.danger { background: #b91c1c; border-color: #b91c1c; }
 .muted { color: #6b7280; }
 .error { color: #b91c1c; }
 .success { color: #047857; }
