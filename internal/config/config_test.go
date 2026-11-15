@@ -16,6 +16,10 @@ func TestFromEnvDefaults(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if c.WarehouseTZ.String() != "Europe/Istanbul" {
+		t.Errorf("WarehouseTZ = %v, want Europe/Istanbul", c.WarehouseTZ)
+	}
+	c.WarehouseTZ = nil // a *time.Location compares by pointer
 	want := Config{Addr: "127.0.0.1:52710", DebugAddr: "127.0.0.1:52711", CORSOrigin: "http://localhost:4200",
 		LogFormat: "json", LogLevel: slog.LevelInfo, ShutdownTimeout: 20 * time.Second}
 	if c != want {
@@ -39,6 +43,10 @@ func TestFromEnv(t *testing.T) {
 		{"all wrong", map[string]string{"BOOKSTORE_ADDR": "8080", "BOOKSTORE_CORS_ORIGIN": "localhost:4200",
 			"BOOKSTORE_LOG_LEVEL": "loud", "BOOKSTORE_SHUTDOWN_TIMEOUT": "20"},
 			nil, []string{"BOOKSTORE_ADDR", "BOOKSTORE_CORS_ORIGIN", "BOOKSTORE_LOG_LEVEL", "BOOKSTORE_SHUTDOWN_TIMEOUT"}},
+		{"utc warehouse", map[string]string{"BOOKSTORE_WAREHOUSE_TZ": "UTC"},
+			func(c Config) bool { return c.WarehouseTZ == time.UTC }, nil},
+		{"misspelled zone", map[string]string{"BOOKSTORE_WAREHOUSE_TZ": "Europe/Istanbol"},
+			nil, []string{"BOOKSTORE_WAREHOUSE_TZ: unknown time zone Europe/Istanbol"}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -13,14 +13,15 @@ import (
 
 // Config holds every setting the service reads at start-up.
 type Config struct {
-	Addr            string        // BOOKSTORE_ADDR: public API
-	DebugAddr       string        // BOOKSTORE_DEBUG_ADDR: pprof; "off" disables it
-	CORSOrigin      string        // BOOKSTORE_CORS_ORIGIN: the Angular app
-	DatabaseURL     string        // BOOKSTORE_DB: empty keeps orders in memory
-	LogFormat       string        // BOOKSTORE_LOG_FORMAT: json or text
-	LogLevel        slog.Level    // BOOKSTORE_LOG_LEVEL: debug, info, warn, error
-	DrainDelay      time.Duration // BOOKSTORE_DRAIN_DELAY: /readyz fails this long before shutdown
-	ShutdownTimeout time.Duration // BOOKSTORE_SHUTDOWN_TIMEOUT: time for requests in flight
+	Addr            string         // BOOKSTORE_ADDR: public API
+	DebugAddr       string         // BOOKSTORE_DEBUG_ADDR: pprof; "off" disables it
+	CORSOrigin      string         // BOOKSTORE_CORS_ORIGIN: the Angular app
+	DatabaseURL     string         // BOOKSTORE_DB: empty keeps orders in memory
+	LogFormat       string         // BOOKSTORE_LOG_FORMAT: json or text
+	LogLevel        slog.Level     // BOOKSTORE_LOG_LEVEL: debug, info, warn, error
+	DrainDelay      time.Duration  // BOOKSTORE_DRAIN_DELAY: /readyz fails this long before shutdown
+	ShutdownTimeout time.Duration  // BOOKSTORE_SHUTDOWN_TIMEOUT: time for requests in flight
+	WarehouseTZ     *time.Location // BOOKSTORE_WAREHOUSE_TZ: IANA name for delivery estimates
 }
 
 // FromEnv builds a Config from getenv (os.Getenv in main, a map in tests).
@@ -67,6 +68,11 @@ func FromEnv(getenv func(string) string) (Config, error) {
 		errs = append(errs, fmt.Errorf("BOOKSTORE_SHUTDOWN_TIMEOUT: %q is not a positive duration like 20s", getenv("BOOKSTORE_SHUTDOWN_TIMEOUT")))
 	} else {
 		c.ShutdownTimeout = d
+	}
+	if loc, err := time.LoadLocation(get("BOOKSTORE_WAREHOUSE_TZ", "Europe/Istanbul")); err != nil {
+		errs = append(errs, fmt.Errorf("BOOKSTORE_WAREHOUSE_TZ: %w", err))
+	} else {
+		c.WarehouseTZ = loc
 	}
 	return c, errors.Join(errs...)
 }

@@ -16,6 +16,7 @@ import (
 	"runtime/debug"
 	"syscall"
 	"time"
+	_ "time/tzdata" // about 450 KB: time zones work on scratch images and Windows hosts
 
 	_ "github.com/microsoft/go-mssqldb" // registers the "sqlserver" driver
 
@@ -69,7 +70,8 @@ func run(ctx context.Context, getenv func(string) string, out io.Writer) error {
 		health.Check = db.PingContext
 	}
 
-	api := &httpapi.API{Books: books, Orders: orders.NewService(repo, books), Health: health, Log: logger}
+	api := &httpapi.API{Books: books, Orders: orders.NewService(repo, books), Health: health, Log: logger,
+		Delivery: orders.DeliveryRule{Loc: cfg.WarehouseTZ, CutoffHour: 15, TransitDays: 2}}
 	csrf := http.NewCrossOriginProtection()
 	if err := csrf.AddTrustedOrigin(cfg.CORSOrigin); err != nil {
 		return err

@@ -19,6 +19,8 @@ type API struct {
 	Orders *orders.Service
 	Health *Health
 	Log    *slog.Logger
+	// Delivery estimates delivery dates; the zero value works in UTC.
+	Delivery orders.DeliveryRule
 }
 
 // Routes registers every endpoint on a new ServeMux.

@@ -33,8 +33,9 @@ type orderResponse struct {
 	CustomerID string              `json:"customerId"`
 	Status     string              `json:"status"`
 	Items      []orderItemResponse `json:"items"`
-	Total      catalog.Money       `json:"total"` // in kuruş, like every price
-	CreatedAt  time.Time           `json:"createdAt"`
+	Total      catalog.Money       `json:"total"`             // in kuruş, like every price
+	CreatedAt  time.Time           `json:"createdAt"`         // RFC 3339 in UTC
+	Delivery   string              `json:"estimatedDelivery"` // a date: 2006-01-02
 }
 
 type orderItemResponse struct {
@@ -44,13 +45,14 @@ type orderItemResponse struct {
 	Quantity  int           `json:"quantity"`
 }
 
-func newOrderResponse(o *orders.Order) orderResponse {
+func newOrderResponse(o *orders.Order, rule orders.DeliveryRule) orderResponse {
 	items := make([]orderItemResponse, 0, len(o.Items)) // never nil: [] not null
 	for _, it := range o.Items {
 		items = append(items, orderItemResponse{ISBN: it.ISBN, Title: it.Title, UnitPrice: it.UnitPrice, Quantity: it.Quantity})
 	}
 	return orderResponse{ID: o.ID, CustomerID: o.CustomerID, Status: o.Status.String(),
-		Items: items, Total: o.Total(), CreatedAt: o.CreatedAt.UTC()}
+		Items: items, Total: o.Total(), CreatedAt: o.CreatedAt.UTC(),
+		Delivery: rule.Estimate(o.CreatedAt).Format(time.DateOnly)}
 }
 
 func (a *API) placeOrder(w http.ResponseWriter, r *http.Request) {
@@ -95,7 +97,7 @@ func (a *API) placeOrder(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Location", "/api/orders/"+o.ID)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	if err := json.NewEncoder(w).Encode(newOrderResponse(o)); err != nil {
+	if err := json.NewEncoder(w).Encode(newOrderResponse(o, a.Delivery)); err != nil {
 		a.logger().WarnContext(r.Context(), "write json", "error", err)
 	}
 }
@@ -111,7 +113,7 @@ func (a *API) getOrder(w http.ResponseWriter, r *http.Request) {
 		writeProblem(w, r, Problem{Status: http.StatusInternalServerError})
 		return
 	}
-	writeJSON(w, newOrderResponse(o))
+	writeJSON(w, newOrderResponse(o, a.Delivery))
 }
 
 // errUnsupportedMediaType is returned when the body is not JSON.
