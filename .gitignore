@@ -1,23 +1,7 @@
-# .NET
 bin/
 obj/
+out/
 *.user
-*.suo
 .vs/
+files/
 TestResults/
-*.trx
-BenchmarkDotNet.Artifacts/
-# Node / Angular
-node_modules/
-dist/
-.angular/
-coverage/
-# Python / misc
-__pycache__/
-.venv/
-.DS_Store
-.idea/
-*.log
-# local secrets
-.env
-appsettings.*.local.json
