@@ -1,1 +1,7 @@
-[]
+[
+  {
+    "Id": "QuestPDF",
+    "Version": "2026.9.2",
+    "License": "LicenseRef-QuestPDF-Community"
+  }
+]

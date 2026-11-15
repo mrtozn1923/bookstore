@@ -10,4 +10,6 @@ public interface IFileStore
     Task<Stream> OpenReadAsync(string path, CancellationToken cancellationToken = default);
 
     Task<bool> DeleteAsync(string path, CancellationToken cancellationToken = default);
+
+    Task<bool> ExistsAsync(string path, CancellationToken cancellationToken = default);
 }

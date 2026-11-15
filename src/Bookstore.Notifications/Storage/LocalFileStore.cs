@@ -53,6 +53,9 @@ public sealed class LocalFileStore(IOptions<LocalFileStoreOptions> options) : IF
         return Task.FromResult(true);
     }
 
+    public Task<bool> ExistsAsync(string path, CancellationToken cancellationToken = default) =>
+        Task.FromResult(File.Exists(Resolve(path)));
+
     // The path comes from our own code, but still never leave the root (post 08 covers this in depth)
     private string Resolve(string path)
     {

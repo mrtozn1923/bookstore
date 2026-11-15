@@ -58,12 +58,26 @@ public static class BookstoreSampleData
         ],
         ApprovalsUrl: "https://bookstore.example.com/institution/approvals");
 
+    public static InvoiceModel LongInvoice(int orderId, int lineCount)
+    {
+        InvoiceModel invoice = Invoice(orderId);
+        List<InvoiceLine> lines = [];
+        for (int i = 0; i < lineCount; i++)
+        {
+            (string isbn, string title, decimal price) = Books[i % Books.Count];
+            lines.Add(new InvoiceLine(isbn, title, 20 + i % 5, price, 0.10m));
+        }
+
+        return invoice with { Lines = lines };
+    }
+
     public static InvoiceModel Invoice(int orderId) => new(
         InvoiceNumber: $"BKS-2026-{orderId:D6}",
         OrderId: orderId,
         IssueDate: new DateOnly(2026, 11, 14),
         CustomerEmail: "ada@example.com",
-        BillingAddress: new PostalAddress("Ada Lovelace", "Example Street 12", "Istanbul", "34000", "Turkiye"),
+        // Turkish characters on purpose: the PDF post checks that every glyph survives
+        BillingAddress: new PostalAddress("Ada Lovelace", "Bağdat Caddesi No: 12, Kadıköy", "İstanbul", "34710", "Türkiye"),
         Lines:
         [
             new InvoiceLine("9780441172719", "Dune", 2, 450.00m, 0.10m),

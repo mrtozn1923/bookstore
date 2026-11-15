@@ -11,6 +11,11 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
     <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" />
     <PackageReference Include="PreMailer.Net" />
+    <PackageReference Include="QuestPDF" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Documents\Pdf\logo.png" LogicalName="Bookstore.Notifications.logo.png" />
   </ItemGroup>
 
 </Project>

@@ -5,9 +5,13 @@ using Bookstore.Api.Reports;
 using Bookstore.Notifications;
 using Bookstore.Notifications.Documents;
 using Bookstore.Notifications.Documents.Excel;
+using Bookstore.Notifications.Documents.Pdf;
 using Bookstore.Notifications.Outbox;
 using Bookstore.Notifications.Samples;
 using Microsoft.EntityFrameworkCore;
+
+// Bookstore qualifies for the QuestPDF Community License (annual gross revenue under USD 1M); set once at startup
+QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +19,8 @@ builder.Services.AddNotifications(builder.Configuration);
 builder.Services.AddDbContext<BookstoreContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("Bookstore")));
 builder.Services.AddEmailOutbox<BookstoreContext>(builder.Configuration);
 builder.Services.AddScoped<ApprovalReminderJob>();
-builder.Services.AddSingleton<IDocumentRenderer<InvoiceModel>, PlainTextInvoiceRenderer>();
+builder.Services.AddSingleton<IDocumentRenderer<InvoiceModel>, InvoicePdfRenderer>();
+builder.Services.AddSingleton<InvoiceArchive>();
 builder.Services.AddSingleton<IDocumentRenderer<MonthlySalesReport>, MonthlySalesExcelRenderer>();
 builder.Services.AddSingleton<ReportJobQueue>();
 builder.Services.AddSingleton<ReportJobStore>();
@@ -36,14 +41,13 @@ await using (AsyncServiceScope scope = app.Services.CreateAsyncScope())
     await scope.ServiceProvider.GetRequiredService<BookstoreContext>().Database.EnsureCreatedAsync();
 }
 
-// Synchronous: small, fast document rendered straight into the response
-app.MapGet("/api/orders/{orderId:int}/invoice", (int orderId, IDocumentRenderer<InvoiceModel> renderer, CancellationToken ct) =>
+// The first download renders and stores the PDF; later downloads stream the stored file
+app.MapGet("/api/orders/{orderId:int}/invoice", async (int orderId, InvoiceArchive archive, IFileStore files, CancellationToken ct) =>
 {
     InvoiceModel invoice = BookstoreSampleData.Invoice(orderId);
-    return Results.Stream(
-        stream => renderer.RenderAsync(invoice, stream, ct),
-        renderer.Format.ContentType,
-        fileDownloadName: $"invoice-{invoice.InvoiceNumber}{renderer.Format.Extension}");
+    string path = await archive.EnsureStoredAsync(invoice, ct);
+    Stream pdf = await files.OpenReadAsync(path, ct);
+    return Results.File(pdf, FileFormat.Pdf.ContentType, $"invoice-{invoice.InvoiceNumber}.pdf");
 });
 
 // Synchronous on purpose, to show what a slow document does to a request
