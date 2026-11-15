@@ -7,7 +7,8 @@ public static class ReportPrinter
 {
     public static void Print(EvalReport report, string model)
     {
-        Console.WriteLine($"{report.Task} {report.Version} | {model} | {report.Results.Count} cases");
+        string fingerprint = report.Fingerprint is null ? "" : $" ({report.Fingerprint})";
+        Console.WriteLine($"{report.Task} {report.Version}{fingerprint} | {model} | {report.Results.Count} cases");
         foreach (CaseResult result in report.Results)
         {
             string status = result.Verdict.Passed ? "PASS" : "FAIL";
@@ -30,6 +31,7 @@ public static class ReportPrinter
         File.WriteAllLines(path, report.Results.Select(r => JsonSerializer.Serialize(new
         {
             r.Id,
+            report.Fingerprint,
             r.Verdict.Passed,
             r.Verdict.Detail,
             r.Output,

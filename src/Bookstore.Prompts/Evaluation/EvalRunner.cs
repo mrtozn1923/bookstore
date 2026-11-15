@@ -11,7 +11,7 @@ public sealed record Verdict(bool Passed, string Detail)
 
 public sealed record CaseResult(string Id, Verdict Verdict, string Output, TimeSpan Elapsed);
 
-public sealed record EvalReport(string Task, string Version, IReadOnlyList<CaseResult> Results)
+public sealed record EvalReport(string Task, string Version, IReadOnlyList<CaseResult> Results, string? Fingerprint = null)
 {
     public int Passed => Results.Count(r => r.Verdict.Passed);
     public double PassRate => Results.Count == 0 ? 0 : (double)Passed / Results.Count;
@@ -37,6 +37,6 @@ public sealed class EvalRunner(IChatClient client, ChatOptions baseOptions)
             Verdict verdict = grade(testCase, response.Text);
             results.Add(new CaseResult(testCase.Id, verdict, response.Text, Stopwatch.GetElapsedTime(start)));
         }
-        return new EvalReport(prompt.Task, prompt.Version, results);
+        return new EvalReport(prompt.Task, prompt.Version, results, prompt.Fingerprint);
     }
 }

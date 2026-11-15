@@ -5,4 +5,9 @@
     <PackageReference Include="Microsoft.SqlServer.TransactSql.ScriptDom" Version="180.154.0" />
   </ItemGroup>
 
+  <!-- Prompt files ship inside the assembly; editing one needs a build and a review -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\prompts\**\*.prompt.md" LogicalName="prompts/%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
 </Project>

@@ -8,7 +8,8 @@ public sealed record PromptVersion(
     string Version,
     string System,
     Func<string, string> BuildUser,
-    ChatResponseFormat? Format = null)
+    ChatResponseFormat? Format = null,
+    string? Fingerprint = null)
 {
     public List<ChatMessage> Render(string input) =>
         [new(ChatRole.System, System), new(ChatRole.User, BuildUser(input))];

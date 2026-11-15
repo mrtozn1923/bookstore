@@ -1,4 +1,5 @@
 using System.Globalization;
+using Bookstore.Prompts.Catalog;
 using Bookstore.Prompts.Evaluation;
 using Bookstore.Prompts.Lab;
 using Bookstore.Prompts.Tasks.LongDocument;
@@ -18,16 +19,27 @@ EvalRunner runner = new(LabClient.Create(), LabClient.Options());
 
 switch (task)
 {
+    case "return-check" when version == "injection":
+    {
+        // Same v3 prompt, with and without escaping the customer message
+        IReadOnlyList<TestCase<ReturnCheckResult>> cases =
+            TestSet.LoadJsonl<ReturnCheckResult>(Path.Combine(AppContext.BaseDirectory, "data", "injection-messages.jsonl"));
+        string promptVersion = args.ElementAtOrDefault(2) ?? "v3";
+        foreach (bool escape in promptVersion == "v3" ? new[] { false, true } : [true])
+        {
+            PromptVersion prompt = PromptCatalog.Default.ToPromptVersion("return-check", promptVersion, "message",
+                ChatResponseFormat.ForJsonSchema<ReturnCheckResult>(), escapeInput: escape)
+                with { Version = promptVersion + (escape ? "-escaped" : "-raw") };
+            EvalReport report = await runner.RunAsync(prompt, cases, ReturnCheckGrader.Grade);
+            ReportPrinter.Print(report, LabClient.Model);
+        }
+        break;
+    }
     case "return-check":
     {
         IReadOnlyList<TestCase<ReturnCheckResult>> cases =
             TestSet.LoadJsonl<ReturnCheckResult>(Path.Combine(AppContext.BaseDirectory, "data", "return-check.jsonl"));
-        PromptVersion prompt = version switch
-        {
-            "v2" => ReturnCheckPrompts.V2,
-            "v3" => ReturnCheckPrompts.V3,
-            _ => ReturnCheckPrompts.V1,
-        };
+        PromptVersion prompt = ReturnCheckPrompts.Get(version);
         Func<TestCase<ReturnCheckResult>, string, Verdict> grade =
             args.Contains("--guard") ? ReturnCheckGrader.GradeWithGuard : ReturnCheckGrader.Grade;
         EvalReport report = await runner.RunAsync(prompt, firstOnly ? [.. cases.Take(1)] : cases, grade);
@@ -114,6 +126,20 @@ switch (task)
         await AgentLab.RunAsync(version, args.Contains("--approval"),
             args.SkipWhile(a => a != "--only").Skip(1).FirstOrDefault(),
             int.TryParse(args.SkipWhile(a => a != "--repeat-history").Skip(1).FirstOrDefault(), out int repeat) ? repeat : 1);
+        break;
+    case "prompts":
+        switch (version)
+        {
+            case "lock":
+                PromptsLab.Lock(args.ElementAtOrDefault(2) ?? Path.Combine("prompts", "prompts.lock.json"));
+                break;
+            case "check-models":
+                await PromptsLab.CheckModelsAsync();
+                break;
+            default:
+                PromptsLab.List();
+                break;
+        }
         break;
     default:
         Console.WriteLine($"Unknown task: {task}");
