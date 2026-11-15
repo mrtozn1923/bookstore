@@ -20,6 +20,8 @@ builder.Services.AddSingleton<IOrderRepository, InMemoryOrderRepository>();
 builder.Services.AddScoped<BookstoreTools>();
 builder.Services.AddScoped<AssistantAgent>();
 builder.Services.AddScoped<ToolRunnerAssistant>();
+builder.Services.AddScoped<ReturnRequestExtractor>();
+builder.Services.AddScoped<ReturnPolicy>();
 
 WebApplication app = builder.Build();
 
@@ -27,6 +29,7 @@ app.UseExceptionHandler();
 app.MapCatalogEndpoints();
 app.MapSupportEndpoints();
 app.MapAssistantEndpoints();
+app.MapReturnEndpoints();
 
 if (app.Environment.IsDevelopment())
 {
