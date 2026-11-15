@@ -3,6 +3,7 @@
     <Project Path="samples/Bookstore.Bcl.Samples/Bookstore.Bcl.Samples.csproj" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="src/Bookstore.Admin/Bookstore.Admin.csproj" />
     <Project Path="src/Bookstore.Bcl/Bookstore.Bcl.csproj" />
   </Folder>
 </Solution>

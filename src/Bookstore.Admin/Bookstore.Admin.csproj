@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Bookstore.Admin</RootNamespace>
+    <AssemblyName>bookstore-admin</AssemblyName>
+    <!-- dotnet pack produces a .NET tool package; see the .NET SDK, CLI and MSBuild series. -->
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>bookstore-admin</ToolCommandName>
+    <PackageId>Bookstore.Admin</PackageId>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.CommandLine" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.15" />
+    <ProjectReference Include="..\Bookstore.Bcl\Bookstore.Bcl.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>
