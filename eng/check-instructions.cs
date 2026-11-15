@@ -2,6 +2,7 @@
 // Checks Copilot instruction and prompt files: frontmatter, applyTo globs, AGENTS.md copy, size.
 // Run from the repository root: dotnet run eng/check-instructions.cs
 using System.Diagnostics;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 const int AlwaysLoadedBudget = 8_000;   // our own budget in characters, not a Copilot limit
@@ -42,6 +43,58 @@ foreach (string file in tracked.Where(f => f.StartsWith(".github/prompts/") && f
     if (!meta.ContainsKey("description"))
     {
         errors.Add($"{file}: description is missing");
+    }
+}
+
+foreach (string file in tracked.Where(f => f.StartsWith(".github/skills/") && f.EndsWith("/SKILL.md")))
+{
+    Dictionary<string, string> meta = Frontmatter(file);
+    string folder = Path.GetFileName(Path.GetDirectoryName(file))!;
+    string name = meta.GetValueOrDefault("name", "");
+    string description = meta.GetValueOrDefault("description", "");
+    string invocation = meta.GetValueOrDefault("disable-model-invocation", "false") == "true" ? "slash command only" : "auto + slash command";
+    Console.WriteLine($"{file}: skill {name} ({invocation}, description {description.Length} chars)");
+    if (name != folder || !Regex.IsMatch(name, "^[a-z0-9-]{1,64}$"))
+    {
+        errors.Add($"{file}: name '{name}' must match the folder '{folder}' and use 1-64 lowercase letters, digits or hyphens");
+    }
+    if (description.Length is 0 or > 1024)
+    {
+        errors.Add($"{file}: description must be 1-1024 characters");
+    }
+}
+
+foreach (string file in tracked.Where(f => f.StartsWith(".github/agents/") && f.EndsWith(".agent.md")))
+{
+    Dictionary<string, string> meta = Frontmatter(file);
+    Console.WriteLine($"{file}: agent {meta.GetValueOrDefault("name", Path.GetFileName(file).Replace(".agent.md", ""))} (tools: {meta.GetValueOrDefault("tools", "all")})");
+    if (!meta.ContainsKey("description"))
+    {
+        errors.Add($"{file}: description is required for a custom agent");
+    }
+}
+
+foreach (string file in tracked.Where(f => f.StartsWith(".github/hooks/") && f.EndsWith(".json")))
+{
+    using JsonDocument hooks = JsonDocument.Parse(File.ReadAllText(file));
+    if (!hooks.RootElement.TryGetProperty("version", out JsonElement version) || version.GetInt32() != 1)
+    {
+        errors.Add($"{file}: \"version\": 1 is required");
+    }
+    foreach (JsonProperty hookEvent in hooks.RootElement.GetProperty("hooks").EnumerateObject())
+    {
+        foreach (JsonElement hook in hookEvent.Value.EnumerateArray())
+        {
+            foreach (string shell in new[] { "bash", "powershell" })
+            {
+                string? script = hook.TryGetProperty(shell, out JsonElement value) ? value.GetString() : null;
+                if (script is not null && script.StartsWith(".github/") && !File.Exists(script))
+                {
+                    errors.Add($"{file}: {hookEvent.Name} {shell} script {script} does not exist");
+                }
+            }
+        }
+        Console.WriteLine($"{file}: {hookEvent.Name} -> {hookEvent.Value.GetArrayLength()} hook(s)");
     }
 }
 

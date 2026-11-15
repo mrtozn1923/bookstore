@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "bookstore": {
+      "type": "local",
+      "command": "dotnet",
+      "args": ["run", "--project", "src/Bookstore.Mcp", "--no-build"],
+      "env": {
+        "BOOKSTORE_API_URL": "${BOOKSTORE_API_URL:-http://localhost:5080}"
+      },
+      "tools": ["search_books", "get_book", "list_institutions"]
+    },
+    "playwright": {
+      "type": "local",
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@0.0.85", "--isolated", "--allowed-origins", "http://localhost:4200"],
+      "tools": ["browser_navigate", "browser_snapshot", "browser_click", "browser_type", "browser_console_messages"]
+    }
+  }
+}
