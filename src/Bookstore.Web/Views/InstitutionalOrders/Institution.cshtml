@@ -1,0 +1,17 @@
+@model Bookstore.Web.Institutional.InstitutionStep
+@{
+    ViewData["Title"] = "Institutional order: 1 of 3";
+}
+<h1>Institutional order <small>1 of 3</small></h1>
+<form method="post">
+    <div asp-validation-summary="ModelOnly"></div>
+    <label asp-for="InstitutionName">Institution</label>
+    <input asp-for="InstitutionName" />
+    <span asp-validation-for="InstitutionName"></span>
+    <label asp-for="UnitName">Unit (campus, branch, department)</label>
+    <input asp-for="UnitName" />
+    <label asp-for="ContactEmail">Contact e-mail</label>
+    <input asp-for="ContactEmail" />
+    <span asp-validation-for="ContactEmail"></span>
+    <button type="submit">Next: books</button>
+</form>

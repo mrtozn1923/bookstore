@@ -1,0 +1,18 @@
+@model Bookstore.Web.Institutional.BooksStep
+@{
+    ViewData["Title"] = "Institutional order: 2 of 3";
+}
+<h1>Institutional order <small>2 of 3</small></h1>
+<form method="post">
+    <div asp-validation-summary="ModelOnly"></div>
+    <table>
+        @foreach (Book book in Model.Catalog)
+        {
+            <tr>
+                <td>@book.Title</td>
+                <td><input type="number" min="0" name="Quantities[@book.Id]" value="@(Model.Quantities.GetValueOrDefault(book.Id))" /></td>
+            </tr>
+        }
+    </table>
+    <button type="submit">Next: review</button>
+</form>

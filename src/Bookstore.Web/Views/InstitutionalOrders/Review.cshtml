@@ -1,0 +1,16 @@
+@model Bookstore.Web.Institutional.ReviewStep
+@{
+    ViewData["Title"] = "Institutional order: 3 of 3";
+}
+<h1>Institutional order <small>3 of 3</small></h1>
+<p>@Model.Draft.InstitutionName @(Model.Draft.UnitName is null ? "" : $"/ {Model.Draft.UnitName}") · @Model.Draft.ContactEmail</p>
+<ul>
+    @foreach ((Book book, int quantity) in Model.Summary.Lines)
+    {
+        <li>@quantity × @book.Title</li>
+    }
+</ul>
+<p>Subtotal @Model.Summary.Subtotal.ToString("0.00") TRY · Institutional discount -@Model.Summary.Discount.ToString("0.00") TRY · Total @Model.Summary.Total.ToString("0.00") TRY</p>
+<form method="post">
+    <button type="submit">Send for approval</button>
+</form>

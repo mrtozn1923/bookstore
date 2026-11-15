@@ -10,7 +10,15 @@
     <header>
         <a class="brand" asp-controller="Books" asp-action="Index">Bookstore</a>
         @await Component.InvokeAsync("CategoryMenu")
+        <a asp-controller="Cart" asp-action="Index">Cart</a>
     </header>
+    @if (Context.Features.Get<Microsoft.AspNetCore.Http.Features.ITrackingConsentFeature>() is { CanTrack: false })
+    {
+        <form class="consent" method="post" asp-controller="Privacy" asp-action="Consent" asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)">
+            We use a cookie to remember your preferences (sort order). Cart and order cookies are required for the site to work.
+            <button type="submit">Allow preference cookies</button>
+        </form>
+    }
     <main>
         @if (TempData["Flash"] is string flash)
         {

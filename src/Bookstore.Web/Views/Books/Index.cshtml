@@ -3,9 +3,10 @@
     ViewData["Title"] = "Books";
 }
 <h1>Books</h1>
+<p>Sort: <a href="?sort=title">title</a> · <a href="?sort=price">price</a> (now: @ViewData["Sort"])</p>
 <ul class="books">
     @foreach (Book book in Model)
     {
-        <li><a asp-action="Details" asp-route-id="@book.Id" asp-route-slug="@book.Slug">@book.Title</a> · @book.Author</li>
+        <li><a asp-action="Details" asp-route-id="@book.Id" asp-route-slug="@book.Slug">@book.Title</a> · @book.Author · @book.Price.ToString("0.00") TRY</li>
     }
 </ul>

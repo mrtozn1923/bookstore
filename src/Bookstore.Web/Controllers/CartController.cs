@@ -7,6 +7,10 @@ namespace Bookstore.Web.Controllers;
 [Route("cart")]
 public sealed class CartController(CartService cart) : Controller
 {
+    [HttpGet("")]
+    public async Task<IActionResult> Index(CancellationToken cancellationToken) =>
+        View(await cart.GetItemsAsync(cancellationToken));
+
     [HttpPost("add")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Add(int bookId, int quantity, CancellationToken cancellationToken)

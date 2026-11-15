@@ -1,0 +1,12 @@
+@model string?
+@{
+    ViewData["Title"] = "Institutional order sent";
+}
+@if (Model is not null)
+{
+    <h1>Order @Model was sent for approval</h1>
+}
+else
+{
+    <h1>Your order was sent for approval</h1>
+}

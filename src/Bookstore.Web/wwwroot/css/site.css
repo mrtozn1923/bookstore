@@ -4,3 +4,4 @@ header nav { display: flex; gap: .75rem; }
 .brand { font-weight: 700; }
 .flash { background: #eef6ee; border: 1px solid #9c9; padding: .5rem .75rem; }
 .price { font-weight: 600; }
+.consent { background: #fff8e1; border: 1px solid #e0c060; padding: .5rem .75rem; margin-top: .5rem; }
