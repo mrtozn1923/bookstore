@@ -1,0 +1,26 @@
+{
+  "@context": "https://schema.org",
+  "@type": "DiscussionForumPosting",
+  "headline": "Should I read the Dune appendices first?",
+  "text": "I am about to start Dune. A friend says reading the appendices first spoils nothing and helps with the names. Did anyone try that?",
+  "url": "https://bookstore.example/forum/dune/read-appendices-first",
+  "datePublished": "2026-11-10T21:04:00+03:00",
+  "author": {
+    "@type": "Person",
+    "name": "Alan T.",
+    "url": "https://bookstore.example/forum/users/alan-t"
+  },
+  "commentCount": 1,
+  "comment": [
+    {
+      "@type": "Comment",
+      "text": "I did. The glossary helped, the history section was better after the book.",
+      "datePublished": "2026-11-10T22:30:00+03:00",
+      "author": {
+        "@type": "Person",
+        "name": "Grace H.",
+        "url": "https://bookstore.example/forum/users/grace-h"
+      }
+    }
+  ]
+}

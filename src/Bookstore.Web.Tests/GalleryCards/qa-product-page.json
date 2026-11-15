@@ -1,0 +1,8 @@
+{
+  "@context": "https://schema.org",
+  "@type": "QAPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "Is it in stock?", "answerCount": 1, "acceptedAnswer": { "@type": "Answer", "text": "Yes." } },
+    { "@type": "Question", "name": "Is it signed?", "answerCount": 0 }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "@context": "https://schema.org",
+  "@type": "QAPage",
+  "mainEntity": {
+    "@type": "Question",
+    "name": "Does the Dune paperback include the maps?",
+    "text": "I want the edition with the map of Arrakis. Does the paperback (ISBN 9780000000019) have it?",
+    "answerCount": 2,
+    "datePublished": "2026-11-05T10:12:00+03:00",
+    "author": { "@type": "Person", "name": "Linus T." },
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Yes, the map is on the two pages before chapter one, in black and white.",
+      "datePublished": "2026-11-05T11:40:00+03:00",
+      "upvoteCount": 4,
+      "url": "https://bookstore.example/questions/dune-paperback-maps#answer-2",
+      "author": { "@type": "Person", "name": "Ada L." }
+    },
+    "suggestedAnswer": [
+      {
+        "@type": "Answer",
+        "text": "Mine has it too, but the hardcover prints it larger.",
+        "datePublished": "2026-11-06T09:02:00+03:00",
+        "upvoteCount": 1,
+        "url": "https://bookstore.example/questions/dune-paperback-maps#answer-3",
+        "author": { "@type": "Person", "name": "Barbara L." }
+      }
+    ]
+  }
+}
