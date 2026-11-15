@@ -18,3 +18,25 @@ type ValidationError struct {
 func (e ValidationError) Error() string {
 	return e.Field + ": " + e.Message
 }
+
+// ValidationErrors returns every ValidationError in err's tree, in order.
+// It walks both single wrapping (%w) and errors.Join.
+func ValidationErrors(err error) []ValidationError {
+	var out []ValidationError
+	var walk func(error)
+	walk = func(e error) {
+		switch x := e.(type) {
+		case nil:
+		case ValidationError:
+			out = append(out, x)
+		case interface{ Unwrap() []error }:
+			for _, inner := range x.Unwrap() {
+				walk(inner)
+			}
+		case interface{ Unwrap() error }:
+			walk(x.Unwrap())
+		}
+	}
+	walk(err)
+	return out
+}

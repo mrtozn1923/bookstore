@@ -72,6 +72,11 @@ func (s *Service) Place(ctx context.Context, customerID string, lines []Line) (*
 	return o, nil
 }
 
+// ByID returns a saved order.
+func (s *Service) ByID(ctx context.Context, id string) (*Order, error) {
+	return s.repo.ByID(ctx, id)
+}
+
 // newID returns the next order ID. Only the counter is locked, not the
 // catalog lookups or the repository call.
 func (s *Service) newID() string {

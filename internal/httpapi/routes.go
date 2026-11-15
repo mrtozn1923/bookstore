@@ -9,12 +9,14 @@ import (
 	"strconv"
 
 	"bookstore/internal/catalog"
+	"bookstore/internal/orders"
 	"bookstore/internal/paging"
 )
 
 // API holds what the handlers need. main builds it once.
 type API struct {
-	Books catalog.Store
+	Books  catalog.Store
+	Orders *orders.Service
 }
 
 // Routes registers every endpoint on a new ServeMux.
@@ -24,6 +26,8 @@ func (a *API) Routes() *http.ServeMux {
 	mux.HandleFunc("GET /api/books", a.listBooks)
 	mux.HandleFunc("GET /api/books/{isbn}", a.getBook)
 	mux.HandleFunc("GET /api/authors", a.listAuthors)
+	mux.HandleFunc("POST /api/orders", a.placeOrder)
+	mux.HandleFunc("GET /api/orders/{id}", a.getOrder)
 	return mux
 }
 

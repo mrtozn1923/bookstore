@@ -8,12 +8,18 @@ import (
 
 	"bookstore/internal/catalog"
 	"bookstore/internal/httpapi"
+	"bookstore/internal/orders"
+	"bookstore/internal/orders/memstore"
 )
 
 const angularDevOrigin = "http://localhost:4200"
 
 func main() {
-	api := &httpapi.API{Books: catalog.Store{}}
+	books := catalog.Store{}
+	api := &httpapi.API{
+		Books:  books,
+		Orders: orders.NewService(memstore.New(), books),
+	}
 
 	csrf := http.NewCrossOriginProtection()
 	if err := csrf.AddTrustedOrigin(angularDevOrigin); err != nil {
