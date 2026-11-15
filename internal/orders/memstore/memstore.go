@@ -31,7 +31,7 @@ func (s *Store) Save(_ context.Context, o *orders.Order) error {
 func (s *Store) ByID(_ context.Context, id string) (*orders.Order, error) {
 	o, ok := s.byID[id]
 	if !ok {
-		return nil, fmt.Errorf("order %s not found", id)
+		return nil, fmt.Errorf("id %s: %w", id, orders.ErrNotFound)
 	}
 	return o, nil
 }

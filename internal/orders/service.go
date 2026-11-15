@@ -2,8 +2,11 @@ package orders
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
+
+	"bookstore/internal/catalog"
 )
 
 // Repository is what Service needs from storage. It is declared here, next
@@ -13,27 +16,73 @@ type Repository interface {
 	ByID(ctx context.Context, id string) (*Order, error)
 }
 
+// Catalog is what Service needs from the catalog.
+type Catalog interface {
+	ByISBN(isbn string) (catalog.Book, error)
+}
+
+// Line is one requested book in a new order.
+type Line struct {
+	ISBN     string
+	Quantity int
+}
+
 // Service places orders.
 type Service struct {
 	repo   Repository
+	books  Catalog
 	now    func() time.Time
 	nextID int
 }
 
-// NewService accepts any Repository and returns a concrete *Service.
-func NewService(repo Repository) *Service {
-	return &Service{repo: repo, now: time.Now, nextID: 1000}
+// NewService accepts interfaces and returns a concrete *Service.
+func NewService(repo Repository, books Catalog) *Service {
+	return &Service{repo: repo, books: books, now: time.Now, nextID: 1000}
 }
 
-// Place creates an order with the given items and saves it.
-func (s *Service) Place(ctx context.Context, customerID string, items []Item) (*Order, error) {
-	s.nextID++ // not safe for concurrent use yet; fixed in 08
-	o := NewOrder(fmt.Sprintf("ORD-%d", s.nextID), customerID, s.now())
-	for _, it := range items {
-		o.AddItem(it, s.now())
-	}
-	if err := s.repo.Save(ctx, o); err != nil {
+// Place validates the request, checks stock and saves a new order.
+func (s *Service) Place(ctx context.Context, customerID string, lines []Line) (*Order, error) {
+	if err := validate(customerID, lines); err != nil {
 		return nil, err
 	}
+	items := make([]Item, 0, len(lines))
+	for _, l := range lines {
+		b, err := s.books.ByISBN(l.ISBN)
+		if err != nil {
+			return nil, fmt.Errorf("place order: %w", err)
+		}
+		if b.Stock < l.Quantity {
+			return nil, fmt.Errorf("place order: %q has %d in stock, %d requested: %w",
+				b.Title, b.Stock, l.Quantity, ErrOutOfStock)
+		}
+		items = append(items, Item{ISBN: b.ISBN, Title: b.Title, UnitPrice: b.Price, Quantity: l.Quantity})
+	}
+
+	s.nextID++ // not safe for concurrent use yet; fixed in 08
+	now := s.now()
+	o := NewOrder(fmt.Sprintf("ORD-%d", s.nextID), customerID, now)
+	for _, it := range items {
+		o.AddItem(it, now)
+	}
+	if err := s.repo.Save(ctx, o); err != nil {
+		return nil, fmt.Errorf("save order %s: %w", o.ID, err)
+	}
 	return o, nil
+}
+
+// validate collects every problem instead of stopping at the first one.
+func validate(customerID string, lines []Line) error {
+	var errs []error
+	if customerID == "" {
+		errs = append(errs, ValidationError{Field: "customerId", Message: "is required"})
+	}
+	if len(lines) == 0 {
+		errs = append(errs, ValidationError{Field: "items", Message: "must not be empty"})
+	}
+	for i, l := range lines {
+		if l.Quantity <= 0 {
+			errs = append(errs, ValidationError{Field: fmt.Sprintf("items[%d].quantity", i), Message: "must be positive"})
+		}
+	}
+	return errors.Join(errs...) // nil when errs is empty
 }

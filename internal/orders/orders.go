@@ -82,14 +82,14 @@ func (o *Order) AddItem(item Item, now time.Time) {
 	o.Touch(now)
 }
 
-// MarkPaid moves a pending order to Paid and reports whether it did.
-func (o *Order) MarkPaid(now time.Time) bool {
+// MarkPaid moves a pending order to Paid.
+func (o *Order) MarkPaid(now time.Time) error {
 	if o.Status != StatusPending {
-		return false
+		return fmt.Errorf("pay order %s in status %v: %w", o.ID, o.Status, ErrInvalidTransition)
 	}
 	o.Status = StatusPaid
 	o.Touch(now)
-	return true
+	return nil
 }
 
 // Total is the sum of all lines.

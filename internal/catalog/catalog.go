@@ -2,6 +2,7 @@
 package catalog
 
 import (
+	"errors"
 	"fmt"
 	"slices"
 )
@@ -26,6 +27,9 @@ var books = []Book{
 	{ISBN: "9780141439587", Title: "Emma", Author: "Jane Austen", Price: 19900, Stock: 7},
 }
 
+// ErrBookNotFound is returned when no book has the requested ISBN.
+var ErrBookNotFound = errors.New("book not found")
+
 // Store serves books from memory for now.
 type Store struct{}
 
@@ -43,6 +47,16 @@ func (Store) CheaperThan(limit Money) []Book {
 		}
 	}
 	return result
+}
+
+// ByISBN returns the book with the given ISBN.
+func (Store) ByISBN(isbn string) (Book, error) {
+	for _, b := range books {
+		if b.ISBN == isbn {
+			return b, nil
+		}
+	}
+	return Book{}, fmt.Errorf("isbn %s: %w", isbn, ErrBookNotFound)
 }
 
 // String formats the amount for people: Money(34990) prints as "349.90 TRY".

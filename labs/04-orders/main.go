@@ -15,13 +15,13 @@ import (
 func main() {
 	ctx := context.Background()
 	repo := memstore.New()
-	svc := orders.NewService(repo)
+	svc := orders.NewService(repo, catalog.Store{})
 
 	books := catalog.Store{}.All()
 	dune, emma := books[0], books[3]
-	o, err := svc.Place(ctx, "ada", []orders.Item{
-		{ISBN: dune.ISBN, Title: dune.Title, UnitPrice: dune.Price, Quantity: 2},
-		{ISBN: emma.ISBN, Title: emma.Title, UnitPrice: emma.Price, Quantity: 1},
+	o, err := svc.Place(ctx, "ada", []orders.Line{
+		{ISBN: dune.ISBN, Quantity: 2},
+		{ISBN: emma.ISBN, Quantity: 1},
 	})
 	if err != nil {
 		fmt.Println("place failed:", err)
