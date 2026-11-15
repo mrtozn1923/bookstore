@@ -22,6 +22,10 @@ restore:
     dotnet restore
     npm --prefix {{ web }} ci
 
+# First-time setup after scripts/bootstrap (restore + seed data)
+[group('setup')]
+setup: restore seed
+
 # Build the API and the Angular app
 [group('build')]
 build:

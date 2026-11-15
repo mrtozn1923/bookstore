@@ -1,0 +1,7 @@
+# Runtime versions for Bookstore. The .NET SDK version is read from global.json.
+[tools]
+node = "24"
+just = "1.59.0"
+
+[settings]
+idiomatic_version_file_enable_tools = ["dotnet"]
