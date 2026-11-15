@@ -6,6 +6,8 @@
     <Project Path="samples/Bookstore.Api/Bookstore.Api.csproj" />
     <Project Path="samples/GcLab/GcLab.csproj" />
     <Project Path="samples/JitLab/JitLab.csproj" />
+    <Project Path="samples/NominalTyping/NominalTyping.csproj" />
+    <Project Path="samples/Paradigms/Paradigms.csproj" />
     <Project Path="samples/PipelineTour/PipelineTour.csproj" />
     <Project Path="samples/RegexLexer/RegexLexer.csproj" />
     <Project Path="samples/RoslynSemantic/RoslynSemantic.csproj" />

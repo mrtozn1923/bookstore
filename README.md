@@ -44,4 +44,11 @@ dotnet run -c Release --project samples/GcLab -- memory
 dotnet run -c Release --project samples/GcLab -- filter interpreter 5
 DOTNET_gcServer=1 dotnet run -c Release --project samples/GcLab -- modes 8
 dotnet run -c Release --project benchmarks/Bookstore.Filter.Benchmarks -- --filter '*EvaluationBenchmarks*'
+
+# 08: paradigms, typing, runtime async
+dotnet run --project samples/Paradigms
+dotnet run --project samples/NominalTyping
+cd samples/ts-erasure && npx tsc && node dist/structural.js
+# samples/RuntimeAsync targets net11.0 and has its own global.json (needs the .NET 11 SDK); it is not in the solution
+cd samples/RuntimeAsync && dotnet build -c Release -p:RuntimeAsync=true --no-incremental && dotnet bin/Release/net11.0/RuntimeAsync.dll
 ```
