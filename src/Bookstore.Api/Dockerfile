@@ -10,7 +10,9 @@ RUN dotnet publish src/Bookstore.Api/Bookstore.Api.csproj -c Release --no-restor
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled
 ARG APP_VERSION=dev
 ARG SOURCE_COMMIT=unknown
-ENV APP_VERSION=$APP_VERSION SOURCE_COMMIT=$SOURCE_COMMIT
+# Lab only (post 08): a non-zero FAULT_RATE builds a deliberately failing image.
+ARG FAULT_RATE=0
+ENV APP_VERSION=$APP_VERSION SOURCE_COMMIT=$SOURCE_COMMIT Bookstore__FaultRate=$FAULT_RATE
 WORKDIR /app
 COPY --from=build /app .
 USER $APP_UID

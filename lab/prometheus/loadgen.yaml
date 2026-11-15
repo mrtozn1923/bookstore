@@ -1,0 +1,21 @@
+# Lab-only traffic for the canary analysis (post 08): about ten requests a second to the api Service.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loadgen
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: loadgen
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: loadgen
+    spec:
+      containers:
+        - name: loadgen
+          image: curlimages/curl:8.17.0
+          command: ["/bin/sh", "-c"]
+          args:
+            - while true; do curl -s -o /dev/null -m 2 http://api/api/books; curl -s -o /dev/null -m 2 http://api/api/info; sleep 0.2; done

@@ -9,8 +9,8 @@ images:
 - digest: sha256:<digest-from-your-ci-run>
   name: bookstore/api
   newName: localhost:52612/bookstore/api
-  newTag: 1.2.0
+  newTag: 1.3.0
 - digest: sha256:<digest-from-your-ci-run>
   name: bookstore/migrator
   newName: localhost:52612/bookstore/migrator
-  newTag: 1.2.0
+  newTag: 1.3.0

@@ -1,5 +1,6 @@
-apiVersion: apps/v1
-kind: Deployment
+# A Rollout instead of a Deployment (post 08): same pod template, plus a release strategy.
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
 metadata:
   name: api
   annotations:
@@ -13,6 +14,10 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: api
+  # Without steps a canary Rollout behaves like a rolling update (dev, staging);
+  # the prod overlay adds steps and analysis.
+  strategy:
+    canary: {}
   template:
     metadata:
       labels:

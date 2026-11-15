@@ -5,6 +5,7 @@ using Bookstore.Inventory;
 using Bookstore.Ordering;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
+using OpenTelemetry.Metrics;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,12 @@ builder.Services.AddDbContext<BookstoreContext>(options => _ = provider switch
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<BookstoreContext>("database", tags: ["ready"]);
 builder.Services.AddSingleton(TimeProvider.System);
+
+// HTTP server metrics for Prometheus (GET /metrics): canary analysis in the GitOps series reads them.
+builder.Services.AddOpenTelemetry()
+    .WithMetrics(metrics => metrics
+        .AddAspNetCoreInstrumentation()
+        .AddPrometheusExporter());
 builder.Services.AddProblemDetails();
 builder.Services.AddValidation();
 builder.Services.AddOpenApi();
@@ -41,6 +48,23 @@ WebApplication app = builder.Build();
 app.UseExceptionHandler();
 app.UseStatusCodePages();
 
+// Lab only: Bookstore:FaultRate (0..1) makes that share of /api requests fail with 500.
+// The GitOps series builds a deliberately bad image with it to watch a canary roll back.
+double faultRate = app.Configuration.GetValue<double>("Bookstore:FaultRate");
+if (faultRate > 0)
+{
+    app.Use(async (context, next) =>
+    {
+        if (context.Request.Path.StartsWithSegments("/api") && Random.Shared.NextDouble() < faultRate)
+        {
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            return;
+        }
+
+        await next(context);
+    });
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -53,6 +77,7 @@ if (app.Environment.IsDevelopment())
 // Liveness only says the process answers; readiness also needs the database.
 app.MapHealthChecks("/health/live", new HealthCheckOptions { Predicate = _ => false });
 app.MapHealthChecks("/health/ready", new HealthCheckOptions { Predicate = check => check.Tags.Contains("ready") });
+app.MapPrometheusScrapingEndpoint();
 // APP_VERSION and SOURCE_COMMIT are baked into the image by CI (see ci/build-and-push.sh).
 app.MapGet("/api/info", (IHostEnvironment env) => new AppInfo(
     Environment.GetEnvironmentVariable("APP_VERSION") ?? "dev",

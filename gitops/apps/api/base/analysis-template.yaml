@@ -1,0 +1,33 @@
+# Canary health from Prometheus: only the pods of the new ReplicaSet (rollouts_pod_template_hash).
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: api-canary-health
+spec:
+  args:
+    - name: namespace
+    - name: canary-hash
+  metrics:
+    - name: error-rate
+      # The query uses a 1m window: wait until the canary has a minute of traffic.
+      initialDelay: 60s
+      interval: 30s
+      failureLimit: 1
+      successCondition: len(result) > 0 && result[0] < 0.05
+      provider:
+        prometheus:
+          address: http://prometheus.monitoring.svc.cluster.local:9090
+          query: |
+            sum(rate(http_server_request_duration_seconds_count{namespace="{{args.namespace}}", rollouts_pod_template_hash="{{args.canary-hash}}", http_route=~"/api/.*", http_response_status_code=~"5.."}[1m]) or vector(0))
+            /
+            sum(rate(http_server_request_duration_seconds_count{namespace="{{args.namespace}}", rollouts_pod_template_hash="{{args.canary-hash}}", http_route=~"/api/.*"}[1m]))
+    - name: p95-latency
+      initialDelay: 60s
+      interval: 30s
+      failureLimit: 1
+      successCondition: len(result) > 0 && result[0] < 0.5
+      provider:
+        prometheus:
+          address: http://prometheus.monitoring.svc.cluster.local:9090
+          query: |
+            histogram_quantile(0.95, sum by (le) (rate(http_server_request_duration_seconds_bucket{namespace="{{args.namespace}}", rollouts_pod_template_hash="{{args.canary-hash}}", http_route=~"/api/.*"}[1m])))

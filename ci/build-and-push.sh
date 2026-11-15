@@ -2,6 +2,7 @@
 # Local CI for the GitOps series: build once, push to the registry, promote to dev with a commit.
 # usage: CONFIG_REPO=<url or path> ci/build-and-push.sh <api|web> <version>
 #        PUSH_ONLY=1 ci/build-and-push.sh ...   (images only: Argo CD Image Updater updates dev)
+#        FAULT_RATE=0.3 ...                      (lab only: a deliberately failing image, post 08)
 set -euo pipefail
 component="$1"; version="$2"
 registry="${REGISTRY:-localhost:52612}"
@@ -19,7 +20,7 @@ for entry in "${images[@]}"; do
     image="$registry/bookstore/$name"
     echo "==> build $image:$version (source $source_commit)"
     docker build -q -f "$context/$dockerfile" -t "$image:$version" \
-        --build-arg APP_VERSION="$version" --build-arg SOURCE_COMMIT="$source_commit" \
+        --build-arg APP_VERSION="$version" --build-arg SOURCE_COMMIT="$source_commit" --build-arg FAULT_RATE="${FAULT_RATE:-0}" \
         --label org.opencontainers.image.revision="$source_commit" \
         --label org.opencontainers.image.version="$version" "$context" >/dev/null
     docker push -q "$image:$version" >/dev/null
