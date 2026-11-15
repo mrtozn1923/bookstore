@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/Bookstore.Api/Bookstore.Api.csproj" />
+    <Project Path="src/Bookstore.FakeEInvoice/Bookstore.FakeEInvoice.csproj" />
     <Project Path="src/Bookstore.FakeProviders/Bookstore.FakeProviders.csproj" />
   </Folder>
   <Folder Name="/tests/">
@@ -8,5 +9,6 @@
   </Folder>
   <Folder Name="/samples/">
     <Project Path="samples/Bookstore.ResilienceLab/Bookstore.ResilienceLab.csproj" />
+    <Project Path="samples/Bookstore.SoapLab/Bookstore.SoapLab.csproj" />
   </Folder>
 </Solution>

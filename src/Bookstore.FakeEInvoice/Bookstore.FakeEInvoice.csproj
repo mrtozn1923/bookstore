@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <RootNamespace>Bookstore.FakeEInvoice</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CoreWCF.Http" />
+    <PackageReference Include="CoreWCF.Primitives" />
+  </ItemGroup>
+
+</Project>

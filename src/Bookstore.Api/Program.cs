@@ -1,4 +1,6 @@
 using Bookstore.Infrastructure;
+using Bookstore.Institutional;
+using Bookstore.Invoicing;
 using Bookstore.Notifications;
 using Bookstore.Ordering;
 using Bookstore.Payments;
@@ -13,6 +15,7 @@ using System.Net;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using Polly;
+using Polly.Retry;
 using Polly.Simmy;
 using Polly.Simmy.Latency;
 using Polly.Simmy.Outcomes;
@@ -153,6 +156,26 @@ if (builder.Configuration.GetValue<bool>("Telemetry:ConsoleExporter"))
             .AddConsoleExporter());
 }
 
+// E-invoices go to the integrator's SOAP service. WCF has its own HTTP stack, so the Polly pipeline wraps the operation.
+builder.Services.AddOptions<EInvoiceIntegratorOptions>()
+    .BindConfiguration("Invoicing:EInvoice")
+    .ValidateOnStart();
+builder.Services.AddSingleton<EInvoiceChannelFactory>();
+builder.Services.AddScoped<IInvoiceIntegrator, SoapInvoiceIntegrator>();
+builder.Services.AddResiliencePipeline(SoapInvoiceIntegrator.PipelineName, pipeline => pipeline
+    .AddTimeout(TimeSpan.FromSeconds(30))
+    .AddRetry(new RetryStrategyOptions
+    {
+        ShouldHandle = new PredicateBuilder().Handle<Exception>(SoapInvoiceIntegrator.IsTransient),
+        MaxRetryAttempts = 2,
+        BackoffType = DelayBackoffType.Exponential,
+        UseJitter = true,
+        Delay = TimeSpan.FromMilliseconds(500)
+    }));
+builder.Services.AddSingleton<InstitutionDirectory>();
+builder.Services.AddSingleton<InvoiceStore>();
+builder.Services.AddScoped<InvoiceService>();
+
 // Exchange rates: read-only GET served from two regions, so hedging instead of plain retries.
 var rateEndpoints = builder.Configuration.GetSection("ExchangeRates:Endpoints").Get<string[]>()!;
 builder.Services.AddHttpClient(ExchangeRateClient.ClientName, client => client.BaseAddress = new Uri(rateEndpoints[0]))
@@ -247,6 +270,9 @@ app.MapPost("/admin/webhooks/messages/{id}/resend", (string id, WebhookOutbox ou
 
 // Anonymous by design: the signature, not a user, proves who is calling.
 app.MapPost("/webhooks/payment-provider", PaymentWebhookEndpoint.ReceiveAsync);
+
+app.MapPost("/api/orders/{id:int}/invoice", async (int id, InvoiceService invoices, CancellationToken ct) =>
+    await invoices.IssueAsync(id, ct) is { } invoice ? Results.Ok(invoice) : Results.NotFound());
 
 app.MapHealthChecks("/health");
 

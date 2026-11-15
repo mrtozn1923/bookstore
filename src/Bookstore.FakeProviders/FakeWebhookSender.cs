@@ -25,7 +25,7 @@ public static class FakeWebhookSender
                 request.Headers.Add("webhook-id", id);
                 request.Headers.Add("webhook-timestamp", timestamp.ToString());
                 request.Headers.Add("webhook-signature", "v1," + Convert.ToBase64String(
-                    HMACSHA256.HashData(Convert.FromBase64String(secret["whsec_".Length..]), Encoding.UTF8.GetBytes($"{id}.{timestamp}.{body}"))));
+                    HMACSHA256.HashData(Convert.FromBase64String(secret.StartsWith("whsec_", StringComparison.Ordinal) ? secret["whsec_".Length..] : secret), Encoding.UTF8.GetBytes($"{id}.{timestamp}.{body}"))));
                 try
                 {
                     using var response = await Http.SendAsync(request);

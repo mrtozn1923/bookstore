@@ -13,6 +13,8 @@
     <!-- Http.Resilience 10.11 brings Polly 8.4.2; reference the current Polly explicitly -->
     <PackageReference Include="Polly.Extensions" />
     <PackageReference Include="Polly.RateLimiting" />
+    <PackageReference Include="System.ServiceModel.Http" />
+    <PackageReference Include="System.ServiceModel.Primitives" />
   </ItemGroup>
 
 </Project>

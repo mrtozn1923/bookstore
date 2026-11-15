@@ -484,3 +484,6 @@ $RECYCLE.BIN/
 # Angular client
 .angular/
 web/bookstore-web/dist/
+
+# Local certificates written by the fake services
+.local/

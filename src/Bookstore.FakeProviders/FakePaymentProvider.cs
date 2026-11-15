@@ -38,7 +38,7 @@ public sealed class FakePaymentSettings
 public static class FakePaymentProvider
 {
     // A fake example secret; Bookstore.Api's appsettings.json has the same value.
-    public const string DefaultWebhookSecret = "whsec_Ym9va3N0b3JlLWZha2Utd2ViaG9vay1zZWNyZXQtMDAwMA==";
+    public const string DefaultWebhookSecret = "test+webhook+secret+not+real";
 
     public static WireMockServer Start(int? port = null, FakeMode mode = FakeMode.Normal) =>
         Start(port, new FakePaymentSettings { Mode = mode });

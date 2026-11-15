@@ -23,5 +23,10 @@
     <PackageVersion Include="OpenTelemetry.Exporter.Console" Version="1.21.0" />
     <PackageVersion Include="Refit.HttpClientFactory" Version="16.4.0" />
     <PackageVersion Include="Microsoft.Kiota.Bundle" Version="2.1.6" />
+    <!-- Post 10: SOAP client (dotnet/wcf) and the fake integrator's server side (CoreWCF) -->
+    <PackageVersion Include="System.ServiceModel.Http" Version="10.1.0" />
+    <PackageVersion Include="System.ServiceModel.Primitives" Version="10.1.0" />
+    <PackageVersion Include="CoreWCF.Http" Version="1.9.1" />
+    <PackageVersion Include="CoreWCF.Primitives" Version="1.9.1" />
   </ItemGroup>
 </Project>

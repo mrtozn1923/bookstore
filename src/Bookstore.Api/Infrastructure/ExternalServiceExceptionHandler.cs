@@ -1,3 +1,4 @@
+using Bookstore.Invoicing;
 using Bookstore.Ordering;
 using Bookstore.Payments;
 using Bookstore.Shipping;
@@ -23,7 +24,11 @@ public sealed class ExternalServiceExceptionHandler(IProblemDetailsService probl
                 (StatusCodes.Status503ServiceUnavailable, "Payment service is temporarily unavailable."),
             ShippingCarrierException { Kind: ShippingFailureKind.Transient or ShippingFailureKind.Unavailable } =>
                 (StatusCodes.Status503ServiceUnavailable, "Shipping service is temporarily unavailable."),
-            PaymentGatewayException or ShippingCarrierException =>
+            InvoiceIntegratorException { Kind: InvoiceFailureKind.Rejected } =>
+                (StatusCodes.Status422UnprocessableEntity, "The e-invoice was rejected by the integrator."),
+            InvoiceIntegratorException { Kind: InvoiceFailureKind.Transient or InvoiceFailureKind.Unavailable } =>
+                (StatusCodes.Status503ServiceUnavailable, "E-invoice service is temporarily unavailable."),
+            PaymentGatewayException or ShippingCarrierException or InvoiceIntegratorException =>
                 (StatusCodes.Status502BadGateway, "An external service returned an unexpected response."),
             _ => null
         };
@@ -40,11 +45,18 @@ public sealed class ExternalServiceExceptionHandler(IProblemDetailsService probl
             context.Response.Headers.RetryAfter = ((int)retryAfter.TotalSeconds).ToString();
         }
 
+        var problem = new Microsoft.AspNetCore.Mvc.ProblemDetails { Status = mapped.Value.status, Title = mapped.Value.title };
+        // The integrator's code helps support; its message and the SOAP details stay in our logs.
+        if (exception is InvoiceIntegratorException { Code: { } code })
+        {
+            problem.Extensions["integratorCode"] = code;
+        }
+
         return await problemDetails.TryWriteAsync(new ProblemDetailsContext
         {
             HttpContext = context,
             Exception = exception,
-            ProblemDetails = { Status = mapped.Value.status, Title = mapped.Value.title }
+            ProblemDetails = problem
         });
     }
 }

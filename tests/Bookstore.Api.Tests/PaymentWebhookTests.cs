@@ -15,8 +15,8 @@ namespace Bookstore.Api.Tests;
 
 public sealed class PaymentWebhookTests : IDisposable
 {
-    private const string OldSecret = "whsec_Ym9va3N0b3JlLWZha2Utd2ViaG9vay1zZWNyZXQtMDAwMA==";
-    private const string NewSecret = "whsec_Ym9va3N0b3JlLWZha2Utd2ViaG9vay1zZWNyZXQtMDAwMQ==";
+    private const string OldSecret = "test+webhook+secret+not+real";
+    private const string NewSecret = "test+webhook+secret+not+new0";
 
     private readonly WireMockServer _payments = FakePaymentProvider.Start(null,
         new FakePaymentSettings { Mode = FakeMode.Slow, Delay = TimeSpan.FromSeconds(1) });
