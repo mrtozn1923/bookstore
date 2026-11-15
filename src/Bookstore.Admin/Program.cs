@@ -10,6 +10,8 @@ builder.Services.AddRazorComponents()
 string apiBaseUrl = builder.Configuration["BookstoreApi:BaseUrl"]
     ?? throw new InvalidOperationException("BookstoreApi:BaseUrl is missing (see appsettings.json).");
 builder.Services.AddHttpClient<BookstoreApiClient>(client => client.BaseAddress = new Uri(apiBaseUrl));
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton<StaffNoteStore>();
 
 WebApplication app = builder.Build();
 

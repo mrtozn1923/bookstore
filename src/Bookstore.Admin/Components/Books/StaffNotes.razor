@@ -1,0 +1,49 @@
+@inject StaffNoteStore Store
+@inject ILogger<StaffNotes> Logger
+
+<h2>Staff notes</h2>
+
+@if (Notes is null || Notes.Count == 0)
+{
+    <p class="text-muted">No notes yet.</p>
+}
+else
+{
+    <ul>
+        @foreach (StaffNote note in Notes)
+        {
+            <li>@note.CreatedAtUtc.ToString("yyyy-MM-dd HH:mm") UTC: @note.Text</li>
+        }
+    </ul>
+}
+
+<textarea class="form-control" rows="3" placeholder="A note for the warehouse team"
+          @bind="Draft" @bind:event="oninput"></textarea>
+<button class="btn btn-secondary mt-2" disabled="@(!RendererInfo.IsInteractive || string.IsNullOrWhiteSpace(Draft))"
+        @onclick="AddNote">Add note</button>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Isbn { get; set; } = "";
+
+    [PersistentState]
+    public List<StaffNote>? Notes { get; set; }
+
+    // An unsent note: kept across a circuit pause and resume, lost on a full page reload.
+    [PersistentState]
+    public string? Draft { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Logger.LogInformation("StaffNotes for {Isbn} (renderer: {Renderer}, restored notes: {Restored}, draft: {Draft})",
+            Isbn, RendererInfo.Name, Notes is not null, Draft ?? "(none)");
+        Notes ??= [.. Store.GetNotes(Isbn)];
+    }
+
+    private void AddNote()
+    {
+        Store.Add(Isbn, Draft!);
+        Notes = [.. Store.GetNotes(Isbn)];
+        Draft = null;
+    }
+}
