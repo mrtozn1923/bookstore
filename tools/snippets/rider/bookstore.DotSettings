@@ -1,0 +1,22 @@
+<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=7D2E4C1A9B3F4E8A8C6D5B4A3F2E1D0C/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=7D2E4C1A9B3F4E8A8C6D5B4A3F2E1D0C/Shortcut/@EntryValue">bsfact</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=7D2E4C1A9B3F4E8A8C6D5B4A3F2E1D0C/Description/@EntryValue">Bookstore: xUnit v3 test named Method_Scenario_ExpectedResult</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=7D2E4C1A9B3F4E8A8C6D5B4A3F2E1D0C/Text/@EntryValue">[Fact]
+public void $METHOD$_$SCENARIO$_$EXPECTED$()
+{
+    $END$
+}</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=7D2E4C1A9B3F4E8A8C6D5B4A3F2E1D0C/Reformat/@EntryValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=7D2E4C1A9B3F4E8A8C6D5B4A3F2E1D0C/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=7D2E4C1A9B3F4E8A8C6D5B4A3F2E1D0C/Applicability/=Live/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=7D2E4C1A9B3F4E8A8C6D5B4A3F2E1D0C/Scope/=B68999B9D6B43E47A02B22C12A54C3CC/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=7D2E4C1A9B3F4E8A8C6D5B4A3F2E1D0C/Scope/=B68999B9D6B43E47A02B22C12A54C3CC/Type/@EntryValue">InCSharpTypeMember</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=7D2E4C1A9B3F4E8A8C6D5B4A3F2E1D0C/Scope/=B68999B9D6B43E47A02B22C12A54C3CC/CustomProperties/=minimumLanguageVersion/@EntryIndexedValue">2.0</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=7D2E4C1A9B3F4E8A8C6D5B4A3F2E1D0C/Field/=METHOD/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=7D2E4C1A9B3F4E8A8C6D5B4A3F2E1D0C/Field/=METHOD/Order/@EntryValue">0</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=7D2E4C1A9B3F4E8A8C6D5B4A3F2E1D0C/Field/=SCENARIO/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=7D2E4C1A9B3F4E8A8C6D5B4A3F2E1D0C/Field/=SCENARIO/Order/@EntryValue">1</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=7D2E4C1A9B3F4E8A8C6D5B4A3F2E1D0C/Field/=EXPECTED/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=7D2E4C1A9B3F4E8A8C6D5B4A3F2E1D0C/Field/=EXPECTED/Order/@EntryValue">2</s:Int64>
+</wpf:ResourceDictionary>

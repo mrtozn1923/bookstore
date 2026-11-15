@@ -1,0 +1,4 @@
+<h1>Bookstore</h1>
+@for (book of books(); track book.isbn) {
+  <app-book-card [book]="book" />
+}

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>xUnit v3 fact</Title>
+      <Shortcut>bsfact</Shortcut>
+      <Description>Bookstore: xUnit v3 test named Method_Scenario_ExpectedResult</Description>
+      <Author>Bookstore team</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Imports>
+        <Import>
+          <Namespace>Xunit</Namespace>
+        </Import>
+      </Imports>
+      <Declarations>
+        <Literal>
+          <ID>method</ID>
+          <ToolTip>Method under test</ToolTip>
+          <Default>Method</Default>
+        </Literal>
+        <Literal>
+          <ID>scenario</ID>
+          <ToolTip>Input or state</ToolTip>
+          <Default>Scenario</Default>
+        </Literal>
+        <Literal>
+          <ID>expected</ID>
+          <ToolTip>Expected result</ToolTip>
+          <Default>ExpectedResult</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="CSharp" Kind="method decl">
+        <![CDATA[[Fact]
+public void $method$_$scenario$_$expected$()
+{
+    $end$
+}]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

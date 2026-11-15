@@ -1,0 +1,82 @@
+{
+  "xUnit v3 fact": {
+    "scope": "csharp",
+    "prefix": "bsfact",
+    "description": "Bookstore: xUnit v3 test named Method_Scenario_ExpectedResult",
+    "body": [
+      "[${1|Fact,Theory|}]",
+      "public ${2|void,async Task|} ${3:Method}_${4:Scenario}_${5:ExpectedResult}()",
+      "{",
+      "    $0",
+      "}"
+    ]
+  },
+  "Minimal API endpoint group": {
+    "scope": "csharp",
+    "prefix": "bsendpoints",
+    "isFileTemplate": true,
+    "description": "Bookstore: static class that maps a RouteGroupBuilder",
+    "body": [
+      "namespace ${RELATIVE_FILEPATH/^\\w+\\W|\\W[\\w.]+$|(\\W)/${1:+.}/g};",
+      "",
+      "public static class ${TM_FILENAME_BASE}",
+      "{",
+      "    public static RouteGroupBuilder Map${1:Book}Endpoints(this IEndpointRouteBuilder app)",
+      "    {",
+      "        RouteGroupBuilder group = app.MapGroup(\"/api/${2:books}\")",
+      "            .WithTags(\"${1}\");",
+      "",
+      "        group.MapGet(\"/\", ${3:GetAll});",
+      "        $0",
+      "        return group;",
+      "    }",
+      "",
+      "    private static IResult ${3}() => TypedResults.Ok();",
+      "}"
+    ]
+  },
+  "EF Core entity configuration": {
+    "scope": "csharp",
+    "prefix": "bsconfig",
+    "isFileTemplate": true,
+    "description": "Bookstore: IEntityTypeConfiguration<T> named after the file",
+    "body": [
+      "using Microsoft.EntityFrameworkCore;",
+      "using Microsoft.EntityFrameworkCore.Metadata.Builders;",
+      "",
+      "namespace ${RELATIVE_FILEPATH/^\\w+\\W|\\W[\\w.]+$|(\\W)/${1:+.}/g};",
+      "",
+      "internal sealed class ${TM_FILENAME_BASE} : IEntityTypeConfiguration<${1:${TM_FILENAME_BASE/(.*)Configuration$/$1/}}>",
+      "{",
+      "    public void Configure(EntityTypeBuilder<${1}> builder)",
+      "    {",
+      "        builder.ToTable(\"${2:${1}s}\");",
+      "        builder.HasKey(x => x.${3:Id});",
+      "        $0",
+      "    }",
+      "}"
+    ]
+  },
+  "Angular standalone component with signal input": {
+    "scope": "typescript",
+    "prefix": "bscomponent",
+    "isFileTemplate": true,
+    "include": ["**/src/app/**/*.ts"],
+    "exclude": ["**/*.spec.ts"],
+    "description": "Bookstore: Angular 22 component, file name without .component suffix",
+    "body": [
+      "import { Component, input } from '@angular/core';",
+      "import { ${2:Book} } from '${3:../book}';",
+      "",
+      "@Component({",
+      "  selector: 'app-${TM_FILENAME_BASE}',",
+      "  templateUrl: './${TM_FILENAME_BASE}.html',",
+      "  styleUrl: './${TM_FILENAME_BASE}.css',",
+      "})",
+      "export class ${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/} {",
+      "  readonly ${1:book} = input.required<${2}>();",
+      "  $0",
+      "}"
+    ]
+  }
+}
