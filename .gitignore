@@ -13,3 +13,7 @@ api/**/obj/
 *.db
 *.db-shm
 *.db-wal
+
+# Golden test failure images
+failures/
+coverage/
