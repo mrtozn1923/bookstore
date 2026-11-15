@@ -6,6 +6,9 @@ import '../../utils/result.dart';
 abstract class AuthRepository extends ChangeNotifier {
   bool get isSignedIn;
   String? get email;
+
+  /// The email of the last sign-in on this device, if the app remembers it.
+  String? get lastEmail => null;
   Future<Result<void>> signIn({
     required String email,
     required String password,

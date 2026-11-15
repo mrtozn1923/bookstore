@@ -1,3 +1,5 @@
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../utils/result.dart';
 import '../services/api_client.dart';
 import 'auth_repository.dart';
@@ -12,7 +14,7 @@ class InvalidCredentials implements Exception {
 /// Signs in with ASP.NET Core Identity's /login and keeps the tokens in the
 /// ApiClient's TokenStore; ApiClient adds them to requests.
 class ApiAuthRepository extends AuthRepository {
-  ApiAuthRepository(this._api) {
+  ApiAuthRepository(this._api, this._prefs) {
     _api.onSessionExpired = () {
       _email = null;
       notifyListeners(); // the router's redirect sends the user to sign-in
@@ -20,7 +22,20 @@ class ApiAuthRepository extends AuthRepository {
   }
 
   final ApiClient _api;
+  // Not a secret: only used to show who is signed in and to prefill the form
+  final SharedPreferencesAsync _prefs;
+  static const _emailKey = 'last_email';
   String? _email;
+  String? _lastEmail;
+
+  @override
+  String? get lastEmail => _lastEmail;
+
+  /// Called once at start-up: tokens on the device mean a signed-in user.
+  Future<void> restore() async {
+    _lastEmail = await _prefs.getString(_emailKey);
+    if (await _api.tokens.read() != null) _email = _lastEmail;
+  }
 
   @override
   bool get isSignedIn => _email != null;
@@ -40,7 +55,8 @@ class ApiAuthRepository extends AuthRepository {
     switch (result) {
       case Ok(:final value):
         await _api.tokens.write(tokensFromJson(value));
-        _email = email;
+        await _prefs.setString(_emailKey, email);
+        _email = _lastEmail = email;
         notifyListeners();
         return const Result.ok(null);
       case Failure(error: ApiException(statusCode: 401)):

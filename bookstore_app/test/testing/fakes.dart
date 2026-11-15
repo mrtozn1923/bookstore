@@ -12,13 +12,14 @@ class FakeBookRepository implements BookRepository {
   final SampleCatalog _catalog;
   final calls = <int>[];
   int failuresLeft;
+  Object error = Exception('timeout');
 
   @override
   Future<Result<List<Book>>> getPage(int page) async {
     calls.add(page);
     if (failuresLeft > 0) {
       failuresLeft--;
-      return Result.failure(Exception('timeout'));
+      return Result.failure(error);
     }
     return Result.ok(await _catalog.page(page));
   }

@@ -17,6 +17,9 @@ import 'package:bookstore_app/utils/result.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
+import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 
 /// Prints every request with its status code (never headers or bodies).
 class LoggingClient extends http.BaseClient {
@@ -42,7 +45,9 @@ void main() {
       client: LoggingClient(),
     );
     final books = ApiBookRepository(api);
-    final auth = ApiAuthRepository(api);
+    SharedPreferencesAsyncPlatform.instance =
+        InMemorySharedPreferencesAsync.empty();
+    final auth = ApiAuthRepository(api, SharedPreferencesAsync());
     final orders = ApiOrderRepository(api);
 
     final page = (await books.getPage(0) as Ok<List<Book>>).value;

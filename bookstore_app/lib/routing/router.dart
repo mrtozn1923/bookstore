@@ -82,6 +82,7 @@ GoRouter createRouter({
     GoRoute(
       path: Routes.signIn,
       builder: (context, state) => SignInScreen(
+        initialEmail: auth.lastEmail,
         onSignIn: (email, password) async {
           final result = await auth.signIn(email: email, password: password);
           return switch (result) {

@@ -6,9 +6,10 @@ import '../../core/validators.dart';
 typedef SignInHandler = Future<String?> Function(String email, String password);
 
 class SignInScreen extends StatefulWidget {
-  const SignInScreen({super.key, required this.onSignIn});
+  const SignInScreen({super.key, required this.onSignIn, this.initialEmail});
 
   final SignInHandler onSignIn;
+  final String? initialEmail;
 
   @override
   State<SignInScreen> createState() => _SignInScreenState();
@@ -16,7 +17,7 @@ class SignInScreen extends StatefulWidget {
 
 class _SignInScreenState extends State<SignInScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _email = TextEditingController();
+  late final _email = TextEditingController(text: widget.initialEmail);
   final _password = TextEditingController();
   var _obscure = true;
   var _submitting = false;
