@@ -28,11 +28,13 @@ const app = createApp(
         orders: new OrderService(bookRepository, new InMemoryOrderRepository(catalog, new Map())),
         readiness: async () => ({ status: "ready", checks: {} }),
         carrier,
+        paymentEvents: async () => true,
     },
     {
         corsOrigins: [],
         trustProxy: 0,
         rateLimitPerMinute: 100,
+        paymentWebhookSecret: "test-webhook-secret-not-real",
         // Lab only: one fixed token for a store staff member, no signatures
         verifyToken: async (token) => {
             if (token !== "lab-staff") {

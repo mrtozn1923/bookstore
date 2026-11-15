@@ -11,6 +11,7 @@ import { ordersRouter } from "#routes/orders";
 import { reportsRouter } from "#routes/reports";
 import { diagnosticsRouter } from "#routes/diagnostics";
 import { shipmentsRouter, type TrackingLookup } from "#routes/shipments";
+import { paymentWebhookRouter, type PaymentEventHandler } from "./payments/paymentWebhook.ts";
 import { coversRoot } from "#storage/coverStorage";
 import { HttpError } from "#http/errors";
 import type { BookService } from "#services/bookService";
@@ -23,6 +24,7 @@ export interface AppServices {
     orders: OrderService;
     readiness: ReadinessCheck;
     carrier: TrackingLookup;
+    paymentEvents: PaymentEventHandler;
 }
 
 export interface AppOptions {
@@ -30,6 +32,7 @@ export interface AppOptions {
     trustProxy: number;
     rateLimitPerMinute: number;
     verifyToken: TokenVerifier;
+    paymentWebhookSecret: string;
 }
 
 // Builds the Express app without listening; services come in from outside (constructor injection, no container)
@@ -64,6 +67,8 @@ export function createApp(services: AppServices, options: AppOptions): express.E
             handler: (req, res, next) => next(new HttpError(429, "too many requests, try again later")),
         }),
     );
+    // Before express.json: the webhook needs the raw bytes to check their signature
+    app.use("/api/payments/webhook", paymentWebhookRouter(options.paymentWebhookSecret, services.paymentEvents));
     app.use(express.json({ limit: "64kb" }));
 
     // Book covers saved in post 08; ETag and Last-Modified come for free, dotfiles are ignored

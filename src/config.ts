@@ -26,6 +26,8 @@ const environmentSchema = z.object({
     CARRIER_API_KEY: z.string().default(""),
     CARRIER_TIMEOUT_MS: z.coerce.number().int().min(100).max(30_000).default(2_000),
     CARRIER_ATTEMPTS: z.coerce.number().int().min(1).max(5).default(3),
+    // Shared secret for the payment provider's webhook signatures (HMAC-SHA256)
+    PAYMENT_WEBHOOK_SECRET: z.string().min(16),
 });
 
 export interface AppConfig {
@@ -35,7 +37,7 @@ export interface AppConfig {
     logLevel: "fatal" | "error" | "warn" | "info" | "debug" | "trace";
     db: { connectionString: string };
     shutdown: { drainMs: number; timeoutMs: number };
-    http: { corsOrigins: string[]; trustProxy: number; rateLimitPerMinute: number };
+    http: { corsOrigins: string[]; trustProxy: number; rateLimitPerMinute: number; paymentWebhookSecret: string };
     auth: { issuer: string; audience: string; jwksUrl: string };
     carrier: { baseUrl: string; apiKey: string; timeoutMs: number; attempts: number };
 }
@@ -61,7 +63,7 @@ export function loadConfig(environment: Record<string, string | undefined> = pro
         logLevel: e.LOG_LEVEL,
         db: Object.freeze({ connectionString: e.DB_CONNECTION_STRING }),
         shutdown: Object.freeze({ drainMs: e.SHUTDOWN_DRAIN_MS, timeoutMs: e.SHUTDOWN_TIMEOUT_MS }),
-        http: Object.freeze({ corsOrigins: e.CORS_ORIGINS, trustProxy: e.TRUST_PROXY, rateLimitPerMinute: e.RATE_LIMIT_PER_MINUTE }),
+        http: Object.freeze({ corsOrigins: e.CORS_ORIGINS, trustProxy: e.TRUST_PROXY, rateLimitPerMinute: e.RATE_LIMIT_PER_MINUTE, paymentWebhookSecret: e.PAYMENT_WEBHOOK_SECRET }),
         auth: Object.freeze({ issuer: e.AUTH_ISSUER, audience: e.AUTH_AUDIENCE, jwksUrl: e.AUTH_JWKS_URL }),
         carrier: Object.freeze({ baseUrl: e.CARRIER_API_URL, apiKey: e.CARRIER_API_KEY, timeoutMs: e.CARRIER_TIMEOUT_MS, attempts: e.CARRIER_ATTEMPTS }),
     });

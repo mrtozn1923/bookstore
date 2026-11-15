@@ -9,6 +9,9 @@ import { InvalidTokenError, type Principal } from "../src/auth/tokenVerifier.ts"
 import { logger } from "../src/diagnostics/logger.ts";
 import { TrackingNotFoundError } from "../src/integrations/carrierClient.ts";
 import type { TrackingLookup } from "#routes/shipments";
+import { createInMemoryPaymentEvents } from "../src/payments/paymentWebhook.ts";
+
+export const WEBHOOK_SECRET = "test-webhook-secret-not-real";
 
 // Tests read their results from assertions, not from log lines
 logger.level = "silent";
@@ -49,11 +52,12 @@ export const fakeCarrier: TrackingLookup = {
 export function createTestApp(stock?: Record<string, number>, options: Partial<AppOptions> = {}, carrier: TrackingLookup = fakeCarrier) {
     const services = createTestServices(stock);
     const app = createApp(
-        { books: services.books, orders: services.orders, readiness: async () => ({ status: "ready", checks: {} }), carrier },
+        { books: services.books, orders: services.orders, readiness: async () => ({ status: "ready", checks: {} }), carrier, paymentEvents: createInMemoryPaymentEvents() },
         {
             corsOrigins: ["http://localhost:4200"],
             trustProxy: 0,
             rateLimitPerMinute: 1_000,
+            paymentWebhookSecret: WEBHOOK_SECRET,
             verifyToken: async (token) => {
                 const principal = PRINCIPALS[token];
                 if (!principal) {
