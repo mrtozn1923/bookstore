@@ -7,3 +7,7 @@ plugins/bookstore-dev/node_modules/
 
 # Claude Code worktrees
 .claude/worktrees/
+
+# Dependency report agent
+tools/dependency-report/node_modules/
+artifacts/
