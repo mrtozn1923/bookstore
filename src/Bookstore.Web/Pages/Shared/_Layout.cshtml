@@ -1,0 +1,36 @@
+@{
+    PageMeta meta = (PageMeta)ViewData["Meta"]!;
+}
+<!DOCTYPE html>
+<html lang="@meta.Lang">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@meta.Title</title>
+    <meta name="description" content="@meta.Description">
+    <meta name="robots" content="@meta.Robots">
+    @if (meta.Canonical.Length > 0)
+    {
+        <link rel="canonical" href="@meta.Canonical">
+        <link rel="alternate" hreflang="tr" href="@meta.AlternateTr">
+        <link rel="alternate" hreflang="en" href="@meta.AlternateEn">
+        <link rel="alternate" hreflang="x-default" href="@meta.AlternateTr">
+    }
+    <meta property="og:title" content="@meta.Title">
+    <meta property="og:url" content="@meta.Canonical">
+    @if (meta.OgImage is not null)
+    {
+        <meta property="og:image" content="@meta.OgImage">
+    }
+    @if (meta.JsonLd is not null)
+    {
+        <script type="application/ld+json">@Html.Raw(meta.JsonLd)</script>
+    }
+</head>
+<body>
+    <header><a href="@(meta.Lang == "en" ? "/en/" : "/")">Bookstore</a></header>
+    <main>
+        @RenderBody()
+    </main>
+</body>
+</html>

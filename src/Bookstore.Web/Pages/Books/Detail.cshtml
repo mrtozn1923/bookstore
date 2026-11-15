@@ -1,0 +1,33 @@
+@page "/books/{slug}"
+@model Bookstore.Web.Pages.Books.DetailModel
+@{
+    Book book = Model.Book;
+    string img = Model.ImageBase;
+    const string Sizes = "(max-width: 600px) 50vw, 320px";
+}
+<article>
+    <h1>@book.Title</h1>
+    <p>@book.Author, @book.Year</p>
+    @* ana kapak: ilk ekranda, lazy değil; src her zaman dolu (srcset desteklemeyen crawler'lar için) *@
+    <picture>
+        <source type="image/avif" srcset="@CoverImages.SrcSet(book, "avif", img)" sizes="@Sizes">
+        <source type="image/webp" srcset="@CoverImages.SrcSet(book, "webp", img)" sizes="@Sizes">
+        <img src="@CoverImages.Url(book, 640, "jpg", img)" srcset="@CoverImages.SrcSet(book, "jpg", img)" sizes="@Sizes"
+             alt="@CoverImages.Alt(book, Model.Lang)" width="320" height="480" fetchpriority="high">
+    </picture>
+    @* dekoratif görsel: boş alt, ekran okuyucu atlar *@
+    <img src="/images/divider.svg" alt="" width="240" height="12">
+    <h2>@(Model.Lang == "tr" ? "Benzer kitaplar" : "Related books")</h2>
+    <ul>
+        @foreach (Book related in Model.Related)
+        {
+            <li>
+                <a href="@Model.BookPath(related)">
+                    <img src="@CoverImages.Url(related, 320, "jpg", img)" alt="@CoverImages.Alt(related, Model.Lang)"
+                         width="160" height="240" loading="lazy">
+                    @related.Title
+                </a>
+            </li>
+        }
+    </ul>
+</article>

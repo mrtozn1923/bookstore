@@ -1,0 +1,7 @@
+@page "/not-found"
+@{
+    bool en = HttpContext.Features.Get<Microsoft.AspNetCore.Diagnostics.IStatusCodeReExecuteFeature>()?.OriginalPath.StartsWith("/en") == true;
+    ViewData["Meta"] = new PageMeta(en ? "en" : "tr", en ? "Page not found | Bookstore" : "Sayfa bulunamadı | Bookstore",
+        "", "", "", "", Robots: "noindex");
+}
+<h1>@(en ? "Page not found" : "Sayfa bulunamadı")</h1>
