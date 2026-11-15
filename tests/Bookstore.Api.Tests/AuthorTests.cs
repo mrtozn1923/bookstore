@@ -12,7 +12,7 @@ public sealed class AuthorTests(AuthorTestsFactory factory) : IClassFixture<Auth
 {
     private const string Dune = "9780441172719";
 
-    private readonly HttpClient client = factory.CreateClient();
+    private readonly HttpClient client = factory.CreateClientFor("grace@example.com", "StoreStaff");
     private readonly CancellationToken ct = TestContext.Current.CancellationToken;
 
     [Fact]

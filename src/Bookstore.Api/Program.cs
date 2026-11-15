@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Bookstore.Auth;
 using Bookstore.Catalog;
 using Bookstore.Data;
 using Bookstore.Inventory;
@@ -13,6 +14,7 @@ string connectionString = builder.Configuration.GetConnectionString("BookstoreDb
         "Connection string 'BookstoreDb' is missing. Set it with user-secrets or the ConnectionStrings__BookstoreDb environment variable (see README.md).");
 
 builder.Services.AddDbContext<BookstoreContext>(options => options.UseSqlServer(connectionString));
+builder.AddPanelAuthentication();
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddProblemDetails();
 builder.Services.AddValidation();
@@ -41,6 +43,7 @@ if (app.Environment.IsDevelopment())
 
 app.MapCatalogEndpoints();
 app.MapAuthorEndpoints();
+app.MapPriceEndpoints();
 app.MapOrderingEndpoints();
 app.MapInventoryEndpoints();
 

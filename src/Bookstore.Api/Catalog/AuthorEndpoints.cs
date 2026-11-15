@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Bookstore.Auth;
 using Bookstore.Data;
 using Bookstore.Inventory;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -20,14 +21,15 @@ public sealed record NewAuthorRequest(
     [property: Required, StringLength(200)] string Name,
     [property: MinLength(1)] IReadOnlyList<NewBookRequest> Books);
 
-// Back-office endpoints for the catalog, used by Bookstore.Admin. Authorization comes later in the Blazor series.
+// Back-office endpoints for the catalog, used by Bookstore.Admin: staff read, store staff and admins write.
 public static class AuthorEndpoints
 {
     public static IEndpointRouteBuilder MapAuthorEndpoints(this IEndpointRouteBuilder app)
     {
-        RouteGroupBuilder authors = app.MapGroup("/api/authors").WithTags("Catalog");
+        RouteGroupBuilder authors = app.MapGroup("/api/authors").WithTags("Catalog")
+            .RequireAuthorization(ApiPolicies.Staff);
         authors.MapGet("/", GetAuthors);
-        authors.MapPost("/", CreateAuthor);
+        authors.MapPost("/", CreateAuthor).RequireAuthorization(ApiPolicies.ManageCatalog);
         return app;
     }
 

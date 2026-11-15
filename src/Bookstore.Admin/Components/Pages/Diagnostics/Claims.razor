@@ -1,0 +1,9 @@
+@page "/diagnostics/claims"
+@using Bookstore.Admin.Client.Diagnostics
+
+<PageTitle>Claims</PageTitle>
+
+<h1>The same user on the server and in WebAssembly</h1>
+
+<ClaimsProbe @rendermode="InteractiveServer" />
+<ClaimsProbe @rendermode="InteractiveWebAssembly" />

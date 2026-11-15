@@ -27,6 +27,15 @@ public class BookstoreApiFactory : WebApplicationFactory<Program>, IAsyncLifetim
     {
         builder.UseSetting("ConnectionStrings:BookstoreDb", connectionString);
         builder.UseSetting("Database:MigrateOnStartup", "false");
+        builder.UseSetting("PanelTokens:SigningKey", TestTokens.SigningKey);
+    }
+
+    // A client that calls the API as a staff member with the given roles.
+    public HttpClient CreateClientFor(string name, params string[] roles)
+    {
+        HttpClient client = CreateClient();
+        client.DefaultRequestHeaders.Authorization = new("Bearer", TestTokens.For(name, roles));
+        return client;
     }
 
     public async ValueTask InitializeAsync()

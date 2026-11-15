@@ -1,5 +1,6 @@
 @page "/authors/new"
 @rendermode InteractiveServer
+@attribute [Authorize(Policy = PanelPolicies.ManageCatalog)]
 @using System.Text.RegularExpressions
 @using Bookstore.Admin.Components.Catalog
 @using Bookstore.Admin.Validation

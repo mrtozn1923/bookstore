@@ -17,7 +17,7 @@ public sealed class NewAuthorPageTests : BunitContext
         // A fake Bookstore.Api: categories for the select list, a 400 for an ISBN that already exists.
         StubHandler handler = new(request =>
         {
-            requests.Add($"{request.Method} {request.RequestUri!.AbsolutePath}");
+            requests.Add($"{request.Method} {request.RequestUri!.AbsolutePath} {request.Headers.Authorization?.Scheme}".TrimEnd());
             return request.RequestUri.AbsolutePath switch
             {
                 "/api/categories" => Json(HttpStatusCode.OK, new[] { new CategoryView("Classics", "classics") }),
@@ -30,7 +30,10 @@ public sealed class NewAuthorPageTests : BunitContext
                 _ => new HttpResponseMessage(HttpStatusCode.NotFound)
             };
         });
-        Services.AddSingleton(new BookstoreApiClient(new HttpClient(handler) { BaseAddress = new Uri("http://localhost:5080/") }));
+        Services.AddSingleton(new BookstoreApiClient(
+            new HttpClient(handler) { BaseAddress = new Uri("http://localhost:5080/") },
+            new FixedAuthenticationStateProvider(TestStaff.User("grace@example.com", "StoreStaff")),
+            TestStaff.Tokens()));
         Services.AddAdminValidation();
     }
 
@@ -42,7 +45,7 @@ public sealed class NewAuthorPageTests : BunitContext
         page.Find("form").Submit();
 
         Assert.Equal(6, page.FindAll("div.validation-message").Count);
-        Assert.DoesNotContain("POST /api/authors", requests);
+        Assert.DoesNotContain(requests, r => r.StartsWith("POST /api/authors"));
     }
 
     [Fact]
@@ -60,7 +63,7 @@ public sealed class NewAuthorPageTests : BunitContext
 
         page.WaitForAssertion(() =>
         {
-            Assert.Contains("POST /api/authors", requests);
+            Assert.Contains("POST /api/authors Bearer", requests);
             Assert.Equal("A book with ISBN 9780441172719 already exists.",
                 page.Find("fieldset label:contains('ISBN') + div.validation-message").TextContent);
         });

@@ -8,7 +8,9 @@
 <PageTitle>Authors</PageTitle>
 
 <h1>Authors</h1>
-<p><a href="authors/new" class="btn btn-sm btn-primary">New author</a></p>
+<AuthorizeView Policy="@PanelPolicies.ManageCatalog">
+    <p><a href="authors/new" class="btn btn-sm btn-primary">New author</a></p>
+</AuthorizeView>
 
 @if (Authors is null)
 {

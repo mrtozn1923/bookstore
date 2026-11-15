@@ -1,0 +1,59 @@
+@using System.ComponentModel.DataAnnotations
+@inject BookstoreApiClient Api
+@inject NavigationManager Navigation
+
+<AuthorizeView Policy="@PanelPolicies.ManageCatalog">
+    <Authorized>
+        <h2>Price</h2>
+        @if (error is not null)
+        {
+            <p class="alert alert-danger">@error</p>
+        }
+        <EditForm Model="Form" FormName="price" OnValidSubmit="SaveAsync" Enhance Context="editContext">
+            <DataAnnotationsValidator />
+            <label>
+                New price
+                <InputNumber @bind-Value="Form!.Price" class="form-control w-auto" />
+            </label>
+            <ValidationMessage For="() => Form!.Price" />
+            <button type="submit" class="btn btn-primary">Change price</button>
+        </EditForm>
+    </Authorized>
+    <NotAuthorized>
+        <p class="text-muted">Only store staff can change prices.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private string? error;
+
+    [Parameter, EditorRequired]
+    public string Isbn { get; set; } = "";
+
+    [Parameter, EditorRequired]
+    public decimal CurrentPrice { get; set; }
+
+    [SupplyParameterFromForm(FormName = "price")]
+    private PriceForm? Form { get; set; }
+
+    protected override void OnInitialized() => Form ??= new() { Price = CurrentPrice };
+
+    private async Task SaveAsync()
+    {
+        ApiWriteResult result = await Api.SetPriceAsync(Isbn, Form!.Price);
+        if (result == ApiWriteResult.Forbidden)
+        {
+            error = "Bookstore.Api refused the change: your account cannot change prices.";
+            return;
+        }
+
+        // Post/Redirect/Get: the page loads again with the new price from the API.
+        Navigation.NavigateTo($"books/{Isbn}");
+    }
+
+    public sealed class PriceForm
+    {
+        [Range(typeof(decimal), "1", "10000")]
+        public decimal Price { get; set; }
+    }
+}

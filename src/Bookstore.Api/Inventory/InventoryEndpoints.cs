@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Bookstore.Auth;
 using Bookstore.Catalog;
 using Bookstore.Data;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -10,12 +11,13 @@ public sealed record StockView(string Isbn, string Title, int OnHand, int Reserv
 
 public sealed record SetStockRequest([property: Range(0, 10_000)] int QuantityOnHand);
 
-// Back-office endpoints used by Bookstore.Admin. Authorization comes later in the Blazor series.
+// Back-office endpoints used by Bookstore.Admin: any staff member may read and count stock.
 public static class InventoryEndpoints
 {
     public static IEndpointRouteBuilder MapInventoryEndpoints(this IEndpointRouteBuilder app)
     {
-        RouteGroupBuilder inventory = app.MapGroup("/api/inventory").WithTags("Inventory");
+        RouteGroupBuilder inventory = app.MapGroup("/api/inventory").WithTags("Inventory")
+            .RequireAuthorization(ApiPolicies.Staff);
         inventory.MapGet("/", GetStock);
         inventory.MapPut("/{isbn}", SetQuantityOnHand);
         return app;

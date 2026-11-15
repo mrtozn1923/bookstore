@@ -11,7 +11,7 @@ public sealed class InventoryTests(BookstoreApiFactory factory)
     private const string Middlemarch = "9780141439549";
     private const string DonQuixote = "9780060934347";   // seeded with 0 copies
 
-    private readonly HttpClient client = factory.CreateClient();
+    private readonly HttpClient client = factory.CreateClientFor("linus@example.com", "WarehouseStaff");
     private readonly CancellationToken ct = TestContext.Current.CancellationToken;
 
     [Fact]

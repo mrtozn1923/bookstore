@@ -35,6 +35,8 @@
         <button type="submit" class="btn btn-primary">Save</button>
     </EditForm>
 
+    <PriceEditor Isbn="@book.Isbn" CurrentPrice="book.Price" />
+
     <StaffNotes Isbn="@book.Isbn" @rendermode="InteractiveServer" />
 }
 

@@ -2,6 +2,7 @@ using Bookstore.Admin.Components;
 using Bookstore.Admin.Client.Catalog;
 using Bookstore.Admin.Client.Ordering;
 using Bookstore.Admin.Client.Shared;
+using Bookstore.Admin.Identity;
 using Bookstore.Admin.Services;
 using Bookstore.Admin.Validation;
 using Bookstore.Data;
@@ -11,7 +12,8 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
-    .AddInteractiveWebAssemblyComponents();
+    .AddInteractiveWebAssemblyComponents()
+    .AddAuthenticationStateSerialization();
 
 string apiBaseUrl = builder.Configuration["BookstoreApi:BaseUrl"]
     ?? throw new InvalidOperationException("BookstoreApi:BaseUrl is missing (see appsettings.json).");
@@ -25,6 +27,8 @@ string connectionString = builder.Configuration.GetConnectionString("BookstoreDb
 builder.Services.AddDbContextFactory<BookstoreContext>(options => options
     .UseSqlServer(connectionString)
     .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+// Staff accounts (ASP.NET Core Identity, cookie), policies, and the token the API calls carry.
+builder.AddPanelIdentity(connectionString);
 builder.Services.AddScoped<IBookCatalog, EfBookCatalog>();
 builder.Services.AddScoped<SalesReport>();
 builder.Services.AddScoped<QuoteState>();
@@ -36,6 +40,11 @@ builder.Services.AddCascadingValue(_ => new PanelOptions(Currency: "TRY", Amount
 builder.Services.AddAdminValidation();
 
 WebApplication app = builder.Build();
+
+if (app.Environment.IsDevelopment() && app.Configuration.GetValue<bool>("Identity:SeedStaff"))
+{
+    await app.SeedDevelopmentStaffAsync();
+}
 
 if (app.Environment.IsDevelopment())
 {
@@ -51,7 +60,9 @@ app.UseHttpsRedirection();
 
 app.UseAntiforgery();
 
-app.MapStaticAssets();
+// CSS, scripts and the WebAssembly files must load on the login page too.
+app.MapStaticAssets().AllowAnonymous();
+app.MapAccountEndpoints();
 app.MapPanelCatalogEndpoints();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()

@@ -1,0 +1,20 @@
+@using System.Security.Claims
+
+<div class="probe">
+    <h3>@RendererInfo.Name</h3>
+    <AuthorizeView>
+        <Authorized>
+            <p>@context.User.Identity?.Name has @context.User.Claims.Count() claims: <code>@ClaimTypes(context.User)</code></p>
+            <AuthorizeView Policy="@PanelPolicies.ManageCatalog" Context="catalog">
+                <Authorized><p>Policy ManageCatalog: allowed</p></Authorized>
+                <NotAuthorized><p>Policy ManageCatalog: denied</p></NotAuthorized>
+            </AuthorizeView>
+        </Authorized>
+    </AuthorizeView>
+</div>
+
+@code {
+    // Short names: "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name" becomes "name".
+    private static string ClaimTypes(ClaimsPrincipal user) =>
+        string.Join(", ", user.Claims.Select(c => c.Type[(c.Type.LastIndexOf('/') + 1)..]));
+}
