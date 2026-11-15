@@ -1,0 +1,14 @@
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: bookstore-critical
+value: 100000
+description: "Order processing: may preempt batch work."
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: bookstore-batch
+value: -100
+preemptionPolicy: Never
+description: "Reports and exports: run when there is room, never preempt."

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: report-batch
+  namespace: bookstore
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: report-batch
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: report-batch
+    spec:
+      priorityClassName: bookstore-batch
+      terminationGracePeriodSeconds: 5
+      nodeSelector:
+        bookstore.example.com/pool: workers
+      tolerations:
+        - key: bookstore.example.com/pool
+          operator: Equal
+          value: workers
+          effect: NoSchedule
+      containers:
+        - name: report
+          image: busybox:1.37
+          command: ["sh", "-c", "trap 'exit 0' TERM; while true; do sleep 1; done"]
+          resources:
+            requests:
+              cpu: "3"
+              memory: 32Mi

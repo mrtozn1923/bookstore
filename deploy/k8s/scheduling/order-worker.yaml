@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-worker
+  namespace: bookstore
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: order-worker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: order-worker
+        app.kubernetes.io/part-of: bookstore
+    spec:
+      priorityClassName: bookstore-critical
+      nodeSelector:
+        bookstore.example.com/pool: workers
+      tolerations:
+        - key: bookstore.example.com/pool
+          operator: Equal
+          value: workers
+          effect: NoSchedule
+      containers:
+        - name: worker
+          image: busybox:1.37
+          command: ["sh", "-c", "trap 'exit 0' TERM; while true; do sleep 5; done"]
+          resources:
+            requests:
+              cpu: "1"
+              memory: 32Mi
