@@ -1,6 +1,8 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../../domain/models/book.dart';
+import '../../core/formatting.dart';
+import '../../core/themes/bookstore_colors.dart';
 
 class BookInfo extends StatelessWidget {
   const BookInfo({super.key, required this.book, this.onAddToCart});
@@ -25,7 +27,12 @@ class BookInfo extends StatelessWidget {
           spacing: 16,
           runSpacing: 8,
           children: [
-            Text(book.price.format(), style: textTheme.titleLarge),
+            Text(
+              context.formatPrice(book.price),
+              style: textTheme.titleLarge?.copyWith(
+                color: BookstoreColors.of(context).price,
+              ),
+            ),
             FilledButton.icon(
               onPressed: onAddToCart,
               icon: const Icon(Icons.add_shopping_cart),

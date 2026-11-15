@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../../domain/models/book.dart';
+import '../../core/themes/bookstore_colors.dart';
 
 /// 2:3 cover with a format badge in the top-left corner.
 class BookCover extends StatelessWidget {
@@ -34,6 +35,8 @@ class BookCover extends StatelessWidget {
               child: Chip(
                 label: const Text('E-book'),
                 visualDensity: VisualDensity.compact,
+                backgroundColor: BookstoreColors.of(context).ebookBadge,
+                labelStyle: TextStyle(color: colors.surface),
               ),
             ),
         ],

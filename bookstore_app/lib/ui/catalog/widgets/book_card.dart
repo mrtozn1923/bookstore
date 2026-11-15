@@ -1,6 +1,8 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../../domain/models/book.dart';
+import '../../core/formatting.dart';
+import '../../core/themes/bookstore_colors.dart';
 import 'book_thumbnail.dart';
 import 'favorite_button.dart';
 
@@ -40,7 +42,12 @@ class BookCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    Text(book.price.format(), style: textTheme.titleSmall),
+                    Text(
+                      context.formatPrice(book.price),
+                      style: textTheme.titleSmall?.copyWith(
+                        color: BookstoreColors.of(context).price,
+                      ),
+                    ),
                   ],
                 ),
               ),
