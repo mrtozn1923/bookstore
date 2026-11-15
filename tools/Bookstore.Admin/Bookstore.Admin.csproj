@@ -9,8 +9,4 @@
     <ProjectReference Include="..\..\src\Bookstore.Contracts\Bookstore.Contracts.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
-
 </Project>

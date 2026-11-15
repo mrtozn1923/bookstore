@@ -1,5 +1,4 @@
 using Bookstore.Contracts;
-using Xunit;
 
 namespace Bookstore.Contracts.Tests;
 

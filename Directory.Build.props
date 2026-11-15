@@ -4,5 +4,14 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- Must be set before the SDK props: all build output goes to artifacts/ at the repo root. -->
+    <UseArtifactsOutput>true</UseArtifactsOutput>
+    <!-- Without this, projects under a nested Directory.Build.props get their own artifacts/ folder. -->
+    <ArtifactsPath>$(MSBuildThisFileDirectory)artifacts</ArtifactsPath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Read by the BannedApiAnalyzers package that Directory.Packages.props adds to every project. -->
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)BannedSymbols.txt" />
+  </ItemGroup>
 </Project>

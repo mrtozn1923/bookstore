@@ -1,0 +1,6 @@
+<Project>
+  <!-- OutputType is known only after the csproj, and the SDK's None glob only exists after Sdk.props. -->
+  <ItemGroup Condition="'$(OutputType)' == 'Exe' and '$(UsingMicrosoftNETSdkWeb)' != 'true'">
+    <None Update="appsettings*.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>
