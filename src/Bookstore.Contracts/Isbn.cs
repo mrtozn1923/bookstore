@@ -1,11 +1,14 @@
 namespace Bookstore.Contracts;
 
+/// <summary>A validated 13-digit International Standard Book Number.</summary>
 public readonly record struct Isbn
 {
     private Isbn(string value) => Value = value;
 
+    /// <summary>The 13 digits without hyphens or spaces.</summary>
     public string Value { get; }
 
+    /// <summary>Parses an ISBN-13, ignoring hyphens and spaces, and checks its check digit.</summary>
     public static bool TryParse(string? input, out Isbn isbn)
     {
         isbn = default;
@@ -20,13 +23,7 @@ public readonly record struct Isbn
             return false;
         }
 
-        int sum = 0;
-        for (int i = 0; i < 12; i++)
-        {
-            sum += (digits[i] - '0') * (i % 2 == 0 ? 1 : 3);
-        }
-
-        if ((10 - sum % 10) % 10 != digits[12] - '0')
+        if (IsbnChecksum.Compute(digits.AsSpan(0, 12)) != digits[12] - '0')
         {
             return false;
         }
@@ -35,5 +32,6 @@ public readonly record struct Isbn
         return true;
     }
 
+    /// <inheritdoc />
     public override string ToString() => Value;
 }
