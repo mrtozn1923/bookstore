@@ -7,13 +7,17 @@ import { MatButton } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { firstValueFrom } from 'rxjs';
 import { InstitutionalOrder, InstitutionalOrderLine } from '../../core/api-models';
+import { SplitButton } from '../../shared/split-button';
+import { useOverlayThemeClass } from '../../core/overlay-theme';
 
 type Slot = 'this' | 'next';
 
 // Partial shipments of an institutional order: drag lines between the two lists or use the move buttons
 @Component({
   selector: 'app-shipment-plan-page',
-  imports: [CdkDropListGroup, CdkDropList, CdkDrag, MatButton],
+  // Institutional portal theme (material-theme.scss)
+  host: { class: 'institutional-portal' },
+  imports: [CdkDropListGroup, CdkDropList, CdkDrag, MatButton, SplitButton],
   templateUrl: './shipment-plan-page.html',
   styleUrl: './shipment-plan-page.scss',
 })
@@ -32,6 +36,7 @@ export class ShipmentPlanPage {
   protected readonly canSave = computed(() => this.dirty() && !this.saving() && this.lists().this.length > 0);
 
   constructor() {
+    useOverlayThemeClass('institutional-portal');
     void firstValueFrom(this.http.get<InstitutionalOrder>('/api/admin/institutional-orders/1042')).then(order => {
       this.order.set(order);
       this.lists.set({
@@ -65,15 +70,16 @@ export class ShipmentPlanPage {
     this.update(next);
   }
 
-  protected async save(): Promise<void> {
+  protected async save(notifyUnit = false): Promise<void> {
     this.saving.set(true);
     try {
       await firstValueFrom(this.http.put('/api/admin/institutional-orders/1042/shipments', {
         thisShipment: this.lists().this.map(l => l.id),
         nextShipment: this.lists().next.map(l => l.id),
-      }));
+      }, { params: notifyUnit ? { notifyUnit: true } : {} }));
       this.dirty.set(false);
-      this.snackBar.open('Shipment plan saved', 'OK', { duration: 4000 });
+      const unit = this.order()?.unit ?? 'the unit';
+      this.snackBar.open(notifyUnit ? `Shipment plan saved, ${unit} notified` : 'Shipment plan saved', 'OK', { duration: 4000 });
     } catch {
       this.snackBar.open('The shipment plan could not be saved', 'OK', { duration: 6000 });
     } finally {

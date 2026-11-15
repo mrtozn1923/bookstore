@@ -24,7 +24,9 @@
   }
 </div>
 
-<button matButton="filled" type="button" [disabled]="!canSave()" (click)="save()">Save plan</button>
+<app-split-button label="Save" [primary]="{ id: 'save', label: 'Save plan' }"
+                  [more]="[{ id: 'save-notify', label: 'Save and notify the unit' }]"
+                  [disabled]="!canSave()" (run)="save($event === 'save-notify')" />
 @if (!lists().this.length) {
   <p class="hint">The first shipment needs at least one line.</p>
 }

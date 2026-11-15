@@ -1,0 +1,45 @@
+@use '@angular/material' as mat;
+
+.split {
+  display: inline-flex;
+  gap: 2px;
+}
+
+// Two buttons that read as one: shapes through the button's public tokens, not through .mdc-button classes
+.main {
+  @include mat.button-overrides((filled-container-shape: 20px 4px 4px 20px));
+}
+
+.toggle {
+  min-width: 40px;
+  padding: 0 8px;
+  @include mat.button-overrides((filled-container-shape: 4px 20px 20px 4px));
+}
+
+// The menu is rendered in an overlay at the end of <body>, but it comes from this component's template,
+// so the emulated encapsulation attributes are there and these styles apply without ::ng-deep
+.split-menu {
+  display: flex;
+  flex-direction: column;
+  min-width: 220px;
+  padding: 8px 0;
+  border-radius: 4px;
+  background: var(--mat-sys-surface-container);
+  box-shadow: var(--mat-sys-level2);
+}
+
+.split-menu-item {
+  padding: 12px 16px;
+  border: 0;
+  background: none;
+  text-align: start;
+  font: var(--mat-sys-label-large);
+  color: var(--mat-sys-on-surface);
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
+    outline: none;
+  }
+}

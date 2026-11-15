@@ -66,18 +66,27 @@ public static class InstitutionalOrderEndpoints
     private static Results<Ok<InstitutionalOrderView>, NotFound> GetOrder(int id, InstitutionalOrderStore store) =>
         id == 1042 ? TypedResults.Ok(store.Get()) : TypedResults.NotFound();
 
-    // Every line exactly once, and the first shipment must not be empty
-    private static Results<NoContent, NotFound, ValidationProblem> SavePlan(int id, ShipmentPlan plan, InstitutionalOrderStore store)
+    // Every line exactly once, and the first shipment must not be empty.
+    // ?notifyUnit=true: the unit is told about the plan (only logged here until the Notifications module sends e-mails)
+    private static Results<NoContent, NotFound, ValidationProblem> SavePlan(
+        int id, ShipmentPlan plan, InstitutionalOrderStore store, ILoggerFactory loggers, bool notifyUnit = false)
     {
         if (id != 1042)
         {
             return TypedResults.NotFound();
         }
-        return store.TryApply(plan)
-            ? TypedResults.NoContent()
-            : TypedResults.ValidationProblem(new Dictionary<string, string[]>
+        if (!store.TryApply(plan))
+        {
+            return TypedResults.ValidationProblem(new Dictionary<string, string[]>
             {
                 ["lines"] = ["Every line must be in exactly one shipment and the first shipment cannot be empty."]
             });
+        }
+        if (notifyUnit)
+        {
+            loggers.CreateLogger("Bookstore.Institutional").LogInformation(
+                "Shipment plan of order {OrderId} saved, notifying {Unit}", id, store.Get().Unit);
+        }
+        return TypedResults.NoContent();
     }
 }

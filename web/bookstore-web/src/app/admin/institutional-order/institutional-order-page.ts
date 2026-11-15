@@ -14,6 +14,7 @@ import { MatInput } from '@angular/material/input';
 import { MatSelect } from '@angular/material/select';
 import { catchError, debounceTime, distinctUntilChanged, map, of, switchMap } from 'rxjs';
 import { BookSummary, InstitutionUnit, PagedResult } from '../../core/api-models';
+import { useOverlayThemeClass } from '../../core/overlay-theme';
 
 interface InstitutionalOrderModel {
   units: InstitutionUnit[];
@@ -33,6 +34,8 @@ const datepickerMessages: Record<string, string> = {
 
 @Component({
   selector: 'app-institutional-order-page',
+  // Institutional portal theme (material-theme.scss)
+  host: { class: 'institutional-portal' },
   imports: [
     FormField, MatFormField, MatLabel, MatHint, MatError, MatPrefix, MatSuffix, MatInput, MatSelect, MatOption,
     MatAutocomplete, MatAutocompleteTrigger, MatDatepicker, MatDatepickerInput, MatDatepickerToggle, MatIcon, MatButton,
@@ -48,6 +51,10 @@ const datepickerMessages: Record<string, string> = {
   ],
 })
 export class InstitutionalOrderPage {
+  constructor() {
+    useOverlayThemeClass('institutional-portal');
+  }
+
   private readonly http = inject(HttpClient);
   protected readonly tomorrow = startOfTomorrow();
 

@@ -6,6 +6,8 @@
 @use '@angular/material' as mat;
 // Generated from the Bookstore brand color #1d4ed8 with: ng generate @angular/material:theme-color
 @use './theme-colors' as brand;
+// Generated from the institutional portal color #0f766e with: ng generate @angular/material:theme-color
+@use './institutional-colors' as inst;
 
 html {
   height: 100%;
@@ -41,4 +43,12 @@ body {
   font: var(--mat-sys-body-medium);
   // Admin screens are dense lists and tables: one density step = 4px less
   @include mat.theme((density: -1));
+}
+
+// Institutional portal: the same components in the institution color. Only the color system tokens are emitted
+// again for this class, not the component styles
+.institutional-portal {
+  @include mat.theme((color: (primary: inst.$primary-palette, tertiary: inst.$tertiary-palette)));
+  // Squarer buttons for the portal through the public token API instead of .mat-mdc-* classes
+  @include mat.button-overrides((filled-container-shape: 8px, outlined-container-shape: 8px, text-container-shape: 8px));
 }

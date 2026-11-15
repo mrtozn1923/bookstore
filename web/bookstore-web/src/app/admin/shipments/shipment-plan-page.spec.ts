@@ -1,8 +1,10 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { InstitutionalOrder } from '../../core/api-models';
+import { SplitButtonHarness } from '../../shared/testing/split-button-harness';
 import { ShipmentPlanPage } from './shipment-plan-page';
 
 const order: InstitutionalOrder = {
@@ -51,5 +53,15 @@ describe('ShipmentPlanPage', () => {
     expect(column(1)).toEqual(['Dune', 'Middlemarch', 'The Hobbit']);
     expect(button('Save plan').disabled).toBe(true);
     expect(element.querySelector('.hint')?.textContent).toContain('needs at least one line');
+  });
+
+  it('saves and notifies the unit from the split button menu', async () => {
+    const { fixture, http, button } = await render();
+    button('Move The Hobbit to next shipment').click();
+    await fixture.whenStable();
+    const save = await TestbedHarnessEnvironment.loader(fixture).getHarness(SplitButtonHarness);
+    await save.chooseFromMenu('Save and notify the unit');
+    const request = http.expectOne(r => r.url === '/api/admin/institutional-orders/1042/shipments');
+    expect(request.request.params.get('notifyUnit')).toBe('true');
   });
 });
