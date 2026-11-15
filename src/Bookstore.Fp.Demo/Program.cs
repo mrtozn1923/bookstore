@@ -15,5 +15,8 @@ switch (post)
     case "02-records": Post02.Records(); break;
     case "02-shallow": Post02.Shallow(); break;
     case "02-cost": Post02.CopyCost(); break;
+    case "03-culture": Post03.Culture(); break;
+    case "03-core": Post03.CoreAndShell(); break;
+    case "03-memo": Post03.Memoization(); break;
     default: Console.WriteLine("usage: dotnet run --project src/Bookstore.Fp.Demo -- <post-key>"); break;
 }
