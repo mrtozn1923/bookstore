@@ -11,6 +11,26 @@ type ClientState = {
   clearRecentlyViewed: () => void;
 };
 
+const storageKey = 'bookstore.client';
+const legacyCartIdKey = 'bookstore.cartId';
+
+// One-time migration: up to post 10 the cart id had a key of its own. Without this, users who
+// already have a cart would lose it (the server keeps it, but this browser would forget its id).
+export function migrateLegacyCartId(storage: Storage) {
+  const legacyCartId = storage.getItem(legacyCartIdKey);
+  if (legacyCartId === null) {
+    return;
+  }
+  if (storage.getItem(storageKey) === null) {
+    // The shape persist writes: { state, version }
+    storage.setItem(storageKey, JSON.stringify({ state: { cartId: legacyCartId, recentlyViewed: [] }, version: 1 }));
+  }
+  storage.removeItem(legacyCartIdKey);
+}
+
+// Runs once when the module loads, before the store below reads localStorage
+migrateLegacyCartId(localStorage);
+
 // Client state that should survive a reload: which server cart is ours, and the last books opened
 export const useClientStore = create<ClientState>()(
   persist(
@@ -25,7 +45,7 @@ export const useClientStore = create<ClientState>()(
       clearRecentlyViewed: () => set({ recentlyViewed: [] }),
     }),
     {
-      name: 'bookstore.client', // localStorage key
+      name: storageKey, // localStorage key
       version: 1,
       // Persist data only; the functions are recreated by the store
       partialize: (state) => ({ cartId: state.cartId, recentlyViewed: state.recentlyViewed }),

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
-import type { CartLine } from '@/features/cart/types';
-import { useCart } from '@/features/cart/useCart';
+import type { CartLine } from './types';
+import { useCart } from './useCart';
 import { formatPrice } from '@/shared/format';
 
 const undoMs = 5000;

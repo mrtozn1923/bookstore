@@ -1,8 +1,8 @@
 import { useMutation, useMutationState, useQuery, useQueryClient } from '@tanstack/react-query';
-import { cartApi, cartKey, cartQuery } from '@/features/cart/cartApi';
-import { useCartId } from '@/features/cart/useCartId';
-import { applyChange, type QuantityChange } from '@/features/cart/cartLines';
-import type { Cart, CartLine } from '@/features/cart/types';
+import { cartApi, cartKey, cartQuery } from './cartApi';
+import { useCartId } from './useCartId';
+import { applyChange, type QuantityChange } from './cartLines';
+import type { Cart, CartLine } from './types';
 
 const quantityMutationKey = ['cart', 'setQuantity'];
 

@@ -1,6 +1,6 @@
 import { NavLink, Outlet, useNavigation } from 'react-router';
-import { UserMenu } from '@/features/auth/UserMenu';
-import { CartSummary } from '@/features/cart/CartSummary';
+import { UserMenu } from '@/features/auth';
+import { CartSummary } from '@/features/cart';
 import { ThemeToggle } from '@/shared/theme/ThemeToggle';
 
 // The layout route: header stays, <Outlet /> is replaced by the matching child route (like <router-outlet>)

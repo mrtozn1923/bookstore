@@ -1,5 +1,5 @@
-import { BookCard } from '@/features/catalog/BookCard';
-import type { BookSummary } from '@/features/catalog/types';
+import { BookCard } from './BookCard';
+import type { BookSummary } from './types';
 
 type BookListProps = {
   books: BookSummary[];

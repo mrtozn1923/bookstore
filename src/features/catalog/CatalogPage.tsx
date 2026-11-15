@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { useRef } from 'react';
 import { useSearchParams } from 'react-router';
-import { useCart } from '@/features/cart/useCart';
-import { BookList } from '@/features/catalog/BookList';
-import { booksQuery, pageSize } from '@/features/catalog/catalogApi';
-import { SearchBox } from '@/features/catalog/SearchBox';
-import { RecentlyViewed } from '@/features/history/RecentlyViewed';
+import { useCart } from '@/features/cart';
+import { BookList } from './BookList';
+import { booksQuery, pageSize } from './catalogApi';
+import { SearchBox } from './SearchBox';
+import { RecentlyViewed } from '@/features/history';
 import { useDebouncedValue } from '@/shared/useDebouncedValue';
 import { useKeyboardShortcut } from '@/shared/useKeyboardShortcut';
 

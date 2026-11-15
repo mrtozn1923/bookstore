@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router';
 import { expect, it, vi } from 'vitest';
-import { BookCard } from '@/features/catalog/BookCard';
+import { BookCard } from './BookCard';
 import { testBooks } from '@/test/books';
 
 const dune = testBooks[0];

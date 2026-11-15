@@ -1,7 +1,7 @@
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useRef } from 'react';
-import { StockRow } from '@/features/admin/StockRow';
-import type { StockLot } from '@/features/admin/stockLots';
+import { StockRow } from './StockRow';
+import type { StockLot } from './stockLots';
 
 type StockTableProps = {
   lots: StockLot[];

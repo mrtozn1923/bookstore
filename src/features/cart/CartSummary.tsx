@@ -1,4 +1,4 @@
-import { useCart } from '@/features/cart/useCart';
+import { useCart } from './useCart';
 import { formatPrice } from '@/shared/format';
 
 export function CartSummary() {

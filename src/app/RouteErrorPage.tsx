@@ -11,6 +11,8 @@ export function RouteErrorPage() {
       <h1>{title}</h1>
       <p>{detail}</p>
       <p><Link to="/">Back to the catalog</Link></p>
+      {/* Replaced with the value from .env when Vite builds the app */}
+      <p className="muted">Still stuck? Write to {import.meta.env.VITE_SUPPORT_EMAIL}.</p>
     </main>
   );
 }

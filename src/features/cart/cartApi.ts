@@ -1,5 +1,5 @@
 import { queryOptions } from '@tanstack/react-query';
-import type { Cart, Order } from '@/features/cart/types';
+import type { Cart, Order } from './types';
 import { ApiError, apiFetch } from '@/shared/api';
 
 export const cartKey = (cartId: string | null) => ['cart', cartId] as const;

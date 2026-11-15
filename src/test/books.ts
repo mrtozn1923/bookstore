@@ -1,4 +1,4 @@
-import type { BookDetails } from '@/features/catalog/types';
+import type { BookDetails } from '@/features/catalog';
 
 // A few real rows from the API seed; enough for search, paging and the cart
 export const testBooks: BookDetails[] = [

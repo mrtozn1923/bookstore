@@ -1,7 +1,7 @@
 import { Activity, Profiler, useDeferredValue, useState } from 'react';
-import { reportRender } from '@/features/admin/reportRender';
-import { makeStockLots, type StockLot } from '@/features/admin/stockLots';
-import { StockTable } from '@/features/admin/StockTable';
+import { reportRender } from './reportRender';
+import { makeStockLots, type StockLot } from './stockLots';
+import { StockTable } from './StockTable';
 
 type Tab = 'all' | 'pinned';
 

@@ -1,5 +1,5 @@
 import { data, type LoaderFunctionArgs } from 'react-router';
-import { bookQuery } from '@/features/catalog/catalogApi';
+import { bookQuery } from './catalogApi';
 import { ApiError } from '@/shared/api';
 import { useClientStore } from '@/shared/clientStore';
 import { queryClient } from '@/shared/queryClient';

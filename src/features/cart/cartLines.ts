@@ -1,4 +1,4 @@
-import type { Cart, CartLine } from '@/features/cart/types';
+import type { Cart, CartLine } from './types';
 
 export type QuantityChange = { isbn: string; title: string; unitPrice: number; quantity: number };
 

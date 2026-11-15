@@ -1,7 +1,7 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 import { expect, it } from 'vitest';
-import { useCart } from '@/features/cart/useCart';
+import { useCart } from './useCart';
 import { testBooks } from '@/test/books';
 import { server } from '@/test/server';
 import { createTestQueryClient, withQueryClient } from '@/test/render';

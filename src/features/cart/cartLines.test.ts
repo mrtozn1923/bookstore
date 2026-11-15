@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { applyChange } from '@/features/cart/cartLines';
-import type { Cart } from '@/features/cart/types';
+import { applyChange } from './cartLines';
+import type { Cart } from './types';
 
 const cart: Cart = {
   id: 'cart-1',

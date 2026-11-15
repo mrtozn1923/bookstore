@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw';
-import type { Cart } from '@/features/cart/types';
-import type { BookSummary, PagedResult } from '@/features/catalog/types';
+import type { Cart } from '@/features/cart';
+import type { BookSummary, PagedResult } from '@/features/catalog';
 import { testBooks } from '@/test/books';
 
 // In-memory carts, like the real API keeps them in its database; cleared after every test
@@ -12,6 +12,9 @@ function cartView(cart: Cart): Cart {
 
 // The same URLs and response shapes as Bookstore.Api; fetch in the code under test is not changed at all
 export const handlers = [
+  // Nobody is signed in unless a test says otherwise
+  http.get('/bff/user', () => new HttpResponse(null, { status: 401 })),
+
   http.get('/api/books', ({ request }) => {
     const url = new URL(request.url);
     const search = (url.searchParams.get('search') ?? '').toLowerCase();

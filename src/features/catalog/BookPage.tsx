@@ -1,9 +1,9 @@
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import { useId, useState } from 'react';
 import { Link, useParams } from 'react-router';
-import { useCart } from '@/features/cart/useCart';
-import { bookQuery, booksQuery } from '@/features/catalog/catalogApi';
-import type { BookDetails } from '@/features/catalog/types';
+import { useCart } from '@/features/cart';
+import { bookQuery, booksQuery } from './catalogApi';
+import type { BookDetails } from './types';
 import { formatPrice } from '@/shared/format';
 
 export function BookPage() {

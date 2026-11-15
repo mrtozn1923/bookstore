@@ -1,6 +1,6 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router';
-import { orderQuery } from '@/features/orders/orderQuery';
+import { orderQuery } from './orderQuery';
 import { formatPrice } from '@/shared/format';
 
 export function OrderPage() {

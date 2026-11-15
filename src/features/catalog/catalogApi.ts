@@ -1,5 +1,5 @@
 import { keepPreviousData, queryOptions } from '@tanstack/react-query';
-import type { BookDetails, BookSummary, PagedResult } from '@/features/catalog/types';
+import type { BookDetails, BookSummary, PagedResult } from './types';
 import { apiFetch } from '@/shared/api';
 
 export const pageSize = 8;

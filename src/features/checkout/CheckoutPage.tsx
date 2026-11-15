@@ -1,19 +1,19 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useId, type ReactNode } from 'react';
 import { useFieldArray, useForm, useWatch, type FieldError } from 'react-hook-form';
 import { useNavigate } from 'react-router';
-import { useAuthStore } from '@/features/auth/authStore';
-import { cartApi, cartKey } from '@/features/cart/cartApi';
-import { useCart } from '@/features/cart/useCart';
-import { checkoutSchema, type CheckoutValues } from '@/features/checkout/checkoutSchema';
-import { applyServerErrors } from '@/features/checkout/serverErrors';
+import { userQuery } from '@/features/auth';
+import { cartApi, cartKey, useCart } from '@/features/cart';
+import { checkoutSchema, type CheckoutValues } from './checkoutSchema';
+import { applyServerErrors } from './serverErrors';
 import { ApiError } from '@/shared/api';
 import { useClientStore } from '@/shared/clientStore';
 import { formatPrice } from '@/shared/format';
 
 export function CheckoutPage() {
-  const user = useAuthStore((state) => state.user);
+  // The requireUser middleware has already loaded the user into the cache
+  const { data: user } = useQuery(userQuery);
   const { cartId, lines } = useCart();
   const queryClient = useQueryClient();
   const navigate = useNavigate();

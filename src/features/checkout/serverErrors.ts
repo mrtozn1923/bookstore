@@ -1,5 +1,5 @@
 import type { FieldPath, UseFormSetError } from 'react-hook-form';
-import type { CheckoutValues } from '@/features/checkout/checkoutSchema';
+import type { CheckoutValues } from './checkoutSchema';
 import type { ProblemDetails } from '@/shared/api';
 
 // Bookstore.Api reports errors by request property name (PlaceOrderRequest); the form uses its own names

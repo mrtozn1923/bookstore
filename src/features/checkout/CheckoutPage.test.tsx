@@ -2,7 +2,6 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { expect, it } from 'vitest';
-import { useAuthStore } from '@/features/auth/authStore';
 import { useClientStore } from '@/shared/clientStore';
 import { carts } from '@/test/handlers';
 import { renderApp } from '@/test/render';
@@ -10,7 +9,7 @@ import { server } from '@/test/server';
 
 it('shows the API validation error next to the email field', async () => {
   // Arrange the state the route expects: a signed-in user and a cart with one line
-  useAuthStore.getState().signIn({ name: 'Ada Lovelace', email: 'ada@example.com' });
+  server.use(http.get('/bff/user', () => HttpResponse.json({ name: 'Ada Lovelace', email: 'ada@example.com' })));
   carts.set('cart-1', { id: 'cart-1', currency: 'TRY', total: 489,
     items: [{ isbn: '9780441172719', title: 'Dune', unitPrice: 489, quantity: 1, lineTotal: 489 }] });
   useClientStore.getState().setCartId('cart-1');

@@ -1,22 +1,17 @@
-import { useNavigate, useSearchParams } from 'react-router';
-import { useAuthStore } from '@/features/auth/authStore';
+import { useSearchParams } from 'react-router';
 
 export function SignInPage() {
-  const signIn = useAuthStore((state) => state.signIn);
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  // Only allow paths inside this app as a target (no open redirect to another site)
+  // Only allow paths inside this app as a target (no open redirect to another site); the BFF checks it again
   const target = searchParams.get('redirectTo') ?? '/';
   const redirectTo = target.startsWith('/') && !target.startsWith('//') ? target : '/';
 
   return (
     <>
       <h1>Sign in</h1>
-      <p className="muted">Demo sign-in: no password, the user lives in memory.</p>
-      <button type="button" onClick={() => {
-        signIn({ name: 'Ada Lovelace', email: 'ada@example.com' });
-        navigate(redirectTo, { replace: true });
-      }}>Sign in as Ada</button>
+      <p className="muted">You go to the sign-in page and come back here signed in.</p>
+      {/* A full page navigation, not fetch: the BFF answers with a redirect and sets the session cookie */}
+      <a className="button" href={`/bff/login?returnUrl=${encodeURIComponent(redirectTo)}`}>Sign in</a>
     </>
   );
 }

@@ -1,5 +1,5 @@
 import { redirect } from 'react-router';
-import { cartQuery } from '@/features/cart/cartApi';
+import { cartQuery } from '@/features/cart';
 import { useClientStore } from '@/shared/clientStore';
 import { queryClient } from '@/shared/queryClient';
 

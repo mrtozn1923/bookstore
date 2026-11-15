@@ -1,4 +1,4 @@
-import type { StockLot } from '@/features/admin/stockLots';
+import type { StockLot } from './stockLots';
 
 type StockRowProps = {
   lot: StockLot;

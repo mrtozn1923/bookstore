@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
-import type { BookSummary } from '@/features/catalog/types';
+import type { BookSummary } from './types';
 import { formatPrice } from '@/shared/format';
 
 type BookCardProps = {
