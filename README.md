@@ -37,4 +37,11 @@ dotnet publish samples/Bookstore.Api -c Release -p:PublishReadyToRun=true -o pub
 dotnet publish samples/Bookstore.Api -c Release -p:PublishAot=true -o publish/aot
 dotnet run -c Release --project samples/StartupProbe -- 5 publish/aot/Bookstore.Api
 dotnet run -c Release --project benchmarks/Bookstore.Filter.Benchmarks -- --filter '*CompileBenchmarks*'
+
+# 07: garbage collection
+dotnet run -c Release --project samples/GcLab -- gens
+dotnet run -c Release --project samples/GcLab -- memory
+dotnet run -c Release --project samples/GcLab -- filter interpreter 5
+DOTNET_gcServer=1 dotnet run -c Release --project samples/GcLab -- modes 8
+dotnet run -c Release --project benchmarks/Bookstore.Filter.Benchmarks -- --filter '*EvaluationBenchmarks*'
 ```

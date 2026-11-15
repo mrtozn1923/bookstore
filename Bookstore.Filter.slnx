@@ -4,6 +4,7 @@
   </Folder>
   <Folder Name="/samples/">
     <Project Path="samples/Bookstore.Api/Bookstore.Api.csproj" />
+    <Project Path="samples/GcLab/GcLab.csproj" />
     <Project Path="samples/JitLab/JitLab.csproj" />
     <Project Path="samples/PipelineTour/PipelineTour.csproj" />
     <Project Path="samples/RegexLexer/RegexLexer.csproj" />

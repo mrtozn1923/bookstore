@@ -12,6 +12,7 @@
   <ItemGroup>
     <ProjectReference Include="../../src/Bookstore.Filter.Data/Bookstore.Filter.Data.csproj" />
     <ProjectReference Include="../../samples/JitLab/JitLab.csproj" />
+    <ProjectReference Include="../../samples/GcLab/GcLab.csproj" />
   </ItemGroup>
 
   <ItemGroup>
