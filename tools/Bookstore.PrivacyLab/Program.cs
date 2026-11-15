@@ -9,7 +9,10 @@ switch (command)
     case "inventory":
         InventoryCommand.Run(sql: args.Contains("--sql"));
         break;
+    case "protect":
+        await ProtectDemo.RunAsync();
+        break;
     default:
-        Console.WriteLine("usage: dotnet run -- <hash-link|inventory [--sql]>");
+        Console.WriteLine("usage: dotnet run -- <hash-link|inventory [--sql]|protect>");
         break;
 }

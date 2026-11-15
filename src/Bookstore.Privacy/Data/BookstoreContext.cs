@@ -25,5 +25,6 @@ public sealed class BookstoreContext(DbContextOptions<BookstoreContext> options)
             b.HasMany(c => c.Sessions).WithOne().HasForeignKey(s => s.CustomerId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
+        modelBuilder.Entity<Order>().HasIndex(o => o.BillingNationalIdIndex);
     }
 }

@@ -12,5 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Bookstore.Privacy\Bookstore.Privacy.csproj" />
+    <ProjectReference Include="..\..\tools\Bookstore.TestData\Bookstore.TestData.csproj" />
   </ItemGroup>
 </Project>
