@@ -1,6 +1,7 @@
 import { CurrencyPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, ElementRef, Injector, afterNextRender, computed, inject, signal, viewChild } from '@angular/core';
+import { FormField, email, form, required } from '@angular/forms/signals';
 import { RouterLink } from '@angular/router';
 import { CartLine, OrderView } from '../core/api-models';
 import { PageHeading } from '../core/page-heading';
@@ -13,7 +14,7 @@ interface SummaryItem {
 
 @Component({
   selector: 'app-cart-page',
-  imports: [CurrencyPipe, RouterLink, PageHeading],
+  imports: [CurrencyPipe, RouterLink, PageHeading, FormField],
   templateUrl: './cart-page.html',
 })
 export class CartPage {
@@ -21,8 +22,17 @@ export class CartPage {
   protected readonly placedOrder = signal<OrderView | null>(null);
   protected readonly serverError = signal('');
   protected readonly pendingRemoval = signal<CartLine | null>(null);
-  protected readonly nameError = signal('');
-  protected readonly emailError = signal('');
+  // Signal Forms: the model is a signal, the rules and their messages live in the schema
+  protected readonly customer = signal({ name: '', email: '' });
+  protected readonly checkoutForm = form(this.customer, path => {
+    required(path.name, { message: 'Enter your full name.' });
+    required(path.email, { message: 'Enter your e-mail address.' });
+    email(path.email, { message: 'Enter an e-mail address like name@example.com.' });
+  });
+  // Messages appear after the first submit, not while the user is still typing
+  private readonly submitted = signal(false);
+  protected readonly nameError = computed(() => this.submitted() ? this.firstError(this.checkoutForm.name().errors()) : '');
+  protected readonly emailError = computed(() => this.submitted() ? this.firstError(this.checkoutForm.email().errors()) : '');
 
   // One list for the summary: field errors first, in the order of the form, then the error from the API
   protected readonly errorSummary = computed<SummaryItem[]>(() => [
@@ -71,24 +81,26 @@ export class CartPage {
     }
   }
 
-  protected async checkout(event: Event, nameBox: HTMLInputElement, emailBox: HTMLInputElement): Promise<void> {
+  protected async checkout(event: Event): Promise<void> {
     event.preventDefault();
     this.serverError.set('');
-    // The form has novalidate: we check the fields ourselves and show the messages next to them (WCAG 3.3.1)
-    this.nameError.set(nameBox.validity.valueMissing ? 'Enter your full name.' : '');
-    this.emailError.set(emailBox.validity.valueMissing ? 'Enter your e-mail address.'
-      : emailBox.validity.typeMismatch ? 'Enter an e-mail address like name@example.com.' : '');
+    this.submitted.set(true);
     if (this.errorSummary().length) {
       this.focusAfterRender(this.summary);
       return;
     }
     try {
-      this.placedOrder.set(await this.store.placeOrder(nameBox.value, emailBox.value));
+      const { name, email } = this.customer();
+      this.placedOrder.set(await this.store.placeOrder(name, email));
       this.focusAfterRender(this.confirmation);
     } catch (error) {
       this.serverError.set(this.describe(error));
       this.focusAfterRender(this.summary);
     }
+  }
+
+  private firstError(errors: { message?: string }[]): string {
+    return errors[0]?.message ?? '';
   }
 
   // With <base href="/">, href="#customer-name" would leave the cart; move focus to the field ourselves.

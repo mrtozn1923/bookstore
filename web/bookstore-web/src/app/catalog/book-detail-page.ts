@@ -1,3 +1,4 @@
+import { Tab, TabContent, TabList, TabPanel, Tabs } from '@angular/aria/tabs';
 import { CurrencyPipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
 import { Component, effect, inject, input, signal } from '@angular/core';
@@ -10,7 +11,7 @@ import { PageHeading } from '../core/page-heading';
 
 @Component({
   selector: 'app-book-detail-page',
-  imports: [CurrencyPipe, RouterLink, PageHeading],
+  imports: [CurrencyPipe, RouterLink, PageHeading, Tabs, TabList, Tab, TabPanel, TabContent],
   templateUrl: './book-detail-page.html',
 })
 export class BookDetailPage {

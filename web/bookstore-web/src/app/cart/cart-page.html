@@ -47,10 +47,11 @@
       </ul>
     </section>
   }
-  <form class="checkout" novalidate (submit)="checkout($event, nameBox, emailBox)">
+  <form class="checkout" novalidate (submit)="checkout($event)">
     <div class="field">
       <label for="customer-name">Full name</label>
-      <input #nameBox id="customer-name" name="name" autocomplete="name" required
+      <!-- [formField] sets value, required and name; the error state and its message we connect ourselves -->
+      <input id="customer-name" autocomplete="name" [formField]="checkoutForm.name"
              [attr.aria-invalid]="nameError() ? 'true' : null"
              [attr.aria-describedby]="nameError() ? 'customer-name-error' : null" />
       @if (nameError()) {
@@ -59,7 +60,7 @@
     </div>
     <div class="field">
       <label for="customer-email">E-mail</label>
-      <input #emailBox id="customer-email" name="email" type="email" autocomplete="email" required
+      <input id="customer-email" type="email" autocomplete="email" [formField]="checkoutForm.email"
              [attr.aria-invalid]="emailError() ? 'true' : null"
              [attr.aria-describedby]="emailError() ? 'customer-email-error' : null" />
       @if (emailError()) {

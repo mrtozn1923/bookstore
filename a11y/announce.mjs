@@ -45,11 +45,15 @@ if (mode === 'catalog') {
   await page.getByTestId('book-count').filter({ hasText: '3' }).waitFor();
   await flush('category: Science Fiction');
   await page.getByRole('radio', { name: 'All' }).check();
-  await page.getByRole('searchbox', { name: 'Search books' }).fill('tolkien');
+  const box = page.getByRole('combobox', { name: 'Search books' });
+  await box.fill('tolkien');
+  // Enter picks the active suggestion; the first one is the typed text itself
+  await box.and(page.locator('[aria-activedescendant]')).waitFor();
   await page.keyboard.press('Enter');
   await page.getByTestId('book-count').filter({ hasText: /^1 / }).waitFor();
   await flush('search: tolkien');
-  await page.getByRole('searchbox', { name: 'Search books' }).fill('asimov tolkien');
+  await box.fill('asimov tolkien');
+  await box.and(page.locator('[aria-activedescendant]')).waitFor();
   await page.keyboard.press('Enter');
   await page.getByText('No books match').waitFor();
   await flush('search: asimov tolkien');

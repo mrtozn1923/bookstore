@@ -70,6 +70,19 @@ input, select {
 .toolbar { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
 .toolbar form { display: flex; gap: 0.5rem; }
 .book-title { font-size: 1rem; margin: 0; }
+.search-field { position: relative; }
+.suggestions { position: absolute; z-index: 5; top: 100%; left: 0; min-width: 100%; margin-top: 0.25rem; padding: 0.25rem 0;
+  background: #ffffff; border: 1px solid #6b7280; border-radius: 6px; }
+.suggestions [ngOption] { padding: 0.4rem 0.8rem; cursor: pointer; }
+[ngTabList] { display: flex; gap: 0.25rem; border-bottom: 1px solid #6b7280; }
+[ngTab] { padding: 0.5rem 1rem; cursor: pointer; border: 1px solid transparent; border-bottom: 0; border-radius: 6px 6px 0 0; }
+[ngTab][aria-selected="true"] { border-color: #6b7280; background: #ffffff; margin-bottom: -1px; font-weight: 700; }
+[ngTabPanel] { padding: 0.5rem 0; }
+/* Angular Aria marks the inactive panel inert; hiding it is the stylesheet's job */
+[ngTabPanel][inert] { display: none; }
+/* The option aria-activedescendant points to: focus stays in the input, so show it here */
+.suggestions [ngOption][data-active="true"] { outline: 3px solid #1d4ed8; outline-offset: -3px; }
+.suggestions [ngOption][aria-selected="true"] { font-weight: 700; }
 
 .book-grid {
   list-style: none;

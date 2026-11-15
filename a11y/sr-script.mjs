@@ -35,10 +35,11 @@ await step('open the catalog', 'page loads', 'page loads', async () => `title "$
 
 await step('jump to the search', 'D', 'VO+U, Landmarks', async () => await nodeText('search'));
 
-const search = page.getByRole('searchbox', { name: 'Search books' });
+const search = page.getByRole('combobox', { name: 'Search books' });
 await search.focus();
 await step('go to the search field', 'E', 'VO+Command+J', async () => await focusedAx(page));
 await search.fill('dune');
+await search.and(page.locator('[aria-activedescendant]')).waitFor();
 await search.press('Enter');
 await page.getByTestId('book-count').filter({ hasText: 'dune' }).waitFor();
 await step('type "dune", Enter', 'type, Enter', 'type, Return');

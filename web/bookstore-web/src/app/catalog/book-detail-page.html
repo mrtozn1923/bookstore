@@ -6,8 +6,22 @@
   <article class="book-detail">
     <h1 appPageHeading>{{ b.title }}</h1>
     <p class="muted">{{ b.author }} · {{ b.publishedYear }} · {{ b.category }}</p>
-    <p>{{ b.description }}</p>
-    <p class="muted">ISBN {{ b.isbn }}</p>
+    <!-- Angular Aria tabs: roles, aria-selected, aria-controls, roving tabindex, arrows, Home and End -->
+    <div ngTabs class="book-tabs">
+      <div ngTabList selectedTab="description" aria-label="About this book">
+        <div ngTab value="description">Description</div>
+        <div ngTab value="details">Details</div>
+      </div>
+      <div ngTabPanel value="description">
+        <ng-template ngTabContent><p>{{ b.description }}</p></ng-template>
+      </div>
+      <div ngTabPanel value="details">
+        <ng-template ngTabContent>
+          <p>ISBN {{ b.isbn }}</p>
+          <p>Published in {{ b.publishedYear }} · {{ b.category }}</p>
+        </ng-template>
+      </div>
+    </div>
     <p><strong>{{ b.price | currency: 'TRY' : 'symbol-narrow' }}</strong></p>
 
     @if (b.available > 0) {

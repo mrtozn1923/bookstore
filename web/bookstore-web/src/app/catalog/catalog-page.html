@@ -3,8 +3,25 @@
 <section class="toolbar">
   <!-- <search> is the search landmark: "D" in NVDA and the rotor's Landmarks list find it -->
   <search>
-    <form (submit)="applySearch($event, searchBox.value)">
-      <input #searchBox type="search" placeholder="Search by title, author or ISBN" aria-label="Search books" />
+    <form (submit)="applySearch($event)">
+      <div class="search-field">
+        <!-- Angular Aria: role="combobox", aria-expanded, aria-controls and aria-activedescendant come from ngCombobox -->
+        <input ngCombobox #combobox="ngCombobox" type="search" placeholder="Search by title, author or ISBN"
+               aria-label="Search books" [(value)]="query" />
+        <ng-template ngComboboxPopup [combobox]="combobox">
+          <!-- Focus stays in the input; the active option is pointed to with aria-activedescendant -->
+          <div ngListbox ngComboboxWidget #listbox="ngListbox" class="suggestions" aria-label="Suggestions"
+               focusMode="activedescendant" selectionMode="explicit" [tabindex]="-1"
+               [activeDescendant]="listbox.activeDescendant()"
+               [(value)]="picked" (click)="pickSuggestion()" (keydown.enter)="pickSuggestion()">
+            <!-- The first option is the typed text itself, so Enter right after typing still searches for it -->
+            <div ngOption [value]="query().trim()" [label]="'Search for ' + query().trim()">Search for "{{ query().trim() }}"</div>
+            @for (title of suggestions(); track title) {
+              <div ngOption [value]="title" [label]="title">{{ title }}</div>
+            }
+          </div>
+        </ng-template>
+      </div>
       <button type="submit">Search</button>
     </form>
   </search>
