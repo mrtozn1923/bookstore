@@ -1,7 +1,5 @@
-# Snapshot 30: submodule and subtree
+# Snapshot 31: large repos
 
-- `bookstore-api/.gitmodules`: the submodule entry created by `git submodule add`.
-- `bookstore-api/.github/workflows/ci.yml`: checkout with `submodules: recursive`.
+- `bookstore-web/.gitattributes`: book covers (`covers/*.jpg`, `covers/*.png`) stored with Git LFS.
 
-The post's remotes are local stand-ins served from http://127.0.0.1:52030/git/; replace the URL with your
-own GitHub repository URL.
+Run `git lfs install` once per machine before cloning a repo that uses these attributes.
