@@ -11,6 +11,7 @@ internal sealed class BookConfiguration : IEntityTypeConfiguration<Book>
         book.Property(b => b.Isbn).HasMaxLength(13).IsUnicode(false);
         book.HasIndex(b => b.Isbn).IsUnique();
         book.Property(b => b.Title).HasMaxLength(200);
+        book.Property(b => b.Subtitle).HasMaxLength(200);
         book.Property(b => b.Description).HasMaxLength(1000);
         book.Property(b => b.Price).HasPrecision(10, 2);
         book.HasOne(b => b.Author).WithMany(a => a.Books).HasForeignKey(b => b.AuthorId);

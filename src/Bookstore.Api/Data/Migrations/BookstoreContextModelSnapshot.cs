@@ -164,6 +164,10 @@ namespace Bookstore.Data.Migrations
                     b.Property<int>("PublishedYear")
                         .HasColumnType("int");
 
+                    b.Property<string>("Subtitle")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)

@@ -1,0 +1,56 @@
+{{- if and .Values.migrations.enabled (eq .Values.database.provider "SqlServer") }}
+{{- $component := dict "ctx" . "component" "migrate" -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "bookstore.fullname" . }}-migrate
+  labels:
+    {{- include "bookstore.labels" $component | nindent 4 }}
+  annotations:
+    # Runs before any chart resource is created or updated; a failure stops the release.
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "0"
+    # Delete the previous Job before a new one; delete it after success, keep it after a failure.
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: {{ .Values.migrations.backoffLimit }}
+  activeDeadlineSeconds: {{ .Values.migrations.activeDeadlineSeconds }}
+  template:
+    metadata:
+      labels:
+        {{- include "bookstore.selectorLabels" $component | nindent 8 }}
+    spec:
+      restartPolicy: Never
+      automountServiceAccountToken: false
+      securityContext:
+        {{- include "bookstore.podSecurityContext" . | nindent 8 }}
+      containers:
+        - name: migrate
+          image: {{ include "bookstore.image" (dict "ctx" . "image" .Values.migrations.image) | quote }}
+          imagePullPolicy: {{ .Values.migrations.image.pullPolicy }}
+          env:
+            # The bundle is a single-file app; it extracts itself here (the root filesystem is read-only).
+            - name: DOTNET_BUNDLE_EXTRACT_BASE_DIR
+              value: /tmp
+            # The bundle builds BookstoreContext through Program.cs, which reads this setting.
+            - name: ConnectionStrings__BookstoreDb
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "database.existingSecret is required when database.provider is SqlServer" .Values.database.existingSecret }}
+                  key: {{ .Values.database.secretKey }}
+          securityContext:
+            {{- include "bookstore.containerSecurityContext" . | nindent 12 }}
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 256Mi
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir:
+            sizeLimit: 64Mi
+{{- end }}

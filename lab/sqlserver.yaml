@@ -1,0 +1,56 @@
+# Lab only: SQL Server for the hook and migration examples. It is NOT part of the chart
+# (production keeps the database outside the cluster, see the Kubernetes series post 12).
+# The sa password comes from the Secret "mssql" created by lab/scripts/create-db-secrets.sh.
+apiVersion: v1
+kind: Service
+metadata:
+  name: mssql
+  namespace: bookstore-db
+spec:
+  selector:
+    app: mssql
+  ports:
+    - port: 1433
+      targetPort: 1433
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mssql
+  namespace: bookstore-db
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: mssql
+  template:
+    metadata:
+      labels:
+        app: mssql
+    spec:
+      hostname: sql1
+      containers:
+        - name: mssql
+          image: mcr.microsoft.com/mssql/server:2025-latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: ACCEPT_EULA
+              value: "Y"
+            - name: MSSQL_PID
+              value: Developer
+            - name: MSSQL_MEMORY_LIMIT_MB
+              value: "1024"
+            - name: MSSQL_SA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mssql
+                  key: sa-password
+          ports:
+            - containerPort: 1433
+          resources:
+            requests:
+              memory: 1Gi
+            limits:
+              memory: 1280Mi
