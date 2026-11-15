@@ -57,3 +57,7 @@ input, select {
   color: #92400e;
   font-size: 0.8rem;
 }
+
+.amount { display: flex; align-items: center; gap: 0.5rem; }
+.amount button { padding: 0.1rem 0.6rem; }
+button:disabled { opacity: 0.5; cursor: default; }

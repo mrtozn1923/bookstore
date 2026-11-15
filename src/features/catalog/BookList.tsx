@@ -4,7 +4,7 @@ import type { BookSummary } from '@/features/catalog/types';
 type BookListProps = {
   books: BookSummary[];
   quantities: Record<string, number>;
-  onAdd: (isbn: string) => void;
+  onAdd: (book: BookSummary, amount: number) => void;
 };
 
 export function BookList({ books, quantities, onAdd }: BookListProps) {
@@ -16,7 +16,7 @@ export function BookList({ books, quantities, onAdd }: BookListProps) {
     <ul className="book-grid">
       {books.map((book) => (
         // key: a stable identity like @for's track; never the array index
-        <BookCard key={book.isbn} book={book} quantity={quantities[book.isbn] ?? 0} onAdd={onAdd} />
+        <BookCard key={book.isbn} book={book} quantityInCart={quantities[book.isbn] ?? 0} onAdd={onAdd} />
       ))}
     </ul>
   );
