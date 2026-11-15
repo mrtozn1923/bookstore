@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookstore-backoffice
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: bookstore-backoffice
+  template:
+    metadata:
+      labels:
+        app: bookstore-backoffice
+    spec:
+      os:
+        name: windows
+      nodeSelector:
+        kubernetes.io/os: windows
+        node.kubernetes.io/windows-build: "10.0.26100"
+      containers:
+        - name: backoffice
+          image: registry.example.com/bookstore/backoffice:1.4.0
+          ports:
+            - containerPort: 80
+          env:
+            - name: BookstoreDb
+              valueFrom:
+                secretKeyRef:
+                  name: bookstore-backoffice-db
+                  key: connection-string
+          readinessProbe:
+            httpGet:
+              path: /health.ashx
+              port: 80
+            initialDelaySeconds: 20
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: "1"
+              memory: 1Gi
