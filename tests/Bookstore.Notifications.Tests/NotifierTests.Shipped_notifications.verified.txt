@@ -1,0 +1,178 @@
+﻿{
+  1, 0, False, False: {
+    Code: -1
+  },
+  1, 0, False, True : {
+    Code: -1
+  },
+  1, 0, True , False: {
+    Code: -1
+  },
+  1, 0, True , True : {
+    Code: -1
+  },
+  1, 1, False, False: {
+    Inbox: [
+      Your order of Dune has shipped.
+    ]
+  },
+  1, 1, False, True : {
+    Inbox: [
+      Your order of Dune has shipped.
+    ]
+  },
+  1, 1, True , False: {
+    Inbox: [
+      Your order of Dune has shipped.
+    ],
+    Sms: [
+      555-0101: Your order of Dune has shipped.
+    ]
+  },
+  1, 1, True , True : {
+    Inbox: [
+      Your order of Dune has shipped.
+    ],
+    Sms: [
+      555-0101: URGENT: Your order of Dune has shipped.
+    ]
+  },
+  1, 2, False, False: {
+    Inbox: [
+      Your order of 2 books has shipped.
+    ]
+  },
+  1, 2, False, True : {
+    Inbox: [
+      Your order of 2 books has shipped.
+    ]
+  },
+  1, 2, True , False: {
+    Inbox: [
+      Your order of 2 books has shipped.
+    ],
+    Sms: [
+      555-0101: Your order of 2 books has shipped.
+    ]
+  },
+  1, 2, True , True : {
+    Inbox: [
+      Your order of 2 books has shipped.
+    ],
+    Sms: [
+      555-0101: URGENT: Your order of 2 books has shipped.
+    ]
+  },
+  2, 0, False, False: {
+    Code: -1
+  },
+  2, 0, False, True : {
+    Code: -1
+  },
+  2, 0, True , False: {
+    Code: -1
+  },
+  2, 0, True , True : {
+    Code: -1
+  },
+  2, 1, False, False: {
+    Inbox: [
+      Your order of Dune has shipped.
+    ]
+  },
+  2, 1, False, True : {
+    Inbox: [
+      Your order of Dune has shipped.
+    ]
+  },
+  2, 1, True , False: {
+    Code: -2,
+    Inbox: [
+      Your order of Dune has shipped.
+    ]
+  },
+  2, 1, True , True : {
+    Code: -2,
+    Inbox: [
+      Your order of Dune has shipped.
+    ]
+  },
+  2, 2, False, False: {
+    Inbox: [
+      Your order of 2 books has shipped.
+    ]
+  },
+  2, 2, False, True : {
+    Inbox: [
+      Your order of 2 books has shipped.
+    ]
+  },
+  2, 2, True , False: {
+    Code: -2,
+    Inbox: [
+      Your order of 2 books has shipped.
+    ]
+  },
+  2, 2, True , True : {
+    Code: -2,
+    Inbox: [
+      Your order of 2 books has shipped.
+    ]
+  },
+  3, 0, False, False: {
+    Code: -1
+  },
+  3, 0, False, True : {
+    Code: -1
+  },
+  3, 0, True , False: {
+    Code: -1
+  },
+  3, 0, True , True : {
+    Code: -1
+  },
+  3, 1, False, False: {
+    Inbox: [
+      Your order of Dune has shipped.
+    ]
+  },
+  3, 1, False, True : {
+    Inbox: [
+      Your order of Dune has shipped.
+    ]
+  },
+  3, 1, True , False: {
+    Code: -2,
+    Inbox: [
+      Your order of Dune has shipped.
+    ]
+  },
+  3, 1, True , True : {
+    Code: -2,
+    Inbox: [
+      Your order of Dune has shipped.
+    ]
+  },
+  3, 2, False, False: {
+    Inbox: [
+      Your order of 2 books has shipped.
+    ]
+  },
+  3, 2, False, True : {
+    Inbox: [
+      Your order of 2 books has shipped.
+    ]
+  },
+  3, 2, True , False: {
+    Code: -2,
+    Inbox: [
+      Your order of 2 books has shipped.
+    ]
+  },
+  3, 2, True , True : {
+    Code: -2,
+    Inbox: [
+      Your order of 2 books has shipped.
+    ]
+  }
+}

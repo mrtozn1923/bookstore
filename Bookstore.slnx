@@ -2,11 +2,13 @@
   <Folder Name="/src/">
     <Project Path="src/Bookstore.Catalog/Bookstore.Catalog.csproj" />
     <Project Path="src/Bookstore.Inventory/Bookstore.Inventory.csproj" />
+    <Project Path="src/Bookstore.Notifications/Bookstore.Notifications.csproj" />
     <Project Path="src/Bookstore.Ordering/Bookstore.Ordering.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Bookstore.Catalog.Tests/Bookstore.Catalog.Tests.csproj" />
     <Project Path="tests/Bookstore.Inventory.Tests/Bookstore.Inventory.Tests.csproj" />
+    <Project Path="tests/Bookstore.Notifications.Tests/Bookstore.Notifications.Tests.csproj" />
     <Project Path="tests/Bookstore.Ordering.Tests/Bookstore.Ordering.Tests.csproj" />
   </Folder>
 </Solution>

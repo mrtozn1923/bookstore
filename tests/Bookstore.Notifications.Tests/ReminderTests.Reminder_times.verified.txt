@@ -1,0 +1,8 @@
+﻿{
+  2026-11-16T10:00:00+00:00, 1: 7 reminder 2026-11-17 10:00 Your cart is waiting for you.,
+  2026-11-16T10:00:00+00:00, 3: 7 reminder 2026-11-19 10:00 Your cart is waiting for you.,
+  2026-11-16T22:30:00+00:00, 1: 7 reminder 2026-11-18 08:00 Your cart is waiting for you.,
+  2026-11-16T22:30:00+00:00, 3: 7 reminder 2026-11-20 08:00 Your cart is waiting for you.,
+  2026-11-16T06:15:00+00:00, 1: 7 reminder 2026-11-17 08:00 Your cart is waiting for you.,
+  2026-11-16T06:15:00+00:00, 3: 7 reminder 2026-11-19 08:00 Your cart is waiting for you.
+}

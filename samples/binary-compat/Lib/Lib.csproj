@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>Bookstore.Notifications.Client</AssemblyName>
+    <!-- dotnet build -p:LibVersion=2 builds the "1.4.0" API -->
+    <DefineConstants Condition="'$(LibVersion)' == '2'">$(DefineConstants);V2</DefineConstants>
+  </PropertyGroup>
+</Project>

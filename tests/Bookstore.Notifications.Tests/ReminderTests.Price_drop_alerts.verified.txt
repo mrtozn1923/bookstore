@@ -1,0 +1,6 @@
+﻿{
+  big: 1,
+  Inbox: [
+    1 price-drop Dune is now 90.00 TRY (25% off).
+  ]
+}
