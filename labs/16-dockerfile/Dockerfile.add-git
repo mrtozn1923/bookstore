@@ -1,0 +1,5 @@
+# syntax=docker/dockerfile:1.29.0
+FROM alpine:3.24
+# a tag can move; the commit checksum cannot
+ADD --checksum=affbc17e1e0e97b0bb625ef8185afea3d746067f https://github.com/microsoft/go-sqlcmd.git#v1.10.0 /src/go-sqlcmd
+RUN ls /src/go-sqlcmd | head -5 && test ! -d /src/go-sqlcmd/.git

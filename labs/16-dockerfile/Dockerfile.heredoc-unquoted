@@ -1,0 +1,8 @@
+# syntax=docker/dockerfile:1.29.0
+FROM alpine:3.24
+COPY <<EOF /usr/local/bin/apply-db.sh
+for f in /db/*.sql; do
+    echo "applying $f to $SQLCMDSERVER"
+done
+EOF
+RUN cat /usr/local/bin/apply-db.sh

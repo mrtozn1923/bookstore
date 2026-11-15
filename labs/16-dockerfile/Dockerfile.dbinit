@@ -1,0 +1,32 @@
+# syntax=docker/dockerfile:1.29.0
+ARG SQLCMD_VERSION=1.10.0
+
+# one stage per architecture, because every download has its own checksum
+FROM scratch AS sqlcmd-amd64
+ARG SQLCMD_VERSION
+ADD --unpack=true --checksum=sha256:92516d98c63d99b0994de5b61350c91f6915f9b76f139a59039fbcb225c2e987 \
+    https://github.com/microsoft/go-sqlcmd/releases/download/v${SQLCMD_VERSION}/sqlcmd-linux-amd64.tar.bz2 /
+
+FROM scratch AS sqlcmd-arm64
+ARG SQLCMD_VERSION
+ADD --unpack=true --checksum=sha256:9faaa981f9c374f319ac796dedb4678499b8596c87d5b6c512e9b0e7a3b74f8e \
+    https://github.com/microsoft/go-sqlcmd/releases/download/v${SQLCMD_VERSION}/sqlcmd-linux-arm64.tar.bz2 /
+
+# TARGETARCH picks the stage; BuildKit skips the other one
+# hadolint ignore=DL3006
+FROM sqlcmd-${TARGETARCH} AS sqlcmd
+
+FROM alpine:3.24 AS final
+COPY --from=sqlcmd /sqlcmd /usr/local/bin/sqlcmd
+COPY db/ /db/
+COPY --chmod=755 <<'EOF' /usr/local/bin/apply-db.sh
+#!/bin/sh
+set -eu
+for f in /db/*.sql; do
+    echo "applying $f to $SQLCMDSERVER"
+    sqlcmd -C -b -i "$f"
+done
+EOF
+
+USER 1000
+ENTRYPOINT ["/usr/local/bin/apply-db.sh"]

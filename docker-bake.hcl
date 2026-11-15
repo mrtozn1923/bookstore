@@ -1,5 +1,9 @@
 variable "TAG" {
-  default = "1.2.0"
+  default = "1.3.0"
+}
+
+variable "GIT_SHA" {
+  default = "unknown"
 }
 
 variable "REGISTRY" {
@@ -30,6 +34,7 @@ target "api" {
   target     = "final"
   args = {
     APP_VERSION = TAG
+    GIT_SHA     = GIT_SHA
   }
   tags = ["dockerseries-bookstore-api:${TAG}"]
 }

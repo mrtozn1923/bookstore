@@ -1,0 +1,12 @@
+# syntax=docker/dockerfile:1.29.0
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS flat
+WORKDIR /src
+COPY src/*/*.csproj tests/*/*.csproj ./
+RUN find . -type f | sort
+
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS parents
+WORKDIR /src
+COPY --parents Bookstore.slnx global.json src/*/*.csproj tests/*/*.csproj ./
+RUN find . -type f | sort
+RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
+    dotnet restore Bookstore.slnx

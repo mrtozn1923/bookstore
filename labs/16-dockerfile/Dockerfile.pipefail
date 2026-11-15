@@ -1,0 +1,5 @@
+# syntax=docker/dockerfile:1.29.0
+FROM mcr.microsoft.com/dotnet/sdk:10.0
+# the script name has a typo: curl gets a 404
+RUN curl -fsSL https://raw.githubusercontent.com/dotnet/install-scripts/main/src/dotnet-instal.sh | bash -s -- --channel 11.0
+RUN dotnet --list-sdks

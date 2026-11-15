@@ -1,0 +1,6 @@
+# syntax=docker/dockerfile:1.29.0
+FROM alpine:3.24
+WORKDIR /seed
+# these run later, in every image built FROM this one
+ONBUILD COPY data/books.csv ./
+ONBUILD RUN wc -l books.csv

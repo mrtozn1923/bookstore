@@ -1,0 +1,8 @@
+# syntax=docker/dockerfile:1.29.0
+FROM alpine:3.24
+RUN <<EOT
+echo "1: creating /data"
+mkdir /data
+cp /missing/books.csv /data/
+echo "3: done"
+EOT
