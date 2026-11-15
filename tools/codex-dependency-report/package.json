@@ -1,0 +1,21 @@
+{
+  "name": "bookstore-codex-dependency-report",
+  "private": true,
+  "type": "module",
+  "description": "Weekly dependency update plan for the Bookstore repository, built on the Codex SDK",
+  "scripts": {
+    "report": "tsx report.ts",
+    "check": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "dependencies": {
+    "@openai/codex-sdk": "0.169.0"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.6",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2"
+  }
+}

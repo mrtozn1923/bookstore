@@ -5,3 +5,6 @@ AGENTS.override.md
 bin/
 obj/
 artifacts/
+
+# Codex dependency report tool
+tools/codex-dependency-report/node_modules/
