@@ -13,6 +13,7 @@
     { "id": "v5.0.0-8.2.1", "level": 1, "verification": "test" },
     { "id": "v5.0.0-8.2.2", "level": 1, "verification": "test" },
     { "id": "v5.0.0-8.3.1", "level": 1, "verification": "test" },
-    { "id": "v5.0.0-16.3.2", "level": 2, "verification": "planned", "backlog": "SEC-15" }
+    { "id": "v5.0.0-8.4.1", "level": 2, "verification": "test", "note": "Added after incident INC-2026-11-12" },
+    { "id": "v5.0.0-16.3.2", "level": 2, "verification": "test" }
   ]
 }

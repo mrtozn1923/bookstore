@@ -1782,12 +1782,92 @@
             "target": {
               "cell": "dc7f9973-4254-570a-ab2f-d7f1b2f08c95"
             }
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "targetMarker": {
+                  "name": "block"
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "labels": [
+              {
+                "markup": [
+                  {
+                    "tagName": "ellipse",
+                    "selector": "labelBody"
+                  },
+                  {
+                    "tagName": "text",
+                    "selector": "labelText"
+                  }
+                ],
+                "attrs": {
+                  "labelText": {
+                    "text": "5 GET /api/institutions/{id}/orders",
+                    "textAnchor": "middle",
+                    "textVerticalAnchor": "middle"
+                  },
+                  "labelBody": {
+                    "ref": "labelText",
+                    "refRx": "50%",
+                    "refRy": "60%",
+                    "fill": "#fff",
+                    "strokeWidth": 0
+                  }
+                },
+                "position": 0.5
+              }
+            ],
+            "data": {
+              "type": "tm.Flow",
+              "name": "5 GET /api/institutions/{id}/orders",
+              "description": "",
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "isBidirectional": false,
+              "isEncrypted": true,
+              "isPublicNetwork": true,
+              "protocol": "HTTPS",
+              "threats": [
+                {
+                  "id": "80e5377c-d6bf-590f-9aac-68aff3384ec6",
+                  "threatId": "80e5377c-d6bf-590f-9aac-68aff3384ec6",
+                  "number": 13,
+                  "title": "Another institution's orders listed (BOLA)",
+                  "type": "Information disclosure",
+                  "modelType": "STRIDE",
+                  "severity": "High",
+                  "status": "Mitigated",
+                  "score": "L3 x I3 = 9",
+                  "description": "The institution id in the route was not compared with the caller's institution; any institutional user could list another institution's orders.",
+                  "mitigation": "The route id must equal the token's institution_id; denied attempts are audited (ASVS v5.0.0-8.4.1, 16.3.2). Test: InstitutionOrdersIncidentTests. Found by incident INC-2026-11-12, not by this model."
+                }
+              ],
+              "isTrustBoundary": false
+            },
+            "id": "41e40944-e70d-5c0d-ab3c-33e5a12953e3",
+            "source": {
+              "cell": "2ec105ca-bf98-5dfa-8d28-9e9f26ab1ab1"
+            },
+            "target": {
+              "cell": "fae5b863-0dc4-5482-84bd-715492b1b022"
+            }
           }
         ]
       }
     ],
     "diagramTop": 2,
     "reviewer": "Emre",
-    "threatTop": 12
+    "threatTop": 13
   }
 }

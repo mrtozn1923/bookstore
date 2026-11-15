@@ -17,7 +17,7 @@ together with the code change that made it necessary.
 | Diagram | Scope | Last review |
 |---|---|---|
 | Checkout, Payments and Shipping | Customer checkout, hosted payment page, provider webhook, shipment | 2026-11-15 |
-| Institutional purchase approval | Purchase request, approval above the unit limit, institutional order | 2026-11-15 |
+| Institutional purchase approval | Purchase request, approval above the unit limit, institutional order, institution order list | 2026-11-15 |
 
 Out of scope for now: back office, Catalog administration, Notifications.
 
@@ -28,3 +28,9 @@ Threats are found per element with STRIDE and scored as likelihood (1–3) x imp
 an accepted threat stays `Open` and points to its row in `risk-register.md`.
 Every threat ends in one of: a test (`[Trait("threat", "T09")]`), a backlog item (SEC-nn),
 or a row in `risk-register.md`. A threat is `Mitigated` only when its test exists and passes.
+
+## Incidents and pentests that changed the model
+
+- Pentest 2026-11 (F-01, F-02): T12 and T03 mitigated; `docs/security/pentest-2026-11/`.
+- INC-2026-11-12: the institution order list flow was missing from the model; T13 added.
+  `docs/security/incidents/INC-2026-11-12.md`.

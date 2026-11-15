@@ -2,6 +2,7 @@ using Bookstore.Catalog;
 using Bookstore.Institutional;
 using Bookstore.Inventory;
 using Bookstore.Ordering;
+using Bookstore.Security;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -20,6 +21,7 @@ public sealed class BookstoreContext(DbContextOptions<BookstoreContext> options)
     public DbSet<Institution> Institutions => Set<Institution>();
     public DbSet<InstitutionUnit> InstitutionUnits => Set<InstitutionUnit>();
     public DbSet<PurchaseRequest> PurchaseRequests => Set<PurchaseRequest>();
+    public DbSet<AccessAuditEntry> AccessAuditEntries => Set<AccessAuditEntry>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(BookstoreContext).Assembly);
