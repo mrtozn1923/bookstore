@@ -486,3 +486,5 @@ $RECYCLE.BIN/
 web/bookstore-web/dist/
 web/bookstore-web/test-results/
 web/bookstore-web/coverage/
+# Copied from build/feed.npmrc by the pipeline
+web/bookstore-web/.npmrc

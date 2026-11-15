@@ -1,4 +1,5 @@
 # Installs, tests and builds an Angular application, then publishes the build output as an artifact.
+# With npmrc set, packages come through that registry (an Azure Artifacts feed) after npmAuthenticate.
 parameters:
   - name: workingDirectory
     type: string
@@ -7,6 +8,9 @@ parameters:
   - name: nodeVersion
     type: string
     default: 24.x
+  - name: npmrc
+    type: string
+    default: ''
 
 jobs:
   - job: Web
@@ -27,6 +31,15 @@ jobs:
           restoreKeys: |
             npm | "$(Agent.OS)"
           path: $(npm_config_cache)
+
+      - ${{ if ne(parameters.npmrc, '') }}:
+          - script: cp ${{ parameters.npmrc }} ${{ parameters.workingDirectory }}/.npmrc
+            displayName: Use feed .npmrc
+
+          - task: npmAuthenticate@0
+            displayName: Authenticate to Azure Artifacts
+            inputs:
+              workingFile: ${{ parameters.workingDirectory }}/.npmrc
 
       - script: npm ci
         displayName: npm ci

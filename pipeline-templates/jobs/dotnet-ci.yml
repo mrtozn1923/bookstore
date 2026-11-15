@@ -5,6 +5,9 @@ parameters:
     type: string
   - name: apiProject
     type: string
+  - name: nugetConfig
+    type: string
+    default: ''
   - name: buildConfiguration
     type: string
     default: Release
@@ -31,6 +34,7 @@ jobs:
       - template: ../steps/dotnet-setup.yml
         parameters:
           solution: ${{ parameters.solution }}
+          nugetConfig: ${{ parameters.nugetConfig }}
 
       - script: dotnet build ${{ parameters.solution }} --no-restore -c ${{ parameters.buildConfiguration }} -p:Version=$(appVersion)
         displayName: Build $(appVersion)

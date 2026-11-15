@@ -1,7 +1,11 @@
 # Installs the SDK from global.json, restores the NuGet cache and restores the solution in locked mode.
+# With nugetConfig set, restore goes through that config (an Azure Artifacts feed) after NuGetAuthenticate.
 parameters:
   - name: solution
     type: string
+  - name: nugetConfig
+    type: string
+    default: ''
 
 steps:
   - task: UseDotNet@2
@@ -18,5 +22,13 @@ steps:
         nuget | "$(Agent.OS)"
       path: $(NUGET_PACKAGES)
 
-  - script: dotnet restore ${{ parameters.solution }} --locked-mode
-    displayName: Restore (locked)
+  - ${{ if ne(parameters.nugetConfig, '') }}:
+      - task: NuGetAuthenticate@1
+        displayName: Authenticate to Azure Artifacts
+
+      - script: dotnet restore ${{ parameters.solution }} --configfile ${{ parameters.nugetConfig }} --locked-mode
+        displayName: Restore (locked, feed)
+
+  - ${{ else }}:
+      - script: dotnet restore ${{ parameters.solution }} --locked-mode
+        displayName: Restore (locked)

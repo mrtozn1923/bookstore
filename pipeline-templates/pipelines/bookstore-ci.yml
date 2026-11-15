@@ -9,6 +9,12 @@ parameters:
     type: string
   - name: webDistDirectory
     type: string
+  - name: nugetConfig
+    type: string
+    default: ''
+  - name: npmrc
+    type: string
+    default: ''
   - name: buildConfiguration
     type: string
     default: Release
@@ -36,6 +42,7 @@ stages:
         parameters:
           solution: ${{ parameters.solution }}
           apiProject: ${{ parameters.apiProject }}
+          nugetConfig: ${{ parameters.nugetConfig }}
           buildConfiguration: ${{ parameters.buildConfiguration }}
           runIntegrationTests: ${{ parameters.runIntegrationTests }}
           extraSteps:
@@ -53,6 +60,7 @@ stages:
         parameters:
           workingDirectory: ${{ parameters.webDirectory }}
           distDirectory: ${{ parameters.webDistDirectory }}
+          npmrc: ${{ parameters.npmrc }}
 
       - template: ../jobs/package.yml
 
@@ -64,6 +72,7 @@ stages:
           - template: ../steps/dotnet-setup.yml
             parameters:
               solution: ${{ parameters.solution }}
+              nugetConfig: ${{ parameters.nugetConfig }}
           - script: |
               dotnet list ${{ parameters.solution }} package --vulnerable --include-transitive | tee audit.txt
               if grep -q "has the following vulnerable packages" audit.txt; then

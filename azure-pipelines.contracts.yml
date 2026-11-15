@@ -1,0 +1,49 @@
+# bookstore-contracts: packs Bookstore.Contracts and pushes it to the Bookstore Azure Artifacts feed
+parameters:
+  - name: publishStable
+    displayName: Publish a stable version (main only)
+    type: boolean
+    default: false
+
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - src/Bookstore.Contracts
+
+pool:
+  vmImage: ubuntu-24.04
+
+variables:
+  project: src/Bookstore.Contracts/Bookstore.Contracts.csproj
+  nugetConfig: build/nuget.feed.config
+
+steps:
+  - checkout: self
+
+  - task: UseDotNet@2
+    displayName: Install .NET SDK from global.json
+    inputs:
+      packageType: sdk
+      useGlobalJson: true
+
+  - task: NuGetAuthenticate@1
+    displayName: Authenticate to Azure Artifacts
+
+  - script: bash scripts/set-contracts-version.sh
+    displayName: Decide package version
+    env:
+      PUBLISH_STABLE: ${{ parameters.publishStable }}
+
+  - script: dotnet restore $(project) --configfile $(nugetConfig) --locked-mode
+    displayName: Restore through the feed
+
+  - script: dotnet pack $(project) --no-restore -c Release -p:Version=$(contractsVersion) -o $(Build.ArtifactStagingDirectory)/packages
+    displayName: Pack $(contractsVersion)
+
+  - script: >-
+      dotnet nuget push "$(Build.ArtifactStagingDirectory)/packages/*.nupkg"
+      --source bookstore --configfile $(nugetConfig) --api-key az --skip-duplicate
+    displayName: Push to feed
