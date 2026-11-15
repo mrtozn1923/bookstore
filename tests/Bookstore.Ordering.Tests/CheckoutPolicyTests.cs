@@ -8,7 +8,9 @@ public class CheckoutPolicyTests
     private static readonly CartLine Hobbit = new("9780261103344", "The Hobbit", 149.90m, 2, false);
     private static readonly CartLine TwelveEmmas = new("9780141439587", "Emma", 59.90m, 12, true);
 
-    private static Cart NewCart(string name, PaymentMethod payment) => name switch
+    private static Cart NewCart(string name, PaymentMethod method) => NewCart(name, PaymentOptions.For(method));
+
+    private static Cart NewCart(string name, IPaymentOption payment) => name switch
     {
         "guest, empty" => new Cart(Customer.CreateGuest(), [], payment),
         "guest, Dune" => new Cart(Customer.CreateGuest(), [Dune], payment),

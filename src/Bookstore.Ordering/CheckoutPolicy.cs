@@ -9,7 +9,7 @@ public enum PaymentMethod
     CashOnDelivery
 }
 
-public sealed record Cart(Customer Customer, IReadOnlyList<CartLine> Lines, PaymentMethod Payment)
+public sealed record Cart(Customer Customer, IReadOnlyList<CartLine> Lines, IPaymentOption Payment)
 {
     public decimal Subtotal => Lines.Sum(l => l.UnitPrice * l.Quantity);
 }
@@ -41,7 +41,7 @@ public class CheckoutPolicy
     }
 
     private static bool IsEligibleForDiscount(Cart cart) =>
-        cart is not ({ Customer.IsGuest: true } or { Lines.Count: 0 } or { Payment: PaymentMethod.CashOnDelivery });
+        cart is not ({ Customer.IsGuest: true } or { Lines.Count: 0 } or { Payment: CashOnDeliveryPayment });
 
     private static bool QualifiesForCampaign(Cart cart, DateOnly today) =>
         IsCampaignWeek(today) && cart.Subtotal >= CampaignMinimum;
@@ -59,7 +59,7 @@ public class CheckoutPolicy
     {
         if (cart.Lines.Count == 0)
             return "The cart is empty.";
-        if (cart.Customer.IsGuest && cart.Payment == PaymentMethod.BankTransfer)
+        if (cart.Customer.IsGuest && cart.Payment is BankTransferPayment)
             return "Guests cannot pay by bank transfer.";
 
         if (cart.Lines.Any(l => l.Quantity > OrderSettings.MaxQuantityPerLine))
@@ -67,9 +67,9 @@ public class CheckoutPolicy
         return null;
     }
 
-    public decimal PaymentFee(Cart cart) => PaymentOptions.For(cart.Payment).Fee(cart.Subtotal);
+    public decimal PaymentFee(Cart cart) => cart.Payment.Fee(cart.Subtotal);
 
     public string PaymentLabel(PaymentMethod method) => PaymentOptions.For(method).Label;
 
-    public string ConfirmationNote(Cart cart) => PaymentOptions.For(cart.Payment).ConfirmationNote(cart.Subtotal);
+    public string ConfirmationNote(Cart cart) => cart.Payment.ConfirmationNote(cart.Subtotal);
 }

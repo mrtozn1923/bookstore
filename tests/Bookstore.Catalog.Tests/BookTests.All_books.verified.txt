@@ -1,0 +1,37 @@
+﻿{
+  Dune paperback: {
+    Title: Dune,
+    PriceWithVat: 132.00,
+    WeightKg: 0.45,
+    Delivery: Cargo, 2 days
+  },
+  Dune preorder: {
+    Title: Dune,
+    PriceWithVat: 132.00,
+    WeightKg: 0.45,
+    Delivery: Ships on 2026-12-01
+  },
+  Emma epub: {
+    Title: Emma,
+    PriceWithVat: 71.88,
+    Delivery: Download (EPUB)
+  },
+  Emma preorder: {
+    Title: Emma,
+    PriceWithVat: 71.88,
+    Delivery: Available on 2026-12-01
+  },
+  Middlemarch hardcover: {
+    Title: Middlemarch,
+    PriceWithVat: 208.45,
+    WeightKg: 1.25,
+    Delivery: Cargo (heavy), 3 days
+  },
+  signed Hobbit: {
+    Title: The Hobbit,
+    PriceWithVat: 384.89,
+    WeightKg: 0.7,
+    Delivery: Cargo, 2 days,
+    SignedBy: Grace
+  }
+}
