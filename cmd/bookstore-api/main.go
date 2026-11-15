@@ -2,23 +2,43 @@
 package main
 
 import (
+	"context"
+	"database/sql"
 	"log"
 	"net/http"
+	"os"
 	"time"
+
+	_ "github.com/microsoft/go-mssqldb" // registers the "sqlserver" driver
 
 	"bookstore/internal/catalog"
 	"bookstore/internal/httpapi"
 	"bookstore/internal/orders"
 	"bookstore/internal/orders/memstore"
+	"bookstore/internal/orders/sqlstore"
 )
 
 const angularDevOrigin = "http://localhost:4200"
 
 func main() {
 	books := catalog.Store{}
+
+	var repo orders.Repository = memstore.New()
+	if dsn := os.Getenv("BOOKSTORE_DB"); dsn != "" {
+		db, err := openDB(dsn, books.All())
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer db.Close()
+		repo = sqlstore.New(db)
+		log.Printf("orders are stored in SQL Server")
+	} else {
+		log.Printf("BOOKSTORE_DB is not set: orders are kept in memory")
+	}
+
 	api := &httpapi.API{
 		Books:  books,
-		Orders: orders.NewService(memstore.New(), books),
+		Orders: orders.NewService(repo, books),
 	}
 
 	csrf := http.NewCrossOriginProtection()
@@ -44,5 +64,32 @@ func main() {
 		MaxHeaderBytes:    64 << 10,
 	}
 	log.Printf("bookstore-api listening on http://%s", srv.Addr)
-	log.Fatal(srv.ListenAndServe())
+	if err := srv.ListenAndServe(); err != nil {
+		log.Print(err)
+	}
+}
+
+// openDB creates the pool once for the whole process, checks that the
+// server answers and creates the tables.
+func openDB(dsn string, books []catalog.Book) (*sql.DB, error) {
+	db, err := sql.Open("sqlserver", dsn) // no connection yet, only the pool
+	if err != nil {
+		return nil, err
+	}
+	db.SetMaxOpenConns(20)                  // default 0: no limit
+	db.SetMaxIdleConns(10)                  // default 2
+	db.SetConnMaxLifetime(30 * time.Minute) // default 0: connections live forever
+	db.SetConnMaxIdleTime(5 * time.Minute)  // default 0: idle connections are kept
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := db.PingContext(ctx); err != nil { // the first real connection
+		db.Close()
+		return nil, err
+	}
+	if err := sqlstore.EnsureSchema(ctx, db, books); err != nil {
+		db.Close()
+		return nil, err
+	}
+	return db, nil
 }

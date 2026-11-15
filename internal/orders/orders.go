@@ -64,6 +64,7 @@ type Order struct {
 	CustomerID string
 	Items      []Item
 	Status     Status
+	PaidAt     *time.Time // nil until the order is paid
 }
 
 // NewOrder returns a pending order with no items.
@@ -88,6 +89,7 @@ func (o *Order) MarkPaid(now time.Time) error {
 		return fmt.Errorf("pay order %s in status %v: %w", o.ID, o.Status, ErrInvalidTransition)
 	}
 	o.Status = StatusPaid
+	o.PaidAt = &now
 	o.Touch(now)
 	return nil
 }

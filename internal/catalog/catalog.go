@@ -89,5 +89,5 @@ func (Store) ByAuthor() iter.Seq2[string, []Book] {
 
 // String formats the amount for people: Money(34990) prints as "349.90 TRY".
 func (m Money) String() string {
-	return fmt.Sprintf("%d.%02d TRY", m/100, m%100)
+	return m.Decimal() + " TRY"
 }

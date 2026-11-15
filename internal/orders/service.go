@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"sync"
 	"time"
 
 	"bookstore/internal/catalog"
@@ -13,6 +12,11 @@ import (
 // Repository is what Service needs from storage. It is declared here, next
 // to its consumer, and implemented elsewhere without naming it.
 type Repository interface {
+	// NextID returns a new order ID. The store owns the counter, so IDs
+	// stay unique across restarts when the store is a database.
+	NextID(ctx context.Context) (string, error)
+	// Save stores a new order. A store that tracks stock returns an error
+	// wrapping ErrOutOfStock and saves nothing if a line cannot be filled.
 	Save(ctx context.Context, o *Order) error
 	ByID(ctx context.Context, id string) (*Order, error)
 }
@@ -28,19 +32,17 @@ type Line struct {
 	Quantity int
 }
 
-// Service places orders. It is safe for concurrent use.
+// Service places orders. It is safe for concurrent use when its
+// Repository is.
 type Service struct {
 	repo  Repository
 	books Catalog
 	now   func() time.Time
-
-	mu     sync.Mutex // guards nextID
-	nextID int
 }
 
 // NewService accepts interfaces and returns a concrete *Service.
 func NewService(repo Repository, books Catalog) *Service {
-	return &Service{repo: repo, books: books, now: time.Now, nextID: 1000}
+	return &Service{repo: repo, books: books, now: time.Now}
 }
 
 // Place validates the request, checks stock and saves a new order.
@@ -61,8 +63,12 @@ func (s *Service) Place(ctx context.Context, customerID string, lines []Line) (*
 		items = append(items, Item{ISBN: b.ISBN, Title: b.Title, UnitPrice: b.Price, Quantity: l.Quantity})
 	}
 
+	id, err := s.repo.NextID(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("place order: %w", err)
+	}
 	now := s.now()
-	o := NewOrder(s.newID(), customerID, now)
+	o := NewOrder(id, customerID, now)
 	for _, it := range items {
 		o.AddItem(it, now)
 	}
@@ -75,15 +81,6 @@ func (s *Service) Place(ctx context.Context, customerID string, lines []Line) (*
 // ByID returns a saved order.
 func (s *Service) ByID(ctx context.Context, id string) (*Order, error) {
 	return s.repo.ByID(ctx, id)
-}
-
-// newID returns the next order ID. Only the counter is locked, not the
-// catalog lookups or the repository call.
-func (s *Service) newID() string {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	s.nextID++
-	return fmt.Sprintf("ORD-%d", s.nextID)
 }
 
 // validate collects every problem instead of stopping at the first one.
