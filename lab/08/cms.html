@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bookstore blog body from the CMS</title>
+    <link rel="stylesheet" href="index.out.css">
+</head>
+<body class="p-8">
+    <!-- the CMS body is the same HTML in both articles -->
+    <article id="body-plain">
+        <h2>Why Middlemarch still matters</h2>
+        <p>George Eliot's novel follows a whole town. Read it slowly, and read the <a href="#notes">notes</a>.</p>
+        <ul>
+            <li>Penguin Classics edition</li>
+            <li>Oxford World's Classics edition</li>
+        </ul>
+        <pre><code>isbn: 9780141439549</code></pre>
+    </article>
+    <article id="body-prose" class="prose prose-slate prose-a:text-indigo-600 dark:prose-invert">
+        <h2>Why Middlemarch still matters</h2>
+        <p>George Eliot's novel follows a whole town. Read it slowly, and read the <a href="#notes">notes</a>.</p>
+        <ul>
+            <li>Penguin Classics edition</li>
+            <li>Oxford World's Classics edition</li>
+        </ul>
+        <pre><code>isbn: 9780141439549</code></pre>
+        <div class="not-prose">
+            <button id="add-to-cart" type="button" class="rounded bg-indigo-600 px-3 py-1 text-white">Add to cart</button>
+        </div>
+    </article>
+</body>
+</html>

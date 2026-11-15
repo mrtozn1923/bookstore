@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bookstore cards and visual utilities</title>
+    <link rel="stylesheet" href="index.out.css">
+</head>
+<body class="bg-slate-50 p-8 text-slate-900">
+    <!-- promo banner -->
+    <section id="promo" class="rounded-xl bg-linear-to-r from-indigo-600 to-sky-500 p-6 text-white">
+        <h2 id="promo-plain" class="w-80 text-2xl font-bold">Institutional orders get a 10% discount</h2>
+        <h2 id="promo-balance" class="mt-4 w-80 text-2xl font-bold text-balance text-shadow-sm">Institutional orders get a 10% discount</h2>
+    </section>
+
+    <!-- book cards -->
+    <div class="mt-8 grid grid-cols-[repeat(auto-fill,minmax(12rem,1fr))] gap-6">
+        <article id="card-dune" class="group overflow-hidden rounded-lg bg-white shadow-sm transition-shadow duration-300 hover:shadow-lg">
+            <div class="overflow-hidden">
+                <div class="aspect-2/3 bg-amber-200 transition-transform duration-300 group-hover:scale-105 motion-reduce:transition-none"></div>
+            </div>
+            <div class="p-4">
+                <h3 class="truncate font-semibold">Dune</h3>
+                <p class="text-2xl font-bold tracking-tight tabular-nums">420.00 TRY</p>
+            </div>
+        </article>
+        <article id="card-emma" data-stock="out" class="group overflow-hidden rounded-lg bg-white shadow-sm">
+            <div class="relative overflow-hidden">
+                <div class="aspect-2/3 bg-sky-200 group-data-[stock=out]:opacity-60 group-data-[stock=out]:grayscale"></div>
+                <span class="absolute inset-x-0 bottom-0 bg-slate-900/70 py-1 text-center text-sm text-white">Out of stock</span>
+            </div>
+            <div class="p-4">
+                <h3 class="truncate font-semibold">Emma</h3>
+                <p id="blurb" class="mt-1 max-h-16 overflow-hidden text-sm mask-b-from-50%">A comedy of manners about a young woman who is sure she knows what is best for everyone in her village, and finds out she does not.</p>
+            </div>
+        </article>
+    </div>
+
+    <!-- borders, rings, outlines -->
+    <div class="mt-8 flex gap-4">
+        <p id="border-default" class="border p-2 text-slate-600">Paperback</p>
+        <p id="ring-default" class="ring p-2 text-indigo-600">Hardcover</p>
+        <button id="btn-none" type="button" class="rounded bg-white px-3 py-1 outline-none">outline-none</button>
+        <button id="btn-hidden" type="button" class="rounded bg-white px-3 py-1 outline-hidden">outline-hidden</button>
+    </div>
+
+    <!-- cover carousel -->
+    <ul id="carousel" class="mt-8 flex w-80 snap-x snap-mandatory gap-4 overflow-x-auto scrollbar-thin">
+        <li class="h-36 w-24 shrink-0 snap-start rounded bg-amber-200"></li>
+        <li class="h-36 w-24 shrink-0 snap-start rounded bg-sky-200"></li>
+        <li class="h-36 w-24 shrink-0 snap-start rounded bg-rose-200"></li>
+        <li class="h-36 w-24 shrink-0 snap-start rounded bg-emerald-200"></li>
+        <li class="h-36 w-24 shrink-0 snap-start rounded bg-violet-200"></li>
+    </ul>
+</body>
+</html>

@@ -15,11 +15,15 @@
     "build:06": "tailwindcss -i 06/conflict.css -o 06/conflict.out.css",
     "test:06": "node scripts/06-conflict.mjs && node scripts/06-merge.mjs && node scripts/06-legacy.mjs && node scripts/06-button.mjs",
     "build:07": "tailwindcss -i 07/input.css -o 07/index.out.css",
-    "test:07": "node scripts/07-layout.mjs"
+    "test:07": "node scripts/07-layout.mjs",
+    "build:08": "tailwindcss -i 08/input.css -o 08/index.out.css && tailwindcss -i 08/checkout.css -o 08/checkout.out.css && tailwindcss -i 08/checkout-forms.css -o 08/checkout-forms.out.css",
+    "test:08": "node scripts/08-visual.mjs && node scripts/08-forms.mjs && node scripts/08-prose.mjs"
   },
   "type": "module",
   "devDependencies": {
     "@tailwindcss/cli": "^4.3.5",
+    "@tailwindcss/forms": "^0.5.11",
+    "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.5",
     "playwright": "^1.65.0",
     "prettier": "^3.10.1",
