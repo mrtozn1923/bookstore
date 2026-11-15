@@ -52,7 +52,13 @@ switch (command)
     case "topics":
         Classification.Topics();
         break;
+    case "segments":
+        Unsupervised.Segments();
+        break;
+    case "anomalies":
+        Unsupervised.Anomalies();
+        break;
     default:
-        Console.WriteLine("Commands: rules, explore, quality, clean, split, cv, complexity, first-model, pitfalls, features, inspect, skew, gd, compare, cancel, topics");
+        Console.WriteLine("Commands: rules, explore, quality, clean, split, cv, complexity, first-model, pitfalls, features, inspect, skew, gd, compare, cancel, topics, segments, anomalies");
         break;
 }
