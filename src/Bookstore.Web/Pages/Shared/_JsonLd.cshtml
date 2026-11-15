@@ -1,0 +1,6 @@
+@model JsonLdDocument
+@{
+    // "!" opts this element out of ScriptTagHelper, which would encode "+" in the type attribute
+    // Html.Raw is safe only because JsonLd.Serialize escapes < > & as < > &
+}
+<!script type="application/ld+json">@Html.Raw(JsonLd.Serialize(Model))</!script>

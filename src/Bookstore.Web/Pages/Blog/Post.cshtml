@@ -1,0 +1,25 @@
+@page "/blog/{slug}"
+@model Bookstore.Web.Pages.Blog.PostModel
+@{
+    string prefix = SiteGraph.Prefix(Model.Lang);
+    bool en = Model.Lang == "en";
+}
+<nav aria-label="breadcrumb">
+    <a href="@prefix/blog">Blog</a> ›
+    <a href="@prefix/blog/category/@Model.Post.CategorySlug">@Model.Post.Category.Get(Model.Lang)</a> ›
+    <span>@Model.Post.Title.Get(Model.Lang)</span>
+</nav>
+<article>
+    <h1>@Model.Post.Title.Get(Model.Lang)</h1>
+    <p class="byline">
+        <a href="@prefix/authors/@Model.Author.Slug" rel="author">@Model.Author.Name</a>
+        · @(en ? "Published" : "Yayın"): <time datetime="@Model.Post.PublishedAt.ToString("O")">@Model.Post.PublishedAt.ToString("yyyy-MM-dd")</time>
+        @if (Model.Post.UpdatedAt is { } updated && updated > Model.Post.PublishedAt)
+        {
+            <text>· @(en ? "Updated" : "Güncelleme"): <time datetime="@updated.ToString("O")">@updated.ToString("yyyy-MM-dd")</time></text>
+        }
+    </p>
+    <p class="summary">@Model.Post.Summary.Get(Model.Lang)</p>
+    <img src="@Model.Post.ImagePath" width="1200" height="675" alt="" />
+    <p>@Model.Post.Body.Get(Model.Lang)</p>
+</article>

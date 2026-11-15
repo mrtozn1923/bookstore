@@ -1,0 +1,14 @@
+@page
+@inject PostCatalog Catalog
+@{
+    string lang = HttpContext.Request.Path.StartsWithSegments("/en") ? "en" : "tr";
+    var graph = new SiteGraph("https://bookstore.example");
+    ViewData["Lang"] = lang;
+    ViewData["Title"] = lang == "en" ? "Blog" : "Blog";
+    ViewData["JsonLd"] = graph.Home();
+}
+<h1>Bookstore</h1>
+@foreach (Post post in Catalog.Posts)
+{
+    <p><a href="@SiteGraph.Prefix(lang)/blog/@post.Slug">@post.Title.Get(lang)</a></p>
+}

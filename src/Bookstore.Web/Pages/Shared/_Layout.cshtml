@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="@(ViewData["Lang"] ?? "tr")">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] | Bookstore</title>
+    @if (ViewData["JsonLd"] is JsonLdDocument jsonLd)
+    {
+        <partial name="_JsonLd" model="jsonLd" />
+    }
+</head>
+<body>
+    @RenderBody()
+</body>
+</html>

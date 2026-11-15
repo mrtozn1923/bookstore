@@ -1,0 +1,22 @@
+@page "/authors/{slug}"
+@inject PostCatalog Catalog
+@{
+    string slug = (string)RouteData.Values["slug"]!;
+    Author? author = Catalog.FindAuthor(slug);
+    if (author is null)
+    {
+        Response.StatusCode = 404;
+        return;
+    }
+    string lang = HttpContext.Request.Path.StartsWithSegments("/en") ? "en" : "tr";
+    ViewData["Lang"] = lang;
+    ViewData["Title"] = author.Name;
+    ViewData["JsonLd"] = new SiteGraph("https://bookstore.example").Profile(author, lang);
+}
+<h1>@author.Name</h1>
+<p>@author.JobTitle.Get(lang)</p>
+<p>@author.Bio.Get(lang)</p>
+@foreach (string link in author.SameAs)
+{
+    <p><a href="@link" rel="me">@link</a></p>
+}

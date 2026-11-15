@@ -1,0 +1,29 @@
+@page "/books/{slug}"
+@model Bookstore.Web.Pages.Books.DetailModel
+@{
+    string lang = Model.Lang;
+    PriceQuote quote = Model.Quote;
+}
+<article class="book">
+    <h1>@ViewData["Title"]</h1>
+    <p class="author">@Model.Book.AuthorName</p>
+    <img src="@Model.Book.ImagePaths[0]" width="600" height="600" alt="@Model.Book.Title" />
+    <p class="isbn">ISBN <span>@Model.Book.Isbn</span></p>
+    <p class="price">
+        <span class="price-now">@PricingService.Format(quote.Price, lang)</span>
+        @if (quote.StrikethroughPrice is { } regular)
+        {
+            <s class="price-was">@PricingService.Format(regular, lang)</s>
+            <span class="sale-ends">@BookTexts.SaleEnds(lang): <time datetime="@quote.SaleEndsAt!.Value.ToString("O")">@quote.SaleEndsAt.Value.ToString("yyyy-MM-dd HH:mm")</time></span>
+        }
+    </p>
+    <p class="stock">@BookTexts.Stock(Model.Book.StockQuantity, lang)</p>
+    @if (Model.Book.StockQuantity > 0)
+    {
+        <form method="post" action="@SiteGraph.Prefix(lang)/cart">
+            <input type="hidden" name="isbn" value="@Model.Book.Isbn" />
+            <button type="submit">@BookTexts.AddToCart(lang)</button>
+        </form>
+    }
+    <p class="description">@Model.Book.Description.Get(lang)</p>
+</article>
