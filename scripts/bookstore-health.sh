@@ -18,14 +18,19 @@ usage() {
 }
 
 main() {
-    if [ "$#" -gt 1 ]; then
+    if (( $# > 1 )); then
         usage
         exit 2
     fi
     local target="${1:-local}"
+    local timeout="${HEALTH_TIMEOUT:-5}"
+    if [[ ! $timeout =~ ^[1-9][0-9]*$ ]]; then
+        echo "HEALTH_TIMEOUT must be a positive integer, got: $timeout" >&2
+        exit 2
+    fi
     # A known environment name maps to its URL; anything else is used as a URL.
     local url="${HEALTH_URLS[$target]:-$target}"
-    local curl_opts=(-fsS --max-time "${HEALTH_TIMEOUT:-5}" -o /dev/null)
+    local curl_opts=(-fsS --max-time "$timeout" -o /dev/null)
 
     if curl "${curl_opts[@]}" "$url"; then
         echo "OK $url"
