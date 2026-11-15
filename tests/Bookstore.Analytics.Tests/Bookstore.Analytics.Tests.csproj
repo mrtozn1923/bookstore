@@ -12,5 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Bookstore.Analytics\Bookstore.Analytics.csproj" />
+    <ProjectReference Include="..\..\src\Bookstore.Analytics.Cli\Bookstore.Analytics.Cli.csproj" />
   </ItemGroup>
 </Project>
