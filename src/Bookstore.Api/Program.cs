@@ -12,6 +12,7 @@ builder.Services.AddClaude(builder.Configuration);
 builder.Services.AddSingleton<IBookRepository, InMemoryBookRepository>();
 builder.Services.AddScoped<ClaudeCatalogService>();
 builder.Services.AddSingleton<IConversationStore, InMemoryConversationStore>();
+builder.Services.AddSingleton(SupportKnowledge.LoadEmbedded());
 builder.Services.AddScoped<SupportChatService>();
 builder.Services.AddScoped<InvoiceAnalyzer>();
 builder.Services.AddScoped<ReturnClassifier>();

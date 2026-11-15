@@ -7,6 +7,8 @@ namespace Bookstore.Api.Tests;
 
 public sealed class SupportChatServiceTests
 {
+    private static readonly SupportKnowledge Knowledge = new("# Policy", ["Fiction/Classics"]);
+
     [Fact]
     public void BuildRequest_OperatorNoteFollowsTheUserTurn()
     {
@@ -18,7 +20,7 @@ public sealed class SupportChatServiceTests
             new SystemMessageParam { Content = "This customer has an open complaint. Offer a call back." },
         ];
 
-        MessageCreateParams request = SupportChatService.BuildRequest(history, new ClaudeOptions());
+        MessageCreateParams request = SupportChatService.BuildRequest(history, Knowledge, new ClaudeOptions());
         JsonElement messages = JsonSerializer.SerializeToElement(request.RawBodyData)
             .GetProperty("messages");
 

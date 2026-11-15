@@ -13,7 +13,7 @@ public enum ReplyOutcome
     Unknown,
 }
 
-public sealed record TokenUsage(long Input, long Output, long CacheRead, long CacheWrite, long Thinking);
+public sealed record TokenUsage(long Input, long Output, long CacheRead, long CacheWrite, long Thinking, long CacheWrite1h = 0);
 
 public sealed record ClaudeReply(
     ReplyOutcome Outcome,
@@ -47,7 +47,8 @@ public static class ClaudeReplyReader
             usage.OutputTokens,
             usage.CacheReadInputTokens ?? 0,
             usage.CacheCreationInputTokens ?? 0,
-            usage.OutputTokensDetails?.ThinkingTokens ?? 0);
+            usage.OutputTokensDetails?.ThinkingTokens ?? 0,
+            usage.CacheCreation?.Ephemeral1hInputTokens ?? 0);
 
         // Echo the assistant turn back unchanged, thinking blocks included.
         List<ContentBlockParam> assistantContent = message.Content

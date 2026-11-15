@@ -19,4 +19,7 @@ public sealed class ClaudeOptions
     public int MaxRetries { get; set; } = 2;
 
     public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(60);
+
+    // Sends the diagnostics object so the API reports where the cached prefix diverged from the previous turn.
+    public bool CacheDiagnostics { get; set; }
 }

@@ -30,13 +30,15 @@ public sealed class AssistantAgent(
         System = SystemPrompt,
         Tools = [.. BookstoreTools.Definitions, BookstoreTools.AuthorWebSearchTool],
         Messages = messages,
+        // Every round resends tools, system and the growing history; the breakpoint follows the last block.
+        CacheControl = new CacheControlEphemeral(),
     };
 
     public async Task<AgentAnswer> AskAsync(string question, CurrentCustomer customer, CancellationToken cancellationToken)
     {
         List<MessageParam> messages = [new UserMessageParam { Content = question }];
         List<string> toolCalls = [];
-        long input = 0, output = 0;
+        long input = 0, output = 0, cacheRead = 0, cacheWrite = 0;
 
         for (int round = 1; round <= MaxRounds; round++)
         {
@@ -44,7 +46,9 @@ public sealed class AssistantAgent(
             ClaudeReply reply = ClaudeReplyReader.Read(response);
             input += reply.Usage.Input;
             output += reply.Usage.Output;
-            TokenUsage usage = new(input, output, 0, 0, 0);
+            cacheRead += reply.Usage.CacheRead;
+            cacheWrite += reply.Usage.CacheWrite;
+            TokenUsage usage = new(input, output, cacheRead, cacheWrite, 0);
 
             if (reply.Outcome is not (ReplyOutcome.NeedsTools or ReplyOutcome.Paused))
             {
@@ -77,6 +81,6 @@ public sealed class AssistantAgent(
 
         logger.LogWarning("Stopped after {MaxRounds} rounds", MaxRounds);
         return new AgentAnswer("I could not finish this request. A team member will help you.", ReplyOutcome.Unknown,
-            MaxRounds, toolCalls, new TokenUsage(input, output, 0, 0, 0));
+            MaxRounds, toolCalls, new TokenUsage(input, output, cacheRead, cacheWrite, 0));
     }
 }

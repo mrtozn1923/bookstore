@@ -8,6 +8,7 @@ using Bookstore.Api.Returns;
 
 // Usage:
 //   dotnet run -- estimate [inputTokens] [outputTokens]   price math only, no API call
+//   dotnet run -- cache [prefix] [suffix] [output] [requests]   prompt caching price math, no API call
 //   dotnet run -- run                                     needs ANTHROPIC_API_KEY, calls the API
 CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
 CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
@@ -25,6 +26,27 @@ if (mode == "estimate")
     {
         decimal one = ClaudePricing.EstimateUsd(model, perRequest);
         Console.WriteLine($"{model,-20}{one,14:0.000000}{one * 1000,12:0.0000}");
+    }
+
+    return;
+}
+
+if (mode == "cache")
+{
+    long prefix = args.Length > 1 ? long.Parse(args[1]) : 40_000;
+    long suffix = args.Length > 2 ? long.Parse(args[2]) : 600;
+    long output = args.Length > 3 ? long.Parse(args[3]) : 250;
+    int requests = args.Length > 4 ? int.Parse(args[4]) : 1_000;
+
+    Console.WriteLine($"Assumed: prefix={prefix} suffix={suffix} output={output} requests={requests}");
+    Console.WriteLine($"{"model",-20}{"no cache",11}{"1 write",11}{"every write",13}{"saving",9}");
+    foreach (string model in ClaudePricing.KnownModels)
+    {
+        decimal none = PromptCacheCostModel.WithoutCache(model, new(prefix, suffix, output, requests, CacheWrites: 0));
+        decimal healthy = PromptCacheCostModel.WithCache(model, new(prefix, suffix, output, requests, CacheWrites: 1));
+        // A silent breaker (timestamp in the system prompt, shuffled tools) turns every request into a cache write.
+        decimal broken = PromptCacheCostModel.WithCache(model, new(prefix, suffix, output, requests, CacheWrites: requests));
+        Console.WriteLine($"{model,-20}{none,11:0.00}{healthy,11:0.00}{broken,13:0.00}{1 - healthy / none,9:P0}");
     }
 
     return;
