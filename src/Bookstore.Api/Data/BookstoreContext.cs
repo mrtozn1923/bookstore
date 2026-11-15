@@ -1,4 +1,5 @@
 using Bookstore.Catalog;
+using Bookstore.Institutional;
 using Bookstore.Inventory;
 using Bookstore.Ordering;
 using Microsoft.EntityFrameworkCore;
@@ -6,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Bookstore.Data;
 
-// One context for the reference app; each module maps to its own SQL schema (catalog, ordering, inventory).
+// One context for the reference app; each module maps to its own SQL schema (catalog, ordering, inventory, institutional).
 public sealed class BookstoreContext(DbContextOptions<BookstoreContext> options) : DbContext(options)
 {
     public DbSet<Book> Books => Set<Book>();
@@ -16,6 +17,9 @@ public sealed class BookstoreContext(DbContextOptions<BookstoreContext> options)
     public DbSet<Cart> Carts => Set<Cart>();
     public DbSet<Customer> Customers => Set<Customer>();
     public DbSet<Order> Orders => Set<Order>();
+    public DbSet<Institution> Institutions => Set<Institution>();
+    public DbSet<InstitutionUnit> InstitutionUnits => Set<InstitutionUnit>();
+    public DbSet<PurchaseRequest> PurchaseRequests => Set<PurchaseRequest>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(BookstoreContext).Assembly);

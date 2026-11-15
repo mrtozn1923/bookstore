@@ -1,6 +1,8 @@
 using Bookstore.Data;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,6 +19,9 @@ public sealed class BookstoreApiFactory : WebApplicationFactory<Program>, IAsync
     {
         builder.UseSetting("ConnectionStrings:BookstoreDb", $"Data Source={databasePath}");
         builder.UseSetting("Database:MigrateOnStartup", "false");
+        builder.ConfigureTestServices(services => services
+            .AddAuthentication(TestAuthHandler.SchemeName)
+            .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.SchemeName, _ => { }));
     }
 
     public async ValueTask InitializeAsync()

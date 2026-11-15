@@ -17,5 +17,14 @@ together with the code change that made it necessary.
 | Diagram | Scope | Last review |
 |---|---|---|
 | Checkout, Payments and Shipping | Customer checkout, hosted payment page, provider webhook, shipment | 2026-11-15 |
+| Institutional purchase approval | Purchase request, approval above the unit limit, institutional order | 2026-11-15 |
 
-Out of scope for now: back office, Catalog administration, Notifications, Institutional orders.
+Out of scope for now: back office, Catalog administration, Notifications.
+
+## Threats
+
+Threats are found per element with STRIDE and scored as likelihood (1–3) x impact (1–3):
+6–9 High, 3–5 Medium, 1–2 Low. Threat Dragon has no "Accepted" status:
+an accepted threat stays `Open` and points to its row in `risk-register.md`.
+Every threat ends in one of: a test (`[Trait("threat", "T09")]`), a backlog item (SEC-nn),
+or a row in `risk-register.md`. A threat is `Mitigated` only when its test exists and passes.

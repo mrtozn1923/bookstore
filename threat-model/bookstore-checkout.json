@@ -3,7 +3,7 @@
   "summary": {
     "title": "Bookstore checkout",
     "owner": "Bookstore team (Selin, Emre, Ayse)",
-    "description": "Threat model of the Bookstore checkout, Payments and Shipping integrations.",
+    "description": "Threat model of the Bookstore checkout, Payments and Shipping integrations and the institutional purchase approval.",
     "id": 0
   },
   "detail": {
@@ -181,8 +181,8 @@
                 "text": "Ordering"
               },
               "body": {
-                "stroke": "#333333",
-                "strokeWidth": 1,
+                "stroke": "red",
+                "strokeWidth": 2.5,
                 "strokeDasharray": null
               }
             },
@@ -197,8 +197,35 @@
               "isTrustBoundary": false,
               "outOfScope": false,
               "reasonOutOfScope": "",
-              "threats": [],
-              "hasOpenThreats": false,
+              "threats": [
+                {
+                  "id": "05c4277d-fca9-54ad-b799-e2ff9c3b92cb",
+                  "threatId": "05c4277d-fca9-54ad-b799-e2ff9c3b92cb",
+                  "number": 2,
+                  "title": "Parallel orders oversell stock",
+                  "type": "Tampering",
+                  "modelType": "STRIDE",
+                  "severity": "Medium",
+                  "status": "Mitigated",
+                  "score": "L2 x I2 = 4",
+                  "description": "Two checkouts reserve the last copies at the same time.",
+                  "mitigation": "Conditional UPDATE inside one transaction. Test: Two_parallel_orders_cannot_reserve_more_than_the_stock."
+                },
+                {
+                  "id": "0b4351eb-66b4-53cf-89d5-033036f106fa",
+                  "threatId": "0b4351eb-66b4-53cf-89d5-033036f106fa",
+                  "number": 3,
+                  "title": "Order placement flood",
+                  "type": "Denial of service",
+                  "modelType": "STRIDE",
+                  "severity": "Medium",
+                  "status": "Open",
+                  "score": "L2 x I2 = 4",
+                  "description": "Scripts create carts and orders to exhaust stock reservations.",
+                  "mitigation": "Rate limit POST /api/orders per client (ASVS v5.0.0-2.4.1); backlog item SEC-14."
+                }
+              ],
+              "hasOpenThreats": true,
               "handlesCardPayment": false,
               "handlesGoodsOrServices": true,
               "isWebApplication": true,
@@ -219,8 +246,8 @@
                 "text": "Payments"
               },
               "body": {
-                "stroke": "#333333",
-                "strokeWidth": 1,
+                "stroke": "red",
+                "strokeWidth": 2.5,
                 "strokeDasharray": null
               }
             },
@@ -235,8 +262,35 @@
               "isTrustBoundary": false,
               "outOfScope": false,
               "reasonOutOfScope": "",
-              "threats": [],
-              "hasOpenThreats": false,
+              "threats": [
+                {
+                  "id": "2a4d2e9a-4089-51c2-8fc9-ce7d1d8ad11e",
+                  "threatId": "2a4d2e9a-4089-51c2-8fc9-ce7d1d8ad11e",
+                  "number": 5,
+                  "title": "Webhook replay",
+                  "type": "Tampering",
+                  "modelType": "STRIDE",
+                  "severity": "Low",
+                  "status": "Open",
+                  "score": "L1 x I2 = 2",
+                  "description": "A valid, captured webhook is sent again.",
+                  "mitigation": "Store processed event ids (unique index); reject old timestamps. Backlog item SEC-12."
+                },
+                {
+                  "id": "0e40054e-daa1-5aa3-94d1-9b676d77f19c",
+                  "threatId": "0e40054e-daa1-5aa3-94d1-9b676d77f19c",
+                  "number": 6,
+                  "title": "No trace of who changed the payment state",
+                  "type": "Repudiation",
+                  "modelType": "STRIDE",
+                  "severity": "Low",
+                  "status": "Open",
+                  "score": "L1 x I2 = 2",
+                  "description": "Support cannot prove whether a status change came from the provider or from back office.",
+                  "mitigation": "Write a security event with event id and source for every status change."
+                }
+              ],
+              "hasOpenThreats": true,
               "handlesCardPayment": false,
               "handlesGoodsOrServices": true,
               "isWebApplication": true,
@@ -295,13 +349,13 @@
                 "text": "BookstoreDb"
               },
               "topLine": {
-                "stroke": "#333333",
-                "strokeWidth": 1,
+                "stroke": "red",
+                "strokeWidth": 2.5,
                 "strokeDasharray": null
               },
               "bottomLine": {
-                "stroke": "#333333",
-                "strokeWidth": 1,
+                "stroke": "red",
+                "strokeWidth": 2.5,
                 "strokeDasharray": null
               }
             },
@@ -316,8 +370,22 @@
               "isTrustBoundary": false,
               "outOfScope": false,
               "reasonOutOfScope": "",
-              "threats": [],
-              "hasOpenThreats": false,
+              "threats": [
+                {
+                  "id": "b2aafbfc-d2bb-59c4-991b-163b75848f42",
+                  "threatId": "b2aafbfc-d2bb-59c4-991b-163b75848f42",
+                  "number": 7,
+                  "title": "Customer data readable from backups",
+                  "type": "Information disclosure",
+                  "modelType": "STRIDE",
+                  "severity": "Medium",
+                  "status": "Open",
+                  "score": "L1 x I3 = 3",
+                  "description": "Database backups copied outside the database boundary.",
+                  "mitigation": "Encrypted backups and a restricted storage account; the residual risk is accepted (risk-register.md R-01)."
+                }
+              ],
+              "hasOpenThreats": true,
               "isALog": false,
               "storesCredentials": false,
               "isEncrypted": true,
@@ -449,7 +517,21 @@
               "isEncrypted": true,
               "isPublicNetwork": true,
               "protocol": "HTTPS",
-              "threats": [],
+              "threats": [
+                {
+                  "id": "a0cdaaef-444a-5005-bd61-ae27aae85a6d",
+                  "threatId": "a0cdaaef-444a-5005-bd61-ae27aae85a6d",
+                  "number": 1,
+                  "title": "Client-supplied price or total",
+                  "type": "Tampering",
+                  "modelType": "STRIDE",
+                  "severity": "High",
+                  "status": "Mitigated",
+                  "score": "L2 x I3 = 6",
+                  "description": "The SPA could send a unit price or total and the API could trust it.",
+                  "mitigation": "Prices and totals are read from Catalog on the server; the request carries only cart id and customer data. Test: OrderingTests."
+                }
+              ],
               "isTrustBoundary": false
             },
             "id": "dba410f3-2d11-5d73-a222-f235d008404d",
@@ -816,7 +898,7 @@
             "shape": "flow",
             "attrs": {
               "line": {
-                "stroke": "#333333",
+                "stroke": "red",
                 "targetMarker": {
                   "name": "block"
                 },
@@ -862,12 +944,26 @@
               "description": "",
               "outOfScope": false,
               "reasonOutOfScope": "",
-              "hasOpenThreats": false,
+              "hasOpenThreats": true,
               "isBidirectional": false,
               "isEncrypted": true,
               "isPublicNetwork": true,
               "protocol": "HTTPS",
-              "threats": [],
+              "threats": [
+                {
+                  "id": "309c437c-0823-5f70-b205-6f3e11c207cb",
+                  "threatId": "309c437c-0823-5f70-b205-6f3e11c207cb",
+                  "number": 4,
+                  "title": "Forged payment webhook",
+                  "type": "Spoofing",
+                  "modelType": "STRIDE",
+                  "severity": "High",
+                  "status": "Open",
+                  "score": "L2 x I3 = 6",
+                  "description": "Anyone on the internet can POST a payment.succeeded event and mark an unpaid order as Paid.",
+                  "mitigation": "Verify the provider's HMAC signature and timestamp; then re-read the payment status from the provider API. Backlog item SEC-11 + test."
+                }
+              ],
               "isTrustBoundary": false
             },
             "id": "3fefca83-dc9e-5f1b-8000-f3a91715836c",
@@ -948,7 +1044,7 @@
             "shape": "flow",
             "attrs": {
               "line": {
-                "stroke": "#333333",
+                "stroke": "red",
                 "targetMarker": {
                   "name": "block"
                 },
@@ -994,12 +1090,26 @@
               "description": "",
               "outOfScope": false,
               "reasonOutOfScope": "",
-              "hasOpenThreats": false,
+              "hasOpenThreats": true,
               "isBidirectional": false,
               "isEncrypted": true,
               "isPublicNetwork": true,
               "protocol": "HTTPS",
-              "threats": [],
+              "threats": [
+                {
+                  "id": "034b4841-066d-557e-b7f7-6329d61abbf6",
+                  "threatId": "034b4841-066d-557e-b7f7-6329d61abbf6",
+                  "number": 8,
+                  "title": "Carrier receives more data than needed",
+                  "type": "Information disclosure",
+                  "modelType": "STRIDE",
+                  "severity": "Low",
+                  "status": "Open",
+                  "score": "L2 x I1 = 2",
+                  "description": "The full order (items, prices, e-mail) is sent to the carrier.",
+                  "mitigation": "Send only name, address and parcel data (data minimisation; see the KVKK series)."
+                }
+              ],
               "isTrustBoundary": false
             },
             "id": "6cc256a3-605b-5d5a-ab4d-78f1617494e6",
@@ -1143,10 +1253,541 @@
             }
           }
         ]
+      },
+      {
+        "id": 1,
+        "title": "Institutional purchase approval",
+        "diagramType": "STRIDE",
+        "description": "Kurumsal Sipariş: purchase request, approval above the unit limit, institutional order.",
+        "placeholder": "",
+        "thumbnail": "./public/content/images/thumbnail.stride.jpg",
+        "version": "2.6.2",
+        "cells": [
+          {
+            "position": {
+              "x": 40,
+              "y": 60
+            },
+            "size": {
+              "width": 230,
+              "height": 420
+            },
+            "attrs": {
+              "label": {
+                "text": "Institution network"
+              }
+            },
+            "visible": true,
+            "shape": "trust-boundary-box",
+            "zIndex": -1,
+            "id": "3da03d22-3a76-54b4-89ad-f696383916d7",
+            "data": {
+              "type": "tm.BoundaryBox",
+              "name": "Institution network",
+              "description": "",
+              "isTrustBoundary": true,
+              "hasOpenThreats": false
+            }
+          },
+          {
+            "position": {
+              "x": 330,
+              "y": 60
+            },
+            "size": {
+              "width": 260,
+              "height": 420
+            },
+            "attrs": {
+              "label": {
+                "text": "Bookstore.Api host"
+              }
+            },
+            "visible": true,
+            "shape": "trust-boundary-box",
+            "zIndex": -1,
+            "id": "3bf55cef-f2fc-5dee-8ec4-25580fc0ea86",
+            "data": {
+              "type": "tm.BoundaryBox",
+              "name": "Bookstore.Api host",
+              "description": "",
+              "isTrustBoundary": true,
+              "hasOpenThreats": false
+            }
+          },
+          {
+            "position": {
+              "x": 75,
+              "y": 110
+            },
+            "size": {
+              "width": 160,
+              "height": 80
+            },
+            "attrs": {
+              "text": {
+                "text": "InstitutionBuyer"
+              },
+              "body": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "strokeDasharray": null
+              }
+            },
+            "visible": true,
+            "shape": "actor",
+            "zIndex": 2,
+            "id": "b2e810de-eaf5-55f0-961f-dfcb31805aea",
+            "data": {
+              "name": "InstitutionBuyer",
+              "description": "Creates purchase requests for a unit (min. 20 copies).",
+              "type": "tm.Actor",
+              "isTrustBoundary": false,
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "threats": [],
+              "hasOpenThreats": false,
+              "providesAuthentication": false
+            }
+          },
+          {
+            "position": {
+              "x": 75,
+              "y": 330
+            },
+            "size": {
+              "width": 160,
+              "height": 80
+            },
+            "attrs": {
+              "text": {
+                "text": "InstitutionApprover"
+              },
+              "body": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "strokeDasharray": null
+              }
+            },
+            "visible": true,
+            "shape": "actor",
+            "zIndex": 2,
+            "id": "2ec105ca-bf98-5dfa-8d28-9e9f26ab1ab1",
+            "data": {
+              "name": "InstitutionApprover",
+              "description": "Approves requests above the unit's approval limit.",
+              "type": "tm.Actor",
+              "isTrustBoundary": false,
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "threats": [],
+              "hasOpenThreats": false,
+              "providesAuthentication": false
+            }
+          },
+          {
+            "position": {
+              "x": 405,
+              "y": 210
+            },
+            "size": {
+              "width": 110,
+              "height": 110
+            },
+            "attrs": {
+              "text": {
+                "text": "Institutional"
+              },
+              "body": {
+                "stroke": "red",
+                "strokeWidth": 2.5,
+                "strokeDasharray": null
+              }
+            },
+            "visible": true,
+            "shape": "process",
+            "zIndex": 2,
+            "id": "fae5b863-0dc4-5482-84bd-715492b1b022",
+            "data": {
+              "name": "Institutional",
+              "description": "Purchase requests, approval, institutional order.",
+              "type": "tm.Process",
+              "isTrustBoundary": false,
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "threats": [
+                {
+                  "id": "4132a150-431e-5a85-8c82-a699d3d9e376",
+                  "threatId": "4132a150-431e-5a85-8c82-a699d3d9e376",
+                  "number": 9,
+                  "title": "Buyer approves own purchase request",
+                  "type": "Elevation of privilege",
+                  "modelType": "STRIDE",
+                  "severity": "High",
+                  "status": "Mitigated",
+                  "score": "L2 x I3 = 6",
+                  "description": "A user with both roles, or a forged approve call, approves a request they created.",
+                  "mitigation": "Approver must be an InstitutionApprover of the same institution and not the requester. Test: PurchaseApprovalTests."
+                },
+                {
+                  "id": "d3e3fcba-f7f8-5d8f-8bc2-c90b21ad1dc5",
+                  "threatId": "d3e3fcba-f7f8-5d8f-8bc2-c90b21ad1dc5",
+                  "number": 10,
+                  "title": "Request changed after approval",
+                  "type": "Tampering",
+                  "modelType": "STRIDE",
+                  "severity": "High",
+                  "status": "Mitigated",
+                  "score": "L2 x I3 = 6",
+                  "description": "Lines are changed after approval and the approved request is ordered with the new lines.",
+                  "mitigation": "Approval stores a hash of the approved lines; ordering fails if it no longer matches. Test: PurchaseApprovalTests."
+                },
+                {
+                  "id": "dde97965-7e8a-567c-8c46-17a5b04301a2",
+                  "threatId": "dde97965-7e8a-567c-8c46-17a5b04301a2",
+                  "number": 11,
+                  "title": "Ordering without approval",
+                  "type": "Elevation of privilege",
+                  "modelType": "STRIDE",
+                  "severity": "High",
+                  "status": "Mitigated",
+                  "score": "L2 x I3 = 6",
+                  "description": "The order step is called directly for a request that needs approval.",
+                  "mitigation": "The order step checks the state server side (ASVS v5.0.0-2.3.1). Test: PurchaseApprovalTests."
+                },
+                {
+                  "id": "74de56f3-fb72-553e-9145-f4afaf6a79d5",
+                  "threatId": "74de56f3-fb72-553e-9145-f4afaf6a79d5",
+                  "number": 12,
+                  "title": "Splitting a request to stay under the approval limit",
+                  "type": "Elevation of privilege",
+                  "modelType": "STRIDE",
+                  "severity": "Medium",
+                  "status": "Open",
+                  "score": "L2 x I2 = 4",
+                  "description": "Several small requests, each under the limit, add up to a large order.",
+                  "mitigation": "Accepted for release 1 (risk-register.md R-02, owner Selin, review 2027-03-01); monitor daily totals per unit."
+                }
+              ],
+              "hasOpenThreats": true,
+              "handlesCardPayment": false,
+              "handlesGoodsOrServices": true,
+              "isWebApplication": true,
+              "privilegeLevel": ""
+            }
+          },
+          {
+            "position": {
+              "x": 650,
+              "y": 240
+            },
+            "size": {
+              "width": 160,
+              "height": 80
+            },
+            "attrs": {
+              "text": {
+                "text": "BookstoreDb"
+              },
+              "topLine": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "strokeDasharray": null
+              },
+              "bottomLine": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "strokeDasharray": null
+              }
+            },
+            "visible": true,
+            "shape": "store",
+            "zIndex": 2,
+            "id": "dc7f9973-4254-570a-ab2f-d7f1b2f08c95",
+            "data": {
+              "name": "BookstoreDb",
+              "description": "PurchaseRequests, Orders, AccessAudit.",
+              "type": "tm.Store",
+              "isTrustBoundary": false,
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "threats": [],
+              "hasOpenThreats": false,
+              "isALog": false,
+              "storesCredentials": false,
+              "isEncrypted": true,
+              "isSigned": false
+            }
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "targetMarker": {
+                  "name": "block"
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "labels": [
+              {
+                "markup": [
+                  {
+                    "tagName": "ellipse",
+                    "selector": "labelBody"
+                  },
+                  {
+                    "tagName": "text",
+                    "selector": "labelText"
+                  }
+                ],
+                "attrs": {
+                  "labelText": {
+                    "text": "1 create / change request",
+                    "textAnchor": "middle",
+                    "textVerticalAnchor": "middle"
+                  },
+                  "labelBody": {
+                    "ref": "labelText",
+                    "refRx": "50%",
+                    "refRy": "60%",
+                    "fill": "#fff",
+                    "strokeWidth": 0
+                  }
+                },
+                "position": 0.5
+              }
+            ],
+            "data": {
+              "type": "tm.Flow",
+              "name": "1 create / change request",
+              "description": "",
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "isBidirectional": false,
+              "isEncrypted": true,
+              "isPublicNetwork": true,
+              "protocol": "HTTPS",
+              "threats": [],
+              "isTrustBoundary": false
+            },
+            "id": "a5f5e591-3261-58cb-9456-96f045d4632c",
+            "source": {
+              "cell": "b2e810de-eaf5-55f0-961f-dfcb31805aea"
+            },
+            "target": {
+              "cell": "fae5b863-0dc4-5482-84bd-715492b1b022"
+            }
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "targetMarker": {
+                  "name": "block"
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "labels": [
+              {
+                "markup": [
+                  {
+                    "tagName": "ellipse",
+                    "selector": "labelBody"
+                  },
+                  {
+                    "tagName": "text",
+                    "selector": "labelText"
+                  }
+                ],
+                "attrs": {
+                  "labelText": {
+                    "text": "2 approve request",
+                    "textAnchor": "middle",
+                    "textVerticalAnchor": "middle"
+                  },
+                  "labelBody": {
+                    "ref": "labelText",
+                    "refRx": "50%",
+                    "refRy": "60%",
+                    "fill": "#fff",
+                    "strokeWidth": 0
+                  }
+                },
+                "position": 0.5
+              }
+            ],
+            "data": {
+              "type": "tm.Flow",
+              "name": "2 approve request",
+              "description": "",
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "isBidirectional": false,
+              "isEncrypted": true,
+              "isPublicNetwork": true,
+              "protocol": "HTTPS",
+              "threats": [],
+              "isTrustBoundary": false
+            },
+            "id": "3549fdf3-8e8d-52de-98e9-54db3ece94b5",
+            "source": {
+              "cell": "2ec105ca-bf98-5dfa-8d28-9e9f26ab1ab1"
+            },
+            "target": {
+              "cell": "fae5b863-0dc4-5482-84bd-715492b1b022"
+            }
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "targetMarker": {
+                  "name": "block"
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "labels": [
+              {
+                "markup": [
+                  {
+                    "tagName": "ellipse",
+                    "selector": "labelBody"
+                  },
+                  {
+                    "tagName": "text",
+                    "selector": "labelText"
+                  }
+                ],
+                "attrs": {
+                  "labelText": {
+                    "text": "3 place institutional order",
+                    "textAnchor": "middle",
+                    "textVerticalAnchor": "middle"
+                  },
+                  "labelBody": {
+                    "ref": "labelText",
+                    "refRx": "50%",
+                    "refRy": "60%",
+                    "fill": "#fff",
+                    "strokeWidth": 0
+                  }
+                },
+                "position": 0.5
+              }
+            ],
+            "data": {
+              "type": "tm.Flow",
+              "name": "3 place institutional order",
+              "description": "",
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "isBidirectional": false,
+              "isEncrypted": true,
+              "isPublicNetwork": true,
+              "protocol": "HTTPS",
+              "threats": [],
+              "isTrustBoundary": false
+            },
+            "id": "72b4bfd1-cd49-575a-adf6-dbadd6f2df13",
+            "source": {
+              "cell": "b2e810de-eaf5-55f0-961f-dfcb31805aea"
+            },
+            "target": {
+              "cell": "fae5b863-0dc4-5482-84bd-715492b1b022"
+            }
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "targetMarker": {
+                  "name": "block"
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "labels": [
+              {
+                "markup": [
+                  {
+                    "tagName": "ellipse",
+                    "selector": "labelBody"
+                  },
+                  {
+                    "tagName": "text",
+                    "selector": "labelText"
+                  }
+                ],
+                "attrs": {
+                  "labelText": {
+                    "text": "4 requests, approvals, orders",
+                    "textAnchor": "middle",
+                    "textVerticalAnchor": "middle"
+                  },
+                  "labelBody": {
+                    "ref": "labelText",
+                    "refRx": "50%",
+                    "refRy": "60%",
+                    "fill": "#fff",
+                    "strokeWidth": 0
+                  }
+                },
+                "position": 0.5
+              }
+            ],
+            "data": {
+              "type": "tm.Flow",
+              "name": "4 requests, approvals, orders",
+              "description": "",
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "isBidirectional": false,
+              "isEncrypted": true,
+              "isPublicNetwork": false,
+              "protocol": "SQL/TLS",
+              "threats": [],
+              "isTrustBoundary": false
+            },
+            "id": "08b280b0-390c-5c0a-890d-d578d0955676",
+            "source": {
+              "cell": "fae5b863-0dc4-5482-84bd-715492b1b022"
+            },
+            "target": {
+              "cell": "dc7f9973-4254-570a-ab2f-d7f1b2f08c95"
+            }
+          }
+        ]
       }
     ],
-    "diagramTop": 1,
+    "diagramTop": 2,
     "reviewer": "Emre",
-    "threatTop": 0
+    "threatTop": 12
   }
 }
