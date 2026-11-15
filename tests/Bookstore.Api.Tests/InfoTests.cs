@@ -25,15 +25,16 @@ public sealed class InfoTests(BookstoreApiFactory factory)
     }
 
     [Fact]
-    public async Task Info_reports_version_environment_and_provider()
+    public async Task Info_reports_version_commit_environment_and_provider()
     {
         InfoResponse? info = await client.GetFromJsonAsync<InfoResponse>("/api/info", TestContext.Current.CancellationToken);
 
         Assert.NotNull(info);
         Assert.Equal("SqlServer", info.Database);
         Assert.False(string.IsNullOrEmpty(info.Version));
+        Assert.False(string.IsNullOrEmpty(info.Commit));
         Assert.False(string.IsNullOrEmpty(info.Pod));
     }
 
-    private sealed record InfoResponse(string Version, string Environment, string Pod, string Database);
+    private sealed record InfoResponse(string Version, string Commit, string Environment, string Pod, string Database);
 }

@@ -1,0 +1,25 @@
+# Lab settings for Argo CD Image Updater (applied on top of install.yaml).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-image-updater-config
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: argocd-image-updater-config
+    app.kubernetes.io/part-of: argocd-image-updater-controller
+data:
+  # Images are named localhost:52612/...; inside the cluster the registry answers as gitopsseries-registry:5000.
+  registries.conf: |
+    registries:
+      - name: Lab registry
+        prefix: localhost:52612
+        api_url: http://gitopsseries-registry:5000
+        insecure: yes
+  git.user: argocd-image-updater
+  git.email: image-updater@example.com
+  git.commit-message-template: |
+    {{ .AppName }}: update images
+
+    {{ range .AppChanges -}}
+    {{ .Image }}: {{ .OldTag }} -> {{ .NewTag }}
+    {{ end -}}

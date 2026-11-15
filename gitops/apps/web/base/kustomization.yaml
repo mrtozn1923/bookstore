@@ -8,6 +8,3 @@ labels:
       app.kubernetes.io/part-of: bookstore
     includeSelectors: false
     includeTemplates: true
-images:
-  - name: gitopsseries-bookstore-web
-    newTag: 1.0.0

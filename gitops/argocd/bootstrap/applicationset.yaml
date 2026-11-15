@@ -13,23 +13,6 @@ spec:
         revision: main
         directories:
           - path: apps/*/overlays/*
-  strategy:
-    type: RollingSync
-    rollingSync:
-      steps:
-        - matchExpressions:
-            - key: env
-              operator: In
-              values: [dev]
-        - matchExpressions:
-            - key: env
-              operator: In
-              values: [staging]
-        - matchExpressions:
-            - key: env
-              operator: In
-              values: [prod]
-          maxUpdate: 1
   syncPolicy:
     # Deleting the ApplicationSet (or a folder) must not delete running workloads.
     preserveResourcesOnDeletion: true
@@ -49,6 +32,11 @@ spec:
         server: https://kubernetes.default.svc
         namespace: 'bookstore-{{.path.basename}}'
       syncPolicy:
+        # Promotion happens in Git (a commit for dev, a merged pull request for staging and prod),
+        # so every environment syncs automatically once its overlay changes.
+        automated:
+          prune: true
+          selfHeal: true
         syncOptions:
           - CreateNamespace=true
           - PruneLast=true

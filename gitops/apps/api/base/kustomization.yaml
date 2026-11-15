@@ -12,8 +12,3 @@ labels:
       app.kubernetes.io/part-of: bookstore
     includeSelectors: false
     includeTemplates: true
-images:
-  - name: gitopsseries-bookstore-migrator
-    newTag: 1.1.0
-  - name: gitopsseries-bookstore-api
-    newTag: 1.1.0

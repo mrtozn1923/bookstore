@@ -4,5 +4,14 @@ namespace: bookstore-prod
 resources:
 - ../../base
 replicas:
-- name: api
-  count: 2
+- count: 2
+  name: api
+images:
+- digest: sha256:<digest-from-your-ci-run>
+  name: bookstore/api
+  newName: localhost:52612/bookstore/api
+  newTag: 1.2.0
+- digest: sha256:<digest-from-your-ci-run>
+  name: bookstore/migrator
+  newName: localhost:52612/bookstore/migrator
+  newTag: 1.2.0

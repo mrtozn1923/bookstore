@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: gitopsseries-bookstore-api
+          image: bookstore/api
           ports:
             - name: http
               containerPort: 8080

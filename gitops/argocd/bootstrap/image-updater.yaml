@@ -1,0 +1,33 @@
+# Argo CD Image Updater follows 1.2.x patch releases for bookstore-api-dev only;
+# staging and prod are still promoted by pull request.
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: bookstore-dev
+  namespace: argocd
+spec:
+  writeBackConfig:
+    # Commit with the credentials Argo CD has for this repo ("repocreds").
+    method: git
+    gitConfig:
+      branch: main
+      # Edit apps/api/overlays/dev/kustomization.yaml, as `kustomize edit set image` would.
+      writeBackTarget: kustomization
+  applicationRefs:
+    - namePattern: bookstore-api-dev
+      images:
+        - alias: api
+          imageName: localhost:52612/bookstore/api:1.2.x
+          commonUpdateSettings:
+            updateStrategy: semver
+          manifestTargets:
+            kustomize:
+              # The logical name in the base manifests.
+              name: bookstore/api
+        - alias: migrator
+          imageName: localhost:52612/bookstore/migrator:1.2.x
+          commonUpdateSettings:
+            updateStrategy: semver
+          manifestTargets:
+            kustomize:
+              name: bookstore/migrator

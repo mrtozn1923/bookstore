@@ -53,8 +53,10 @@ if (app.Environment.IsDevelopment())
 // Liveness only says the process answers; readiness also needs the database.
 app.MapHealthChecks("/health/live", new HealthCheckOptions { Predicate = _ => false });
 app.MapHealthChecks("/health/ready", new HealthCheckOptions { Predicate = check => check.Tags.Contains("ready") });
+// APP_VERSION and SOURCE_COMMIT are baked into the image by CI (see ci/build-and-push.sh).
 app.MapGet("/api/info", (IHostEnvironment env) => new AppInfo(
     Environment.GetEnvironmentVariable("APP_VERSION") ?? "dev",
+    Environment.GetEnvironmentVariable("SOURCE_COMMIT") ?? "unknown",
     env.EnvironmentName,
     Environment.MachineName,
     provider));
@@ -64,4 +66,4 @@ app.MapOrderingEndpoints();
 
 app.Run();
 
-internal sealed record AppInfo(string Version, string Environment, string Pod, string Database);
+internal sealed record AppInfo(string Version, string Commit, string Environment, string Pod, string Database);

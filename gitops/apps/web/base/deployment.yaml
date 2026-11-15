@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: web
-          image: gitopsseries-bookstore-web
+          image: bookstore/web
           ports:
             - name: http
               containerPort: 8080

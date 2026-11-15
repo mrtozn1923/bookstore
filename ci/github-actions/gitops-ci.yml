@@ -1,0 +1,85 @@
+# The same pipeline as ci/build-and-push.sh for GitHub Actions (goes to .github/workflows/ in the app repo).
+# Not run in the series: validated with actionlint only.
+name: gitops-ci
+on:
+  push:
+    branches: [main]
+    paths: ["src/**", "Directory.Packages.props"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # GITHUB_TOKEN may push to ghcr.io, nothing else.
+      packages: write
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      api: ${{ steps.api.outputs.digest }}
+      migrator: ${{ steps.migrator.outputs.digest }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - id: version
+        run: echo "version=1.2.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: api
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          file: src/Bookstore.Api/Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/bookstore-api:${{ steps.version.outputs.version }}
+          build-args: |
+            APP_VERSION=${{ steps.version.outputs.version }}
+            SOURCE_COMMIT=${{ github.sha }}
+      - id: migrator
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          file: src/Bookstore.Migrations.Postgres/Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/bookstore-migrator:${{ steps.version.outputs.version }}
+
+  promote-dev:
+    needs: build
+    runs-on: ubuntu-latest
+    # One writer for the dev overlay at a time; a second run waits instead of racing.
+    concurrency:
+      group: config-repo-dev
+      cancel-in-progress: false
+    steps:
+      # A GitHub App installed only on the config repo, with contents: write. No personal token.
+      - id: token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          app-id: ${{ vars.CONFIG_BOT_APP_ID }}
+          private-key: ${{ secrets.CONFIG_BOT_PRIVATE_KEY }}
+          repositories: bookstore-config
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ github.repository_owner }}/bookstore-config
+          token: ${{ steps.token.outputs.token }}
+      - name: Set image tag and digest in the dev overlay
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
+          API: ${{ needs.build.outputs.api }}
+          MIGRATOR: ${{ needs.build.outputs.migrator }}
+          OWNER: ${{ github.repository_owner }}
+          SOURCE_COMMIT: ${{ github.sha }}
+        run: |
+          cd apps/api/overlays/dev
+          kustomize edit set image \
+            "bookstore/api=ghcr.io/$OWNER/bookstore-api:$VERSION@$API" \
+            "bookstore/migrator=ghcr.io/$OWNER/bookstore-migrator:$VERSION@$MIGRATOR"
+          git config user.name "bookstore-ci"
+          git config user.email "ci@example.com"
+          git commit -am "dev: bookstore-api $VERSION" -m "Source-Commit: $SOURCE_COMMIT"
+          git push origin HEAD:main

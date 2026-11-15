@@ -4,5 +4,10 @@ namespace: bookstore-prod
 resources:
 - ../../base
 replicas:
-- name: web
-  count: 2
+- count: 2
+  name: web
+images:
+- digest: sha256:<digest-from-your-ci-run>
+  name: bookstore/web
+  newName: localhost:52612/bookstore/web
+  newTag: 1.0.0

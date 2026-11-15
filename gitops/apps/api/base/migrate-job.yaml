@@ -20,7 +20,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: migrate
-          image: gitopsseries-bookstore-migrator
+          image: bookstore/migrator
           env:
             - name: ConnectionStrings__BookstoreDb
               valueFrom:

@@ -3,3 +3,8 @@ kind: Kustomization
 namespace: bookstore-staging
 resources:
 - ../../base
+images:
+- digest: sha256:<digest-from-your-ci-run>
+  name: bookstore/web
+  newName: localhost:52612/bookstore/web
+  newTag: 1.0.0

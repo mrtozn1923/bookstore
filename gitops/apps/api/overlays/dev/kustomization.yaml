@@ -4,5 +4,9 @@ namespace: bookstore-dev
 resources:
 - ../../base
 images:
-- name: gitopsseries-bookstore-api
-  newTag: 1.1.0
+- name: bookstore/api
+  newName: localhost:52612/bookstore/api
+  newTag: 1.2.1
+- name: bookstore/migrator
+  newName: localhost:52612/bookstore/migrator
+  newTag: 1.2.1
