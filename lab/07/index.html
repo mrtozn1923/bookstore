@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bookstore catalog and cart (Tailwind)</title>
+    <link rel="stylesheet" href="index.out.css">
+</head>
+<body class="bg-slate-50 text-slate-900">
+    <!-- catalog page -->
+    <main class="mx-auto max-w-7xl px-4 py-8">
+        <div id="toolbar" class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <h1 class="text-2xl font-bold">Catalog</h1>
+            <p id="result-count" class="text-sm text-slate-600 max-md:hidden">4 books</p>
+        </div>
+        <ul id="catalog-grid" class="mt-6 grid grid-cols-[repeat(auto-fill,minmax(12rem,1fr))] gap-6">
+            <li>
+                <article class="flex h-full flex-col overflow-hidden rounded-lg border border-slate-200 bg-white">
+                    <div class="relative aspect-2/3 bg-amber-200">
+                        <span id="badge" class="absolute inset-s-2 top-2 z-10 rounded bg-white px-2 py-0.5 text-xs">New</span>
+                    </div>
+                    <div class="flex flex-1 flex-col gap-1 p-4">
+                        <h2 class="line-clamp-2 font-semibold">Dune</h2>
+                        <p class="text-sm text-slate-600">Frank Herbert</p>
+                        <div class="mt-auto flex items-center justify-between pt-3">
+                            <span class="font-semibold">420.00 TRY</span>
+                            <button type="button" class="rounded bg-indigo-600 px-3 py-1 text-sm text-white">Add</button>
+                        </div>
+                    </div>
+                </article>
+            </li>
+            <li>
+                <article class="flex h-full flex-col overflow-hidden rounded-lg border border-slate-200 bg-white">
+                    <div class="relative aspect-2/3 bg-emerald-200"></div>
+                    <div class="flex flex-1 flex-col gap-1 p-4">
+                        <h2 class="line-clamp-2 font-semibold">Middlemarch: A Study of Provincial Life</h2>
+                        <p class="text-sm text-slate-600">George Eliot</p>
+                        <div class="mt-auto flex items-center justify-between pt-3">
+                            <span class="font-semibold">385.00 TRY</span>
+                            <button type="button" class="rounded bg-indigo-600 px-3 py-1 text-sm text-white">Add</button>
+                        </div>
+                    </div>
+                </article>
+            </li>
+            <li>
+                <article class="flex h-full flex-col overflow-hidden rounded-lg border border-slate-200 bg-white">
+                    <div class="relative aspect-2/3 bg-sky-200"></div>
+                    <div class="flex flex-1 flex-col gap-1 p-4">
+                        <h2 class="line-clamp-2 font-semibold">Emma</h2>
+                        <p class="text-sm text-slate-600">Jane Austen</p>
+                        <div class="mt-auto flex items-center justify-between pt-3">
+                            <span class="font-semibold">240.00 TRY</span>
+                            <button type="button" class="rounded bg-indigo-600 px-3 py-1 text-sm text-white">Add</button>
+                        </div>
+                    </div>
+                </article>
+            </li>
+            <li>
+                <article class="flex h-full flex-col overflow-hidden rounded-lg border border-slate-200 bg-white">
+                    <div class="relative aspect-2/3 bg-rose-200"></div>
+                    <div class="flex flex-1 flex-col gap-1 p-4">
+                        <h2 class="line-clamp-2 font-semibold">The Hobbit</h2>
+                        <p class="text-sm text-slate-600">J. R. R. Tolkien</p>
+                        <div class="mt-auto flex items-center justify-between pt-3">
+                            <span class="font-semibold">310.00 TRY</span>
+                            <button type="button" class="rounded bg-indigo-600 px-3 py-1 text-sm text-white">Add</button>
+                        </div>
+                    </div>
+                </article>
+            </li>
+        </ul>
+    </main>
+
+    <!-- cart page -->
+    <section id="cart" class="mx-auto max-w-5xl px-4 py-8 lg:grid lg:grid-cols-[1fr_20rem] lg:items-start lg:gap-8">
+        <ul id="cart-lines" class="divide-y divide-slate-200 rounded-lg bg-white px-4">
+            <li class="flex items-center gap-4 py-4">
+                <div class="h-24 w-16 shrink-0 rounded bg-emerald-200"></div>
+                <div class="min-w-0 flex-1">
+                    <h3 id="line-title" class="truncate font-medium">Middlemarch: A Study of Provincial Life (Penguin Classics, annotated edition)</h3>
+                    <p class="text-sm text-slate-600">Qty 1</p>
+                </div>
+                <span id="line-price" class="shrink-0 font-semibold">385.00 TRY</span>
+            </li>
+            <li class="flex items-center gap-4 py-4">
+                <div class="h-24 w-16 shrink-0 rounded bg-sky-200"></div>
+                <div class="min-w-0 flex-1">
+                    <h3 class="truncate font-medium">Emma</h3>
+                    <p class="text-sm text-slate-600">Qty 2</p>
+                </div>
+                <span class="shrink-0 font-semibold">480.00 TRY</span>
+            </li>
+        </ul>
+        <aside id="summary" class="mt-8 rounded-lg bg-white p-6 lg:sticky lg:top-4 lg:mt-0">
+            <h2 class="font-semibold">Order summary</h2>
+            <p class="mt-2 flex justify-between"><span>Total</span><span>865.00 TRY</span></p>
+            <button type="button" class="mt-4 w-full rounded bg-indigo-600 py-2 text-white">Checkout</button>
+        </aside>
+    </section>
+
+    <!-- pitfalls -->
+    <section class="mx-auto max-w-5xl px-4 py-8">
+        <div id="chips-space" class="flex w-80 flex-wrap justify-center space-x-4">
+            <span class="rounded-full bg-white px-3 py-1">Fantasy</span>
+            <span class="rounded-full bg-white px-3 py-1">Science fiction</span>
+            <span class="rounded-full bg-white px-3 py-1">Classics</span>
+            <span class="rounded-full bg-white px-3 py-1">Poetry</span>
+        </div>
+        <div id="chips-gap" class="mt-8 flex w-80 flex-wrap justify-center gap-4">
+            <span class="rounded-full bg-white px-3 py-1">Fantasy</span>
+            <span class="rounded-full bg-white px-3 py-1">Science fiction</span>
+            <span class="rounded-full bg-white px-3 py-1">Classics</span>
+            <span class="rounded-full bg-white px-3 py-1">Poetry</span>
+        </div>
+        <div id="row-no-min" class="mt-8 flex w-80 items-center gap-4 bg-white">
+            <div class="flex-1">
+                <h3 class="truncate font-medium">Middlemarch: A Study of Provincial Life (Penguin Classics, annotated edition)</h3>
+            </div>
+            <span class="shrink-0 font-semibold">385.00 TRY</span>
+        </div>
+        <div dir="rtl" class="mt-8 w-48">
+            <div class="relative aspect-2/3 bg-amber-200">
+                <span id="badge-rtl" class="absolute inset-s-2 top-2 z-10 rounded bg-white px-2 py-0.5 text-xs">New</span>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

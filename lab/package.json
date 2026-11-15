@@ -13,7 +13,9 @@
     "serve:05": "node scripts/serve.mjs ../web/dist/bookstore-web/browser 52862",
     "test:05": "node scripts/05-catalog.mjs",
     "build:06": "tailwindcss -i 06/conflict.css -o 06/conflict.out.css",
-    "test:06": "node scripts/06-conflict.mjs && node scripts/06-merge.mjs && node scripts/06-legacy.mjs && node scripts/06-button.mjs"
+    "test:06": "node scripts/06-conflict.mjs && node scripts/06-merge.mjs && node scripts/06-legacy.mjs && node scripts/06-button.mjs",
+    "build:07": "tailwindcss -i 07/input.css -o 07/index.out.css",
+    "test:07": "node scripts/07-layout.mjs"
   },
   "type": "module",
   "devDependencies": {

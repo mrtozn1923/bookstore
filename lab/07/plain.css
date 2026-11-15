@@ -1,0 +1,47 @@
+/* minimal reset, the parts of Preflight these screens depend on */
+*, ::before, ::after { box-sizing: border-box; margin: 0; padding: 0; border: 0 solid; }
+html { line-height: 1.5; font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; }
+h1, h2, h3 { font-size: inherit; font-weight: inherit; }
+ul { list-style: none; }
+button { font: inherit; color: inherit; background-color: transparent; }
+body { background: #f8fafc; color: #0f172a; }
+
+.page { max-width: 80rem; margin-inline: auto; padding: 2rem 1rem; }
+.toolbar { display: flex; flex-direction: column; gap: 0.75rem; }
+.page-title { font-size: 1.5rem; line-height: calc(2 / 1.5); font-weight: 700; }
+.result-count { font-size: 0.875rem; line-height: calc(1.25 / 0.875); color: #475569; }
+@media (width < 48rem) { .result-count { display: none; } }
+@media (width >= 48rem) { .toolbar { flex-direction: row; align-items: center; justify-content: space-between; } }
+
+.catalog-grid { margin-top: 1.5rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr)); gap: 1.5rem; }
+.book-card { display: flex; flex-direction: column; height: 100%; overflow: hidden; border: 1px solid #e2e8f0; border-radius: 0.5rem; background: #fff; }
+.book-card__cover { position: relative; aspect-ratio: 2 / 3; }
+.badge { position: absolute; inset-inline-start: 0.5rem; top: 0.5rem; z-index: 10; border-radius: 0.25rem; background: #fff; padding: 0.125rem 0.5rem; font-size: 0.75rem; line-height: calc(1 / 0.75); }
+.book-card__body { display: flex; flex: 1; flex-direction: column; gap: 0.25rem; padding: 1rem; }
+.book-card__title { overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; font-weight: 600; }
+.book-card__author, .cart-line__qty { font-size: 0.875rem; line-height: calc(1.25 / 0.875); color: #475569; }
+.book-card__footer { margin-top: auto; display: flex; align-items: center; justify-content: space-between; padding-top: 0.75rem; }
+.price { flex-shrink: 0; font-weight: 600; }
+.button { border-radius: 0.25rem; background: #4f46e5; color: #fff; }
+.button--small { padding: 0.25rem 0.75rem; font-size: 0.875rem; line-height: calc(1.25 / 0.875); }
+.button--block { margin-top: 1rem; width: 100%; padding-block: 0.5rem; }
+
+.cart { max-width: 64rem; margin-inline: auto; padding: 2rem 1rem; }
+.cart-lines { border-radius: 0.5rem; background: #fff; padding-inline: 1rem; }
+.cart-lines > :not(:last-child) { border-bottom: 1px solid #e2e8f0; }
+.cart-line { display: flex; align-items: center; gap: 1rem; padding-block: 1rem; }
+.cart-line__cover { width: 4rem; height: 6rem; flex-shrink: 0; border-radius: 0.25rem; }
+.cart-line__text { min-width: 0; flex: 1; }
+.cart-line__title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+.cart-summary { margin-top: 2rem; border-radius: 0.5rem; background: #fff; padding: 1.5rem; }
+.cart-summary__title { font-weight: 600; }
+.cart-summary__total { margin-top: 0.5rem; display: flex; justify-content: space-between; }
+@media (width >= 64rem) {
+    .cart { display: grid; grid-template-columns: 1fr 20rem; align-items: start; gap: 2rem; }
+    .cart-summary { position: sticky; top: 1rem; margin-top: 0; }
+}
+
+.cover-dune { background: #fde68a; }
+.cover-middlemarch { background: #a7f3d0; }
+.cover-emma { background: #bae6fd; }
+.cover-hobbit { background: #fecdd3; }

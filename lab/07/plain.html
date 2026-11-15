@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bookstore catalog and cart (plain CSS)</title>
+    <link rel="stylesheet" href="plain.css">
+</head>
+<body>
+    <!-- catalog page -->
+    <main class="page">
+        <div id="toolbar" class="toolbar">
+            <h1 class="page-title">Catalog</h1>
+            <p id="result-count" class="result-count">4 books</p>
+        </div>
+        <ul id="catalog-grid" class="catalog-grid">
+            <li>
+                <article class="book-card">
+                    <div class="book-card__cover cover-dune">
+                        <span id="badge" class="badge">New</span>
+                    </div>
+                    <div class="book-card__body">
+                        <h2 class="book-card__title">Dune</h2>
+                        <p class="book-card__author">Frank Herbert</p>
+                        <div class="book-card__footer">
+                            <span class="price">420.00 TRY</span>
+                            <button type="button" class="button button--small">Add</button>
+                        </div>
+                    </div>
+                </article>
+            </li>
+            <li>
+                <article class="book-card">
+                    <div class="book-card__cover cover-middlemarch"></div>
+                    <div class="book-card__body">
+                        <h2 class="book-card__title">Middlemarch: A Study of Provincial Life</h2>
+                        <p class="book-card__author">George Eliot</p>
+                        <div class="book-card__footer">
+                            <span class="price">385.00 TRY</span>
+                            <button type="button" class="button button--small">Add</button>
+                        </div>
+                    </div>
+                </article>
+            </li>
+            <li>
+                <article class="book-card">
+                    <div class="book-card__cover cover-emma"></div>
+                    <div class="book-card__body">
+                        <h2 class="book-card__title">Emma</h2>
+                        <p class="book-card__author">Jane Austen</p>
+                        <div class="book-card__footer">
+                            <span class="price">240.00 TRY</span>
+                            <button type="button" class="button button--small">Add</button>
+                        </div>
+                    </div>
+                </article>
+            </li>
+            <li>
+                <article class="book-card">
+                    <div class="book-card__cover cover-hobbit"></div>
+                    <div class="book-card__body">
+                        <h2 class="book-card__title">The Hobbit</h2>
+                        <p class="book-card__author">J. R. R. Tolkien</p>
+                        <div class="book-card__footer">
+                            <span class="price">310.00 TRY</span>
+                            <button type="button" class="button button--small">Add</button>
+                        </div>
+                    </div>
+                </article>
+            </li>
+        </ul>
+    </main>
+
+    <!-- cart page -->
+    <section id="cart" class="cart">
+        <ul id="cart-lines" class="cart-lines">
+            <li class="cart-line">
+                <div class="cart-line__cover cover-middlemarch"></div>
+                <div class="cart-line__text">
+                    <h3 id="line-title" class="cart-line__title">Middlemarch: A Study of Provincial Life (Penguin Classics, annotated edition)</h3>
+                    <p class="cart-line__qty">Qty 1</p>
+                </div>
+                <span id="line-price" class="price">385.00 TRY</span>
+            </li>
+            <li class="cart-line">
+                <div class="cart-line__cover cover-emma"></div>
+                <div class="cart-line__text">
+                    <h3 class="cart-line__title">Emma</h3>
+                    <p class="cart-line__qty">Qty 2</p>
+                </div>
+                <span class="price">480.00 TRY</span>
+            </li>
+        </ul>
+        <aside id="summary" class="cart-summary">
+            <h2 class="cart-summary__title">Order summary</h2>
+            <p class="cart-summary__total"><span>Total</span><span>865.00 TRY</span></p>
+            <button type="button" class="button button--block">Checkout</button>
+        </aside>
+    </section>
+</body>
+</html>
