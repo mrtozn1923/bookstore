@@ -7,7 +7,7 @@ import { registerOrderNotifications } from "#services/notificationService";
 import type { AppServices } from "./app.ts";
 
 // Composition root: the one place that decides which implementations are used
-export function createServices(pool: sql.ConnectionPool): Omit<AppServices, "readiness"> {
+export function createServices(pool: sql.ConnectionPool): Omit<AppServices, "readiness" | "carrier"> {
     const bookRepository = new SqlBookRepository(pool);
     const orderService = new OrderService(bookRepository, new SqlOrderRepository(pool));
     registerOrderNotifications(orderService);

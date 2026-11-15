@@ -12,6 +12,8 @@ const PROBLEMS: Record<number, { type: string; title: string }> = {
     422: { type: "https://tools.ietf.org/html/rfc9110#section-15.5.21", title: "Unprocessable Content" },
     429: { type: "https://tools.ietf.org/html/rfc6585#section-4", title: "Too Many Requests" },
     500: { type: "https://tools.ietf.org/html/rfc9110#section-15.6.1", title: "An error occurred while processing your request." },
+    502: { type: "https://tools.ietf.org/html/rfc9110#section-15.6.3", title: "Bad Gateway" },
+    504: { type: "https://tools.ietf.org/html/rfc9110#section-15.6.5", title: "Gateway Timeout" },
 };
 
 export interface ProblemDetails {

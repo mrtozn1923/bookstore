@@ -7,6 +7,8 @@ import { OrderService } from "#services/orderService";
 import { createApp, type AppOptions } from "../src/app.ts";
 import { InvalidTokenError, type Principal } from "../src/auth/tokenVerifier.ts";
 import { logger } from "../src/diagnostics/logger.ts";
+import { TrackingNotFoundError } from "../src/integrations/carrierClient.ts";
+import type { TrackingLookup } from "#routes/shipments";
 
 // Tests read their results from assertions, not from log lines
 logger.level = "silent";
@@ -34,10 +36,20 @@ const PRINCIPALS: Record<string, Principal> = {
     "token-grace": { userId: "grace", roles: ["StoreStaff"] },
 };
 
-export function createTestApp(stock?: Record<string, number>, options: Partial<AppOptions> = {}) {
+// A fake carrier that knows one parcel; the real client is tested against undici's MockAgent
+export const fakeCarrier: TrackingLookup = {
+    getTracking: async (trackingNumber) => {
+        if (trackingNumber !== "BK1001TR") {
+            throw new TrackingNotFoundError(trackingNumber);
+        }
+        return { trackingNumber, status: "in_transit", events: [] };
+    },
+};
+
+export function createTestApp(stock?: Record<string, number>, options: Partial<AppOptions> = {}, carrier: TrackingLookup = fakeCarrier) {
     const services = createTestServices(stock);
     const app = createApp(
-        { books: services.books, orders: services.orders, readiness: async () => ({ status: "ready", checks: {} }) },
+        { books: services.books, orders: services.orders, readiness: async () => ({ status: "ready", checks: {} }), carrier },
         {
             corsOrigins: ["http://localhost:4200"],
             trustProxy: 0,

@@ -3,6 +3,7 @@ import { HttpError } from "#http/errors";
 import { RequestValidationError } from "#http/validation";
 import { sendProblem } from "#http/problem";
 import { BookNotFoundError, DomainError, MixedCurrencyError, OrderNotFoundError, OutOfStockError, UnknownBookError } from "#domain/errors";
+import { CarrierUnavailableError, TrackingNotFoundError } from "../integrations/carrierClient.ts";
 import { currentRequestContext } from "../context/requestContext.ts";
 import { logger } from "../diagnostics/logger.ts";
 
@@ -43,6 +44,14 @@ export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
     }
     if (err instanceof HttpError) {
         return sendProblem(res, err.status, { detail: err.message, ...common });
+    }
+    // Outgoing calls: a 404 from the carrier is ours too, its outages become 502/504 (the details go to the log)
+    if (err instanceof TrackingNotFoundError) {
+        return sendProblem(res, 404, { detail: err.message, ...common });
+    }
+    if (err instanceof CarrierUnavailableError) {
+        logger.warn({ err }, "carrier call failed");
+        return sendProblem(res, err.timedOut ? 504 : 502, { detail: "the carrier service is not available, try again later", ...common });
     }
     // body-parser errors carry a status and a type; their messages are not shown to the client
     if (err?.type === "entity.parse.failed") {

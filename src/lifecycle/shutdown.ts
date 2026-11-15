@@ -10,10 +10,12 @@ interface ShutdownTargets {
     pool: sql.ConnectionPool;
     lifecycle: Lifecycle;
     config: AppConfig["shutdown"];
+    // Outgoing connection pools, worker pools...: closed after the server, before the database
+    closeAfterServer?: Array<() => Promise<unknown>>;
 }
 
 // SIGTERM (orchestrators, docker stop) and SIGINT (Ctrl+C) start the same graceful shutdown
-export function registerGracefulShutdown({ server, pool, lifecycle, config }: ShutdownTargets): void {
+export function registerGracefulShutdown({ server, pool, lifecycle, config, closeAfterServer = [] }: ShutdownTargets): void {
     const shutdown = async (signal: NodeJS.Signals): Promise<void> => {
         if (lifecycle.shuttingDown) {
             return;
@@ -33,6 +35,8 @@ export function registerGracefulShutdown({ server, pool, lifecycle, config }: Sh
             server.closeAllConnections();
             await closed;
         }
+
+        await Promise.allSettled(closeAfterServer.map((close) => close()));
 
         // 3) Only now close the database pool: no request can need it any more
         await pool.close();

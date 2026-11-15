@@ -10,6 +10,7 @@ import { booksRouter } from "#routes/books";
 import { ordersRouter } from "#routes/orders";
 import { reportsRouter } from "#routes/reports";
 import { diagnosticsRouter } from "#routes/diagnostics";
+import { shipmentsRouter, type TrackingLookup } from "#routes/shipments";
 import { coversRoot } from "#storage/coverStorage";
 import { HttpError } from "#http/errors";
 import type { BookService } from "#services/bookService";
@@ -21,6 +22,7 @@ export interface AppServices {
     books: BookService;
     orders: OrderService;
     readiness: ReadinessCheck;
+    carrier: TrackingLookup;
 }
 
 export interface AppOptions {
@@ -73,6 +75,7 @@ export function createApp(services: AppServices, options: AppOptions): express.E
     app.use("/api/books", booksRouter(services.books));
     app.use("/api/orders", ordersRouter(services.orders, authenticated));
     app.use("/api/reports", authenticated, requireRole("StoreStaff"), reportsRouter);
+    app.use("/api/shipments", authenticated, requireRole("StoreStaff"), shipmentsRouter(services.carrier));
     app.use("/diagnostics", authenticated, requireRole("Admin"), diagnosticsRouter);
 
     // Nothing matched: 404; then the error handler, always last
