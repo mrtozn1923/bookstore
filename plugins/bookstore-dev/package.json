@@ -1,0 +1,9 @@
+{
+  "name": "bookstore-dev-plugin",
+  "private": true,
+  "description": "Packages for the MCP servers of the bookstore-dev Claude Code plugin",
+  "dependencies": {
+    "@bytebase/dbhub": "1.6.1",
+    "@playwright/mcp": "0.0.85"
+  }
+}

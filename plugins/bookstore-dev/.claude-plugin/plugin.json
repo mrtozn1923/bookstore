@@ -1,0 +1,8 @@
+{
+  "name": "bookstore-dev",
+  "displayName": "Bookstore Dev",
+  "description": "Skills, subagents, hooks and MCP servers for working on the Bookstore repository with Claude Code",
+  "author": {
+    "name": "Bookstore team"
+  }
+}

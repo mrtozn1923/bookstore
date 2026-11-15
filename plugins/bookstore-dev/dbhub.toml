@@ -1,4 +1,4 @@
-# Local SQL Server, read-only login (tools/mcp/sql/create-readonly-login.sql).
+# Local SQL Server, read-only login (plugins/bookstore-dev/sql/create-readonly-login.sql).
 # The password comes from the BOOKSTORE_RO_PASSWORD environment variable.
 [[sources]]
 id = "bookstore"

@@ -16,7 +16,7 @@ if ($LASTEXITCODE -ne 0) { exit 0 }
     hookSpecificOutput = [ordered]@{
         hookEventName            = 'PreToolUse'
         permissionDecision       = 'deny'
-        permissionDecisionReason = "$name is a committed migration file. Never edit it; add a new migration with /add-migration."
+        permissionDecisionReason = "$name is a committed migration file. Never edit it; add a new migration with /bookstore-dev:add-migration."
     }
 } | ConvertTo-Json -Depth 5 -Compress
 exit 0

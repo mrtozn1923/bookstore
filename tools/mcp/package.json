@@ -1,9 +1,0 @@
-{
-  "name": "bookstore-mcp-tools",
-  "private": true,
-  "description": "MCP servers that Claude Code starts for the Bookstore repository",
-  "dependencies": {
-    "@bytebase/dbhub": "1.6.1",
-    "@playwright/mcp": "0.0.85"
-  }
-}

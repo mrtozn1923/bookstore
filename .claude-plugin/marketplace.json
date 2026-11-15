@@ -1,0 +1,14 @@
+{
+  "name": "bookstore",
+  "description": "Claude Code plugins for the Bookstore repository",
+  "owner": {
+    "name": "Bookstore team"
+  },
+  "plugins": [
+    {
+      "name": "bookstore-dev",
+      "source": "./plugins/bookstore-dev",
+      "description": "Migration and component skills, review subagents, migration guard and format hooks, Bookstore MCP servers"
+    }
+  ]
+}

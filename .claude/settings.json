@@ -10,9 +10,9 @@
       "PowerShell(dotnet test *)",
       "PowerShell(npm test *)",
       "PowerShell(npm run build *)",
-      "mcp__bookstore__search_books",
-      "mcp__bookstore__check_stock",
-      "mcp__bookstore-db__search_objects"
+      "mcp__plugin_bookstore-dev_bookstore__search_books",
+      "mcp__plugin_bookstore-dev_bookstore__check_stock",
+      "mcp__plugin_bookstore-dev_bookstore-db__search_objects"
     ],
     "ask": [
       "Bash(dotnet ef database update *)",
@@ -26,68 +26,19 @@
       "Read(**/appsettings.Production.json)",
       "Bash(dotnet user-secrets *)",
       "PowerShell(dotnet user-secrets *)",
-      "mcp__playwright__browser_run_code_unsafe",
-      "mcp__playwright__browser_file_upload"
+      "mcp__plugin_bookstore-dev_playwright__browser_run_code_unsafe",
+      "mcp__plugin_bookstore-dev_playwright__browser_file_upload"
     ]
   },
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "shell": "powershell",
-            "command": "& \"$env:CLAUDE_PROJECT_DIR\\.claude\\hooks\\protect-migrations.ps1\"",
-            "onFailure": "block",
-            "timeout": 30
-          }
-        ]
+  "extraKnownMarketplaces": {
+    "bookstore": {
+      "source": {
+        "source": "directory",
+        "path": "./"
       }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "shell": "powershell",
-            "command": "& \"$env:CLAUDE_PROJECT_DIR\\.claude\\hooks\\format-file.ps1\"",
-            "timeout": 60,
-            "statusMessage": "Formatting the changed file"
-          }
-        ]
-      },
-      {
-        "matcher": "Bash|PowerShell",
-        "hooks": [
-          {
-            "type": "command",
-            "if": "Bash(dotnet test *)",
-            "shell": "powershell",
-            "command": "& \"$env:CLAUDE_PROJECT_DIR\\.claude\\hooks\\short-test-output.ps1\""
-          },
-          {
-            "type": "command",
-            "if": "PowerShell(dotnet test *)",
-            "shell": "powershell",
-            "command": "& \"$env:CLAUDE_PROJECT_DIR\\.claude\\hooks\\short-test-output.ps1\""
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "shell": "powershell",
-            "command": "& \"$env:CLAUDE_PROJECT_DIR\\.claude\\hooks\\stop-guard.ps1\"",
-            "timeout": 600,
-            "statusMessage": "Checking migrations and API tests"
-          }
-        ]
-      }
-    ]
+    }
+  },
+  "enabledPlugins": {
+    "bookstore-dev@bookstore": true
   }
 }

@@ -1,10 +1,8 @@
 ---
 name: ui-tester
 description: Walks through a flow of the running Angular client at http://localhost:4200 in a browser through the playwright MCP server and reports console errors and the step that failed. Use after UI changes while the dev server is running.
-tools: Read, Grep, Glob, mcp__playwright__*
+tools: Read, Grep, Glob, mcp__plugin_bookstore-dev_playwright__*
 model: sonnet
-mcpServers:
-  - playwright
 ---
 
 You test the Bookstore Angular client in a browser. You never edit files.

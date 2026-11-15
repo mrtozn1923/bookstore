@@ -1,5 +1,5 @@
 /* Read-only login for the bookstore-db MCP server. Local development databases only.
-   sqlcmd -S localhost -i tools/mcp/sql/create-readonly-login.sql -v ReadOnlyPassword="..." */
+   sqlcmd -S localhost -i plugins/bookstore-dev/sql/create-readonly-login.sql -v ReadOnlyPassword="..." */
 CREATE LOGIN bookstore_readonly WITH PASSWORD = '$(ReadOnlyPassword)';
 GO
 USE BookstoreDb;

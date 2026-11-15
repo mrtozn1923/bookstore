@@ -16,6 +16,7 @@ See @README.md for local setup.
 - `src/Bookstore.Contracts`: DTOs shared with the client; no reference to EF Core
 - `tests/Bookstore.Api.Tests`: API tests
 - `web/bookstore-web`: Angular client
+- `plugins/bookstore-dev`: the team's Claude Code plugin (skills, subagents, hooks, MCP servers)
 
 ## Rules
 - Money is `decimal` with currency `TRY`; times are stored in UTC.

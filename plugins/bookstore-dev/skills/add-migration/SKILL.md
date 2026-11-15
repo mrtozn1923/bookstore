@@ -1,6 +1,6 @@
 ---
 name: add-migration
-description: Create a new EF Core migration in Bookstore.Api, review the generated SQL and write rollback notes. Run only when the user invokes /add-migration.
+description: Create a new EF Core migration in Bookstore.Api, review the generated SQL and write rollback notes. Run only when the user invokes /bookstore-dev:add-migration.
 argument-hint: "[MigrationName]"
 arguments: [name]
 disable-model-invocation: true

@@ -3,7 +3,7 @@
     "bookstore": {
       "type": "stdio",
       "command": "dotnet",
-      "args": ["${CLAUDE_PROJECT_DIR:-.}/src/Bookstore.Mcp.Server/bin/Debug/net10.0/Bookstore.Mcp.Server.dll"],
+      "args": ["${CLAUDE_PROJECT_DIR}/src/Bookstore.Mcp.Server/bin/Debug/net10.0/Bookstore.Mcp.Server.dll"],
       "env": {
         "Bookstore__CustomerId": "7"
       }
@@ -12,9 +12,9 @@
       "type": "stdio",
       "command": "node",
       "args": [
-        "${CLAUDE_PROJECT_DIR:-.}/tools/mcp/node_modules/@bytebase/dbhub/dist/index.js",
+        "${CLAUDE_PLUGIN_ROOT}/node_modules/@bytebase/dbhub/dist/index.js",
         "--transport", "stdio",
-        "--config=${CLAUDE_PROJECT_DIR:-.}/tools/mcp/dbhub.toml"
+        "--config=${CLAUDE_PLUGIN_ROOT}/dbhub.toml"
       ],
       "env": {
         "BOOKSTORE_RO_PASSWORD": "${BOOKSTORE_RO_PASSWORD}"
@@ -24,7 +24,7 @@
       "type": "stdio",
       "command": "node",
       "args": [
-        "${CLAUDE_PROJECT_DIR:-.}/tools/mcp/node_modules/@playwright/mcp/cli.js",
+        "${CLAUDE_PLUGIN_ROOT}/node_modules/@playwright/mcp/cli.js",
         "--browser", "msedge",
         "--isolated",
         "--allowed-origins", "http://localhost:4200"
