@@ -1,0 +1,10 @@
+BOOK-142 Add bulk order discount for institutions #comment 10% off from 20 copies
+---
+book-151 fix VAT rounding on invoice PDF
+---
+BOOK-153 Keep institutional discount after login #request
+---
+BOOK-153 BOOK-155 #request-review #time 1h 30m
+---
+BOOK-147 #comment Approval mail uses the new template
+and the approver name in the subject #time 2h
