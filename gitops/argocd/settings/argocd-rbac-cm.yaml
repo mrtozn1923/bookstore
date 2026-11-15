@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-rbac-cm
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: argocd-rbac-cm
+    app.kubernetes.io/part-of: argocd
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=false
+data:
+  # Nobody gets anything by default; every right comes from a role below.
+  policy.default: ""
+  policy.csv: |
+    # Developers: see every Bookstore app and its logs, sync only dev.
+    p, role:bookstore-developer, applications, get, bookstore/*, allow
+    p, role:bookstore-developer, logs, get, bookstore/*, allow
+    p, role:bookstore-developer, applications, sync, bookstore/bookstore-*-dev, allow
+    # Release: may sync every environment and restart workloads, may not delete anything.
+    p, role:bookstore-release, applications, get, bookstore/*, allow
+    p, role:bookstore-release, applications, sync, bookstore/*, allow
+    p, role:bookstore-release, applications, action/argoproj.io/Rollout/*, bookstore/*, allow
+    # Platform team: everything (an SSO group in a real setup).
+    g, platform-team, role:admin
+    g, ada, role:bookstore-developer
+    g, ci-bot, role:bookstore-release

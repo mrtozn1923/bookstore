@@ -1,0 +1,20 @@
+# Only the keys below are managed from Git (server-side apply): install defaults stay as they are.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: argocd-cm
+    app.kubernetes.io/part-of: argocd
+  annotations:
+    # Never delete Argo CD's own settings because a file disappeared from Git.
+    argocd.argoproj.io/sync-options: Prune=false
+data:
+  # KSOPS (post 07).
+  kustomize.buildOptions: --enable-alpha-plugins --enable-exec
+  # Local accounts: a person who logs in, and CI with an API key only.
+  accounts.ada: login
+  accounts.ci-bot: apiKey
+  # The built-in admin is for bootstrapping only; people come in through SSO groups (platform-team).
+  admin.enabled: "false"

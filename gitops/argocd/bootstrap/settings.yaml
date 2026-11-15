@@ -1,0 +1,21 @@
+# Argo CD's own settings (accounts, RBAC, notifications) from Git, applied by Argo CD.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd-settings
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: http://git-server.git-server.svc.cluster.local/bookstore-config
+    targetRevision: main
+    path: argocd/settings
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      selfHeal: true
+    syncOptions:
+      # Manage only the keys in Git; the install's defaults in the same ConfigMaps stay untouched.
+      - ServerSideApply=true
