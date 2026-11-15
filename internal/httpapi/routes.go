@@ -64,7 +64,12 @@ func (a *API) listBooks(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *API) getBook(w http.ResponseWriter, r *http.Request) {
-	book, err := a.Books.ByISBN(r.PathValue("isbn"))
+	isbn, err := catalog.NormalizeISBN(r.PathValue("isbn")) // also accepts 978-0-441-17271-9
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	book, err := a.Books.ByISBN(isbn)
 	if errors.Is(err, catalog.ErrBookNotFound) {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return

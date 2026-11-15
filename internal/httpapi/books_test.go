@@ -27,7 +27,9 @@ func TestGetBook(t *testing.T) {
 		wantBody   string
 	}{
 		{"/api/books/9780441172719", http.StatusOK, `"title":"Dune"`},
-		{"/api/books/9780000000000", http.StatusNotFound, "book not found"},
+		{"/api/books/978-0-441-17271-9", http.StatusOK, `"title":"Dune"`},
+		{"/api/books/9780000000002", http.StatusNotFound, "book not found"},
+		{"/api/books/9780000000000", http.StatusBadRequest, "check digit is 0, want 2"},
 		{"/api/books/", http.StatusNotFound, "404 page not found"},
 	}
 	for _, tt := range tests {
