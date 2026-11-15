@@ -1,23 +1,8 @@
-# .NET
-bin/
-obj/
-*.user
-*.suo
-.vs/
-TestResults/
-*.trx
-BenchmarkDotNet.Artifacts/
-# Node / Angular
-node_modules/
-dist/
-.angular/
-coverage/
-# Python / misc
-__pycache__/
-.venv/
-.DS_Store
-.idea/
-*.log
-# local secrets
-.env
-appsettings.*.local.json
+# Build output and tool caches never go into the repo
+.dart_tool/
+build/
+*.exe
+*.jit
+.widget_preview/
+.flutter-plugins-dependencies
+pubspec_overrides.yaml
