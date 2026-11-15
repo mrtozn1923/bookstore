@@ -19,7 +19,7 @@ export default function App() {
     <Layout title="Bookstore" headerExtra={<CartSummary itemCount={cartItemCount(lines)} total={cartTotal(lines)} />}>
       <div className="page">
         <div>
-          <CatalogPage quantities={quantities} onAdd={handleAdd} />
+          <CatalogPage quantities={quantities} cartItemCount={cartItemCount(lines)} onAdd={handleAdd} />
         </div>
         <CartPanel lines={lines} dispatch={dispatch} />
       </div>
