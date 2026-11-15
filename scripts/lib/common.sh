@@ -78,6 +78,35 @@ acquire_lock() {
     flock -n 9 || die "another run holds the lock $1"
 }
 
+# Reads KEY=VALUE lines from FILE into exported variables without running the file as code.
+# Empty lines and lines starting with # are skipped; values are taken literally (no quotes).
+# The file must not be writable by group or others; with "private" it must not be readable either.
+# Usage: load_env_file FILE [private]
+load_env_file() {
+    local file=$1 private=${2:-} mode line key value n=0
+    [[ -r $file ]] || die "cannot read $file"
+    mode=$(stat -c %a "$file")
+    if (( 8#$mode & 8#022 )); then
+        die "$file is writable by group or others (mode $mode)"
+    fi
+    if [[ $private == private ]] && (( 8#$mode & 8#077 )); then
+        die "$file holds secrets and must be mode 600 or 400, not $mode"
+    fi
+    while IFS= read -r line || [[ -n $line ]]; do
+        n=$((n + 1))
+        [[ $line =~ ^[[:space:]]*(#|$) ]] && continue
+        # Do not print the line itself: it may contain a secret.
+        [[ $line =~ ^([A-Za-z_][A-Za-z0-9_]*)=(.*)$ ]] || die "$file:$n: not a KEY=VALUE line"
+        key=${BASH_REMATCH[1]}
+        value=${BASH_REMATCH[2]}
+        case $key in
+            PATH | IFS | BASH_ENV | ENV | SHELLOPTS | LD_*) die "$file:$n: $key may not be set from a file" ;;
+        esac
+        printf -v "$key" '%s' "$value"
+        export "${key?}"
+    done < "$file"
+}
+
 # Prints the name of the release that ROOT/current points to.
 # Usage: current_release [ROOT]; returns 1 when there is no current release.
 current_release() {

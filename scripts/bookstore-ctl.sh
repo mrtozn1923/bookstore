@@ -4,6 +4,8 @@
 #
 # Usage:      bookstore-ctl.sh COMMAND [ARGS...]
 # Commands:   deploy OPTIONS      deploy a release (see bookstore-deploy.sh --help)
+#             rollback -e ENV     switch back to the previous release
+#             backup [-n]         back up the database (see bookstore-backup.sh)
 #             status              current release and health check
 #             releases            list releases, newest last
 #             prune [-n] [KEEP]   delete old releases (see bookstore-prune-releases.sh)
@@ -21,7 +23,7 @@ source "$SCRIPT_DIR/lib/common.sh"
 ROOT="${BOOKSTORE_ROOT:-/opt/bookstore}"
 
 usage() {
-    echo "Usage: ${0##*/} deploy|status|releases|prune|report [ARGS...]" >&2
+    echo "Usage: ${0##*/} deploy|rollback|backup|status|releases|prune|report [ARGS...]" >&2
 }
 
 cmd_status() {
@@ -56,6 +58,12 @@ main() {
     case "$command" in
         deploy)
             "$SCRIPT_DIR/bookstore-deploy.sh" "$@"
+            ;;
+        rollback)
+            "$SCRIPT_DIR/bookstore-deploy.sh" --rollback "$@"
+            ;;
+        backup)
+            "$SCRIPT_DIR/bookstore-backup.sh" "$@"
             ;;
         status)
             cmd_status "$@"
