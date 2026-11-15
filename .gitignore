@@ -4,3 +4,6 @@ CLAUDE.local.md
 
 # Packages for local MCP servers
 tools/mcp/node_modules/
+
+# Claude Code worktrees
+.claude/worktrees/
