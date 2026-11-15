@@ -3,27 +3,27 @@
 # bookstore-ctl.sh - single entry point for everyday tasks on a Bookstore server.
 #
 # Usage:      bookstore-ctl.sh COMMAND [ARGS...]
-# Commands:   status              current release and health check
+# Commands:   deploy OPTIONS      deploy a release (see bookstore-deploy.sh --help)
+#             status              current release and health check
 #             releases            list releases, newest last
 #             prune [-n] [KEEP]   delete old releases (see bookstore-prune-releases.sh)
 # Variables:  BOOKSTORE_ROOT  installation root (default /opt/bookstore)
 # Exit codes: 0 success, 1 error, 2 usage error
 
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+# shellcheck source=lib/common.sh
+source "$SCRIPT_DIR/lib/common.sh"
+
 ROOT="${BOOKSTORE_ROOT:-/opt/bookstore}"
 
 usage() {
-    echo "Usage: ${0##*/} status|releases|prune [ARGS...]" >&2
+    echo "Usage: ${0##*/} deploy|status|releases|prune [ARGS...]" >&2
 }
 
 cmd_status() {
-    local current
-    current=$(readlink -f "$ROOT/current")
-    if [[ -z $current || ! -d $current ]]; then
-        echo "No current release under $ROOT" >&2
-        return 1
-    fi
-    echo "current release: ${current##*/}"
+    local release
+    release=$(current_release "$ROOT") || die "no current release under $ROOT"
+    echo "current release: $release"
     "$SCRIPT_DIR/bookstore-health.sh" "$@"
 }
 
@@ -49,6 +49,9 @@ main() {
         shift
     fi
     case "$command" in
+        deploy)
+            "$SCRIPT_DIR/bookstore-deploy.sh" "$@"
+            ;;
         status)
             cmd_status "$@"
             ;;
