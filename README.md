@@ -22,7 +22,7 @@ Anlatım: "Bookstore: Sitedeki Örnek Uygulama" serisi.
 
 ### Gerekenler
 
-- .NET 10 SDK
+- .NET 11 SDK (11.0.100+; uygulamalar `net10.0` hedefler, `global.json` SDK'yı sabitler)
 - Node.js 24 LTS (Angular 22: `^22.22.3 || ^24.15.0 || >=26`)
 - Docker Desktop (SQL Server container'ı için)
 
@@ -106,7 +106,7 @@ It is explained in the series "Bookstore: The Site's Example Application".
 
 ### Requirements
 
-- .NET 10 SDK
+- .NET 11 SDK (11.0.100+; the apps target `net10.0`, `global.json` pins the SDK)
 - Node.js 24 LTS (Angular 22: `^22.22.3 || ^24.15.0 || >=26`)
 - Docker Desktop (for the SQL Server container)
 
