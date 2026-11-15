@@ -1,0 +1,8 @@
+ef core migration nasıl geri alınır
+dependency injection nedir
+nasil yapilir ef core migration
+ef core migration örneği
+dapper örnek proje
+what is dependency injection
+how to rollback ef core migration
+cs8618 non-nullable property

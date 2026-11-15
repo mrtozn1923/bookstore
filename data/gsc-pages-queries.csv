@@ -1,0 +1,23 @@
+page,query,clicks,impressions,position
+/blog/ef-core-migration-rehberi,ef core migration,310,4200,2.1
+/blog/ef-core-migration-rehberi,ef core migration geri alma,95,900,1.8
+/blog/ef-core-migration-rehberi,ef core migration nasıl yapılır,40,2100,3.2
+/blog/cs8618-nullable-uyarisi,cs8618,260,1900,1.6
+/blog/cs8618-nullable-uyarisi,non-nullable property must contain a non-null value,120,1100,2.4
+/blog/dependency-injection-nedir,dependency injection nedir,70,1500,4.8
+/blog/dependency-injection-nedir,dependency injection,9,2600,8.9
+/blog/dependency-injection-lifetime,dependency injection lifetime,24,600,5.6
+/blog/ef-core-vs-dapper,ef core vs dapper,55,800,4.1
+/blog/ef-core-vs-dapper,dapper nedir,6,700,7.2
+/blog/dapper-ile-toplu-insert,dapper bulk insert,30,450,3.9
+/blog/async-await-nasil-calisir,async await nasıl çalışır,48,950,5.3
+/blog/async-await-nasil-calisir,c# async await,11,1300,9.6
+/blog/linq-groupby,linq groupby,22,520,6.1
+/blog/linq-groupby,linq group by multiple columns,3,140,8.4
+/blog/record-struct,c# record struct,2,60,4.0
+/blog/record-struct,record vs class c#,1,45,6.0
+/blog/minimal-api-validation,minimal api validation,7,1400,12.4
+/blog/minimal-api-validation,asp.net core minimal api validation,14,380,6.8
+/en/blog/ef-core-migrations-guide,ef core migrations,90,2300,6.2
+/en/blog/ef-core-migrations-guide,ef core migration rollback,18,320,3.0
+/blog/span-t-nedir,span nedir c#,4,30,3.0
