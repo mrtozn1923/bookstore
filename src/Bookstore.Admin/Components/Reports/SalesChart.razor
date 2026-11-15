@@ -1,7 +1,21 @@
 @implements IAsyncDisposable
 @inject IJSRuntime JS
+@inject ILogger<SalesChart> Logger
 
-<p class="text-muted">Chart.js @chartVersion</p>
+@if (loadFailed)
+{
+    <p class="alert alert-warning">The chart couldn't be loaded. Copies sold per category:</p>
+    <ul class="sales-fallback">
+        @foreach (CategorySales row in Sales)
+        {
+            <li>@row.Category: @row.Copies</li>
+        }
+    </ul>
+}
+else
+{
+    <p class="text-muted">Chart.js @chartVersion</p>
+}
 <canvas @ref="canvas" height="110"></canvas>
 
 @code {
@@ -10,6 +24,7 @@
     private IJSObjectReference? chart;
     private DotNetObjectReference<SalesChart>? selfReference;
     private string? chartVersion;
+    private bool loadFailed;
 
     [Parameter, EditorRequired]
     public IReadOnlyList<CategorySales> Sales { get; set; } = [];
@@ -24,31 +39,49 @@
             return;
         }
 
-        // There is no JS during prerendering; the first interactive render is the earliest point.
-        module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Reports/SalesChart.razor.js");
-        chartVersion = await JS.GetValueAsync<string>("Chart.version");
-        chart = await JS.InvokeConstructorAsync("Chart", canvas, new
+        try
         {
-            type = "bar",
-            data = new
+            // There is no JS during prerendering; the first interactive render is the earliest point.
+            module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Reports/SalesChart.razor.js");
+            chartVersion = await JS.GetValueAsync<string>("Chart.version");
+            chart = await JS.InvokeConstructorAsync("Chart", canvas, new
             {
-                labels = Sales.Select(s => s.Category),
-                datasets = new[] { new { label = "Copies sold", data = Sales.Select(s => s.Copies) } }
-            }
-        });
-        selfReference = DotNetObjectReference.Create(this);
-        await module.InvokeVoidAsync("onBarClick", chart, selfReference);
+                type = "bar",
+                data = new
+                {
+                    labels = Sales.Select(s => s.Category),
+                    datasets = new[] { new { label = "Copies sold", data = Sales.Select(s => s.Copies) } }
+                }
+            });
+            selfReference = DotNetObjectReference.Create(this);
+            await module.InvokeVoidAsync("onBarClick", chart, selfReference);
+        }
+        catch (JSException ex)
+        {
+            // A failed import or a Chart.js error stays inside this component instead of ending the circuit.
+            Logger.LogWarning(ex, "Sales chart could not be created");
+            loadFailed = true;
+        }
         StateHasChanged();
     }
 
     // New data from the parent: change the existing chart's data instead of creating a new chart.
     protected override async Task OnParametersSetAsync()
     {
-        if (chart is not null)
+        if (chart is null)
+        {
+            return;
+        }
+
+        try
         {
             await chart.SetValueAsync("data.labels", Sales.Select(s => s.Category));
             await chart.SetValueAsync("data.datasets.0.data", Sales.Select(s => s.Copies));
             await chart.InvokeVoidAsync("update");
+        }
+        catch (JSException ex)
+        {
+            Logger.LogWarning(ex, "Sales chart could not be updated");
         }
     }
 

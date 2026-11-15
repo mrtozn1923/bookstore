@@ -1,5 +1,6 @@
 using Bookstore.Admin.Components.Books;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace Bookstore.Admin.Tests;
 
@@ -33,5 +34,17 @@ public sealed class JsInteropTests : BunitContext
         Render<CopyIsbnButton>(p => p.Add(b => b.Isbn, "9780141439549"));
 
         Assert.Empty(JSInterop.Invocations);
+    }
+
+    [Fact]
+    public void A_js_error_shows_the_copy_failure_instead_of_ending_the_circuit()
+    {
+        JSInterop.SetupModule(ModulePath).Setup<bool>("copyText", "9780141439549")
+            .SetException(new JSException("Clipboard is not available"));
+        IRenderedComponent<CopyIsbnButton> button = Render<CopyIsbnButton>(p => p.Add(b => b.Isbn, "9780141439549"));
+
+        button.Find("button").Click();
+
+        Assert.Equal("Copy failed", button.Find("button").TextContent.Trim());
     }
 }

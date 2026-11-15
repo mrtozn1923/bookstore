@@ -13,9 +13,17 @@
 
     private async Task CopyAsync()
     {
-        // The module is loaded on the first click, so pages that never copy don't download it.
-        module ??= await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Books/CopyIsbnButton.razor.js");
-        label = await module.InvokeAsync<bool>("copyText", Isbn) ? "Copied" : "Copy failed";
+        try
+        {
+            // The module is loaded on the first click, so pages that never copy don't download it.
+            module ??= await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Books/CopyIsbnButton.razor.js");
+            label = await module.InvokeAsync<bool>("copyText", Isbn) ? "Copied" : "Copy failed";
+        }
+        catch (JSException)
+        {
+            // The module didn't load or threw; an unhandled exception here would end the circuit.
+            label = "Copy failed";
+        }
     }
 
     public async ValueTask DisposeAsync()

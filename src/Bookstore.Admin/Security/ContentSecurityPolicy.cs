@@ -7,9 +7,6 @@ public static class ContentSecurityPolicy
 {
     public const string NonceKey = "csp-nonce";
 
-    // The template NavMenu's inline onclick handler, allowed by its hash (see the Blazor CSP documentation).
-    private const string NavMenuToggleHash = "'sha256-qnHnQs7NjQNHHNYv/I9cW+I62HzDJjbnyS/OFzqlix0='";
-
     public static IApplicationBuilder UseContentSecurityPolicy(this IApplicationBuilder app) => app.Use(async (context, next) =>
     {
         string nonce = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
@@ -19,7 +16,7 @@ public static class ContentSecurityPolicy
             "base-uri 'self'",
             "object-src 'none'",
             "img-src 'self' data:",
-            $"script-src 'self' 'wasm-unsafe-eval' 'nonce-{nonce}' 'unsafe-hashes' {NavMenuToggleHash}",
+            $"script-src 'self' 'wasm-unsafe-eval' 'nonce-{nonce}'",
             "style-src 'self'",
             // Virtualize sizes its spacer elements with style attributes; this allows attributes, not <style> blocks.
             "style-src-attr 'unsafe-inline'",

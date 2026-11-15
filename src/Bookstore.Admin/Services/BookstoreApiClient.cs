@@ -94,7 +94,10 @@ public sealed class BookstoreApiClient(HttpClient http, AuthenticationStateProvi
     // Every call carries a fresh token for the signed-in user; the API decides what that user may do.
     private async Task<HttpResponseMessage> SendAsync(HttpMethod method, string uri, HttpContent? content, CancellationToken ct)
     {
+        // Read on every call and never cached, so a refreshed user is picked up; BL0013 (.NET 11) doesn't apply here.
+#pragma warning disable BL0013
         AuthenticationState state = await authState.GetAuthenticationStateAsync();
+#pragma warning restore BL0013
         using HttpRequestMessage request = new(method, uri) { Content = content };
         if (state.User.Identity?.IsAuthenticated == true)
         {
