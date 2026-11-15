@@ -1,27 +1,22 @@
 import { useState } from 'react';
 import { CartSummary } from '@/features/cart/CartSummary';
-import { BookCard } from '@/features/catalog/BookCard';
-import type { BookSummary } from '@/features/catalog/types';
-
-const dune: BookSummary = {
-  isbn: '9780441172719',
-  title: 'Dune',
-  author: 'Frank Herbert',
-  category: 'Science Fiction',
-  price: 489,
-  publishedYear: 1965,
-};
+import { BookList } from '@/features/catalog/BookList';
+import { sampleBooks } from '@/features/catalog/sample-books';
+import { Layout } from '@/shared/Layout';
 
 export default function App() {
-  const [quantity, setQuantity] = useState(0);
+  // isbn -> quantity; the next post explains why we always build a new object
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const itemCount = Object.values(quantities).reduce((sum, q) => sum + q, 0);
+
+  function handleAdd(isbn: string) {
+    setQuantities((current) => ({ ...current, [isbn]: (current[isbn] ?? 0) + 1 }));
+  }
 
   return (
-    <main>
-      <h1>Bookstore</h1>
-      <CartSummary itemCount={quantity} />
-      <ul className="book-grid">
-        <BookCard book={dune} quantity={quantity} onAdd={() => setQuantity((q) => q + 1)} />
-      </ul>
-    </main>
+    <Layout title="Bookstore" headerExtra={<CartSummary itemCount={itemCount} />}>
+      <h1>Catalog</h1>
+      <BookList books={sampleBooks} quantities={quantities} onAdd={handleAdd} />
+    </Layout>
   );
 }

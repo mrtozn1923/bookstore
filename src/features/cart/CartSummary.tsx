@@ -3,5 +3,5 @@ type CartSummaryProps = {
 };
 
 export function CartSummary({ itemCount }: CartSummaryProps) {
-  return <p className="muted">Cart: {itemCount} item(s)</p>;
+  return <span className="cart-summary">Cart: {itemCount} item(s)</span>;
 }

@@ -5,6 +5,8 @@
     "react/rules-of-hooks": "error",
     "react/exhaustive-deps": "warn",
     "react/jsx-key": "error",
+    "react/no-array-index-key": "warn",
+    "react/no-danger": "warn",
     "react/only-export-components": ["warn", { "allowConstantExport": true }]
   }
 }
