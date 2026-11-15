@@ -2,7 +2,7 @@
 
 import { enableProdMode, provideZoneChangeDetection } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
-import { PreloadAllModules, TitleStrategy, provideRouter, withComponentInputBinding, withPreloading } from '@angular/router';
+import { PreloadAllModules, TitleStrategy, provideRouter, withComponentInputBinding, withPreloading, withViewTransitions } from '@angular/router';
 import { provideHttpClient, withInterceptors, withXhr } from '@angular/common/http';
 
 import { AppComponent } from './app/app.component';
@@ -21,7 +21,7 @@ if (environment.production) {
 bootstrapApplication(AppComponent, {
   providers: [
     provideZoneChangeDetection(),
-    provideRouter(routes, withPreloading(PreloadAllModules), withComponentInputBinding()),
+    provideRouter(routes, withPreloading(PreloadAllModules), withComponentInputBinding(), withViewTransitions()),
     provideHttpClient(withXhr(), withInterceptors([authInterceptor, errorInterceptor])),
     {
       provide: LoggerService,

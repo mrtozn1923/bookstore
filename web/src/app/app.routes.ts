@@ -14,6 +14,7 @@ import { authGuard, authMatchGuard, roleGuard } from './auth.guard';
 import { unsavedChangesGuard } from './unsaved-changes.guard';
 import { bookResolver } from './book.resolver';
 import { SignUpComponent } from './sign-up/sign-up.component';
+import { CartComponent } from './cart/cart.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -34,6 +35,7 @@ export const routes: Routes = [
     loadComponent: () => import('./about/about.component').then(m => m.AboutComponent),
     title: 'About'
   },
+  { path: 'cart', component: CartComponent, title: 'Cart' },
   { path: 'login', component: LoginComponent },
   {
     path: 'checkout',

@@ -10,10 +10,12 @@
     <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" i18n="Main navigation@@nav.home">Home</a>
     <a routerLink="/books" routerLinkActive="active" i18n="Main navigation@@nav.books">Books</a>
     <a routerLink="/about" routerLinkActive="active" i18n="Main navigation@@nav.about">About</a>
+    <a routerLink="/cart" routerLinkActive="active" i18n="Main navigation@@nav.cart">Cart</a>
   </nav>
 </header>
 
 <router-outlet></router-outlet>
+<app-toast-host />
 
 <footer>
   <span i18n="Footer promotion@@footer.freeShipping">Free shipping on orders over {{ freeShippingLimit | currency: 'TRY' : 'symbol-narrow' }}.</span>

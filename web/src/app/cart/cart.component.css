@@ -1,0 +1,29 @@
+.cart-line { display: flex; gap: 1rem; align-items: center; padding: 0.5rem 0; }
+
+.cart-line-enter { animation: line-in 300ms ease-out; }
+.cart-line-leave { animation: line-out 250ms ease-in forwards; }
+
+@keyframes line-in {
+  from { opacity: 0; transform: translateY(-8px); }
+}
+@keyframes line-out {
+  to { opacity: 0; transform: translateX(24px); }
+}
+
+/* Plain CSS: enter and leave for an element that toggles display */
+.free-shipping {
+  opacity: 1;
+  transition: opacity 400ms, display 400ms allow-discrete;
+}
+.free-shipping[hidden] {
+  display: none;
+  opacity: 0;
+}
+@starting-style {
+  .free-shipping { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cart-line-enter, .cart-line-leave { animation: none; }
+  .free-shipping { transition: none; }
+}

@@ -17,4 +17,12 @@ describe('CartService', () => {
 
     expect(service.getTotal()).toBe(770);
   });
+
+  it('should remove a line by its id', () => {
+    service.add({ title: 'Dune', price: 450 });
+    service.add({ title: 'Dune', price: 450 });
+    service.remove(1);
+
+    expect(service.getTotal()).toBe(450);
+  });
 });

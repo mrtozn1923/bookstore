@@ -1,1 +1,15 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Route changes use the View Transitions API (withViewTransitions in main.ts) */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 200ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none;
+  }
+}

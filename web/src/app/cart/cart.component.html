@@ -1,0 +1,11 @@
+<h2 i18n="@@cart.title">Your cart</h2>
+@for (line of lines(); track line.lineId) {
+  <div class="cart-line" animate.enter="cart-line-enter" animate.leave="cart-line-leave">
+    <span>{{ line.title }}</span>
+    <span>{{ line.price | currency: 'TRY' : 'symbol-narrow' }}</span>
+    <button type="button" (click)="remove(line)" i18n="@@cart.remove">Remove</button>
+  </div>
+} @empty {
+  <p i18n="@@cart.empty">Your cart is empty.</p>
+}
+<p class="free-shipping" [hidden]="total() < 500" i18n="@@cart.freeShipping">Your order ships for free.</p>

@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, computed, viewChildren, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Inject, OnInit, computed, inject, viewChildren, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AppConfig, APP_CONFIG } from '../../app-config';
 import { Book } from '../../book';
@@ -7,6 +7,7 @@ import { LoggerService } from '../../logger.service';
 import { InStockPipe } from '../in-stock.pipe';
 import { BookItemComponent } from '../book-item/book-item.component';
 import { BookSearchComponent } from '../../book-search/book-search.component';
+import { ToastService } from '../../toast.service';
 
 @Component({
     selector: 'app-book-list',
@@ -34,6 +35,7 @@ export class BookListComponent implements OnInit {
   items = viewChildren(BookItemComponent);
   itemCount = computed(() => this.items().length);
   page = 1;
+  private readonly toasts = inject(ToastService);
 
   constructor(
     private cartService: CartService,
@@ -60,6 +62,7 @@ export class BookListComponent implements OnInit {
   addToCart(book: Book): void {
     this.cartService.add(book);
     this.logger.log(`${this.config.appName}: ${book.title} added to the cart`);
+    this.toasts.show($localize`:@@toast.addedToCart:${book.title}:title: added to the cart`);
   }
 
   addBook(): void {

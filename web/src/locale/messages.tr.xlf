@@ -42,7 +42,7 @@
     </unit>
     <unit id="nav.about">
       <notes>
-        <note category="location">src/app/app.component.html:12,16</note>
+        <note category="location">src/app/app.component.html:12,13</note>
         <note category="description">Main navigation</note>
       </notes>
       <segment>
@@ -50,9 +50,19 @@
         <target>Hakkında</target>
       </segment>
     </unit>
+    <unit id="nav.cart">
+      <notes>
+        <note category="location">src/app/app.component.html:14,17</note>
+        <note category="description">Main navigation</note>
+      </notes>
+      <segment>
+        <source>Cart</source>
+        <target>Sepet</target>
+      </segment>
+    </unit>
     <unit id="footer.freeShipping">
       <notes>
-        <note category="location">src/app/app.component.html:19,20</note>
+        <note category="location">src/app/app.component.html:21,22</note>
         <note category="description">Footer promotion</note>
       </notes>
       <segment>
@@ -67,6 +77,42 @@
       <segment>
         <source>Search books...</source>
         <target>Kitap ara...</target>
+      </segment>
+    </unit>
+    <unit id="cart.title">
+      <notes>
+        <note category="location">src/app/cart/cart.component.html:1,2</note>
+      </notes>
+      <segment>
+        <source>Your cart</source>
+        <target>Sepetin</target>
+      </segment>
+    </unit>
+    <unit id="cart.remove">
+      <notes>
+        <note category="location">src/app/cart/cart.component.html:6,8</note>
+      </notes>
+      <segment>
+        <source>Remove</source>
+        <target>Kaldır</target>
+      </segment>
+    </unit>
+    <unit id="cart.empty">
+      <notes>
+        <note category="location">src/app/cart/cart.component.html:9,11</note>
+      </notes>
+      <segment>
+        <source>Your cart is empty.</source>
+        <target>Sepetin boş.</target>
+      </segment>
+    </unit>
+    <unit id="cart.freeShipping">
+      <notes>
+        <note category="location">src/app/cart/cart.component.html:11,12</note>
+      </notes>
+      <segment>
+        <source>Your order ships for free.</source>
+        <target>Siparişin ücretsiz kargoyla gönderilecek.</target>
       </segment>
     </unit>
     <unit id="catalog.stock">
@@ -107,6 +153,15 @@
       <segment>
         <source>{VAR_PLURAL, plural, =0 {No books to show} =1 {Showing 1 book} other {Showing <ph id="0" equiv="INTERPOLATION"/> books}}</source>
         <target>{VAR_PLURAL, plural, =0 {Gösterilecek kitap yok} other {<ph id="0" equiv="INTERPOLATION"/> kitap gösteriliyor}}</target>
+      </segment>
+    </unit>
+    <unit id="toast.addedToCart">
+      <notes>
+        <note category="location">src/app/catalog/book-list/book-list.component.ts:65</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="title" disp="book.title"/> added to the cart</source>
+        <target><ph id="0" equiv="title" disp="book.title"/> sepete eklendi</target>
       </segment>
     </unit>
     <unit id="checkout.delivery">
