@@ -94,6 +94,8 @@ func (a *API) placeOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	a.logger().InfoContext(r.Context(), "order placed",
+		"order_id", o.ID, "items", len(o.Items), "total", o.Total().Decimal())
 	w.Header().Set("Location", "/api/orders/"+o.ID)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)

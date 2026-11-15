@@ -1,0 +1,13 @@
+Subject: Your Bookstore order {{.ID}}
+
+Hello {{.CustomerID}},
+
+thank you for your order. We received it on {{.Placed}}.
+{{range .Items}}
+  {{.Quantity}} x {{.Title}} ({{.ISBN}})  {{.Total}}
+{{- end}}
+
+Total: {{.Total}}
+Estimated delivery: {{.Delivery}}
+
+Bookstore
