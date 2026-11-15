@@ -1,0 +1,11 @@
+@page "/diagnostics/render-modes"
+@using Bookstore.Admin.Client.Diagnostics
+
+<PageTitle>Render modes</PageTitle>
+
+<h1>One component, four render modes</h1>
+
+<RenderModeProbe Label="Static SSR" />
+<RenderModeProbe Label="Interactive Server" @rendermode="InteractiveServer" />
+<RenderModeProbe Label="Interactive WebAssembly" @rendermode="InteractiveWebAssembly" />
+<RenderModeProbe Label="Interactive Auto" @rendermode="InteractiveAuto" />

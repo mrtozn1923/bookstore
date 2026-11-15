@@ -1,0 +1,13 @@
+<div class="probe">
+    <h3>@Label</h3>
+    <p>Renderer: <code>@RendererInfo.Name</code>, interactive: <code>@RendererInfo.IsInteractive</code></p>
+    <p>Assigned mode: <code>@(AssignedRenderMode?.GetType().Name ?? "none")</code></p>
+    <button @onclick="() => clicks++">Clicked @clicks times</button>
+</div>
+
+@code {
+    private int clicks;
+
+    [Parameter, EditorRequired]
+    public string Label { get; set; } = "";
+}
