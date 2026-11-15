@@ -8,6 +8,8 @@ namespace Bookstore.Ordering;
 
 public static class OrderingModule
 {
+    public const string PlaceOrderPolicy = "place-order";
+
     public static IServiceCollection AddOrderingModule(this IServiceCollection services) =>
         services.AddScoped<OrderService>();
 
@@ -20,7 +22,7 @@ public static class OrderingModule
         carts.MapDelete("/{cartId:guid}/items/{isbn}", RemoveItem);
 
         RouteGroupBuilder orders = app.MapGroup("/api/orders").WithTags("Ordering");
-        orders.MapPost("/", PlaceOrder);
+        orders.MapPost("/", PlaceOrder).RequireRateLimiting(PlaceOrderPolicy);
         orders.MapGet("/{orderId:int}", GetOrder).WithName("GetOrder");
         return app;
     }

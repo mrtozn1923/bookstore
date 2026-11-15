@@ -27,7 +27,8 @@ internal sealed class InstitutionUnitConfiguration : IEntityTypeConfiguration<In
         unit.HasOne<Institution>().WithMany().HasForeignKey(u => u.InstitutionId);
         unit.HasData(
             new InstitutionUnit { Id = 1, InstitutionId = 1, Name = "Library", ApprovalLimit = 5000m },
-            new InstitutionUnit { Id = 2, InstitutionId = 2, Name = "Central Library", ApprovalLimit = 20000m });
+            new InstitutionUnit { Id = 2, InstitutionId = 2, Name = "Central Library", ApprovalLimit = 20000m },
+            new InstitutionUnit { Id = 3, InstitutionId = 1, Name = "Science Department", ApprovalLimit = 5000m });
     }
 }
 

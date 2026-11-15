@@ -21,6 +21,8 @@ public sealed record RequestLine(string Isbn, int Quantity);
 public sealed class PurchaseRequestService(
     BookstoreContext db, ICatalogService catalog, IInventoryService inventory, TimeProvider clock)
 {
+    public const string AutoApprover = "unit-limit";
+
     public async Task<PurchaseOutcome> CreateAsync(InstitutionalCaller caller, IReadOnlyList<RequestLine> lines, CancellationToken ct)
     {
         if (!caller.IsBuyer)
@@ -195,9 +197,16 @@ public sealed class PurchaseRequestService(
     private async Task ApplyApprovalRuleAsync(PurchaseRequest request, CancellationToken ct)
     {
         InstitutionUnit unit = await db.InstitutionUnits.SingleAsync(u => u.Id == request.UnitId, ct);
-        bool needsApproval = request.Total > unit.ApprovalLimit;
+        // Pentest F-01: the limit applies to the unit's requests approved by the limit in the last 24 hours, not to one request.
+        DateTime since = clock.GetUtcNow().UtcDateTime.AddHours(-24);
+        List<decimal> recentTotals = await db.PurchaseRequests
+            .Where(r => r.UnitId == request.UnitId && r.Id != request.Id
+                && r.ApprovedBy == AutoApprover && r.CreatedAtUtc >= since)
+            .Select(r => r.Total)
+            .ToListAsync(ct);   // SQLite cannot SUM decimals in SQL; the list is small
+        bool needsApproval = recentTotals.Sum() + request.Total > unit.ApprovalLimit;
         request.Status = needsApproval ? PurchaseRequestStatus.PendingApproval : PurchaseRequestStatus.Approved;
-        request.ApprovedBy = needsApproval ? null : "unit-limit";
+        request.ApprovedBy = needsApproval ? null : AutoApprover;
         request.ApprovedAtUtc = needsApproval ? null : clock.GetUtcNow().UtcDateTime;
         request.ApprovedLinesHash = needsApproval ? null : request.ComputeLinesHash();
     }

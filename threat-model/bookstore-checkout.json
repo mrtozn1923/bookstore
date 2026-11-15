@@ -181,8 +181,8 @@
                 "text": "Ordering"
               },
               "body": {
-                "stroke": "red",
-                "strokeWidth": 2.5,
+                "stroke": "#333333",
+                "strokeWidth": 1,
                 "strokeDasharray": null
               }
             },
@@ -219,13 +219,13 @@
                   "type": "Denial of service",
                   "modelType": "STRIDE",
                   "severity": "Medium",
-                  "status": "Open",
+                  "status": "Mitigated",
                   "score": "L2 x I2 = 4",
                   "description": "Scripts create carts and orders to exhaust stock reservations.",
-                  "mitigation": "Rate limit POST /api/orders per client (ASVS v5.0.0-2.4.1); backlog item SEC-14."
+                  "mitigation": "Fixed-window rate limit on POST /api/orders per client (ASVS v5.0.0-2.4.1). Test: PentestRegressionTests (F-02)."
                 }
               ],
-              "hasOpenThreats": true,
+              "hasOpenThreats": false,
               "handlesCardPayment": false,
               "handlesGoodsOrServices": true,
               "isWebApplication": true,
@@ -1399,8 +1399,8 @@
                 "text": "Institutional"
               },
               "body": {
-                "stroke": "red",
-                "strokeWidth": 2.5,
+                "stroke": "#333333",
+                "strokeWidth": 1,
                 "strokeDasharray": null
               }
             },
@@ -1463,13 +1463,13 @@
                   "type": "Elevation of privilege",
                   "modelType": "STRIDE",
                   "severity": "Medium",
-                  "status": "Open",
+                  "status": "Mitigated",
                   "score": "L2 x I2 = 4",
                   "description": "Several small requests, each under the limit, add up to a large order.",
-                  "mitigation": "Accepted for release 1 (risk-register.md R-02, owner Selin, review 2027-03-01); monitor daily totals per unit."
+                  "mitigation": "The unit limit applies to the unit's auto-approved requests of the last 24 hours. Test: PentestRegressionTests (F-01); risk-register.md R-02 closed."
                 }
               ],
-              "hasOpenThreats": true,
+              "hasOpenThreats": false,
               "handlesCardPayment": false,
               "handlesGoodsOrServices": true,
               "isWebApplication": true,

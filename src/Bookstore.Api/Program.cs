@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 using Bookstore.Catalog;
 using Bookstore.Data;
 using Bookstore.Institutional;
@@ -30,6 +31,16 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 builder.Services.AddAuthentication().AddJwtBearer();
 builder.Services.AddAuthorization();
 
+// Pentest F-02 / ASVS v5.0.0-2.4.1: placing orders is limited per client address.
+int placeOrderLimit = builder.Configuration.GetValue("RateLimiting:PlaceOrder:PermitLimit", 10);
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy(OrderingModule.PlaceOrderPolicy, context => RateLimitPartition.GetFixedWindowLimiter(
+        context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions { PermitLimit = placeOrderLimit, Window = TimeSpan.FromMinutes(1) }));
+});
+
 builder.Services
     .AddCatalogModule()
     .AddInventoryModule()
@@ -49,6 +60,8 @@ if (app.Environment.IsDevelopment())
         await app.MigrateDatabaseAsync();
     }
 }
+
+app.UseRateLimiter();
 
 app.MapCatalogEndpoints();
 app.MapOrderingEndpoints();
