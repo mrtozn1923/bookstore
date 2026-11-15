@@ -5,6 +5,7 @@
     <Project Path="samples/Bookstore.ImageLab/Bookstore.ImageLab.csproj" />
     <Project Path="samples/Bookstore.MailLab/Bookstore.MailLab.csproj" />
     <Project Path="samples/Bookstore.PdfLab/Bookstore.PdfLab.csproj" />
+    <Project Path="samples/Bookstore.StorageLab/Bookstore.StorageLab.csproj" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Bookstore.Api/Bookstore.Api.csproj" />

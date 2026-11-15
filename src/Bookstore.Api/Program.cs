@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using Bookstore.Api.Catalog;
 using Bookstore.Api.Data;
+using Bookstore.Api.FileStorage;
 using Bookstore.Api.Institutional;
 using Bookstore.Api.Reports;
 using Bookstore.Notifications;
@@ -10,6 +11,7 @@ using Bookstore.Notifications.Documents.Html;
 using Bookstore.Notifications.Documents.Pdf;
 using Bookstore.Notifications.Outbox;
 using Bookstore.Notifications.Samples;
+using Bookstore.Notifications.Storage;
 using Microsoft.EntityFrameworkCore;
 
 // Bookstore qualifies for the QuestPDF Community License (annual gross revenue under USD 1M); set once at startup
@@ -39,11 +41,13 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 WebApplication app = builder.Build();
 app.UseRequestTimeouts();
 app.MapCoverEndpoints();
+app.MapFileEndpoints();
 
 await using (AsyncServiceScope scope = app.Services.CreateAsyncScope())
 {
     // Demo only: create the SQLite schema and seed data on start
     await scope.ServiceProvider.GetRequiredService<BookstoreContext>().Database.EnsureCreatedAsync();
+    await app.Services.EnsureFileStoreAsync(app.Configuration.GetSection("Cors:Origins").Get<string[]>() ?? ["http://localhost:4200"]);
 }
 
 // The first download renders and stores the PDF; later downloads stream the stored file

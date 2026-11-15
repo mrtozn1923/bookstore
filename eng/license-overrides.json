@@ -3,5 +3,10 @@
     "Id": "QuestPDF",
     "Version": "2026.9.2",
     "License": "LicenseRef-QuestPDF-Community"
+  },
+  {
+    "Id": "Apache.Arrow",
+    "Version": "22.1.0",
+    "License": "Apache-2.0"
   }
 ]

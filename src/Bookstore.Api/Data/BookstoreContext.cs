@@ -1,3 +1,4 @@
+using Bookstore.Api.FileStorage;
 using Bookstore.Api.Institutional;
 using Bookstore.Notifications.Outbox;
 using Microsoft.EntityFrameworkCore;
@@ -8,10 +9,18 @@ namespace Bookstore.Api.Data;
 public sealed class BookstoreContext(DbContextOptions<BookstoreContext> options) : DbContext(options)
 {
     public DbSet<PurchaseApproval> PurchaseApprovals => Set<PurchaseApproval>();
+    public DbSet<StoredFileRecord> StoredFiles => Set<StoredFileRecord>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyEmailOutbox();
+        modelBuilder.Entity<StoredFileRecord>(e =>
+        {
+            e.ToTable("StoredFiles");
+            e.HasKey(x => x.Path);
+            e.Property(x => x.Path).HasMaxLength(512);
+            e.HasIndex(x => new { x.Purpose, x.CreatedAtUtc });
+        });
         modelBuilder.Entity<PurchaseApproval>(e =>
         {
             e.Property(x => x.Total).HasConversion<double>();

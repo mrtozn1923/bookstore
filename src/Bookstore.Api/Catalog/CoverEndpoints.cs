@@ -57,6 +57,15 @@ public static partial class CoverEndpoints
 
     public static string ThumbnailPath(string isbn, int width) => $"covers/{isbn}/{width}.webp";
 
+    public static bool IsIsbn13(string value) => Isbn13().IsMatch(value);
+
+    public static (string ContentType, string Extension) TypeOf(UploadedImageFormat format) => format switch
+    {
+        UploadedImageFormat.Jpeg => ("image/jpeg", ".jpg"),
+        UploadedImageFormat.Png => ("image/png", ".png"),
+        _ => ("image/webp", ".webp"),
+    };
+
     public static IEndpointRouteBuilder MapCoverEndpoints(this IEndpointRouteBuilder app)
     {
         // The raw image is the request body; the HTTP side of uploads (IFormFile, limits) is covered in the Web API series
@@ -84,12 +93,7 @@ public static partial class CoverEndpoints
                 return Results.Problem(ex.Message, statusCode: StatusCodes.Status415UnsupportedMediaType);
             }
 
-            (string contentType, string extension) = check.Format switch
-            {
-                UploadedImageFormat.Jpeg => ("image/jpeg", ".jpg"),
-                UploadedImageFormat.Png => ("image/png", ".png"),
-                _ => ("image/webp", ".webp"),
-            };
+            (string contentType, string extension) = TypeOf(check.Format);
 
             // The original stays private: it may carry EXIF data such as the location where the photo was taken
             string originalPath = $"covers/{isbn}/original{extension}";
@@ -111,7 +115,7 @@ public static partial class CoverEndpoints
         return app;
     }
 
-    private static async Task<byte[]?> ReadAtMostAsync(Stream body, int maxBytes, CancellationToken ct)
+    public static async Task<byte[]?> ReadAtMostAsync(Stream body, int maxBytes, CancellationToken ct)
     {
         using MemoryStream buffer = new();
         byte[] chunk = new byte[81920];
