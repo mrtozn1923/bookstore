@@ -1,9 +1,5 @@
-# Snapshot 32: git config
+# Snapshot 33: searching history
 
-- `home/.gitconfig`: personal identity, `includeIf` for work repos (folder and remote URL), SSH alias rewrite with `url.insteadOf`, `useHttpPath` for github.com, and the team settings include.
-- `home/.gitconfig-work`: work e-mail and SSH commit signing.
-- `home/.ssh/config`: two GitHub accounts through the `github-work` host alias.
-- `home/team.gitconfig`: recommended team settings.
-- `fake-helper.sh`: test credential helper used in the post; it only prints what Git sends and returns fake values. Never use it for real credentials.
-
-Copy the `home/` files to your own home folder and adjust names, e-mails and key paths.
+- `.gitattributes`: `*.cs diff=csharp` so that `git grep -p` and `git log -L :Method:file` find C# methods.
+- `.git-blame-ignore-revs`: the formatting commit skipped by `git blame` and GitHub's blame view. Run `git config blame.ignoreRevsFile .git-blame-ignore-revs` once per clone.
+- `src/`: the discount code as it is at the end of the post (the `>` bug is still there; the post only finds it).

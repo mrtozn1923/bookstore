@@ -1,7 +1,0 @@
-[user]
-	email = ada@example.com
-	signingKey = ~/.ssh/id_ed25519_work.pub
-[gpg]
-	format = ssh
-[commit]
-	gpgSign = true
