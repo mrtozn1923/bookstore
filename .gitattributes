@@ -1,0 +1,4 @@
+# PowerShell files keep LF line endings so the shebang also works on Linux
+*.ps1 text eol=lf
+*.psm1 text eol=lf
+*.psd1 text eol=lf
