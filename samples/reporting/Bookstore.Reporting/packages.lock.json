@@ -4,9 +4,9 @@
     "net10.0": {
       "Bookstore.Contracts": {
         "type": "Direct",
-        "requested": "[1.0.0, )",
-        "resolved": "1.0.0",
-        "contentHash": "t32kTZ2zfbt2XFqKKPAd8ipqX1j7AMDWXa4kf/PBBLtsFIo5I+OW0IRtXgp4NE7Z0vDsJHOHuVyAGGOcsVF9HA=="
+        "requested": "[1.1.0, )",
+        "resolved": "1.1.0",
+        "contentHash": "GRQZ18r0QGEEOqVt2iSagOjiBmzvTV6gO34hvNGSstdSG6ika0uw43PbKX31z03snCxt5r3WNaIrUHB35LmT9w=="
       }
     }
   }

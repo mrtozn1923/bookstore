@@ -1,11 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <!-- Clear the single TargetFramework from Directory.Build.props, otherwise TargetFrameworks is ignored. -->
+    <TargetFramework></TargetFramework>
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+    <Version>1.1.0</Version>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
     <InternalsVisibleTo Include="Bookstore.Contracts.Tests" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net10.0'))">
+    <!-- net10.0 and later have CompareOptions.NumericOrdering; the fallback is only for older frameworks. -->
+    <Compile Remove="Compat/**" />
   </ItemGroup>
 
 </Project>

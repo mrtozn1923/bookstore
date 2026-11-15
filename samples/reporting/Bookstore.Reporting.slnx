@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="Bookstore.LegacyExport/Bookstore.LegacyExport.csproj" />
   <Project Path="Bookstore.Reporting/Bookstore.Reporting.csproj" />
 </Solution>
