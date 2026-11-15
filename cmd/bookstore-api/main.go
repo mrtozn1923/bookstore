@@ -1,30 +1,23 @@
-// The first version of the Bookstore API: one file, standard library only
+// Command bookstore-api serves the Bookstore HTTP API.
 package main
 
 import (
 	"encoding/json"
 	"log"
 	"net/http"
+
+	"bookstore/internal/catalog"
 )
 
-type book struct {
-	ISBN  string `json:"isbn"`
-	Title string `json:"title"`
-}
-
-var books = []book{
-	{ISBN: "9780441172719", Title: "Dune"},
-	{ISBN: "9780547928227", Title: "The Hobbit"},
-	{ISBN: "9780141439549", Title: "Middlemarch"},
-}
-
 func main() {
+	var store catalog.Store
+
 	http.HandleFunc("GET /hello", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Hello from Bookstore API\n"))
 	})
 	http.HandleFunc("GET /api/books", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(books)
+		json.NewEncoder(w).Encode(store.All())
 	})
 
 	addr := "127.0.0.1:52710"
