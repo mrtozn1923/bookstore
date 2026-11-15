@@ -1,0 +1,7 @@
+@model IReadOnlyList<string>
+<nav>
+    @foreach (string category in Model)
+    {
+        <a asp-controller="Books" asp-action="Index" asp-route-category="@category">@category</a>
+    }
+</nav>

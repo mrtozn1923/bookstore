@@ -1,0 +1,7 @@
+@model int
+@{
+    ViewData["Title"] = $"Error {Model}";
+    Layout = "_ErrorLayout";
+}
+<h1>Error @Model</h1>
+<p>The request could not be completed.</p>

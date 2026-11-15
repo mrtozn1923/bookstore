@@ -1,0 +1,15 @@
+@* No view components, no services, no TempData: this layout must render even when the app is broken. *@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>@ViewData["Title"] - Bookstore</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header><a class="brand" href="/">Bookstore</a></header>
+    <main>@RenderBody()</main>
+</body>
+</html>

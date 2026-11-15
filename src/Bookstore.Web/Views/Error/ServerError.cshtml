@@ -1,0 +1,8 @@
+@model ServerErrorViewModel
+@{
+    ViewData["Title"] = "Something went wrong";
+    Layout = "_ErrorLayout";
+}
+<h1>@(Model.StatusCode == 503 ? "We'll be right back" : "Something went wrong")</h1>
+<p>@(Model.UserMessage ?? "Our team has been notified. Please try again in a few minutes.")</p>
+<p>Error code: <code>@Model.ErrorCode</code></p>

@@ -1,0 +1,18 @@
+@model NotFoundViewModel
+@{
+    ViewData["Title"] = "Page not found";
+    Layout = "_ErrorLayout";
+}
+<h1>Page not found</h1>
+<p>There is no page at <code>@Model.OriginalPath</code>.</p>
+@if (Model.Suggestions.Count > 0)
+{
+    <p>You might be looking for:</p>
+    <ul class="books">
+        @foreach (Book book in Model.Suggestions)
+        {
+            <li><a href="/books/@book.Id/@book.Slug">@book.Title</a></li>
+        }
+    </ul>
+}
+<p><a href="/books">Browse all books</a></p>

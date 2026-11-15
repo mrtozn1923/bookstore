@@ -1,0 +1,11 @@
+@model IReadOnlyList<Book>
+@{
+    ViewData["Title"] = "Books";
+}
+<h1>Books</h1>
+<ul class="books">
+    @foreach (Book book in Model)
+    {
+        <li><a asp-action="Details" asp-route-id="@book.Id" asp-route-slug="@book.Slug">@book.Title</a> · @book.Author</li>
+    }
+</ul>

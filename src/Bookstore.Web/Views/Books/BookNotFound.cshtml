@@ -1,0 +1,13 @@
+@model IReadOnlyList<Book>
+@{
+    ViewData["Title"] = "Book not found";
+    Layout = "_ErrorLayout";
+}
+<h1>We couldn't find that book</h1>
+<p>It may have been removed from the catalog. Maybe one of these?</p>
+<ul class="books">
+    @foreach (Book book in Model)
+    {
+        <li><a asp-action="Details" asp-route-id="@book.Id" asp-route-slug="@book.Slug">@book.Title</a> · @book.Author</li>
+    }
+</ul>

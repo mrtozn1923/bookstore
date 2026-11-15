@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Bookstore</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <a class="brand" asp-controller="Books" asp-action="Index">Bookstore</a>
+        @await Component.InvokeAsync("CategoryMenu")
+    </header>
+    <main>
+        @if (TempData["Flash"] is string flash)
+        {
+            <p class="flash" role="status">@flash</p>
+        }
+        @RenderBody()
+    </main>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
