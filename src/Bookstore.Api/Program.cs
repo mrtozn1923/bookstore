@@ -1,4 +1,5 @@
 using Bookstore.Api.Ai;
+using Bookstore.Api.Assistant;
 using Bookstore.Api.Catalog;
 using Bookstore.Api.Returns;
 using Bookstore.Api.Support;
@@ -13,12 +14,14 @@ builder.Services.AddSingleton<IConversationStore, InMemoryConversationStore>();
 builder.Services.AddScoped<SupportChatService>();
 builder.Services.AddScoped<InvoiceAnalyzer>();
 builder.Services.AddScoped<ReturnClassifier>();
+builder.Services.AddScoped<ShoppingAssistant>();
 
 WebApplication app = builder.Build();
 
 app.UseExceptionHandler();
 app.MapCatalogEndpoints();
 app.MapSupportEndpoints();
+app.MapAssistantEndpoints();
 
 if (app.Environment.IsDevelopment())
 {
