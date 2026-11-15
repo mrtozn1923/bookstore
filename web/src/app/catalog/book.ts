@@ -10,8 +10,36 @@ export interface Book {
 }
 
 export const BOOKS: readonly Book[] = [
-  { isbn: '9780441172719', title: 'Dune', author: 'Frank Herbert', price: 349, format: 'Paperback', stock: 12 },
-  { isbn: '9780547928227', title: 'The Hobbit', author: 'J. R. R. Tolkien', price: 289, format: 'Hardcover', stock: 3 },
-  { isbn: '9780141439587', title: 'Emma', author: 'Jane Austen', price: 189, format: 'Paperback', stock: 0 },
-  { isbn: '9780141439549', title: 'Middlemarch', author: 'George Eliot', price: 239, format: 'E-book', stock: 99 },
+  {
+    isbn: '9780441172719',
+    title: 'Dune',
+    author: 'Frank Herbert',
+    price: 349,
+    format: 'Paperback',
+    stock: 12,
+  },
+  {
+    isbn: '9780547928227',
+    title: 'The Hobbit',
+    author: 'J. R. R. Tolkien',
+    price: 289,
+    format: 'Hardcover',
+    stock: 3,
+  },
+  {
+    isbn: '9780141439587',
+    title: 'Emma',
+    author: 'Jane Austen',
+    price: 189,
+    format: 'Paperback',
+    stock: 0,
+  },
+  {
+    isbn: '9780141439549',
+    title: 'Middlemarch',
+    author: 'George Eliot',
+    price: 239,
+    format: 'E-book',
+    stock: 99,
+  },
 ];

@@ -1,0 +1,38 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-brand-600: #3766d4;
+  --color-brand-700: #2a53b3;
+
+  --font-display: Georgia, Cambria, serif;
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+@utility btn-primary {
+  @apply rounded-sm bg-brand-600 px-4 py-2 font-medium text-white shadow-sm hover:bg-brand-700 focus:outline-hidden focus:ring-3 focus:ring-blue-500/50;
+}
+
+/* v4 Preflight gives buttons cursor: default; the back office keeps the v3 behavior */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}

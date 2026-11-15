@@ -1,8 +1,30 @@
-<article class="flex h-full flex-col gap-2 rounded-card border border-slate-200 bg-white p-4 shadow-sm" [class.opacity-60]="soldOut()">
-  <span class="stock-badge w-fit rounded-full px-2 py-0.5 text-xs font-medium" [class]="stockClasses()">
-    {{ stock() === 'sold-out' ? 'Sold out' : stock() === 'low' ? 'Only ' + book().stock + ' left' : 'In stock' }}
+<article
+  class="flex h-full flex-col gap-2 rounded-card border border-slate-200 bg-white p-4 shadow-sm"
+  [class.opacity-60]="soldOut()"
+>
+  <span
+    class="stock-badge w-fit rounded-full px-2 py-0.5 text-xs font-medium"
+    [class]="stockClasses()"
+  >
+    {{
+      stock() === 'sold-out'
+        ? 'Sold out'
+        : stock() === 'low'
+          ? 'Only ' + book().stock + ' left'
+          : 'In stock'
+    }}
   </span>
   <h3 class="font-display text-lg font-semibold text-ink-900">{{ book().title }}</h3>
   <p class="text-sm text-slate-600">{{ book().author }} · {{ book().format }}</p>
-  <p class="price mt-auto">{{ book().price | currency: 'TRY' : 'symbol-narrow' : '1.2-2' : 'en' }}</p>
+  <div class="mt-auto flex items-center justify-between">
+    <p class="price">{{ book().price | currency: 'TRY' : 'symbol-narrow' : '1.2-2' : 'en' }}</p>
+    <button
+      appButton
+      size="sm"
+      [intent]="soldOut() ? 'secondary' : 'primary'"
+      [disabled]="soldOut()"
+    >
+      {{ soldOut() ? 'Notify me' : 'Add to cart' }}
+    </button>
+  </div>
 </article>

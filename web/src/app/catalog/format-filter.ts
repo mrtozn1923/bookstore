@@ -6,12 +6,22 @@ import { BookFormat } from './book';
   selector: 'app-format-filter',
   imports: [Listbox, Option],
   template: `
-    <div ngListbox multi selectionMode="explicit" orientation="horizontal" [(value)]="selected" aria-label="Format" class="flex gap-2">
+    <div
+      ngListbox
+      multi
+      selectionMode="explicit"
+      orientation="horizontal"
+      [(value)]="selected"
+      aria-label="Format"
+      class="flex gap-2"
+    >
       @for (format of formats; track format) {
-        <div ngOption [value]="format" [label]="format"
-             class="cursor-pointer rounded-full border border-slate-300 px-3 py-1 text-sm
-                    aria-selected:border-brand-600 aria-selected:bg-brand-600 aria-selected:text-white
-                    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500">
+        <div
+          ngOption
+          [value]="format"
+          [label]="format"
+          class="cursor-pointer rounded-full border border-slate-300 px-3 py-1 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 aria-selected:border-brand-600 aria-selected:bg-brand-600 aria-selected:text-white"
+        >
           {{ format }}
         </div>
       }

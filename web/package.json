@@ -20,6 +20,7 @@
     "@angular/platform-browser": "^22.2.0",
     "@angular/router": "^22.2.0",
     "rxjs": "~7.8.0",
+    "tailwind-merge": "^3.7.0",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
@@ -30,6 +31,7 @@
     "jsdom": "^30.0.0",
     "postcss": "^8.5.3",
     "prettier": "^3.8.1",
+    "prettier-plugin-tailwindcss": "^0.8.1",
     "tailwindcss": "^4.1.12",
     "typescript": "~6.0.2",
     "vitest": "^5.0.0"

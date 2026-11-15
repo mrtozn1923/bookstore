@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="conflict.out.css">
+</head>
+<body>
+    <!-- the button's own classes first, the caller's override last -->
+    <button id="a" class="bg-brand-600 px-6 py-2 bg-red-600 px-4">Remove</button>
+    <!-- the same classes, the other way round -->
+    <button id="b" class="bg-red-600 px-4 bg-brand-600 px-6 py-2">Remove</button>
+    <div id="c" class="grid flex"></div>
+</body>
+</html>

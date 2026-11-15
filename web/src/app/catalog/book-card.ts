@@ -1,5 +1,6 @@
 import { Component, computed, input } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
+import { Button } from '../ui/button';
 import { Book } from './book';
 
 type StockState = 'in-stock' | 'low' | 'sold-out';
@@ -13,7 +14,7 @@ const STOCK_CLASSES: Record<StockState, string> = {
 
 @Component({
   selector: 'app-book-card',
-  imports: [CurrencyPipe],
+  imports: [CurrencyPipe, Button],
   templateUrl: './book-card.html',
   styleUrl: './book-card.css',
 })

@@ -1,0 +1,8 @@
+@import "tailwindcss" source(none);
+@source "./conflict.html";
+
+@theme {
+    --color-brand-600: oklch(0.54 0.178 264);
+    --color-brand-700: oklch(0.47 0.16 264);
+    --text-hero: 2.75rem;
+}
