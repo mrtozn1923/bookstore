@@ -1,0 +1,12 @@
+// Shipping rates for the Bookstore checkout (JSON5)
+{
+  currency: 'TRY',
+  freeShippingFrom: 500.,
+  carrierCode: 0x1F,
+  rates: [
+    { region: 'domestic', price: +49.90 },
+    { region: 'international', price: 349.90, },
+  ],
+  note: 'Prices include VAT; \
+updated weekly',
+}

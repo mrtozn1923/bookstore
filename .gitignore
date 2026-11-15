@@ -1,23 +1,10 @@
-# .NET
 bin/
 obj/
-*.user
-*.suo
-.vs/
-TestResults/
-*.trx
-BenchmarkDotNet.Artifacts/
-# Node / Angular
 node_modules/
-dist/
-.angular/
-coverage/
-# Python / misc
-__pycache__/
 .venv/
-.DS_Store
-.idea/
-*.log
-# local secrets
-.env
-appsettings.*.local.json
+__pycache__/
+# files the examples generate
+labs/01-json/orders.json
+labs/01-json/orders.jsonl
+labs/01-json/broken.json*
+labs/01-json/stock-bom.json
