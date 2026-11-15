@@ -1,0 +1,19 @@
+# Replaces the classic task group "Bookstore - Smoke test": same steps, parameters instead of $(variables).
+parameters:
+  - name: baseUrl
+    type: string
+  - name: attempts
+    type: number
+    default: 10
+  - name: delaySeconds
+    type: number
+    default: 15
+
+steps:
+  - script: bash scripts/smoke-test.sh ${{ parameters.baseUrl }}
+    displayName: Smoke test
+    target:
+      settableVariables: none
+    env:
+      SMOKE_ATTEMPTS: ${{ parameters.attempts }}
+      SMOKE_DELAY_SECONDS: ${{ parameters.delaySeconds }}

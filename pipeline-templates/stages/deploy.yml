@@ -9,13 +9,17 @@ parameters:
       - staging
       - production
   - name: dependsOn
-    type: string
+    type: object
   - name: mainOnly
     type: boolean
     default: false
   - name: useSlot
     type: boolean
     default: false
+  # 'current' = the release artifact of this run; otherwise the alias of a pipeline resource (redeploy).
+  - name: artifactPipeline
+    type: string
+    default: current
 
 stages:
   - stage: Deploy_${{ parameters.environment }}
@@ -29,6 +33,16 @@ stages:
     pool:
       vmImage: ubuntu-24.04
     variables:
+      - ${{ if eq(parameters.artifactPipeline, 'current') }}:
+          - name: releaseDir
+            value: $(Pipeline.Workspace)/release
+          - name: expectedCommit
+            value: $(Build.SourceVersion)
+      - ${{ else }}:
+          - name: releaseDir
+            value: $(Pipeline.Workspace)/${{ parameters.artifactPipeline }}/release
+          - name: expectedCommit
+            value: $(resources.pipeline.${{ parameters.artifactPipeline }}.sourceCommit)
       # apiAppName, resourceGroup, webStorageAccount
       - group: bookstore-${{ parameters.environment }}
       # Linked to Azure Key Vault: BookstoreDbMigrations
@@ -42,24 +56,24 @@ stages:
             deploy:
               steps:
                 # Only the release artifact; api, web and migrations are already inside it.
-                - download: current
+                - download: ${{ parameters.artifactPipeline }}
                   artifact: release
 
                 # Deployment jobs do not check out the repository; the scripts live there.
                 - checkout: self
                   fetchDepth: 1
 
-                - script: bash scripts/verify-release.sh $(Pipeline.Workspace)/release
+                - script: bash scripts/verify-release.sh $(releaseDir)
                   displayName: Verify release artifact
                   target:
                     settableVariables: none
                   env:
-                    EXPECTED_COMMIT: $(Build.SourceVersion)
+                    EXPECTED_COMMIT: $(expectedCommit)
 
                 # Migrations run before the new code goes live, so they must stay backward compatible.
                 - script: |
-                    chmod +x $(Pipeline.Workspace)/release/migrations/efbundle
-                    $(Pipeline.Workspace)/release/migrations/efbundle
+                    chmod +x $(releaseDir)/migrations/efbundle
+                    $(releaseDir)/migrations/efbundle
                   displayName: Apply EF Core migrations
                   target:
                     settableVariables: none
@@ -77,13 +91,12 @@ stages:
                       deployToSlotOrASE: true
                       resourceGroupName: $(resourceGroup)
                       slotName: staging
-                    package: $(Pipeline.Workspace)/release/api
+                    package: $(releaseDir)/api
                     runtimeStack: DOTNETCORE|10.0
 
-                - script: bash scripts/smoke-test.sh $(deployApi.AppServiceApplicationUrl)
-                  displayName: Smoke test
-                  target:
-                    settableVariables: none
+                - template: ../steps/smoke-test.yml
+                  parameters:
+                    baseUrl: $(deployApi.AppServiceApplicationUrl)
 
                 - ${{ if eq(parameters.useSlot, true) }}:
                     - task: AzureAppServiceManage@0
@@ -105,4 +118,4 @@ stages:
                     inlineScript: >-
                       az storage blob upload-batch --auth-mode login --overwrite true
                       --account-name $(webStorageAccount) --destination '$web'
-                      --source $(Pipeline.Workspace)/release/web
+                      --source $(releaseDir)/web

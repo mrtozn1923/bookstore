@@ -1,0 +1,21 @@
+# Required skeleton for redeploying an earlier CI run (used with "extends").
+# The classic counterpart is "Deploy" on an old release: same artifact, one chosen environment, same checks.
+parameters:
+  - name: environment
+    type: string
+    values:
+      - dev
+      - staging
+      - production
+  - name: artifactPipeline
+    type: string
+    default: ci
+
+stages:
+  - template: ../stages/deploy.yml
+    parameters:
+      environment: ${{ parameters.environment }}
+      dependsOn: []
+      mainOnly: ${{ eq(parameters.environment, 'production') }}
+      useSlot: ${{ eq(parameters.environment, 'production') }}
+      artifactPipeline: ${{ parameters.artifactPipeline }}

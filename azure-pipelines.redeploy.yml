@@ -1,0 +1,30 @@
+# Redeploys the release artifact of an earlier bookstore-ci run to one environment.
+# Pick the run under "Resources" when you start this pipeline; checks of the environment still apply.
+trigger: none
+pr: none
+
+parameters:
+  - name: environment
+    displayName: Environment
+    type: string
+    default: staging
+    values:
+      - dev
+      - staging
+      - production
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: Bookstore/pipeline-templates
+      ref: refs/tags/v1.6.0
+  pipelines:
+    - pipeline: ci
+      source: bookstore-ci
+      trigger: none
+
+extends:
+  template: pipelines/bookstore-redeploy.yml@templates
+  parameters:
+    environment: ${{ parameters.environment }}
