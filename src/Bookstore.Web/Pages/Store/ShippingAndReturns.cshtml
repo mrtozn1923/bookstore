@@ -1,0 +1,21 @@
+@page "/shipping-and-returns"
+@using Bookstore.Web.Store
+@{
+    string lang = HttpContext.Request.Path.StartsWithSegments("/en") ? "en" : "tr";
+    StorePolicy policy = StorePolicy.Bookstore;
+    ViewData["Lang"] = lang;
+    ViewData["Title"] = StoreTexts.Title(lang);
+    ViewData["JsonLd"] = new SiteGraph("https://bookstore.example").StorePolicyPage(policy);
+}
+<h1>@StoreTexts.Title(lang)</h1>
+<section class="shipping">
+    <p class="shipping-fee">@StoreTexts.ShippingFee(policy, lang)</p>
+    <p class="delivery-time">@StoreTexts.DeliveryTime(policy, lang)</p>
+</section>
+<section class="returns">
+    <p class="return-window">@StoreTexts.ReturnWindow(policy, lang)</p>
+</section>
+<section class="contact">
+    <p class="contact-email"><a href="mailto:support@example.com">support@example.com</a></p>
+    <p class="address">Istanbul, Türkiye</p>
+</section>

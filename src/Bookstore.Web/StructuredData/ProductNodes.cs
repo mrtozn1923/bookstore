@@ -24,7 +24,9 @@ public sealed record OfferNode(
     [property: JsonPropertyName("seller")] IdRef Seller,
     [property: JsonPropertyName("priceSpecification")] UnitPriceSpecificationNode? PriceSpecification = null,
     [property: JsonPropertyName("validFrom")] DateTimeOffset? ValidFrom = null,
-    [property: JsonPropertyName("validThrough")] DateTimeOffset? ValidThrough = null)
+    [property: JsonPropertyName("validThrough")] DateTimeOffset? ValidThrough = null,
+    [property: JsonPropertyName("hasMerchantReturnPolicy")] IdRef? HasMerchantReturnPolicy = null,
+    [property: JsonPropertyName("shippingDetails")] OfferShippingDetailsNode? ShippingDetails = null)
 {
     [JsonPropertyName("@type"), JsonPropertyOrder(-1)]
     public string Type => "Offer";

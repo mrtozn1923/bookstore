@@ -1,6 +1,7 @@
 using Bookstore.Web.Catalog;
 using Bookstore.Web.Content;
 using Bookstore.Web.Reviews;
+using Bookstore.Web.Store;
 
 namespace Bookstore.Web.StructuredData;
 
@@ -15,9 +16,55 @@ public sealed class SiteGraph(string baseUrl)
 
     public string PageUrl(string lang, string path) => $"{baseUrl}{Prefix(lang)}{path}";
 
-    public OrganizationNode Organization() =>
+    public string ReturnPolicyId => $"{baseUrl}/shipping-and-returns#return-policy";
+    public string ShippingServiceId => $"{baseUrl}/shipping-and-returns#standard-shipping";
+
+    // Every page gets the same short store node; details live on the policy page only
+    public OnlineStoreNode Organization() =>
         new(OrganizationId, "Bookstore", $"{baseUrl}/", $"{baseUrl}/images/logo-512.png",
             ["https://github.com/bookstore-example"]);
+
+    public OnlineStoreNode Store(StorePolicy policy)
+    {
+        string[] weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+        var transit = new ServicePeriodNode(new DaysNode(policy.TransitDaysMin, policy.TransitDaysMax), weekdays);
+        var region = new DefinedRegionNode(policy.Country);
+
+        var returns = new MerchantReturnPolicyNode(
+            Id: ReturnPolicyId,
+            ApplicableCountry: [policy.Country],
+            ReturnPolicyCountry: policy.Country,
+            ReturnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+            MerchantReturnDays: policy.ReturnDays,
+            ReturnMethod: "https://schema.org/ReturnByMail",
+            ReturnFees: "https://schema.org/FreeReturn",
+            RefundType: "https://schema.org/FullRefund");
+
+        var shipping = new ShippingServiceNode(
+            Id: ShippingServiceId,
+            Name: "Standard shipping",
+            FulfillmentType: "https://schema.org/FulfillmentTypeDelivery",
+            HandlingTime: new ServicePeriodNode(new DaysNode(0, policy.HandlingDaysMax), weekdays,
+                CutoffTime: policy.CutoffTimeWithOffset),
+            ShippingConditions:
+            [
+                // below the threshold: fixed fee; maxValue is just under the free-shipping amount
+                new(region, new MonetaryAmountNode(policy.Currency, MaxValue: policy.FreeShippingFrom - 0.01m),
+                    new MonetaryAmountNode(policy.Currency, Value: policy.ShippingFee), transit),
+                new(region, new MonetaryAmountNode(policy.Currency, MinValue: policy.FreeShippingFrom),
+                    new MonetaryAmountNode(policy.Currency, Value: 0m), transit),
+            ]);
+
+        return Organization() with
+        {
+            ContactPoint = new ContactPointNode("customer service", "support@example.com"),
+            Address = new PostalAddressNode("Istanbul", policy.Country),
+            HasMerchantReturnPolicy = [returns],
+            HasShippingService = [shipping],
+        };
+    }
+
+    public JsonLdDocument StorePolicyPage(StorePolicy policy) => new([Store(policy), WebSite()]);
 
     public WebSiteNode WebSite() =>
         new(WebSiteId, "Bookstore", $"{baseUrl}/", ["tr", "en"], new IdRef(OrganizationId));
@@ -32,7 +79,7 @@ public sealed class SiteGraph(string baseUrl)
     {
         string url = PageUrl(lang, $"/authors/{author.Slug}");
         return new([new ProfilePageNode($"{url}#profilepage", url, lang, new IdRef(WebSiteId), new IdRef(PersonId(author.Slug))),
-                    Person(author, lang)]);
+                    Person(author, lang), Organization(), WebSite()]);
     }
 
     public JsonLdDocument Post(Post post, Author author, string lang)
@@ -83,7 +130,10 @@ public sealed class SiteGraph(string baseUrl)
                 ? new UnitPriceSpecificationNode("https://schema.org/StrikethroughPrice", regular, quote.Currency)
                 : null,
             ValidFrom: quote.SaleStartsAt,
-            ValidThrough: quote.SaleEndsAt);
+            ValidThrough: quote.SaleEndsAt,
+            // the store-wide policies apply; the offer only names them
+            HasMerchantReturnPolicy: new IdRef(ReturnPolicyId),
+            ShippingDetails: new OfferShippingDetailsNode(new IdRef(ShippingServiceId)));
 
         var product = new BookProductNode(
             Id: ProductId(book),

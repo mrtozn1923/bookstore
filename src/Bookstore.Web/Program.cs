@@ -11,6 +11,7 @@ builder.Services.AddRazorPages(options =>
     options.Conventions.AddPageRoute("/Blog/Post", "en/blog/{slug}");
     options.Conventions.AddPageRoute("/Authors/Profile", "en/authors/{slug}");
     options.Conventions.AddPageRoute("/Books/Detail", "en/books/{slug}");
+    options.Conventions.AddPageRoute("/Store/ShippingAndReturns", "en/shipping-and-returns");
 });
 builder.Services.AddSingleton<PostCatalog>();
 builder.Services.AddSingleton<BookCatalog>();
