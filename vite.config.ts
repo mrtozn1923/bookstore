@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import babel from '@rolldown/plugin-babel'
 import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
@@ -20,5 +21,10 @@ export default defineConfig(({ mode }) => ({
       // /api/books -> http://localhost:5080/api/books, same origin for the browser
       '/api': { target: apiTarget, changeOrigin: true },
     },
+  },
+  test: {
+    // A DOM in Node: jsdom implements document, window and localStorage
+    environment: 'jsdom',
+    setupFiles: ['./src/test/setup.ts'],
   },
 }))

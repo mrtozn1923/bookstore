@@ -1,6 +1,6 @@
-import { createBrowserRouter } from 'react-router';
+import { createBrowserRouter, type RouteObject } from 'react-router';
 import { NotFoundPage } from '@/app/NotFoundPage';
-import { RootLayout } from '@/app/RootLayout';
+import { InitialLoading, RootLayout } from '@/app/RootLayout';
 import { RouteErrorPage } from '@/app/RouteErrorPage';
 import { requireUser } from '@/features/auth/requireUser';
 import { SignInPage } from '@/features/auth/SignInPage';
@@ -11,10 +11,12 @@ import { CatalogPage } from '@/features/catalog/CatalogPage';
 import { orderLoader } from '@/features/orders/orderLoader';
 import { OrderPage } from '@/features/orders/OrderPage';
 
-export const router = createBrowserRouter([
+// Exported on their own so tests can mount the same tree in a memory router
+export const routes: RouteObject[] = [
   {
     path: '/',
     Component: RootLayout,
+    HydrateFallback: InitialLoading,
     ErrorBoundary: RouteErrorPage,
     children: [
       { index: true, Component: CatalogPage },
@@ -41,4 +43,6 @@ export const router = createBrowserRouter([
       { path: '*', Component: NotFoundPage },
     ],
   },
-]);
+];
+
+export const router = createBrowserRouter(routes);

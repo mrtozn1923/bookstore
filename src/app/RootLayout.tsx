@@ -26,3 +26,8 @@ export function RootLayout() {
     </>
   );
 }
+
+// Shown instead of the whole app while the first route's loaders run (a cold start on /checkout or /books/:isbn)
+export function InitialLoading() {
+  return <p className="progress" role="status">Loading page…</p>;
+}
