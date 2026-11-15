@@ -4,4 +4,8 @@
     <InternalsVisibleTo Include="Algorithms.Tests" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.IO.Hashing" Version="10.0.15" />
+  </ItemGroup>
+
 </Project>

@@ -22,5 +22,8 @@ switch (demo)
     case "shifts": IntervalDemos.Shifts(); break;
     case "lowest-price": IntervalDemos.LowestPrice(); break;
     case "timezones": IntervalDemos.TimeZones(); break;
+    case "bloom": ProbabilisticDemos.Bloom(); break;
+    case "top-viewed": ProbabilisticDemos.TopViewed(); break;
+    case "unique-visitors": ProbabilisticDemos.UniqueVisitors(); break;
     default: Console.WriteLine("usage: dotnet run --project src/Algorithms.Demos -- <demo>"); break;
 }
