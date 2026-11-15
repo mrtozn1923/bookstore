@@ -1,0 +1,19 @@
+{
+  "description": "Bookstore hooks for Codex. Project hooks load only in a trusted project, and each one must be reviewed with /hooks before it runs.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "^apply_patch$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pwsh -NoProfile -File \"$(git rev-parse --show-toplevel)/.codex/hooks/protect-migrations.ps1\"",
+            "commandWindows": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"& (Join-Path (git rev-parse --show-toplevel) '.codex/hooks/protect-migrations.ps1')\"",
+            "timeout": 30,
+            "statusMessage": "Checking migration files"
+          }
+        ]
+      }
+    ]
+  }
+}

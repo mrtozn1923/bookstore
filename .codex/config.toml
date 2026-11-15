@@ -12,6 +12,10 @@ network_access = true
 enabled = true
 domains = { "**.nuget.org" = "allow", "registry.npmjs.org" = "allow" }
 
+# Keep parallel subagents to a number the laptop and the usage limit can carry.
+[agents]
+max_concurrent_threads_per_session = 4
+
 [mcp_servers.playwright]
 command = "npx"
 args = ["-y", "@playwright/mcp@0.0.85"]
