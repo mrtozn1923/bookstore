@@ -1,34 +1,77 @@
-# Bookstore CI: restore, build and test on every push to main
+# Bookstore CI: one version per run, build, and integration tests
+parameters:
+  - name: buildConfiguration
+    displayName: Build configuration
+    type: string
+    default: Release
+    values:
+      - Release
+      - Debug
+  - name: runIntegrationTests
+    displayName: Run integration tests
+    type: boolean
+    default: true
+
 trigger:
+  batch: true
   branches:
     include:
       - main
+      - release/*
+  paths:
+    exclude:
+      - web
+      - README.md
+
+schedules:
+  - cron: "0 2 * * 1-5"
+    displayName: Nightly integration run
+    branches:
+      include:
+        - main
+    always: false
 
 pool:
   vmImage: ubuntu-24.04
 
 variables:
-  buildConfiguration: Release
+  buildConfiguration: ${{ parameters.buildConfiguration }}
 
-steps:
-  - checkout: self
+jobs:
+  - job: Version
+    displayName: Compute version
+    steps:
+      - checkout: self
+        fetchDepth: 1
+      - script: bash scripts/set-version.sh
+        name: setVersion
+        displayName: Compute app version
 
-  - task: UseDotNet@2
-    displayName: Install .NET SDK from global.json
-    inputs:
-      packageType: sdk
-      useGlobalJson: true
+  - job: Api
+    displayName: Build and test API
+    dependsOn: Version
+    variables:
+      appVersion: $[ dependencies.Version.outputs['setVersion.appVersion'] ]
+    steps:
+      - checkout: self
 
-  - script: dotnet restore Bookstore.slnx
-    displayName: Restore
+      - task: UseDotNet@2
+        displayName: Install .NET SDK from global.json
+        inputs:
+          packageType: sdk
+          useGlobalJson: true
 
-  - script: dotnet build Bookstore.slnx --no-restore -c $(buildConfiguration)
-    displayName: Build
+      - script: dotnet restore Bookstore.slnx
+        displayName: Restore
 
-  - script: bash scripts/start-test-sql.sh
-    displayName: Start SQL Server for integration tests
+      - script: dotnet build Bookstore.slnx --no-restore -c $(buildConfiguration) -p:Version=$(appVersion)
+        displayName: Build $(appVersion)
 
-  - script: dotnet test --solution Bookstore.slnx --no-build -c $(buildConfiguration)
-    displayName: Test
-    env:
-      ConnectionStrings__BookstoreDb: $(TestDbConnection)
+      - ${{ if eq(parameters.runIntegrationTests, true) }}:
+          - script: bash scripts/start-test-sql.sh
+            displayName: Start SQL Server for integration tests
+
+          - script: dotnet test --solution Bookstore.slnx --no-build -c $(buildConfiguration)
+            displayName: Test
+            env:
+              ConnectionStrings__BookstoreDb: $(TestDbConnection)
