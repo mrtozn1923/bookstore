@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { BookCard, type BookSummary } from './BookCard.tsx';
+import { CartSummary } from '@/features/cart/CartSummary';
+import { BookCard } from '@/features/catalog/BookCard';
+import type { BookSummary } from '@/features/catalog/types';
 
 const dune: BookSummary = {
   isbn: '9780441172719',
@@ -11,13 +13,12 @@ const dune: BookSummary = {
 };
 
 export default function App() {
-  // State: the only value here that changes over time
   const [quantity, setQuantity] = useState(0);
 
   return (
     <main>
       <h1>Bookstore</h1>
-      <p className="muted">Cart: {quantity} item(s)</p>
+      <CartSummary itemCount={quantity} />
       <ul className="book-grid">
         <BookCard book={dune} quantity={quantity} onAdd={() => setQuantity((q) => q + 1)} />
       </ul>

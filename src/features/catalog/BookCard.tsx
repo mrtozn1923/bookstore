@@ -1,12 +1,4 @@
-// Same shape as BookSummary returned by Bookstore.Api (GET /api/books).
-export type BookSummary = {
-  isbn: string;
-  title: string;
-  author: string;
-  category: string;
-  price: number;
-  publishedYear: number;
-};
+import type { BookSummary } from '@/features/catalog/types';
 
 type BookCardProps = {
   book: BookSummary;
