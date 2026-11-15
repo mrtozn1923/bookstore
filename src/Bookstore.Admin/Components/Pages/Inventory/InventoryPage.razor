@@ -1,0 +1,89 @@
+@page "/inventory"
+@rendermode InteractiveServer
+@implements IDisposable
+@inject BookstoreApiClient Api
+@inject ILogger<InventoryPage> Logger
+
+<PageTitle>Inventory</PageTitle>
+
+<h1>Inventory</h1>
+
+<p>
+    <label>Low-stock threshold
+        <input type="number" class="form-control form-control-sm d-inline w-auto"
+               @bind:get="threshold" @bind:set="SetThreshold" @bind:event="oninput" />
+    </label>
+    <label class="ms-3">
+        <input type="checkbox" @bind="onlyLow" @bind:after="LoadAsync" /> Only low stock
+    </label>
+</p>
+
+@if (stock is null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <BookList Items="stock" LowStockThreshold="threshold" OnRestock="RestockAsync" />
+    <p class="text-muted">Refreshed at @refreshedAt.ToString("HH:mm:ss") UTC</p>
+}
+
+@code {
+    private IReadOnlyList<StockView>? stock;
+    private int threshold = 5;
+    private bool onlyLow;
+    private DateTime refreshedAt;
+    private System.Timers.Timer? timer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Logger.LogInformation("OnInitializedAsync (renderer: {Renderer}, interactive: {Interactive})",
+            RendererInfo.Name, RendererInfo.IsInteractive);
+        await LoadAsync();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        Logger.LogInformation("OnAfterRender(firstRender: true): starting the refresh timer");
+        timer = new System.Timers.Timer(TimeSpan.FromSeconds(30));
+        timer.Elapsed += OnTimerElapsed;
+        timer.Start();
+    }
+
+    private async Task LoadAsync()
+    {
+        IReadOnlyList<StockView> all = await Api.GetStockAsync();
+        stock = onlyLow ? [.. all.Where(s => s.Available <= threshold)] : all;
+        refreshedAt = DateTime.UtcNow;
+    }
+
+    private void SetThreshold(int value) => threshold = Math.Clamp(value, 0, 50);
+
+    private async Task RestockAsync(RestockRequest request)
+    {
+        StockView current = stock!.Single(s => s.Isbn == request.Isbn);
+        await Api.SetQuantityOnHandAsync(request.Isbn, current.OnHand + request.Amount);
+        await LoadAsync();
+        Logger.LogInformation("Restocked {Isbn} by {Amount}", request.Isbn, request.Amount);
+    }
+
+    // Runs on a thread-pool thread, outside Blazor's event handling: switch to the renderer with InvokeAsync.
+    private void OnTimerElapsed(object? sender, System.Timers.ElapsedEventArgs e) =>
+        _ = InvokeAsync(async () =>
+        {
+            await LoadAsync();
+            StateHasChanged();
+            Logger.LogInformation("Timer refresh rendered");
+        });
+
+    public void Dispose()
+    {
+        Logger.LogInformation("Dispose: stopping the refresh timer");
+        timer?.Dispose();
+    }
+}

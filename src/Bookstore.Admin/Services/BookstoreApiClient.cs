@@ -16,6 +16,16 @@ public sealed class BookstoreApiClient(HttpClient http)
     public Task<OrderView?> GetOrderAsync(int orderId, CancellationToken ct = default) =>
         GetOrNullAsync<OrderView>($"api/orders/{orderId}", ct);
 
+    public async Task<IReadOnlyList<StockView>> GetStockAsync(CancellationToken ct = default) =>
+        await http.GetFromJsonAsync<List<StockView>>("api/inventory", ct) ?? [];
+
+    public async Task SetQuantityOnHandAsync(string isbn, int quantityOnHand, CancellationToken ct = default)
+    {
+        using HttpResponseMessage response = await http.PutAsJsonAsync(
+            $"api/inventory/{Uri.EscapeDataString(isbn)}", new SetStockRequest(quantityOnHand), ct);
+        response.EnsureSuccessStatusCode();
+    }
+
     private async Task<T?> GetOrNullAsync<T>(string uri, CancellationToken ct) where T : class
     {
         using HttpResponseMessage response = await http.GetAsync(uri, ct);

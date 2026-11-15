@@ -1,0 +1,33 @@
+<tr>
+    <td>@Item.Title <LowStockBadge Available="Item.Available" Threshold="LowStockThreshold" /></td>
+    <td class="text-end">@Item.OnHand</td>
+    <td class="text-end">@Item.Reserved</td>
+    <td class="text-end">@Item.Available</td>
+    <td>
+        <input type="number" min="1" max="500" class="form-control form-control-sm d-inline w-auto" @bind="amount" />
+        <button class="btn btn-sm btn-primary" disabled="@saving" @onclick="RestockClicked">
+            @(saving ? "Saving..." : "Restock")
+        </button>
+    </td>
+</tr>
+
+@code {
+    private int amount = 10;
+    private bool saving;
+
+    [Parameter, EditorRequired]
+    public StockView Item { get; set; } = null!;
+
+    [Parameter]
+    public int LowStockThreshold { get; set; }
+
+    [Parameter]
+    public EventCallback<RestockRequest> OnRestock { get; set; }
+
+    private async Task RestockClicked()
+    {
+        saving = true;
+        await OnRestock.InvokeAsync(new RestockRequest(Item.Isbn, amount));
+        saving = false;
+    }
+}

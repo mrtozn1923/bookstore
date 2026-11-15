@@ -1,0 +1,16 @@
+@if (Available == 0)
+{
+    <span class="badge bg-danger">Out of stock</span>
+}
+else if (Available <= Threshold)
+{
+    <span class="badge bg-warning text-dark">Low: @Available left</span>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public int Available { get; set; }
+
+    [Parameter]
+    public int Threshold { get; set; } = 5;
+}

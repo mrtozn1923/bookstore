@@ -41,5 +41,6 @@ if (app.Environment.IsDevelopment())
 
 app.MapCatalogEndpoints();
 app.MapOrderingEndpoints();
+app.MapInventoryEndpoints();
 
 app.Run();

@@ -1,0 +1,37 @@
+@inject ILogger<BookList> Logger
+
+<table class="table table-sm align-middle">
+    <thead>
+        <tr><th>Title</th><th class="text-end">On hand</th><th class="text-end">Reserved</th><th class="text-end">Available</th><th></th></tr>
+    </thead>
+    <tbody>
+        @foreach (StockView item in Items)
+        {
+            <BookRow Item="item" LowStockThreshold="LowStockThreshold" OnRestock="OnRestock" />
+        }
+    </tbody>
+</table>
+<p>@Items.Count(i => i.Available <= LowStockThreshold) of @Items.Count books are at or below the threshold.</p>
+
+@code {
+    [Parameter, EditorRequired]
+    public IReadOnlyList<StockView> Items { get; set; } = [];
+
+    [Parameter]
+    public int LowStockThreshold { get; set; }
+
+    [Parameter]
+    public EventCallback<RestockRequest> OnRestock { get; set; }
+
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        if (parameters.TryGetValue(nameof(LowStockThreshold), out int next) && next != LowStockThreshold)
+        {
+            Logger.LogInformation("SetParametersAsync: threshold {Old} -> {New}", LowStockThreshold, next);
+        }
+        return base.SetParametersAsync(parameters);
+    }
+
+    protected override void OnParametersSet() =>
+        Logger.LogInformation("OnParametersSet: {Count} items, threshold {Threshold}", Items.Count, LowStockThreshold);
+}
