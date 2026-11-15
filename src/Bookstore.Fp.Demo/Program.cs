@@ -23,5 +23,8 @@ switch (post)
     case "04-curry": Post04.Currying(); break;
     case "04-alloc": Post04.Allocations(); break;
     case "04-enum": Post04.MultipleEnumeration(); break;
+    case "05-flags": Post05.Flags(); break;
+    case "05-workflow": Post05.Workflow(); break;
+    case "05-json": Post05.Json(); break;
     default: Console.WriteLine("usage: dotnet run --project src/Bookstore.Fp.Demo -- <post-key>"); break;
 }
