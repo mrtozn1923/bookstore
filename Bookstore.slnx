@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/samples/">
+    <Project Path="samples/Bookstore.MailLab/Bookstore.MailLab.csproj" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/Bookstore.Api/Bookstore.Api.csproj" />
     <Project Path="src/Bookstore.Notifications/Bookstore.Notifications.csproj" />

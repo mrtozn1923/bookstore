@@ -2,7 +2,8 @@ namespace Bookstore.Notifications;
 
 public sealed record EmailAddress(string Address, string? DisplayName = null);
 
-public sealed record EmailAttachment(string FileName, string ContentType, ReadOnlyMemory<byte> Content);
+// ContentId set: an inline image referenced from the HTML body as cid:<ContentId>
+public sealed record EmailAttachment(string FileName, string ContentType, ReadOnlyMemory<byte> Content, string? ContentId = null);
 
 public sealed record EmailMessage
 {
