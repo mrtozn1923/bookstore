@@ -40,7 +40,13 @@ switch (command)
     case "skew":
         FeatureLab.Skew();
         break;
+    case "gd":
+        Regression.GradientDescent();
+        break;
+    case "compare":
+        Regression.Compare();
+        break;
     default:
-        Console.WriteLine("Commands: rules, explore, quality, clean, split, cv, complexity, first-model, pitfalls, features, inspect, skew");
+        Console.WriteLine("Commands: rules, explore, quality, clean, split, cv, complexity, first-model, pitfalls, features, inspect, skew, gd, compare");
         break;
 }
