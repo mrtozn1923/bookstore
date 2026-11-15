@@ -111,6 +111,8 @@ input, select {
 .checkout button[type="submit"] { margin-top: 1.4rem; }
 .error-summary { border: 3px solid #b91c1c; border-radius: 8px; padding: 0 1rem; margin-top: 1rem; }
 .error-summary h2 { font-size: 1.1rem; }
+/* Links on their own lines are not "inline" targets: give them 24px of height (WCAG 2.5.8) */
+.error-summary a { display: inline-block; min-height: 24px; padding: 0.2rem 0; }
 .filters-toggle { background: #ffffff; color: #1d4ed8; }
 
 /* Hidden on screen, still in the accessibility tree */
