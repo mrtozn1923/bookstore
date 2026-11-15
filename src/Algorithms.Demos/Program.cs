@@ -25,5 +25,10 @@ switch (demo)
     case "bloom": ProbabilisticDemos.Bloom(); break;
     case "top-viewed": ProbabilisticDemos.TopViewed(); break;
     case "unique-visitors": ProbabilisticDemos.UniqueVisitors(); break;
+    case "shuffle-bias": RandomnessDemos.ShuffleBias(); break;
+    case "reservoir": RandomnessDemos.Reservoir(); break;
+    case "book-of-the-day": RandomnessDemos.BookOfTheDay(); break;
+    case "rollout": RandomnessDemos.Rollouts(); break;
+    case "random-pitfalls": RandomnessDemos.Pitfalls(); break;
     default: Console.WriteLine("usage: dotnet run --project src/Algorithms.Demos -- <demo>"); break;
 }
