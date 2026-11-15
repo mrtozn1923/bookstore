@@ -1,0 +1,5 @@
+# Bookstore team filters (space key BOOK)
+my-stale-work: assignee = currentUser() AND statusCategory = "In Progress" AND updated <= "-5d" ORDER BY updated ASC
+bugs-without-epic: project = BOOK AND type = Bug AND "Epic Link" is EMPTY
+done-this-sprint: project = BOOK AND sprint = openSprints() AND status = Done
+review-queue: project = BOOK AND assignee in membersOf("bookstore-developers") AND status = "In Review" AND updated < -2d ORDER BY updated ASC
