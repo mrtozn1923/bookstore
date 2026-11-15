@@ -25,7 +25,13 @@ switch (command)
     case "complexity":
         Splits.Complexity();
         break;
+    case "first-model":
+        FirstModel.Run();
+        break;
+    case "pitfalls":
+        Pitfalls.Run();
+        break;
     default:
-        Console.WriteLine("Commands: rules, explore, quality, clean, split, cv, complexity");
+        Console.WriteLine("Commands: rules, explore, quality, clean, split, cv, complexity, first-model, pitfalls");
         break;
 }
