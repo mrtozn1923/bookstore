@@ -23,6 +23,9 @@ public static class ProcessingActivities
             "Same as order-billing", ["Accounting"], ["db", "backup", "payment-provider"]),
         new("institution-user", "Institutional orders and approvals", "Ask legal",
             "While the institution's contract is active", ["InstitutionApprover", "StoreStaff"], ["db", "backup"]),
+        // Logs, traces and browser error reports: no table of their own, but the same questions apply.
+        new("telemetry", "Operations, debugging, security monitoring", "Legitimate interest",
+            "Example: logs 30 days, traces 7 days, error reports 30 days", ["Developer", "SRE"], ["log-store", "trace-store", "error-reports"]),
         new("privacy-request", "Handling data subject requests", "Legal obligation",
             "Example: 3 years after completion", ["PrivacyOfficer"], ["db", "backup"]),
     ];

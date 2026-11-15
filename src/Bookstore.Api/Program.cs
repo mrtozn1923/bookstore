@@ -4,6 +4,7 @@ using Bookstore.Data;
 using Bookstore.Ordering;
 using Bookstore.Privacy;
 using Bookstore.Privacy.Retention;
+using Bookstore.Privacy.Telemetry;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,6 +23,8 @@ builder.Services.AddSingleton<IErasureLedger>(new FileErasureLedger(builder.Conf
 builder.Services.AddScoped<ErasureProcessor>();
 builder.Services.AddScoped<PeriodicDestructionJob>();
 builder.Services.AddHostedService<DestructionWorker>();
+builder.Services.AddScoped<CheckoutService>();
+builder.Services.AddScoped<OrderLookupService>();
 builder.Services.AddAuthentication(DemoCustomerAuthHandler.SchemeName)
     .AddScheme<AuthenticationSchemeOptions, DemoCustomerAuthHandler>(DemoCustomerAuthHandler.SchemeName, null);
 builder.Services.AddAuthorization();
@@ -47,6 +50,22 @@ me.MapPost("/erasure-requests", async (ClaimsPrincipal user, DataSubjectRequests
 {
     ErasureRequest request = await requests.RequestErasureAsync(CustomerId(user), ct);
     return Results.Accepted($"/api/me/erasure-requests/{request.Id}", new { request.Id, request.DueAtUtc });
+});
+
+me.MapPost("/checkout", async (CheckoutRequest request, ClaimsPrincipal user, CheckoutService checkout, CancellationToken ct) =>
+    Results.Ok(new { OrderId = await checkout.PlaceOrderAsync(CustomerId(user), request, ct) }));
+
+app.MapPost("/api/orders/lookup", async (OrderLookupRequest request, OrderLookupService lookup, CancellationToken ct) =>
+    await lookup.FindAsync(request, ct) is { } status ? Results.Ok(status) : Results.NotFound());
+
+// Our own collector for browser errors: we decide what is kept before anything is written.
+app.MapPost("/api/client-errors", (ClientErrorReport report, HttpContext http, ILogger<ClientErrorReport> logger) =>
+{
+    logger.LogWarning("Client error at {Page}: {Message} (client {ClientNetwork})",
+        TelemetryScrubber.ScrubUrl(report.Url, ClientErrorReport.AllowedQueryKeys),
+        TelemetryScrubber.ScrubText(report.Message),
+        TelemetryScrubber.TruncateIp(http.Connection.RemoteIpAddress));
+    return Results.Accepted();
 });
 
 app.Run();
