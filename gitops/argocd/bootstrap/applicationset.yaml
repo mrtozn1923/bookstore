@@ -1,0 +1,54 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: bookstore
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    # One Application per folder: apps/<component>/overlays/<env>
+    - git:
+        repoURL: http://git-server.git-server.svc.cluster.local/bookstore-config
+        revision: main
+        directories:
+          - path: apps/*/overlays/*
+  strategy:
+    type: RollingSync
+    rollingSync:
+      steps:
+        - matchExpressions:
+            - key: env
+              operator: In
+              values: [dev]
+        - matchExpressions:
+            - key: env
+              operator: In
+              values: [staging]
+        - matchExpressions:
+            - key: env
+              operator: In
+              values: [prod]
+          maxUpdate: 1
+  syncPolicy:
+    # Deleting the ApplicationSet (or a folder) must not delete running workloads.
+    preserveResourcesOnDeletion: true
+  template:
+    metadata:
+      name: 'bookstore-{{index .path.segments 1}}-{{.path.basename}}'
+      labels:
+        component: '{{index .path.segments 1}}'
+        env: '{{.path.basename}}'
+    spec:
+      project: bookstore
+      source:
+        repoURL: http://git-server.git-server.svc.cluster.local/bookstore-config
+        targetRevision: main
+        path: '{{.path.path}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: 'bookstore-{{.path.basename}}'
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true
+          - PruneLast=true

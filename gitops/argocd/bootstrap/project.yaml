@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: bookstore
+  namespace: argocd
+spec:
+  description: Bookstore api and web, every environment
+  sourceRepos:
+    - http://git-server.git-server.svc.cluster.local/bookstore-config
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: bookstore-*
+  # Cluster-scoped kinds the project may create: only namespaces (CreateNamespace=true).
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+  roles:
+    - name: deployer
+      description: CI or on-call may sync, but not create or delete applications
+      policies:
+        - p, proj:bookstore:deployer, applications, get, bookstore/*, allow
+        - p, proj:bookstore:deployer, applications, sync, bookstore/*, allow
