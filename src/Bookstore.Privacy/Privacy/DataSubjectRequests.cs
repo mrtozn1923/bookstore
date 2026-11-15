@@ -9,7 +9,7 @@ public sealed record PersonalDataExport(
     IReadOnlyList<SessionExport> Sessions,
     DateTime ExportedAtUtc);
 
-public sealed record ProfileExport(string FullName, string Email, string? Phone, DateOnly? BirthDate, string City);
+public sealed record ProfileExport(string FullName, string Email, string? Phone, DateTime? AdultConfirmedAtUtc, string City);
 public sealed record OrderExport(int OrderId, DateTime OrderedAtUtc, decimal Total, string ShippingAddress);
 public sealed record SessionExport(DateTime SignedInAtUtc, string IpAddress, string DeviceId, string UserAgent);
 public sealed record ProfileCorrection(string? FullName, string? Phone, string? City);
@@ -23,7 +23,7 @@ public sealed class DataSubjectRequests(BookstoreContext db, TimeProvider clock)
     {
         var customer = await db.Customers.AsNoTracking()
             .Where(c => c.Id == customerId)
-            .Select(c => new ProfileExport(c.FullName, c.Email, c.Phone, c.BirthDate, c.City))
+            .Select(c => new ProfileExport(c.FullName, c.Email, c.Phone, c.AdultConfirmedAtUtc, c.City))
             .SingleOrDefaultAsync(ct);
         if (customer is null)
         {

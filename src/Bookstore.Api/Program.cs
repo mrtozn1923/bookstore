@@ -59,7 +59,7 @@ static async Task SeedAsync(IServiceProvider services)
     for (int i = 0; i < FakePeople.All.Length; i++)
     {
         Customer c = FakePeople.ToCustomer(i, created.AddDays(i));
-        c.Orders.Add(new Order { OrderedAtUtc = created.AddDays(i + 10), Total = 412.50m, ShippingAddress = $"Example St. {i + 1}, {c.City}" });
+        c.Orders.Add(new Order { OrderedAtUtc = created.AddDays(i + 10), Total = 412.50m, ShippingAddress = $"Example St. {i + 1}, {c.City}", BillingName = c.FullName });
         c.Sessions.Add(new CustomerSession
         {
             SignedInAtUtc = created.AddDays(i + 10).AddMinutes(-5),

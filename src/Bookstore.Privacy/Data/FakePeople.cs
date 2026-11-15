@@ -23,7 +23,7 @@ public static class FakePeople
             FullName = $"{first} {last}",
             Email = $"{first}.{last}".ToLowerInvariant() + "@example.com",
             Phone = $"+90 000 000 00 {index + 1:00}",
-            BirthDate = new DateOnly(1990 + index, 1 + index, 10),
+            AdultConfirmedAtUtc = createdAtUtc,
             City = city,
             CreatedAtUtc = createdAtUtc,
         };
