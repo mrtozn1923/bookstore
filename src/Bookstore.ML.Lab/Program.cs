@@ -7,7 +7,16 @@ switch (command)
     case "rules":
         RuleBaseline.Run();
         break;
+    case "explore":
+        Explore.Run();
+        break;
+    case "quality":
+        Explore.Quality();
+        break;
+    case "clean":
+        Clean.Run();
+        break;
     default:
-        Console.WriteLine("Commands: rules");
+        Console.WriteLine("Commands: rules, explore, quality, clean");
         break;
 }
