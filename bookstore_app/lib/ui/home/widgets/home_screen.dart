@@ -1,6 +1,9 @@
 import 'package:flutter/widget_previews.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../../../data/sample_books.dart';
+import '../../catalog/widgets/book_card.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -18,17 +21,25 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Bookstore')),
-      body: Center(
-        child: Text(
-          'Books in cart: $_booksInCart',
-          style: Theme.of(context).textTheme.headlineSmall,
-        ),
+      appBar: AppBar(
+        title: const Text('Bookstore'),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: Center(child: Text('Books in cart: $_booksInCart')),
+          ),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _addBook,
-        tooltip: 'Add book',
-        child: const Icon(Icons.add_shopping_cart),
+      body: ListView(
+        padding: const EdgeInsets.all(8),
+        children: [
+          for (final book in sampleBooks)
+            BookCard(
+              key: ValueKey(book.isbn),
+              book: book,
+              onAddToCart: _addBook,
+            ),
+        ],
       ),
     );
   }
