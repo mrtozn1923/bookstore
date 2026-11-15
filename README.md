@@ -44,3 +44,14 @@ Every dataset under `data/` is synthetic, made for the examples; none of it is r
     cd web/lab && npm ci && npx playwright install chromium
     node serve.mjs ../bookstore-web/dist/bookstore-web/browser 52714 &
     node spa-pageviews.mjs http://127.0.0.1:52714
+
+## 05: consent
+    # Razor pages: no Google tag and no Measurement Protocol call before .AspNet.Consent=yes
+    Analytics__MeasurementId=G-TEST123 dotnet run --project src/Bookstore.Analytics.Web --urls http://127.0.0.1:52704
+    curl -si -X POST http://127.0.0.1:52704/consent/analytics/grant
+
+    # Angular: reject / accept / returning visitor, checked in headless Chromium
+    cd web/lab && node consent-check.mjs http://127.0.0.1:52714
+
+    # GA4 sessions against server-side Google landings (synthetic data)
+    dotnet run --project src/Bookstore.Analytics.Cli -- coverage data/coverage-daily.csv

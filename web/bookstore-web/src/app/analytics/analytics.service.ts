@@ -10,6 +10,7 @@ export class AnalyticsService {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private gtag?: (...args: unknown[]) => void;
   private previousUrl = '';
+  private navigated = false;
 
   start(): void {
     // no tag during SSR or when no measurement ID is configured
@@ -20,10 +21,26 @@ export class AnalyticsService {
     this.gtag = loadGoogleTag(this.doc, this.config.measurementId);
     this.rememberClientId();
     this.previousUrl = this.doc.referrer;
+    // consent given on an already open page: count that page once;
+    // otherwise AnalyticsTitleStrategy sends the first page_view
+    if (this.navigated) {
+      this.pageView();
+    }
+  }
+
+  // Consent withdrawn: tell the tag, then stop sending anything from this page.
+  stop(): void {
+    this.gtag?.('consent', 'update', { analytics_storage: 'denied' });
+    this.gtag = undefined;
   }
 
   // Called by AnalyticsTitleStrategy after the router has set document.title.
+  // (Injecting Router here would be a circular dependency: Router -> TitleStrategy -> this.)
   pageView(): void {
+    this.navigated = true;
+    if (!this.gtag) {
+      return;
+    }
     const location = this.doc.location.href;
     this.gtag?.('event', 'page_view', {
       page_location: location,

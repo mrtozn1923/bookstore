@@ -1,14 +1,27 @@
-import { Component, inject } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { AnalyticsService } from './analytics/analytics.service';
+import { ConsentBanner } from './consent/consent-banner';
+import { ConsentService } from './consent/consent.service';
 
 @Component({
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, ConsentBanner],
   selector: 'app-root',
-  template: `<router-outlet />`,
+  template: `
+    <router-outlet />
+    <app-consent-banner />
+  `,
 })
 export class App {
   constructor() {
-    inject(AnalyticsService).start();
+    const analytics = inject(AnalyticsService);
+    const consent = inject(ConsentService);
+    effect(() => {
+      if (consent.analytics() === 'granted') {
+        analytics.start();
+      } else {
+        analytics.stop();
+      }
+    });
   }
 }

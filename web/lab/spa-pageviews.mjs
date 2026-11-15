@@ -3,7 +3,10 @@
 import { chromium } from 'playwright';
 const base = process.argv[2];
 const browser = await chromium.launch({ args: ['--use-mock-keychain'] });
-const page = await browser.newPage();
+const context = await browser.newContext();
+// from post 05 on, the tag loads only after consent
+await context.addCookies([{ name: '.AspNet.Consent', value: 'yes', url: base }]);
+const page = await context.newPage();
 await page.route(/googletagmanager\.com|google-analytics\.com/, r => r.abort());
 await page.goto(base + '/');
 await page.click('text=Search Console API in C#');

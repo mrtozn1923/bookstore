@@ -1,5 +1,5 @@
-// Loads gtag.js once. Page views are sent by AnalyticsService, so the
-// automatic page_view of the config command is turned off.
+// Loads gtag.js once, only after the visitor allowed analytics (basic consent mode).
+// Page views are sent by AnalyticsService, so the automatic page_view is turned off.
 type Gtag = (...args: unknown[]) => void;
 
 declare global {
@@ -16,6 +16,13 @@ export function loadGoogleTag(doc: Document, measurementId: string): Gtag {
     // gtag.js reads the arguments object, not an array
     win.dataLayer.push(arguments);
   };
+  // consent state first, before config and events
+  win.gtag('consent', 'default', {
+    analytics_storage: 'granted',
+    ad_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+  });
   win.gtag('js', new Date());
   win.gtag('config', measurementId, { send_page_view: false });
 

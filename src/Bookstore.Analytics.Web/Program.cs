@@ -4,6 +4,12 @@ using Bookstore.Analytics.Web.Security;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
+builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+    // non-essential cookies (and our analytics) wait for consent
+    options.CheckConsentNeeded = _ => true;
+    options.MinimumSameSitePolicy = SameSiteMode.Lax;
+});
 builder.Services.AddScoped<CspNonce>();
 builder.Services.Configure<AnalyticsOptions>(builder.Configuration.GetSection(AnalyticsOptions.SectionName));
 builder.Services.AddHttpClient<Ga4MeasurementProtocolClient>(http => http.Timeout = TimeSpan.FromSeconds(2));
@@ -12,7 +18,9 @@ WebApplication app = builder.Build();
 
 app.UseContentSecurityPolicy();
 app.UseStaticFiles();
+app.UseCookiePolicy();
 app.MapRazorPages();
+app.MapAnalyticsConsent();
 
 app.MapGet("/downloads/{name}.pdf", async (
     string name, HttpContext context, Ga4MeasurementProtocolClient ga, ILogger<Program> logger) =>
@@ -22,7 +30,7 @@ app.MapGet("/downloads/{name}.pdf", async (
         return Results.NotFound();
     }
 
-    if (ClientIdCookie.Read(context.Request) is { } clientId)
+    if (context.CanTrack() && ClientIdCookie.Read(context.Request) is { } clientId)
     {
         try
         {

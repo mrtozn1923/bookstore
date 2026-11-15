@@ -11,6 +11,7 @@ return args switch
 {
     ["logs", string file, string host] => LogsCommand.Run(file, host),
     ["opportunities", string csv] => OpportunitiesCommand.Run(csv),
+    ["coverage", string csv] => CoverageCommand.Run(csv),
     ["fetch", string site, .. string[] rest] when sql is not null => await FetchCommand.RunAsync(
         site,
         Day(rest, "--from") ?? FetchCommand.LatestFinalDay(DateTimeOffset.UtcNow),
@@ -37,6 +38,7 @@ static int Usage()
         usage:
           bookstore-analytics logs <access.log> <site-host>
           bookstore-analytics opportunities <pages-queries.csv>
+          bookstore-analytics coverage <coverage-daily.csv>
           bookstore-analytics fetch <site-url> [--from yyyy-MM-dd] [--to yyyy-MM-dd] [--stub http://127.0.0.1:port/] [--page-size n]
           bookstore-analytics report <week-ending yyyy-MM-dd>
         fetch and report need BOOKSTORE_ANALYTICS_SQL; fetch without --stub needs BOOKSTORE_GSC_KEY_FILE.

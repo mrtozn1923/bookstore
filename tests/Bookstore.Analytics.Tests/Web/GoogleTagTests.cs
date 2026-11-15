@@ -6,11 +6,20 @@ namespace Bookstore.Analytics.Tests.Web;
 
 public class GoogleTagTests
 {
+    private const string Consent = ".AspNet.Consent=yes";
+
+    private static Task<HttpResponseMessage> GetAsync(HttpClient client, string url, string cookie)
+    {
+        HttpRequestMessage request = new(HttpMethod.Get, url);
+        request.Headers.Add("Cookie", cookie);
+        return client.SendAsync(request);
+    }
+
     [Fact]
     public async Task Inline_tag_script_carries_the_nonce_from_the_csp_header()
     {
         using WebAppFactory factory = new();
-        HttpResponseMessage response = await factory.CreateClient().GetAsync("/");
+        HttpResponseMessage response = await GetAsync(factory.CreateClient(), "/", Consent);
         string html = await response.Content.ReadAsStringAsync();
 
         string csp = response.Headers.GetValues("Content-Security-Policy").Single();
@@ -34,7 +43,7 @@ public class GoogleTagTests
     public async Task No_measurement_id_means_no_tag()
     {
         using WebAppFactory factory = new(measurementId: null);
-        string html = await factory.CreateClient().GetStringAsync("/");
+        string html = await (await GetAsync(factory.CreateClient(), "/", Consent)).Content.ReadAsStringAsync();
         Assert.DoesNotContain("googletagmanager", html);
     }
 
@@ -42,11 +51,8 @@ public class GoogleTagTests
     public async Task Pdf_download_sends_a_measurement_protocol_event_with_the_client_id()
     {
         using WebAppFactory factory = new();
-        HttpClient client = factory.CreateClient();
-        HttpRequestMessage request = new(HttpMethod.Get, "/downloads/analytics-ve-olcum.pdf");
-        request.Headers.Add("Cookie", "bs_ga_cid=123456789.1700000000");
-
-        HttpResponseMessage response = await client.SendAsync(request);
+        HttpResponseMessage response = await GetAsync(factory.CreateClient(), "/downloads/analytics-ve-olcum.pdf",
+            $"{Consent}; bs_ga_cid=123456789.1700000000");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal("application/pdf", response.Content.Headers.ContentType!.MediaType);
@@ -63,7 +69,7 @@ public class GoogleTagTests
     public async Task Pdf_download_without_client_id_sends_nothing()
     {
         using WebAppFactory factory = new();
-        HttpResponseMessage response = await factory.CreateClient().GetAsync("/downloads/analytics-ve-olcum.pdf");
+        HttpResponseMessage response = await GetAsync(factory.CreateClient(), "/downloads/analytics-ve-olcum.pdf", Consent);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Empty(factory.Ga4.Calls);
     }
