@@ -1,32 +1,33 @@
-# Bookstore
+# Bookstore — series/threat-modeling-ve-guvenli-gelistirme-sureci
 
-**TR** · Bookstore, [mertozen.com](https://www.mertozen.com) sitesindeki bütün yazı serilerinin ortak örnek uygulamasıdır:
-kitap satan bir online kitapçı (bireysel satış + okul/kütüphane/şirketler için kurumsal sipariş). Seriler aynı ürünün
-farklı yüzlerini anlatır — veri modeli, Web API, Angular arayüzü, güvenlik, test, deploy, ekip süreçleri.
+[Türkçe](#türkçe) · [English](#english)
 
-**EN** · Bookstore is the shared example application of every article series on [mertozen.com](https://www.mertozen.com):
-an online bookstore (retail sales + bulk orders for schools, libraries and companies). Each series covers a different
-side of the same product — data model, Web API, Angular front end, security, testing, deployment, team process.
+## Türkçe
 
-## Repo düzeni / Layout
+Bookstore, mertozen.com'daki serilerin ortak örnek uygulamasıdır: kitap satan bir online kitapçı. Bu branch
+"Threat Modeling ve Güvenli Geliştirme Süreci" serisinin kodudur; her yazı bir tag'dir (`ssdlc/NN`).
+Bu branch'te veritabanı **SQLite**'tır (SQL Server gerekmez); `main`'deki referans uygulama SQL Server kullanır.
 
-| Ref | İçerik / Contents |
-|---|---|
-| `main` | Referans uygulama (tanıtım serisi) / the reference application (introduction series) |
-| `series/<seri-slug>` | Bir serinin kodu; her yazı bir commit / one series, one commit per article |
-| tag `<seri-slug>/NN` | NN numaralı yazı bittiğindeki kodun tam hâli / the code exactly as it is at the end of article NN |
+- `threat-model/` — OWASP Threat Dragon 2.6 modeli (`bookstore-checkout.json`) ve threat model kuralları.
+- `src/Bookstore.Api` — ASP.NET Core 10 Web API (Catalog, Ordering, Inventory module'leri).
+- `tests/Bookstore.Api.Tests` — xUnit v3 integration testleri.
 
-Bir yazının kodunu görmek için / To see an article's code:
-
-```bash
-git clone https://github.com/<owner>/bookstore.git
-cd bookstore
-git switch --detach <seri-slug>/NN      # ör. data-modeling-ve-normalizasyon/06
+```powershell
+dotnet test
+dotnet run --project src/Bookstore.Api      # http://localhost:5080, bookstore-dev.db oluşturur
 ```
 
-İki yazı arasındaki farkı görmek için / To diff two articles: `git diff <seri-slug>/05 <seri-slug>/06`.
+## English
 
-Teknoloji / Stack: .NET 10 (C# 14), ASP.NET Core, EF Core, SQL Server, Angular 22 — konusu farklı olan seriler kendi
-araçlarını kullanır (Node.js, Go, PostgreSQL, Redis…). / Series on other topics use their own tools.
+Bookstore is the online bookstore used as the shared example across mertozen.com's series. This branch holds the
+code of the "Threat Modeling and a Secure Development Process" series; every post is a tag (`ssdlc/NN`).
+The database on this branch is **SQLite** (no SQL Server needed); the reference app on `main` uses SQL Server.
 
-Lisans / License: MIT (bkz. / see `LICENSE`).
+- `threat-model/` — the OWASP Threat Dragon 2.6 model (`bookstore-checkout.json`) and the threat model rules.
+- `src/Bookstore.Api` — ASP.NET Core 10 Web API (Catalog, Ordering and Inventory modules).
+- `tests/Bookstore.Api.Tests` — xUnit v3 integration tests.
+
+```powershell
+dotnet test
+dotnet run --project src/Bookstore.Api      # http://localhost:5080, creates bookstore-dev.db
+```
