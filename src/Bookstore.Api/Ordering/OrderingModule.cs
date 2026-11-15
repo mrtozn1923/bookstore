@@ -103,6 +103,13 @@ public static class OrderingModule
                 TypedResults.Problem(
                     $"Not enough stock for: {string.Join(", ", outOfStock.Isbns)}.",
                     statusCode: StatusCodes.Status409Conflict),
+            PlaceOrderOutcome.UnknownInstitution unknown =>
+                TypedResults.Problem($"Unknown institution code '{unknown.Code}'.",
+                    statusCode: StatusCodes.Status400BadRequest),
+            PlaceOrderOutcome.BelowInstitutionalMinimum below =>
+                TypedResults.Problem(
+                    $"Institutional orders need at least {OrderService.InstitutionalMinimumQuantity} books; this cart has {below.Quantity}.",
+                    statusCode: StatusCodes.Status400BadRequest),
             PlaceOrderOutcome.CartChanged =>
                 TypedResults.Problem("The cart changed while the order was being placed.",
                     statusCode: StatusCodes.Status409Conflict),

@@ -15,6 +15,7 @@ public sealed class Order
     public int Id { get; set; }
     public int CustomerId { get; set; }
     public Customer Customer { get; set; } = null!;
+    public int? InstitutionId { get; set; }
     public OrderStatus Status { get; set; } = OrderStatus.Placed;
     public DateTime PlacedAtUtc { get; set; }
     public string Currency { get; set; } = "TRY";

@@ -1,5 +1,6 @@
 using Bookstore.Catalog;
 using Bookstore.Data;
+using Bookstore.Institutional;
 using Bookstore.Inventory;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -13,11 +14,16 @@ public abstract record PlaceOrderOutcome
     public sealed record CartEmpty : PlaceOrderOutcome;
     public sealed record OutOfStock(IReadOnlyList<string> Isbns) : PlaceOrderOutcome;
     public sealed record CartChanged : PlaceOrderOutcome;
+    public sealed record UnknownInstitution(string Code) : PlaceOrderOutcome;
+    public sealed record BelowInstitutionalMinimum(int Quantity) : PlaceOrderOutcome;
 }
 
 public sealed class OrderService(
-    BookstoreContext db, ICatalogService catalog, IInventoryService inventory, TimeProvider clock)
+    BookstoreContext db, ICatalogService catalog, IInventoryService inventory, IInstitutionService institutions, TimeProvider clock)
 {
+    // Kurumsal Sipariş: an order for an institution needs at least 20 books in total (Requirements Analysis series).
+    public const int InstitutionalMinimumQuantity = 20;
+
     public async Task<PlaceOrderOutcome> PlaceOrderAsync(PlaceOrderRequest request, CancellationToken ct)
     {
         Cart? cart = await db.Carts.Include(c => c.Items).FirstOrDefaultAsync(c => c.Id == request.CartId, ct);
@@ -28,6 +34,21 @@ public sealed class OrderService(
         if (cart.Items.Count == 0)
         {
             return new PlaceOrderOutcome.CartEmpty();
+        }
+
+        InstitutionInfo? institution = null;
+        if (!string.IsNullOrWhiteSpace(request.InstitutionCode))
+        {
+            institution = await institutions.FindByCodeAsync(request.InstitutionCode.Trim(), ct);
+            if (institution is null)
+            {
+                return new PlaceOrderOutcome.UnknownInstitution(request.InstitutionCode);
+            }
+            int quantity = cart.Items.Sum(i => i.Quantity);
+            if (quantity < InstitutionalMinimumQuantity)
+            {
+                return new PlaceOrderOutcome.BelowInstitutionalMinimum(quantity);
+            }
         }
 
         IReadOnlyDictionary<int, BookInfo> books =
@@ -47,6 +68,7 @@ public sealed class OrderService(
         Order order = new()
         {
             Customer = customer,
+            InstitutionId = institution?.Id,
             PlacedAtUtc = clock.GetUtcNow().UtcDateTime,
             Status = OrderStatus.Placed
         };

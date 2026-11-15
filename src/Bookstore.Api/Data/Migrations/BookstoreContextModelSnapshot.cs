@@ -823,6 +823,9 @@ namespace Bookstore.Data.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("InstitutionId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("PlacedAtUtc")
                         .HasColumnType("datetime2");
 
@@ -838,6 +841,8 @@ namespace Bookstore.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
+
+                    b.HasIndex("InstitutionId");
 
                     b.ToTable("Orders", "ordering");
                 });
@@ -947,6 +952,11 @@ namespace Bookstore.Data.Migrations
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Bookstore.Institutional.Institution", null)
+                        .WithMany()
+                        .HasForeignKey("InstitutionId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Customer");
                 });

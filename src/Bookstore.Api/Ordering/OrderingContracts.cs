@@ -11,7 +11,8 @@ public sealed record SetQuantityRequest([property: Range(1, 99)] int Quantity);
 public sealed record PlaceOrderRequest(
     Guid CartId,
     [property: Required, StringLength(200)] string CustomerName,
-    [property: Required, EmailAddress, StringLength(256)] string CustomerEmail);
+    [property: Required, EmailAddress, StringLength(256)] string CustomerEmail,
+    [property: StringLength(20)] string? InstitutionCode = null);
 
 public sealed record OrderLineView(string Title, decimal UnitPrice, int Quantity, decimal LineTotal);
 

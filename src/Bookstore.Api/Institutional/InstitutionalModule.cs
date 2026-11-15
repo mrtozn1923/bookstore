@@ -10,6 +10,9 @@ public sealed record InstitutionView(int Id, string Name, string Code, string Ki
 
 public static class InstitutionalModule
 {
+    public static IServiceCollection AddInstitutionalModule(this IServiceCollection services) =>
+        services.AddScoped<IInstitutionService, InstitutionService>();
+
     public static IEndpointRouteBuilder MapInstitutionalEndpoints(this IEndpointRouteBuilder app)
     {
         RouteGroupBuilder institutions = app.MapGroup("/api/institutions").WithTags("Institutional");

@@ -1,4 +1,7 @@
 // Shapes returned by Bookstore.Api (System.Text.Json uses camelCase).
+
+// Mirrors OrderService.InstitutionalMinimumQuantity; the API enforces the rule, the client only explains it.
+export const institutionalMinimumQuantity = 20;
 export interface BookSummary {
   isbn: string;
   title: string;

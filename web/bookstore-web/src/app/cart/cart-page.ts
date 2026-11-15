@@ -1,8 +1,8 @@
 import { CurrencyPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { OrderView } from '../core/api-models';
+import { OrderView, institutionalMinimumQuantity } from '../core/api-models';
 import { CartStore } from './cart-store';
 
 @Component({
@@ -14,6 +14,10 @@ export class CartPage {
   protected readonly store = inject(CartStore);
   protected readonly placedOrder = signal<OrderView | null>(null);
   protected readonly errorMessage = signal('');
+  protected readonly institutionCode = signal('');
+  protected readonly minimum = institutionalMinimumQuantity;
+  protected readonly missingForInstitution = computed(() =>
+    this.institutionCode().trim() ? Math.max(0, this.minimum - this.store.itemCount()) : 0);
 
   protected async changeQuantity(isbn: string, quantity: number): Promise<void> {
     if (quantity >= 1 && quantity <= 99) {
@@ -25,7 +29,7 @@ export class CartPage {
     event.preventDefault();
     this.errorMessage.set('');
     try {
-      this.placedOrder.set(await this.store.placeOrder(name, email));
+      this.placedOrder.set(await this.store.placeOrder(name, email, this.institutionCode()));
     } catch (error) {
       // The API answers with ProblemDetails: 400 validation errors or 409 when stock is not enough.
       const problem = error instanceof HttpErrorResponse ? error.error : null;

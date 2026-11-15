@@ -50,13 +50,15 @@ export class CartStore {
     }
   }
 
-  async placeOrder(customerName: string, customerEmail: string): Promise<OrderView> {
+  async placeOrder(customerName: string, customerEmail: string, institutionCode = ''): Promise<OrderView> {
     const cartId = this.cartState()?.id;
     if (!cartId) {
       throw new Error('The cart is empty.');
     }
     const order = await firstValueFrom(
-      this.http.post<OrderView>('/api/orders', { cartId, customerName, customerEmail }));
+      this.http.post<OrderView>('/api/orders', {
+        cartId, customerName, customerEmail, institutionCode: institutionCode.trim() || null,
+      }));
     localStorage.removeItem(cartIdKey);
     this.cartState.set(null);
     return order;

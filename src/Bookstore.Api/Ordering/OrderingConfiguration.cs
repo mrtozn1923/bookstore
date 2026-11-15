@@ -1,4 +1,5 @@
 using Bookstore.Catalog;
+using Bookstore.Institutional;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -43,6 +44,7 @@ internal sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
         order.Property(o => o.Currency).HasMaxLength(3).IsUnicode(false);
         order.Property(o => o.Total).HasPrecision(12, 2);
         order.HasOne(o => o.Customer).WithMany().HasForeignKey(o => o.CustomerId);
+        order.HasOne<Institution>().WithMany().HasForeignKey(o => o.InstitutionId).OnDelete(DeleteBehavior.Restrict);
         order.HasMany(o => o.Items).WithOne().HasForeignKey(i => i.OrderId).OnDelete(DeleteBehavior.Cascade);
     }
 }

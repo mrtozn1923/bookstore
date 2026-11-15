@@ -24,7 +24,8 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 builder.Services
     .AddCatalogModule()
     .AddInventoryModule()
-    .AddOrderingModule();
+    .AddOrderingModule()
+    .AddInstitutionalModule();
 
 WebApplication app = builder.Build();
 

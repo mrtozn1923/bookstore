@@ -9,5 +9,14 @@
   "search.exclude": {
     "**/package-lock.json": true,
     "**/Migrations/*.Designer.cs": true
+  },
+  "chat.tools.terminal.autoApprove": {
+    "/^dotnet (build|test)\\b/": true,
+    "/^npm (test|run build)\\b/": true,
+    "/^git (status|diff|log)\\b/": true,
+    "/^git push\\b/": false,
+    "/^dotnet ef database\\b/": false,
+    "rm": false,
+    "Remove-Item": false
   }
 }

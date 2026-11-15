@@ -30,8 +30,15 @@
   <form class="checkout" (submit)="checkout($event, nameBox.value, emailBox.value)">
     <input #nameBox name="name" placeholder="Full name" required />
     <input #emailBox name="email" type="email" placeholder="E-mail" required />
-    <button type="submit">Place order</button>
+    <input #institutionBox name="institution" placeholder="Institution code (optional)"
+           data-testid="institution-code" (input)="institutionCode.set(institutionBox.value)" />
+    <button type="submit" [disabled]="missingForInstitution() > 0">Place order</button>
   </form>
+  @if (missingForInstitution() > 0) {
+    <p class="hint" data-testid="institution-hint">
+      Institutional orders need at least {{ minimum }} books. Add {{ missingForInstitution() }} more.
+    </p>
+  }
   @if (errorMessage()) {
     <p class="error">{{ errorMessage() }}</p>
   }
