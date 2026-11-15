@@ -3,6 +3,7 @@ using Bookstore.Prompts.Evaluation;
 using Bookstore.Prompts.Lab;
 using Bookstore.Prompts.Tasks.OrderExtraction;
 using Bookstore.Prompts.Tasks.ReturnCheck;
+using Bookstore.Prompts.Tasks.TicketRouting;
 
 CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
@@ -39,6 +40,21 @@ switch (task)
             _ => OrderExtractionPrompts.V1,
         };
         await ExtractionLab.RunAsync(runner, prompt, resolveInCode: version != "v1");
+        break;
+    }
+    case "ticket-routing":
+    {
+        Task work = version switch
+        {
+            "v1" => RoutingLab.RunAsync(runner, TicketRoutingPrompts.V1),
+            "v2" => RoutingLab.RunAsync(runner, TicketRoutingPrompts.Build(withExamples: false)),
+            "v3" => RoutingLab.RunAsync(runner, TicketRoutingPrompts.Build(withExamples: true)),
+            "order" => RoutingLab.CompareOrderAsync(runner),
+            "confidence" => RoutingLab.ConfidenceAsync(runner),
+            "cross-check" => RoutingLab.CrossCheckAsync(runner, new EvalRunner(LabClient.Create("qwen3:4b"), LabClient.Options())),
+            _ => throw new ArgumentException($"Unknown version: {version}"),
+        };
+        await work;
         break;
     }
     default:

@@ -1,0 +1,24 @@
+{"id": "t01", "input": "10428 numaralı siparişimdeki Emma'nın sayfaları eksik, değiştirmek istiyorum.", "expected": "Returns"}
+{"id": "t02", "input": "İade ettiğim kitabın parası 10 gündür hesabıma yatmadı.", "expected": "Returns"}
+{"id": "t03", "input": "Kargo kutusu ezik geldi, içindeki Dune'un kapağı yırtık.", "expected": "Returns"}
+{"id": "t04", "input": "Yanlış kitap gönderilmiş, Middlemarch yerine Emma geldi.", "expected": "Returns"}
+{"id": "t05", "input": "Cayma hakkımı kullanmak istiyorum, kitabı nasıl geri göndereceğim?", "expected": "Returns"}
+{"id": "t06", "input": "Siparişim 4 gündür 'dağıtımda' görünüyor, ne zaman gelir?", "expected": "Shipping"}
+{"id": "t07", "input": "Teslimat adresimi değiştirebilir miyim? Sipariş henüz kargoya verilmedi.", "expected": "Shipping"}
+{"id": "t08", "input": "Kargo takip numarası sistemde bulunamıyor.", "expected": "Shipping"}
+{"id": "t09", "input": "Kurye kapıya hiç gelmeden 'adreste bulunamadı' yazmış.", "expected": "Shipping"}
+{"id": "t10", "input": "Kartımdan aynı sipariş için iki kez para çekildi.", "expected": "Payments"}
+{"id": "t11", "input": "Ödeme sayfasında kartım sürekli reddediliyor.", "expected": "Payments"}
+{"id": "t12", "input": "Faturamda adım yanlış yazılmış, düzeltebilir misiniz?", "expected": "Payments"}
+{"id": "t13", "input": "Taksit seçeneği neden görünmüyor?", "expected": "Payments"}
+{"id": "t14", "input": "Okulumuz için 60 adet The Hobbit fiyat teklifi rica ediyoruz.", "expected": "Institutional"}
+{"id": "t15", "input": "Kütüphanemizin verdiği 120 adetlik siparişin kargosu nerede?", "expected": "Institutional"}
+{"id": "t16", "input": "Kurumsal hesabımızda onay bekleyen siparişi nasıl onaylarım?", "expected": "Institutional"}
+{"id": "t17", "input": "Şirketimizin 25 kitaplık siparişinde %10 kurumsal indirim uygulanmamış.", "expected": "Institutional"}
+{"id": "t18", "input": "Okulumuza gelen 40 Dune'dan 5'i hasarlı, bunları değiştirmek istiyoruz.", "expected": "Institutional"}
+{"id": "t19", "input": "Telefondaki temsilciniz bana çok kaba davrandı, şikayetçiyim.", "expected": "Human"}
+{"id": "t20", "input": "Bu sorunu 3 gündür çözmediniz, tüketici hakem heyetine başvuracağım.", "expected": "Human"}
+{"id": "t21", "input": "Hem kargo gecikti hem kartımdan fazla para çekildi, bir de kitap yırtık geldi.", "expected": "Human"}
+{"id": "t22", "input": "Yazar imza günü ne zaman yapılacak?", "expected": "Human"}
+{"id": "t23", "input": "asdfgh", "expected": "Human"}
+{"id": "t24", "input": "Merhaba, kitaplarınızı çok beğeniyorum, teşekkürler!", "expected": "Human"}
