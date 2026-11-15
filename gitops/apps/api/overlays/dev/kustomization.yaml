@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: bookstore-dev
 resources:
 - ../../base
+- sealed-api-db.yaml
 images:
 - name: bookstore/api
   newName: localhost:52612/bookstore/api

@@ -1,0 +1,24 @@
+apiVersion: v1
+data:
+    connection-string: ENC[AES256_GCM,data:3lvZS8PpDvYh6H4mMiKgCrNXGcUgaCdICMKBMuWibr7favahWpKc08kuSCEu+g/uUMpDyIys2Z0hpvgwAvqMnYk7M8JkENJ9QYfsTbmbNDAOGDKU8yR9oOdNposV2HFBEs6I3XF/eccceckcwgUPPdG/O5fz81GZgypSSg==,iv:C4nvXh2AoX/Hgy4AtoaTPox+Db9vytdn5GzVVRN12fg=,tag:gezsS2QbrGAwBrPYpdxauw==,type:str]
+    password: ENC[AES256_GCM,data:Z8aF3CpwBhPP3+FqgFqqmhj7hffv+UHmciex63jBuNuHrJ0MGMXu393FAI4=,iv:0j78Cbv2FyTio84sbEg8/Wlr5XR+wKb9638jPPUq8rs=,tag:KH7TsFmwZ+kVgC45zBSWBA==,type:str]
+kind: Secret
+metadata:
+    name: api-db
+    namespace: bookstore-staging
+type: Opaque
+sops:
+    age:
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBUM21naG9mZUtjK0d1WmtR
+            ekxMVTBnaEJiVUdiaG1nK3lpaXQ2YUhySXhRCkcvdG05NndMTlhEbytRWGdWT1Zs
+            djZvSHlTc3BFQjFXYlBEYUlSTHZLblUKLS0tIGpzeFQrUXhGQ25Nejh2VUtuOWZu
+            aVZQay9jNmg5aWw1R24rTGFEV2dxdUEKoAdUS0tP23WpB8IjltOmSsMRcsMWJJhi
+            ySZ7SjpTsSYiVkRmmiW3h8DAO8VnU6zO6/JDNIxxI9iQJLfKmXGBpQ==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age1ukq6ax5vkhtl6qy2ks4jv4pwkt702pgls5jnlpamy8d58l8wqumscc0hfy
+    encrypted_regex: ^(data|stringData)$
+    lastmodified: "2026-11-15T04:36:33Z"
+    mac: ENC[AES256_GCM,data:ZgbVk/RirLqtHkoNM7uJcaICD/m+XrsAmkn+1bAsihxgUxULVMQjbMOj17KCqw8iAC87laANtuWw1O9lKjOmDOn3qb+bBrMQCNU8ssm9+GIvCRD3Wq3TD0sIEmI6051rKoCaZ4VATNBq+x9EmGisQUpWH+JA0gQMB+NeazvwA6E=,iv:FN1QeYWcZhsGR/Bs/tAC1AZP++oLbHGIADHKsHKxMJY=,tag:9KCaZ95F3shqEIMfiiW9Aw==,type:str]
+    version: 3.13.3

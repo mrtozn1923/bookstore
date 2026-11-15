@@ -1,0 +1,6 @@
+# SOPS rules for this repo: staging Secrets are encrypted for the staging age key.
+# Only values under data/stringData are encrypted; kind and metadata stay readable.
+creation_rules:
+  - path_regex: apps/.*/overlays/staging/.*\.enc\.yaml$
+    encrypted_regex: ^(data|stringData)$
+    age: age1ukq6ax5vkhtl6qy2ks4jv4pwkt702pgls5jnlpamy8d58l8wqumscc0hfy

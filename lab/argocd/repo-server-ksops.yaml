@@ -1,0 +1,32 @@
+# argocd-repo-server with KSOPS (post 07): an init container copies the ksops binary,
+# the age private key comes from the sops-age Secret. Apply with:
+#   kubectl -n argocd patch deployment argocd-repo-server --patch-file repo-server-ksops.yaml
+spec:
+  template:
+    spec:
+      volumes:
+        - name: custom-tools
+          emptyDir: {}
+        - name: sops-age
+          secret:
+            secretName: sops-age
+      initContainers:
+        - name: install-ksops
+          image: viaductoss/ksops:v4.5.1
+          # The image has no shell: ksops copies itself (without --with-kustomize, Argo CD keeps its own kustomize).
+          command: ["/usr/local/bin/ksops", "install", "/custom-tools"]
+          volumeMounts:
+            - mountPath: /custom-tools
+              name: custom-tools
+      containers:
+        - name: argocd-repo-server
+          env:
+            - name: SOPS_AGE_KEY_FILE
+              value: /sops-age/keys.txt
+          volumeMounts:
+            - mountPath: /usr/local/bin/ksops
+              name: custom-tools
+              subPath: ksops
+            - mountPath: /sops-age
+              name: sops-age
+              readOnly: true

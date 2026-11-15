@@ -1,0 +1,21 @@
+# Sealed with the cluster's public key: only the controller in this cluster can decrypt it,
+# and only as the Secret api-db in bookstore-prod (strict scope).
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  name: api-db
+  namespace: bookstore-prod
+  annotations:
+    # Before postgres (wave -1): the controller turns this into the api-db Secret.
+    argocd.argoproj.io/sync-wave: "-2"
+spec:
+  encryptedData:
+    connection-string: AgCXzC7ZzMXBw4ObBjPKDjVTAgkvzPgNYYG8P4ztSoUwet9SOPOE399pVlzfC9ACPmZxb2tJip2R6T05c46E8acmiHIN0XvdBL8go8raHNFRdFGZ6/iFmmd1bJCrpvl1h64xHGAvHREbCIhl09x8THIVShtLyf7BT8YN4g04w46ZjiVoeMTRwDNFfEepPDeHkwORCBtc2AB1nkPz3vKbCeaMe0fg6pFiVyebbcaBr+6yFUGGmGJV9gV9r1bPz4iRTmsrbjcAz7LbsFlx49F0cfSPSJoWyKhfKHmzxB8pxzMEUhixdwr5puTj+W7sDEBAt2OVFQqcIpEVkKYrB+CC3gCjMaWnfiMU188ffHWKpDwNFVlt9VH00lnjdPdd5EVQy4ejRz81YL7tX7JgcxIRGmqvP9rukBt1yf3sXahh6rtezbxLCCG5cAbC8k3tKy+6vG8rsNfruxysm5WPOHzOa4qMMgzQAFp9qbVvyPIEuVT9dyp/IYWMdCe82USmwFDuUNBhobrk+9tSbnQtd4o4NE5OzqxDM5+V1lp3IEmee+VFx8fAH1SGeY5Zpf6U+JvO+W0c0XnEDo/claydxguVWJDcqhrasnSBfbxwLgOW0tw9t1j9C4QSvk0lbBN5wTchYxHBUfQK+pSUrTIZaKMYTIRy3daqxnAW8+mA827g6jNmM2rJLrt7O+wi9sKFAE2+U8uQPFhz10HJT10yGdNZWRpf6silNzJ7/xvG5s8g7EAGkDW3MlojH35S/TwqHfjK5S+K3ymohYOFS1cOluI2RMdfo8DbnQJ4T9vFhHIMgcqc0AgE9A9ULa5TsaRukNs=
+    password: AgBhsFXTVEG2+zo9E4PFuWrS/WF8DLepX/8GtJtqQyaSf6bjBcKn9viXgGVfb8Qeywag7kIDV0TOnsVJVZyMWXmCI0JBDTuhSUMP1hd8P2v+InP25+NFHdwyOOkKJhK/z/OdZ5lv/lywRDfwecLD3a+qQoDw3EyjCKH1YhUAmXaw9tCoiQ63EtfWhvUSDP4GCa2o4Cd5ZrMf5Hn4s6EAT7UlN9A3f25S2hM4WVdPlKsJlkgQq+oXg4lQ7oTMBoAs9e+HWow17WIEiZhKX2jrdSCSWssNZ4YrptJFiy0/Stj3UbfvoTRQnj//V7tKqK2W1MWvG+AryqTWyTo/C/F072e6IkTNzqMHMqC+Xmwtrk+LSRYhRJAPD7+76e70lhTFuACITTwmvtqlbguoegb7VACCZc+hwXjOUlLxTsqYpMcL9Hms/synI3U1leGEp0E08AHtaoMZwwC4aMw3vZtzPdyyLGzvt+G5ixuTw9e9PUZzkWmvkTRpbYzvATD9BbFHO8o8PNHLMfhXTO8JeVhYMqBsJuLn9ETyFoTUiw1nzSZ7W3w1dQiPnOPWGo+roLTU207+ZhBJ9+ODF/aLUJV/9P0MMTcokhr+j+DNfhg/MFokZql5ualTs8XxQoPtu1pSmGL0+HI/kbawA7qBMRul2xITsIdSqxJSNgfAFOxvzUqgCMvIIlsSra28g8BmFs2VshtXdNlOntrjkm0sOk3l/v6G8z9N8ausyExJJKpsDIz9Hg==
+  template:
+    metadata:
+      annotations:
+        sealedsecrets.bitnami.com/managed: "true"
+      name: api-db
+      namespace: bookstore-prod
+    type: Opaque

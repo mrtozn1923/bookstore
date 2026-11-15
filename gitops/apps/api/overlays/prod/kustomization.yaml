@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: bookstore-prod
 resources:
 - ../../base
+- sealed-api-db.yaml
 replicas:
 - count: 2
   name: api

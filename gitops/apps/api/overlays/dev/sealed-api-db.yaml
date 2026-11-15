@@ -1,0 +1,19 @@
+# Sealed with the cluster's public key: only the controller in this cluster can decrypt it,
+# and only as the Secret api-db in bookstore-dev (strict scope).
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  name: api-db
+  namespace: bookstore-dev
+  annotations:
+    # Before postgres (wave -1): the controller turns this into the api-db Secret.
+    argocd.argoproj.io/sync-wave: "-2"
+spec:
+  encryptedData:
+    connection-string: AgAtnSo8TtW3mZglEBZtWZ7uz+DgIYUjuUuzBgKL/4RsTXBdnGE8JVxBoxf5p31fm++rawI11bOIvCVb7F93pEtZXU0kV25fo9BxGTyZKMHdmsyxIiW7cHFjwfhmm+Xi0F5BhNIFrwUrxrPrpZWwR4F1KyBMZXzHloueU2hIqpKGlz4UO+xGaEV6D8zEV2LwP++ESh/RF25JkjjIfiuSZ2uy2ymfeRKyCGAaH+42ke0vnXo932pZVjom9kd8GB5BpympJPZK2otcUITfbCOsZuzEbluWfA626KDkfwUTZB3nPsnhL04Pada8SoSaejLCQEyrFNTStB0p7meJtv75og1690DswQ/dkITsy4NsPTdZPmRl+7gznvTrx8ZDly6gQkIUp25TLj2X8Dh1WPLyL3+nG95iRFf7JPEyXGPfx56Wh5hXUcA2C2ryKJrS39VyU4171wxO31R69ebZz0w3cHkraoAQzoYdjlXIhEN+axPhgeovtSYVo1ocJ2kwOUz8DE3zgYqjO3DSdnS/XyHmak1/nWAszhwYnubo+lsdOIEUWMDPxqVWjoMZHZUZ6XuM9DTMOOWRylXRgnmDfqD22ZhSfyibY1Dyo42620L3vB7RsoOYcnsZR3iLH9DQm6VuXuJ223r2oJH3VNLzXGcx+C21H5Y+W/u/3UyM3Me6m3epzXy+Q26UsiLYmKw2lnzF+gu+z69LdD17HR1uY6yCoEJUfsFmtxZRnZFx6dPhBcCuyatq+Xu7jLgKzJYylB9rXxzjA/3fsuhk4aYLMx3QHmDzALQ91TzvFe/Q+kYLeEKeDwg3mOEDKLXOW5Ah86Y=
+    password: AgAMSB8YZW0lXcF6SJpk19u5mOtTpJTvh6hk7BPLaOYgyIwFe/XV1vihFGiucmQEQgc+V4fYnHPwYpAN0BHiWdIf917NAsKGTcJ5B82wFxRuhQTmuMVN7rUeENq2QZ6j7i6sUq7xkR5ZCjmbgYDrwgnZd8DbkuPBjURuVYn07Z3k5qIZK08UGn9sCDXcDLHWkVK2M/+Z6k5QUNVQArN+JQYOxyddUIN+dPgguhBKfcMAsrwADsbqmaH8lGobMPzjQiO1ZCvfXMs3Vdu7hkhK4FrjIZGEEIyNaOxxvG30ljP8LKQOWfFgsnCOXFggnqA+bv4L7I7Lo2GI0VYMd6WO838dq/xt76Cpwa67+PPAt9nlEt8JaQyFSQl25zNSr3j9t8f0HMhtIefaGiIMl1mjdzWmjJRlFNXHXkW/8Hs9ddo02ty6Vszkm4+8Zl8jOtwQGqgA/pVFZiLJvns4WMcdjW6N29okcNwP6Kxot3rO27XS70xqPlTWbgWLdJhnOuICBlzGRrFZyYZpWcwdTJb1bYeIYCwmyYnXsyjr3PhlSpPDEJ+m++7rPLqqYMQi95BeVL4mx/Bsj2LDitkyWhIefSWIljTDSNXXgFNgOPWMPPyYFxzQhoN/CjH4lDYcbbmR84bqgQpg6gFEo1jsLN3l2Q+i2Cr1+cWUOUqHKc6ZBDAhS67lJ3erR6BNNPALaf7/8VkaYiy3tN4YvjEKjKEarMMhwlMJfX5RUFr/oTOJERloLg==
+  template:
+    metadata:
+      name: api-db
+      namespace: bookstore-dev
+    type: Opaque
