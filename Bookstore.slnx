@@ -1,8 +1,12 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/Bookstore.Catalog/Bookstore.Catalog.csproj" />
     <Project Path="src/Bookstore.Ordering/Bookstore.Ordering.csproj" />
+    <Project Path="src/Bookstore.Shipping/Bookstore.Shipping.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/Bookstore.Catalog.Tests/Bookstore.Catalog.Tests.csproj" />
     <Project Path="tests/Bookstore.Ordering.Tests/Bookstore.Ordering.Tests.csproj" />
+    <Project Path="tests/Bookstore.Shipping.Tests/Bookstore.Shipping.Tests.csproj" />
   </Folder>
 </Solution>
