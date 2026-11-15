@@ -1,0 +1,16 @@
+{
+  "name": "@bookstore/schematics",
+  "version": "1.0.0",
+  "private": true,
+  "schematics": "./dist/collection.json",
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node copy-assets.mjs"
+  },
+  "dependencies": {
+    "@angular-devkit/core": "22.2.7",
+    "@angular-devkit/schematics": "22.2.7"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.2"
+  }
+}

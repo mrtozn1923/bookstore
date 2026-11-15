@@ -1,0 +1,14 @@
+import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { Observable } from 'rxjs';
+import { <%= classify(name) %> } from './<%= dasherize(name) %>';
+
+@Injectable({ providedIn: 'root' })
+export class <%= classify(name) %>Api {
+  private readonly http = inject(HttpClient);
+  private readonly baseUrl = '/api/<%= dasherize(name) %>s';
+
+  getAll(): Observable<<%= classify(name) %>[]> {
+    return this.http.get<<%= classify(name) %>[]>(this.baseUrl);
+  }
+}

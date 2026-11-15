@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json.schemastore.org/template",
+  "author": "Bookstore team",
+  "classifications": ["Bookstore", "Web", "API"],
+  "identity": "Bookstore.Templates.Service",
+  "name": "Bookstore service",
+  "shortName": "bookstore-service",
+  "description": "ASP.NET Core service with Bookstore's SDK pin, analyzer settings, test project and Dockerfile.",
+  "sourceName": "Bookstore.ServiceName",
+  "preferNameDirectory": true,
+  "tags": {
+    "language": "C#",
+    "type": "solution"
+  },
+  "symbols": {
+    "Docker": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "Add a Dockerfile and .dockerignore."
+    },
+    "HealthChecks": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "Map /health and add a test for it."
+    },
+    "HttpPort": {
+      "type": "generated",
+      "generator": "port",
+      "parameters": {
+        "low": 5100,
+        "high": 5199
+      },
+      "replaces": "5099"
+    }
+  },
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "condition": "(!Docker)",
+          "exclude": ["Dockerfile", ".dockerignore"]
+        }
+      ]
+    }
+  ]
+}

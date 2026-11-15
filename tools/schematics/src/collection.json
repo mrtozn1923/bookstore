@@ -1,0 +1,10 @@
+{
+  "$schema": "../node_modules/@angular-devkit/schematics/collection-schema.json",
+  "schematics": {
+    "api-service": {
+      "description": "Service that calls a Bookstore API resource with HttpClient.",
+      "factory": "./api-service/index#apiService",
+      "schema": "./api-service/schema.json"
+    }
+  }
+}
