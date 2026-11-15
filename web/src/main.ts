@@ -1,6 +1,6 @@
-import { LOCALE_ID, enableProdMode, provideZoneChangeDetection } from '@angular/core';
-import { registerLocaleData } from '@angular/common';
-import localeTr from '@angular/common/locales/tr';
+/// <reference types="@angular/localize" />
+
+import { enableProdMode, provideZoneChangeDetection } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { PreloadAllModules, TitleStrategy, provideRouter, withComponentInputBinding, withPreloading } from '@angular/router';
 import { provideHttpClient, withInterceptors, withXhr } from '@angular/common/http';
@@ -18,14 +18,11 @@ if (environment.production) {
   enableProdMode();
 }
 
-registerLocaleData(localeTr);
-
 bootstrapApplication(AppComponent, {
   providers: [
     provideZoneChangeDetection(),
     provideRouter(routes, withPreloading(PreloadAllModules), withComponentInputBinding()),
     provideHttpClient(withXhr(), withInterceptors([authInterceptor, errorInterceptor])),
-    { provide: LOCALE_ID, useValue: 'tr' },
     {
       provide: LoggerService,
       useFactory: () => environment.production ? new SilentLoggerService() : new LoggerService()

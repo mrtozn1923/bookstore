@@ -1,5 +1,5 @@
 <app-book-search></app-book-search>
-<a routerLink="/books" [queryParams]="{ sort: 'price', page: 2 }">Sort by price</a>
+<a routerLink="/books" [queryParams]="{ sort: 'price', page: 2 }" i18n="@@catalog.sortByPrice">Sort by lowest price</a>
 <p>Sort: {{ sort }} · Page: {{ page }}</p>
 @for (b of books | inStock; track b.isbn) {
   <app-book-item
@@ -7,7 +7,7 @@
     (addToCart)="addToCart($event)">
   </app-book-item>
 }
-<p>Showing {{ itemCount() }} books</p>
+<p i18n="Number of books on the catalog page@@catalog.showing">{itemCount(), plural, =0 {No books to show} =1 {Showing 1 book} other {Showing {{ itemCount() }} books}}</p>
 <button (click)="addBook()">Add a new book</button>
 <button (click)="goToPage(page + 1)">Next page</button>
 <button (click)="openBook('9780441172719')">Book of the week: Dune</button>

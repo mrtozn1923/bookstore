@@ -1,7 +1,8 @@
 <div class="book">
   <h4><a [routerLink]="['/books', book.isbn]">{{ book.title }}</a></h4>
-  <p>{{ book.price }} TRY</p>
+  <p>{{ book.price | currency: 'TRY' : 'symbol-narrow' }}</p>
+  <p i18n="Stock line on a book card@@catalog.stock">{book.stock, plural, =0 {Out of stock} =1 {Last copy} other {{{ book.stock }} in stock}}</p>
   <p>{{ book.description | truncate:40 }}</p>
   <p>{{ book.description | truncate:40:' →' }}</p>
-  <button (click)="onAdd()">Add to cart</button>
+  <button (click)="onAdd()" i18n="Button on a book card|Adds the book to the shopping cart@@catalog.addToCart">Add to cart</button>
 </div>

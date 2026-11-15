@@ -1,21 +1,21 @@
 <header>
-  <h1>Bookstore</h1>
+  <h1 i18n="Site name in the page header@@header.title">Bookstore</h1>
   <app-sale-countdown></app-sale-countdown>
   @defer (on interaction; prefetch on idle) {
     <app-cart-badge />
   } @placeholder {
-    <button>Show cart</button>
+    <button i18n="@@header.showCart">Show cart</button>
   }
   <nav>
-    <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
-    <a routerLink="/books" routerLinkActive="active">Books</a>
-    <a routerLink="/about" routerLinkActive="active">About</a>
+    <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" i18n="Main navigation@@nav.home">Home</a>
+    <a routerLink="/books" routerLinkActive="active" i18n="Main navigation@@nav.books">Books</a>
+    <a routerLink="/about" routerLinkActive="active" i18n="Main navigation@@nav.about">About</a>
   </nav>
 </header>
 
 <router-outlet></router-outlet>
 
 <footer>
-  Free shipping on orders over 500 TRY.
+  <span i18n="Footer promotion@@footer.freeShipping">Free shipping on orders over {{ freeShippingLimit | currency: 'TRY' : 'symbol-narrow' }}.</span>
   <app-scroll-top></app-scroll-top>
 </footer>

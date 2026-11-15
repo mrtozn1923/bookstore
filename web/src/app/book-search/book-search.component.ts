@@ -7,7 +7,7 @@ import { BookService } from '../book.service';
   selector: 'app-book-search',
   changeDetection: ChangeDetectionStrategy.Eager,
   template: `
-    <input (input)="query.set($any($event.target).value)" placeholder="Search books...">
+    <input (input)="query.set($any($event.target).value)" placeholder="Search books..." i18n-placeholder="@@catalog.searchPlaceholder">
     @for (title of results(); track title) {
       <p>{{ title }}</p>
     }

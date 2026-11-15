@@ -14,6 +14,7 @@
     <option value="express">Express</option>
     <option value="pickup">Pick up at the store</option>
   </select>
+  <p i18n="@@checkout.delivery">Delivery: {checkoutForm.shipping().value(), select, standard {standard} express {express, next business day} pickup {pick up at the store}}</p>
 
   @if (!checkoutForm.address().hidden()) {
     <fieldset>
