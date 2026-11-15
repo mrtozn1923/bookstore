@@ -29,6 +29,8 @@ export default defineConfig({
   },
   projects: [
     { name: 'setup', testMatch: /.*\.setup\.ts/ },
+    // API testleri tarayıcısız; baseURL doğrudan API
+    { name: 'api', testDir: './api-tests', use: { baseURL: apiURL } },
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'], storageState: customerStorageState },

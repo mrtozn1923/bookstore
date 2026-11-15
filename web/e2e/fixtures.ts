@@ -1,8 +1,8 @@
-import { test as base, expect as baseExpect, type APIRequestContext, type PlaywrightWorkerArgs } from '@playwright/test';
+import { test as base, expect as baseExpect, type APIRequestContext } from '@playwright/test';
 import type { OrderDto } from '../src/app/api/book-api.service';
 import { CartPage } from './pages/cart-page';
 import { CatalogPage } from './pages/catalog-page';
-import { apiURL } from './support/config';
+import { signedInApi } from './support/api';
 import { priceMatchers } from './support/matchers';
 
 export interface TestBook {
@@ -55,14 +55,6 @@ interface TestFixtures {
 
 interface WorkerFixtures {
   adminApi: APIRequestContext;
-}
-
-// E2E host'unun token endpoint'inden token alıp onu taşıyan bir API context'i açar
-async function signedInApi(playwright: PlaywrightWorkerArgs['playwright'], body: object): Promise<APIRequestContext> {
-  const anonymous = await playwright.request.newContext({ baseURL: apiURL });
-  const { accessToken } = await (await anonymous.post('/e2e/token', { data: body })).json();
-  await anonymous.dispose();
-  return playwright.request.newContext({ baseURL: apiURL, extraHTTPHeaders: { Authorization: `Bearer ${accessToken}` } });
 }
 
 export const test = base.extend<TestFixtures, WorkerFixtures>({
