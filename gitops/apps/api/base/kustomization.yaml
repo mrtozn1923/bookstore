@@ -4,11 +4,16 @@ resources:
   - postgres.yaml
   - deployment.yaml
   - service.yaml
+  - migrate-job.yaml
+  - smoke-test.yaml
+  - sync-failed.yaml
 labels:
   - pairs:
       app.kubernetes.io/part-of: bookstore
     includeSelectors: false
     includeTemplates: true
 images:
+  - name: gitopsseries-bookstore-migrator
+    newTag: 1.1.0
   - name: gitopsseries-bookstore-api
     newTag: 1.0.0
