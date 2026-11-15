@@ -1,10 +1,13 @@
 <h1 appPageHeading>Catalog</h1>
 
 <section class="toolbar">
-  <form (submit)="applySearch($event, searchBox.value)">
-    <input #searchBox type="search" placeholder="Search by title, author or ISBN" aria-label="Search books" />
-    <button type="submit">Search</button>
-  </form>
+  <!-- <search> is the search landmark: "D" in NVDA and the rotor's Landmarks list find it -->
+  <search>
+    <form (submit)="applySearch($event, searchBox.value)">
+      <input #searchBox type="search" placeholder="Search by title, author or ISBN" aria-label="Search books" />
+      <button type="submit">Search</button>
+    </form>
+  </search>
   <button type="button" class="filters-toggle" aria-controls="category-filters"
           [attr.aria-expanded]="filtersOpen()" (click)="filtersOpen.set(!filtersOpen())">
     Filters
@@ -32,7 +35,8 @@
     <ul class="book-grid">
       @for (book of result.items; track book.isbn) {
         <li class="book-card">
-          <a [routerLink]="['/books', book.isbn]">{{ book.title }}</a>
+          <!-- A heading per book: most screen reader users look for content by headings first -->
+          <h2 class="book-title"><a [routerLink]="['/books', book.isbn]">{{ book.title }}</a></h2>
           <span class="muted">{{ book.author }} · {{ book.publishedYear }}</span>
           <span class="muted">{{ book.category }}</span>
           <strong>{{ book.price | currency: 'TRY' : 'symbol-narrow' }}</strong>

@@ -69,6 +69,7 @@ input, select {
 
 .toolbar { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
 .toolbar form { display: flex; gap: 0.5rem; }
+.book-title { font-size: 1rem; margin: 0; }
 
 .book-grid {
   list-style: none;
