@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <!-- IDE rules (IDE0051, IDE0052) also run in dotnet build -->
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+  </PropertyGroup>
+</Project>

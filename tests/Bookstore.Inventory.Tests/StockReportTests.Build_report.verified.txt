@@ -1,0 +1,7 @@
+﻿Stock value: 4333.50
+Ankara: 15 copies
+Istanbul: 46 copies
+Reorder:
+! 9780441013593 Dune (Ankara): 3
+! 9780141439587 Emma (Ankara): 12
+! 9780141439549 Middlemarch (Istanbul): 6
