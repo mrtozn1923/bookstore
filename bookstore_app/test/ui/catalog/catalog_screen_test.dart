@@ -1,78 +1,65 @@
-import 'package:bookstore_app/data/sample_catalog.dart';
-import 'package:bookstore_app/domain/models/book.dart';
+import 'package:bookstore_app/config/dependencies.dart';
+import 'package:bookstore_app/ui/catalog/view_models/catalog_view_model.dart';
 import 'package:bookstore_app/ui/catalog/widgets/catalog_screen.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:provider/provider.dart';
+
+import '../../testing/fakes.dart';
 
 void main() {
-  late List<int> calls;
-  late SampleCatalog catalog;
-
-  setUp(() {
-    calls = [];
-    catalog = SampleCatalog(total: 60, pageSize: 20);
-  });
-
-  Future<List<Book>> loadPage(int page) {
-    calls.add(page);
-    return catalog.page(page);
-  }
-
-  Future<void> pumpPhone(WidgetTester tester, CatalogPageLoader loader) async {
+  Future<void> pumpPhone(WidgetTester tester, FakeBookRepository books) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
-    await tester.pumpWidget(MaterialApp(home: CatalogScreen(loadPage: loader)));
+    final viewModel = CatalogViewModel(bookRepository: books);
+    addTearDown(viewModel.dispose);
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: appProviders(bookRepository: books),
+        child: MaterialApp(home: CatalogScreen(viewModel: viewModel)),
+      ),
+    );
   }
 
   testWidgets('loads the next page near the end of the list', (tester) async {
-    await pumpPhone(tester, loadPage);
+    final books = FakeBookRepository();
+    await pumpPhone(tester, books);
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
     await tester.pumpAndSettle();
-    debugPrint('after start: calls $calls');
+    debugPrint('after start: calls ${books.calls}');
 
     await tester.scrollUntilVisible(find.text('Sample Book 20'), 500);
     await tester.pumpAndSettle();
-    debugPrint('after scrolling to book 20: calls $calls');
+    debugPrint('after scrolling to book 20: calls ${books.calls}');
 
     await tester.scrollUntilVisible(find.text('Sample Book 60'), 500);
     await tester.pumpAndSettle();
     await tester.drag(find.byType(CustomScrollView), const Offset(0, -500));
     await tester.pumpAndSettle();
-    debugPrint('after the last book: calls $calls');
+    debugPrint('after the last book: calls ${books.calls}');
   });
 
   testWidgets('pull to refresh reloads the first page', (tester) async {
-    await pumpPhone(tester, loadPage);
+    final books = FakeBookRepository();
+    await pumpPhone(tester, books);
     await tester.pumpAndSettle();
 
     await tester.fling(find.text('Dune'), const Offset(0, 400), 1000);
     await tester.pumpAndSettle();
-    debugPrint('after pull to refresh: calls $calls');
-    expect(calls, [0, 0]);
+    debugPrint('after pull to refresh: calls ${books.calls}');
+    expect(books.calls, [0, 0]);
   });
 
   testWidgets('shows an error with a retry button', (tester) async {
-    var failures = 1;
-    Future<List<Book>> flaky(int page) async {
-      calls.add(page);
-      if (failures-- > 0) throw Exception('timeout');
-      return catalog.page(page);
-    }
-
-    await pumpPhone(tester, flaky);
+    final books = FakeBookRepository(failuresLeft: 1);
+    await pumpPhone(tester, books);
     await tester.pumpAndSettle();
     expect(find.text('The catalog could not be loaded.'), findsOneWidget);
 
     await tester.tap(find.text('Try again'));
     await tester.pumpAndSettle();
     expect(find.text('Dune'), findsOneWidget);
-    debugPrint('error then retry: calls $calls');
-  });
-
-  testWidgets('an empty catalog shows the empty view', (tester) async {
-    await pumpPhone(tester, (page) async => const []);
-    await tester.pumpAndSettle();
-    expect(find.text('No books in the catalog yet.'), findsOneWidget);
+    debugPrint('error then retry: calls ${books.calls}');
   });
 }

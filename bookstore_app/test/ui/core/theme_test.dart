@@ -1,4 +1,5 @@
 import 'package:bookstore_app/app.dart';
+import 'package:bookstore_app/config/dependencies.dart';
 import 'package:bookstore_app/data/sample_books.dart';
 import 'package:bookstore_app/ui/core/formatting.dart';
 import 'package:bookstore_app/ui/core/themes/bookstore_colors.dart';
@@ -7,6 +8,7 @@ import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:provider/provider.dart';
 
 String hex(Color c) =>
     '#${c.toARGB32().toRadixString(16).substring(2).toUpperCase()}';
@@ -49,7 +51,9 @@ void main() {
   testWidgets('the app follows the platform brightness', (tester) async {
     for (final brightness in Brightness.values) {
       tester.platformDispatcher.platformBrightnessTestValue = brightness;
-      await tester.pumpWidget(const BookstoreApp());
+      await tester.pumpWidget(
+        MultiProvider(providers: appProviders(), child: const BookstoreApp()),
+      );
       await tester.pumpAndSettle();
       final context = tester.element(find.text('Dune'));
       debugPrint(
