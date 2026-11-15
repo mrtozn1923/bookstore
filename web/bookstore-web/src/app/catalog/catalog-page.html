@@ -19,12 +19,18 @@
   <p class="muted" data-testid="book-count">{{ result.total }} {{ result.total === 1 ? 'book' : 'books' }}</p>
   <ul class="book-grid">
     @for (book of result.items; track book.isbn) {
-      <li class="book-card">
+      <li class="book-card" #card>
         <a [routerLink]="['/books', book.isbn]">{{ book.title }}</a>
         <span class="muted">{{ book.author }} · {{ book.publishedYear }}</span>
         <span class="muted">{{ book.category }}</span>
         <strong>{{ book.price | currency: 'TRY' : 'symbol-narrow' }}</strong>
-        <button type="button" (click)="cartStore.add(book.isbn)">Add to cart</button>
+        <div class="card-actions">
+          <button type="button" (click)="cartStore.add(book.isbn)">Add to cart</button>
+          <button #trigger type="button" class="secondary" aria-haspopup="dialog"
+                  [attr.aria-expanded]="quickView.openIsbn() === book.isbn"
+                  [attr.aria-label]="'Quick look: ' + book.title"
+                  (click)="quickView.open(book.isbn, card, trigger)">Quick look</button>
+        </div>
       </li>
     } @empty {
       <li class="muted">No books match your search.</li>

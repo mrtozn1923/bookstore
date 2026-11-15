@@ -28,3 +28,33 @@ mat-toolbar {
     container-background-color: var(--mat-sys-surface-container),
   ));
 }
+
+.account-panel {
+  min-width: 240px;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--mat-sys-surface-container-high);
+  color: var(--mat-sys-on-surface);
+  box-shadow: var(--mat-sys-level2);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  p {
+    margin: 0;
+  }
+
+  .name {
+    font: var(--mat-sys-title-small);
+  }
+
+  .email,
+  .role {
+    font: var(--mat-sys-body-small);
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  .role {
+    margin-bottom: 8px;
+  }
+}

@@ -4,14 +4,17 @@ import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { BookSummary, CategoryView, PagedResult } from '../core/api-models';
 import { CartStore } from '../cart/cart-store';
+import { QuickView } from './quick-view';
 
 @Component({
   selector: 'app-catalog-page',
   imports: [CurrencyPipe, RouterLink],
+  providers: [QuickView],
   templateUrl: './catalog-page.html',
 })
 export class CatalogPage {
   protected readonly cartStore = inject(CartStore);
+  protected readonly quickView = inject(QuickView);
   protected readonly search = signal('');
   protected readonly category = signal('');
 

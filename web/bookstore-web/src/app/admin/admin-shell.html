@@ -8,7 +8,26 @@
     <span class="title">Bookstore Admin</span>
     <span class="spacer"></span>
     <a matButton routerLink="/">Storefront</a>
+    <button matButton type="button" cdkOverlayOrigin #userOrigin="cdkOverlayOrigin" aria-haspopup="dialog"
+            [attr.aria-expanded]="accountOpen()" (click)="accountOpen.set(!accountOpen())">
+      <mat-icon>account_circle</mat-icon>
+      {{ user.name }}
+    </button>
   </mat-toolbar>
+
+  <!-- Declarative overlay: the directive turns this template into a TemplatePortal and attaches it -->
+  <ng-template cdkConnectedOverlay [cdkConnectedOverlayOrigin]="userOrigin" [cdkConnectedOverlayOpen]="accountOpen()"
+               [cdkConnectedOverlayPositions]="accountPositions" (overlayOutsideClick)="closeAccount(userOrigin.elementRef.nativeElement, false)"
+               (detach)="closeAccount(userOrigin.elementRef.nativeElement, true)" (attach)="focusFirst()"
+               (overlayKeydown)="accountKeydown($event)">
+    <section #accountPanel class="account-panel" role="dialog" aria-label="Account">
+      <p class="name">{{ user.name }}</p>
+      <p class="email">{{ user.email }}</p>
+      <p class="role">{{ user.role }}</p>
+      <a matButton routerLink="/admin/orders" (click)="accountOpen.set(false)">Orders</a>
+      <a matButton routerLink="/" (click)="accountOpen.set(false)">Sign out</a>
+    </section>
+  </ng-template>
 
   <mat-sidenav-container class="container">
     <mat-sidenav #drawer [mode]="mode()" [opened]="!handset()">

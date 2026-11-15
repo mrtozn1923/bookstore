@@ -49,3 +49,5 @@ input, select {
 .cart input { width: 4rem; }
 .total { font-weight: 700; }
 .checkout { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem; }
+.card-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+button.secondary { background: #ffffff; color: #1d4ed8; }
