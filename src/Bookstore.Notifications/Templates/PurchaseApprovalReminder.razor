@@ -1,0 +1,38 @@
+@inject IStringLocalizer<EmailText> T
+
+<EmailLayout Title="@(One ? T["ReminderSubjectOne"] : T["ReminderSubject", Model.Pending.Count])" Footer="@T["Footer"]">
+    <p>@T["Greeting", Model.ApproverName]</p>
+    <p>@(One ? T["ReminderIntroOne", Model.InstitutionName] : T["ReminderIntro", Model.InstitutionName, Model.Pending.Count])</p>
+    <table class="items" role="presentation">
+        <tr>
+            <th>@T["Order"]</th>
+            <th>@T["RequestedBy"]</th>
+            <th>@T["RequestedAt"]</th>
+            <th class="amount">@T["Total"]</th>
+        </tr>
+        @foreach (PendingApproval item in Model.Pending)
+        {
+            <tr>
+                <td>#@item.OrderId</td>
+                <td>@item.RequestedBy (@item.UnitName)</td>
+                <td>@item.RequestedAtUtc.ToString("d MMMM yyyy")</td>
+                <td class="amount">@item.Total.ToString("C", Money)</td>
+            </tr>
+            @if (item.Note is not null)
+            {
+                @* Razor HTML-encodes the note: user input can never become markup *@
+                <tr><td colspan="4">@T["Note"]: @item.Note</td></tr>
+            }
+        }
+    </table>
+    <p><a class="button" href="@Model.ApprovalsUrl">@T["ReviewButton"]</a></p>
+</EmailLayout>
+
+@code {
+    // Prices are always TRY, whatever language the approver reads
+    private static readonly CultureInfo Money = CultureInfo.GetCultureInfo("tr-TR");
+
+    [Parameter, EditorRequired] public required ApprovalReminderModel Model { get; set; }
+
+    private bool One => Model.Pending.Count == 1;
+}

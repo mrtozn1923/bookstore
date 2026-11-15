@@ -1,12 +1,29 @@
 using Bookstore.Notifications.Email;
+using Bookstore.Notifications.Outbox;
 using Bookstore.Notifications.Storage;
+using Bookstore.Notifications.Templates;
 using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Bookstore.Notifications;
 
 public static class NotificationsServiceCollectionExtensions
 {
+    public static IServiceCollection AddEmailOutbox<TContext>(this IServiceCollection services, IConfiguration configuration)
+        where TContext : DbContext
+    {
+        services.TryAddSingleton(TimeProvider.System);
+        services.AddOptions<EmailOutboxOptions>()
+            .Bind(configuration.GetSection("Notifications:Outbox"))
+            .PostConfigure(o => o.RetryDelays = o.RetryDelays is [] ? EmailOutboxOptions.DefaultRetryDelays : o.RetryDelays);
+        services.AddSingleton<EmailOutbox>();
+        services.AddSingleton<OutboxEmailDispatcher<TContext>>();
+        services.AddHostedService(sp => sp.GetRequiredService<OutboxEmailDispatcher<TContext>>());
+        return services;
+    }
+
     public static IServiceCollection AddNotifications(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddOptions<LocalFileStoreOptions>()
@@ -15,6 +32,10 @@ public static class NotificationsServiceCollectionExtensions
             .ValidateOnStart();
 
         services.AddSingleton<IFileStore, LocalFileStore>();
+        services.AddLocalization();
+        services.AddLogging();
+        services.AddOptions<EmailTemplateOptions>().Bind(configuration.GetSection("Notifications:Templates"));
+        services.AddSingleton<EmailTemplates>();
 
         // No SMTP host configured (e.g. a fresh clone): fall back to writing e-mails to the log
         IConfigurationSection smtp = configuration.GetSection("Notifications:Smtp");

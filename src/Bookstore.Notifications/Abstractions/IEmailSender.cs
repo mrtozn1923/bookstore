@@ -12,6 +12,16 @@ public sealed record EmailMessage
     public required string HtmlBody { get; init; }
     public required string TextBody { get; init; }
     public IReadOnlyList<EmailAttachment> Attachments { get; init; } = [];
+
+    // Set by the outbox so a retried message keeps the same Message-Id
+    public string? MessageId { get; init; }
+}
+
+// Thrown by senders; IsTransient tells the caller whether a retry can help
+public sealed class EmailDeliveryException(string message, bool isTransient, Exception? innerException = null)
+    : Exception(message, innerException)
+{
+    public bool IsTransient { get; } = isTransient;
 }
 
 public interface IEmailSender

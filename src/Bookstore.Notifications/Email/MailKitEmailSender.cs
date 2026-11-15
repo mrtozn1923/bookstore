@@ -27,11 +27,17 @@ public sealed class MailKitEmailSender(IOptions<SmtpOptions> options, ILogger<Ma
             SendResult result = await client.SendAsync(mime, cancellationToken);
             logger.LogInformation("Sent {MessageId} to {To}: {Response}", mime.MessageId, message.To.Address, result.ResponseText);
         }
-        catch (Exception ex) when (ex is IOException or SmtpProtocolException or ServiceNotConnectedException)
+        catch (SmtpCommandException ex)
+        {
+            // 4xx: try again later; 5xx: the server will never accept this message
+            bool transient = (int)ex.StatusCode is >= 400 and < 500;
+            throw new EmailDeliveryException($"SMTP {(int)ex.StatusCode} {ex.ErrorCode}: {ex.Message}", transient, ex);
+        }
+        catch (Exception ex) when (ex is IOException or SmtpProtocolException or ServiceNotConnectedException or TimeoutException)
         {
             // The connection is in an unknown state: drop it so the next send reconnects
             await ResetClientAsync();
-            throw;
+            throw new EmailDeliveryException($"SMTP connection failed: {ex.Message}", isTransient: true, ex);
         }
         finally
         {

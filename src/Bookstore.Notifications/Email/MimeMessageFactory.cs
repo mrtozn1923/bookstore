@@ -12,7 +12,7 @@ public static class MimeMessageFactory
         mime.To.Add(new MailboxAddress(message.To.DisplayName ?? "", message.To.Address));
         mime.Subject = message.Subject;
         mime.Date = DateTimeOffset.UtcNow;
-        mime.MessageId = MimeUtils.GenerateMessageId(MailboxAddress.Parse(options.FromAddress).Domain);
+        mime.MessageId = message.MessageId ?? MimeUtils.GenerateMessageId(MailboxAddress.Parse(options.FromAddress).Domain);
 
         BodyBuilder body = new()
         {

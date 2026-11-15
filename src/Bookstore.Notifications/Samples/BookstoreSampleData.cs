@@ -1,4 +1,5 @@
 using Bookstore.Notifications.Documents;
+using Bookstore.Notifications.Templates;
 
 namespace Bookstore.Notifications.Samples;
 
@@ -32,6 +33,17 @@ public static class BookstoreSampleData
         rows.Sort((a, b) => a.PlacedAtUtc.CompareTo(b.PlacedAtUtc));
         return new MonthlySalesReport(month, rows);
     }
+
+    public static ApprovalReminderModel ApprovalReminder(string approverName) => new(
+        ApproverName: approverName,
+        InstitutionName: "Hilltop Primary School",
+        Pending:
+        [
+            new PendingApproval(2101, "Emre", "Science Department", 9_120.00m, new DateTime(2026, 11, 10, 9, 30, 0, DateTimeKind.Utc), null),
+            new PendingApproval(2107, "Ayse", "Library", 4_560.00m, new DateTime(2026, 11, 11, 14, 5, 0, DateTimeKind.Utc),
+                "<b>Urgent</b> for the reading week <script>alert('x')</script>"),
+        ],
+        ApprovalsUrl: "https://bookstore.example.com/institution/approvals");
 
     public static InvoiceModel Invoice(int orderId) => new(
         InvoiceNumber: $"BKS-2026-{orderId:D6}",

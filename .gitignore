@@ -5,3 +5,6 @@ out/
 .vs/
 files/
 TestResults/
+*.db
+*.db-shm
+*.db-wal

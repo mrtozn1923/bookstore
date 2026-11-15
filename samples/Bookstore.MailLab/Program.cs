@@ -1,10 +1,12 @@
 using System.Diagnostics;
+using System.Globalization;
 using System.Net.Security;
 using System.Security.Cryptography;
 using Bookstore.Notifications;
 using Bookstore.Notifications.Documents;
 using Bookstore.Notifications.Email;
 using Bookstore.Notifications.Samples;
+using Bookstore.Notifications.Templates;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Configuration;
@@ -30,6 +32,9 @@ switch (command)
         // Try one connection with the given security mode, without the certificate pin
         await TryConnectAsync(smtp, Enum.Parse<SecureSocketOptions>(args[1]), pin: args.Contains("--pin"), authenticate: args.Contains("--auth"));
         break;
+    case "reminder":
+        await SendReminderAsync(host.Services, args.Length > 1 ? args[1] : "tr-TR", printHtml: args.Contains("--html"));
+        break;
     case "timing":
         await CompareConnectionReuseAsync(host.Services, smtp, int.Parse(args[1]));
         break;
@@ -48,6 +53,24 @@ static async Task SendOrderConfirmationAsync(IServiceProvider services)
 
     IEmailSender sender = services.GetRequiredService<IEmailSender>();
     await sender.SendAsync(message);
+}
+
+static async Task SendReminderAsync(IServiceProvider services, string cultureName, bool printHtml)
+{
+    EmailTemplates templates = services.GetRequiredService<EmailTemplates>();
+    CultureInfo culture = CultureInfo.GetCultureInfo(cultureName);
+    string approver = culture.Name == "tr-TR" ? "Nevin" : "Grace";
+    EmailMessage message = await templates.ApprovalReminderAsync(
+        BookstoreSampleData.ApprovalReminder(approver), new EmailAddress($"{approver.ToLowerInvariant()}@example.com", approver), culture);
+
+    Console.WriteLine($"Subject: {message.Subject}");
+    Console.WriteLine(message.TextBody);
+    if (printHtml)
+    {
+        Console.WriteLine(message.HtmlBody);
+    }
+
+    await services.GetRequiredService<IEmailSender>().SendAsync(message);
 }
 
 static async Task TryConnectAsync(SmtpOptions options, SecureSocketOptions security, bool pin, bool authenticate)
