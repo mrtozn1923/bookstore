@@ -3,4 +3,30 @@
   <ItemGroup Condition="'$(OutputType)' == 'Exe' and '$(UsingMicrosoftNETSdkWeb)' != 'true'">
     <None Update="appsettings*.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
+
+  <!-- Writes the commit and whether the working tree had local changes into assembly metadata. -->
+  <Target Name="AddSourceStatusMetadata"
+          BeforeTargets="GetAssemblyAttributes"
+          DependsOnTargets="InitializeSourceControlInformation"
+          Condition="'$(GenerateAssemblyInfo)' != 'false'">
+    <!-- git status prints one line per changed file; no output means a clean working tree. -->
+    <Exec Command="git status --porcelain"
+          WorkingDirectory="$(MSBuildProjectDirectory)"
+          ConsoleToMSBuild="true"
+          StandardOutputImportance="low"
+          IgnoreExitCode="true">
+      <Output TaskParameter="ConsoleOutput" ItemName="_GitStatusLine" />
+      <Output TaskParameter="ExitCode" PropertyName="_GitExitCode" />
+    </Exec>
+
+    <PropertyGroup>
+      <_WorkingTreeDirty>false</_WorkingTreeDirty>
+      <_WorkingTreeDirty Condition="'@(_GitStatusLine)' != ''">true</_WorkingTreeDirty>
+    </PropertyGroup>
+
+    <ItemGroup Condition="'$(_GitExitCode)' == '0'">
+      <AssemblyMetadata Include="SourceRevision" Value="$(SourceRevisionId)" />
+      <AssemblyMetadata Include="WorkingTreeDirty" Value="$(_WorkingTreeDirty)" />
+    </ItemGroup>
+  </Target>
 </Project>

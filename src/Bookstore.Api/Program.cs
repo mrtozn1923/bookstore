@@ -42,4 +42,10 @@ if (app.Environment.IsDevelopment())
 app.MapCatalogEndpoints();
 app.MapOrderingEndpoints();
 
+// The Angular client is copied to wwwroot on publish; unknown non-API paths fall back to its index.html.
+app.UseDefaultFiles();
+app.UseStaticFiles();
+app.MapFallback("/api/{**path}", () => TypedResults.NotFound());
+app.MapFallbackToFile("index.html");
+
 app.Run();

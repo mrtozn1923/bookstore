@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using Bookstore.Contracts;
@@ -13,6 +14,11 @@ return args switch
 
 static int PrintInfo()
 {
+    Assembly tool = typeof(Program).Assembly;
+    Console.WriteLine($"Version:     {tool.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion}");
+    Dictionary<string, string?> metadata = tool.GetCustomAttributes<AssemblyMetadataAttribute>().ToDictionary(m => m.Key, m => m.Value);
+    string dirty = metadata.GetValueOrDefault("WorkingTreeDirty") == "true" ? " + local changes" : "";
+    Console.WriteLine($"Source:      {metadata.GetValueOrDefault("SourceRevision") ?? "(unknown)"}{dirty}");
     Console.WriteLine($"Runtime:     {RuntimeInformation.FrameworkDescription}");
     Console.WriteLine($"Environment: {Environment.GetEnvironmentVariable("BOOKSTORE_ENVIRONMENT") ?? "(not set)"}");
     Console.WriteLine($"API:         {ReadApiBaseUrl() ?? "(appsettings.json not found)"}");

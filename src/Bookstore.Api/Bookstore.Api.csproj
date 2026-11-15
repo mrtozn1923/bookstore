@@ -14,4 +14,49 @@
     </PackageReference>
   </ItemGroup>
 
+  <!-- Angular client: built with npm on publish and copied to wwwroot. -->
+  <PropertyGroup>
+    <ClientRoot>$(MSBuildThisFileDirectory)..\..\web\bookstore-web\</ClientRoot>
+    <ClientDist>$(ClientRoot)dist\bookstore-web\browser\</ClientDist>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ClientSource Include="$(ClientRoot)src\**;$(ClientRoot)public\**" />
+    <ClientSource Include="$(ClientRoot)angular.json;$(ClientRoot)package-lock.json;$(ClientRoot)tsconfig*.json" />
+  </ItemGroup>
+
+  <!-- npm ci only when package-lock.json is newer than the copy npm keeps in node_modules. -->
+  <Target Name="RestoreClient"
+          Inputs="$(ClientRoot)package-lock.json"
+          Outputs="$(ClientRoot)node_modules\.package-lock.json">
+    <Exec Command="npm ci" WorkingDirectory="$(ClientRoot)" />
+  </Target>
+
+  <!-- ng build only when a source file is newer than the built index.html. -->
+  <Target Name="BuildClient"
+          DependsOnTargets="RestoreClient"
+          Inputs="@(ClientSource)"
+          Outputs="$(ClientDist)index.html">
+    <Exec Command="npm run build" WorkingDirectory="$(ClientRoot)" />
+  </Target>
+
+  <!-- Separate from BuildClient so the files are added even when BuildClient is skipped. -->
+  <Target Name="PublishClient"
+          DependsOnTargets="BuildClient"
+          BeforeTargets="ComputeResolvedFilesToPublishList"
+          Condition="'$(SkipClientBuild)' != 'true'">
+    <ItemGroup>
+      <ClientFile Include="$(ClientDist)**" />
+      <ResolvedFileToPublish Include="@(ClientFile)"
+                             RelativePath="wwwroot\%(RecursiveDir)%(Filename)%(Extension)"
+                             CopyToPublishDirectory="PreserveNewest" />
+    </ItemGroup>
+    <Message Importance="high" Text="Client files: @(ClientFile->'%(RecursiveDir)%(Filename)%(Extension)', ', ')" />
+  </Target>
+
+  <!-- RemoveDir instead of "rm -rf": a task works the same on Windows, Linux and macOS. -->
+  <Target Name="CleanClient" AfterTargets="Clean">
+    <RemoveDir Directories="$(ClientRoot)dist" />
+  </Target>
+
 </Project>
