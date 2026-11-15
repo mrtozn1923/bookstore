@@ -1,4 +1,4 @@
-# Combines the api and web artifacts of the same run into one release artifact with a manifest.
+# Combines the api, web and migrations artifacts of the same run into one release artifact with a manifest.
 parameters:
   - name: manifestScript
     type: string
@@ -25,10 +25,14 @@ jobs:
       - download: current
         artifact: web
 
+      - download: current
+        artifact: migrations
+
       - script: |
           mkdir -p $(Build.ArtifactStagingDirectory)/release
           cp -R $(Pipeline.Workspace)/api $(Build.ArtifactStagingDirectory)/release/api
           cp -R $(Pipeline.Workspace)/web $(Build.ArtifactStagingDirectory)/release/web
+          cp -R $(Pipeline.Workspace)/migrations $(Build.ArtifactStagingDirectory)/release/migrations
           bash ${{ parameters.manifestScript }} $(Build.ArtifactStagingDirectory)/release
         displayName: Assemble release folder
         env:

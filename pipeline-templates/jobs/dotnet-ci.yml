@@ -78,3 +78,19 @@ jobs:
         inputs:
           targetPath: $(Build.ArtifactStagingDirectory)/api
           artifact: api
+
+      # One self-contained executable that applies the migrations; it runs in the deploy stage, not here.
+      - script: |
+          dotnet tool restore
+          dotnet ef migrations bundle --project ${{ parameters.apiProject }} --configuration ${{ parameters.buildConfiguration }} \
+            --self-contained --target-runtime linux-x64 --output $(Build.ArtifactStagingDirectory)/migrations/efbundle
+        displayName: Build EF Core migration bundle
+        env:
+          # Program.cs needs a connection string to build the DbContext; the bundle does not connect while it is built.
+          ConnectionStrings__BookstoreDb: Server=bundle-build-only;Database=BookstoreDb
+
+      - task: PublishPipelineArtifact@1
+        displayName: Upload migrations artifact
+        inputs:
+          targetPath: $(Build.ArtifactStagingDirectory)/migrations
+          artifact: migrations

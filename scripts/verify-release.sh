@@ -22,6 +22,7 @@ web_actual=$(find "$release_dir/web" -type f | wc -l | tr -d ' ')
 
 [ -f "$release_dir/api/Bookstore.Api.dll" ] || fail "api/Bookstore.Api.dll is missing"
 [ -f "$release_dir/web/index.html" ] || fail "web/index.html is missing"
+[ -f "$release_dir/migrations/efbundle" ] || fail "migrations/efbundle is missing"
 [ "$api_actual" = "$api_expected" ] || fail "api has $api_actual files, manifest says $api_expected"
 [ "$web_actual" = "$web_expected" ] || fail "web has $web_actual files, manifest says $web_expected"
 if [ -n "${EXPECTED_COMMIT:-}" ] && [ "$commit" != "$EXPECTED_COMMIT" ]; then

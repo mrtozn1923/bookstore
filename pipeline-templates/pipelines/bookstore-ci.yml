@@ -101,3 +101,4 @@ stages:
           environment: production
           dependsOn: Deploy_staging
           mainOnly: true
+          useSlot: true

@@ -1,5 +1,6 @@
 # One deployment stage per environment. It deploys the release artifact built once in the Build stage.
-# Approvals and checks are not defined here: the owners of the bookstore-<environment> environment add them in the web UI.
+# Approvals and checks are not defined here: the owners of the bookstore-<environment> environment and of the
+# bookstore-azure-<environment> service connection add them in the web UI.
 parameters:
   - name: environment
     type: string
@@ -10,6 +11,9 @@ parameters:
   - name: dependsOn
     type: string
   - name: mainOnly
+    type: boolean
+    default: false
+  - name: useSlot
     type: boolean
     default: false
 
@@ -25,7 +29,10 @@ stages:
     pool:
       vmImage: ubuntu-24.04
     variables:
+      # apiAppName, resourceGroup, webStorageAccount
       - group: bookstore-${{ parameters.environment }}
+      # Linked to Azure Key Vault: BookstoreDbMigrations
+      - group: bookstore-${{ parameters.environment }}-secrets
     jobs:
       - deployment: Deploy
         displayName: Deploy release to ${{ parameters.environment }}
@@ -34,7 +41,7 @@ stages:
           runOnce:
             deploy:
               steps:
-                # Only the release artifact; api and web are already inside it.
+                # Only the release artifact; api, web and migrations are already inside it.
                 - download: current
                   artifact: release
 
@@ -46,3 +53,50 @@ stages:
                   displayName: Verify release artifact
                   env:
                     EXPECTED_COMMIT: $(Build.SourceVersion)
+
+                # Migrations run before the new code goes live, so they must stay backward compatible.
+                - script: |
+                    chmod +x $(Pipeline.Workspace)/release/migrations/efbundle
+                    $(Pipeline.Workspace)/release/migrations/efbundle
+                  displayName: Apply EF Core migrations
+                  env:
+                    ConnectionStrings__BookstoreDb: $(BookstoreDbMigrations)
+
+                - task: AzureWebApp@1
+                  name: deployApi
+                  displayName: Deploy API
+                  inputs:
+                    azureSubscription: bookstore-azure-${{ parameters.environment }}
+                    appType: webAppLinux
+                    appName: $(apiAppName)
+                    ${{ if eq(parameters.useSlot, true) }}:
+                      deployToSlotOrASE: true
+                      resourceGroupName: $(resourceGroup)
+                      slotName: staging
+                    package: $(Pipeline.Workspace)/release/api
+                    runtimeStack: DOTNETCORE|10.0
+
+                - script: bash scripts/smoke-test.sh $(deployApi.AppServiceApplicationUrl)
+                  displayName: Smoke test
+
+                - ${{ if eq(parameters.useSlot, true) }}:
+                    - task: AzureAppServiceManage@0
+                      displayName: Swap staging slot into production
+                      inputs:
+                        azureSubscription: bookstore-azure-${{ parameters.environment }}
+                        Action: Swap Slots
+                        WebAppName: $(apiAppName)
+                        ResourceGroupName: $(resourceGroup)
+                        SourceSlot: staging
+                        SwapWithProduction: true
+
+                - task: AzureCLI@2
+                  displayName: Upload Angular app to the static website
+                  inputs:
+                    azureSubscription: bookstore-azure-${{ parameters.environment }}
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    inlineScript: >-
+                      az storage blob upload-batch --auth-mode login --overwrite true
+                      --account-name $(webStorageAccount) --destination '$web'
+                      --source $(Pipeline.Workspace)/release/web
