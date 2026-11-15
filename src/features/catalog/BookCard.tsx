@@ -6,11 +6,12 @@ type BookCardProps = {
   book: BookSummary;
   quantityInCart: number;
   onAdd: (book: BookSummary, amount: number) => void;
+  onSelect: (isbn: string) => void;
 };
 
 const maxAmount = 10;
 
-export function BookCard({ book, quantityInCart, onAdd }: BookCardProps) {
+export function BookCard({ book, quantityInCart, onAdd, onSelect }: BookCardProps) {
   // Local state: only this card cares how many copies are picked
   const [amount, setAmount] = useState(1);
 
@@ -21,7 +22,7 @@ export function BookCard({ book, quantityInCart, onAdd }: BookCardProps) {
 
   return (
     <li className="book-card">
-      <strong>{book.title}</strong>
+      <button type="button" className="link" onClick={() => onSelect(book.isbn)}>{book.title}</button>
       <span className="muted">
         {book.author} · {book.publishedYear}
         {book.publishedYear < 1900 && <span className="badge">Classic</span>}

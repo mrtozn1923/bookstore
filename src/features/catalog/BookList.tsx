@@ -5,9 +5,10 @@ type BookListProps = {
   books: BookSummary[];
   quantities: Record<string, number>;
   onAdd: (book: BookSummary, amount: number) => void;
+  onSelect: (isbn: string) => void;
 };
 
-export function BookList({ books, quantities, onAdd }: BookListProps) {
+export function BookList({ books, quantities, onAdd, onSelect }: BookListProps) {
   if (books.length === 0) {
     return <p className="muted">No books match your search.</p>;
   }
@@ -16,7 +17,7 @@ export function BookList({ books, quantities, onAdd }: BookListProps) {
     <ul className="book-grid">
       {books.map((book) => (
         // key: a stable identity like @for's track; never the array index
-        <BookCard key={book.isbn} book={book} quantityInCart={quantities[book.isbn] ?? 0} onAdd={onAdd} />
+        <BookCard key={book.isbn} book={book} quantityInCart={quantities[book.isbn] ?? 0} onAdd={onAdd} onSelect={onSelect} />
       ))}
     </ul>
   );

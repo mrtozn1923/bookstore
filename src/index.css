@@ -61,3 +61,11 @@ input, select {
 .amount { display: flex; align-items: center; gap: 0.5rem; }
 .amount button { padding: 0.1rem 0.6rem; }
 button:disabled { opacity: 0.5; cursor: default; }
+
+.page { display: grid; grid-template-columns: 1fr 280px; gap: 1.5rem; align-items: start; }
+.toolbar { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+.cart-panel ul { list-style: none; padding: 0; }
+.cart-panel input { width: 3.5rem; }
+.total { font-weight: 700; }
+.details { margin-top: 1rem; padding: 1rem; border: 1px solid #e5e7eb; border-radius: 8px; }
+button.link { padding: 0; border: 0; background: none; color: #1d4ed8; font-weight: 700; text-align: left; }
