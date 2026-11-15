@@ -10,6 +10,5 @@ labels:
     includeSelectors: false
     includeTemplates: true
 images:
-  - name: bookstore-api
-    newName: gitopsseries-bookstore-api
+  - name: gitopsseries-bookstore-api
     newTag: 1.0.0
