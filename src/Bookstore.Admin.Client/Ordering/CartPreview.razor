@@ -1,0 +1,71 @@
+<div class="card p-3">
+    <p class="text-muted mb-2">Calculated on: <code>@RendererInfo.Name</code></p>
+    <div class="d-flex gap-2 mb-3">
+        <select class="form-select w-auto" @bind="selectedIsbn">
+            @foreach (BookPrice book in Books)
+            {
+                <option value="@book.Isbn">@book.Title (@book.Price.ToString("N2") TRY)</option>
+            }
+        </select>
+        <input type="number" min="1" max="500" class="form-control w-auto" @bind="quantity" />
+        <button class="btn btn-primary" disabled="@(!RendererInfo.IsInteractive)" @onclick="Add">Add</button>
+    </div>
+
+    <table class="table table-sm">
+        <tbody>
+            @foreach (CartLine line in lines)
+            {
+                <tr><td>@line.Quantity x @line.Title</td><td class="text-end">@line.Total.ToString("N2") TRY</td></tr>
+            }
+        </tbody>
+    </table>
+    <p>
+        @TotalQuantity items, subtotal @Subtotal.ToString("N2") TRY,
+        discount @Discount.ToString("N2") TRY, total <strong>@((Subtotal - Discount).ToString("N2")) TRY</strong>
+    </p>
+</div>
+
+@code {
+    // Institutional orders: at least 20 copies get 10% off (Bookstore's B2B rule).
+    private const int InstitutionalMinimum = 20;
+    private const decimal InstitutionalDiscountRate = 0.10m;
+
+    private readonly List<CartLine> lines = [];
+    private string selectedIsbn = "";
+    private int quantity = 1;
+
+    [Parameter, EditorRequired]
+    public IReadOnlyList<BookPrice> Books { get; set; } = [];
+
+    private int TotalQuantity => lines.Sum(l => l.Quantity);
+    private decimal Subtotal => lines.Sum(l => l.Total);
+    private decimal Discount =>
+        TotalQuantity >= InstitutionalMinimum ? Math.Round(Subtotal * InstitutionalDiscountRate, 2) : 0m;
+
+    protected override void OnParametersSet()
+    {
+        if (selectedIsbn.Length == 0 && Books.Count > 0)
+        {
+            selectedIsbn = Books[0].Isbn;
+        }
+    }
+
+    private void Add()
+    {
+        BookPrice book = Books.Single(b => b.Isbn == selectedIsbn);
+        int index = lines.FindIndex(l => l.Isbn == book.Isbn);
+        if (index >= 0)
+        {
+            lines[index] = lines[index] with { Quantity = lines[index].Quantity + quantity };
+        }
+        else
+        {
+            lines.Add(new CartLine(book.Isbn, book.Title, book.Price, quantity));
+        }
+    }
+
+    private sealed record CartLine(string Isbn, string Title, decimal Price, int Quantity)
+    {
+        public decimal Total => Price * Quantity;
+    }
+}
