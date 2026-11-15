@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <!-- net9.0 is here only to compare the JIT of .NET 9 with .NET 10 -->
+    <TargetFramework></TargetFramework>
+    <TargetFrameworks>net10.0;net9.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <ProjectReference Include="../../src/Bookstore.Filter/Bookstore.Filter.csproj" />
+  </ItemGroup>
+
+  <!-- the library targets net10.0 only, so the .NET 9 build compiles the Book record itself -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
+    <Compile Include="../../src/Bookstore.Filter/Catalog/Book.cs" Link="Catalog/Book.cs" />
+  </ItemGroup>
+
+</Project>

@@ -3,3 +3,4 @@ obj/
 node_modules/
 *.jit.txt
 dist/
+BenchmarkDotNet.Artifacts/

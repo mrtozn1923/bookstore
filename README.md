@@ -20,4 +20,14 @@ dotnet run --project samples/RegexLexer
 dotnet run --project samples/RoslynSemantic
 cd samples/ts-erasure && npm install && npx tsc && node dist/book.js
 node samples/v8-tiers/hot.js
+
+# 05: IL, tiers, PGO, escape analysis (net9.0 needs the .NET 9 runtime)
+DOTNET_JitDisasmSummary=1 dotnet run -c Release --project samples/JitLab -f net10.0 -- tiers
+DOTNET_JitDisasm=CountMatches dotnet run -c Release --project samples/JitLab -f net10.0 -- pgo
+dotnet run -c Release --project samples/JitLab -f net9.0 -- alloc
+dotnet run -c Release --project samples/JitLab -f net10.0 -- alloc
+dotnet run -c Release --project samples/JitLab -f net10.0 -- warmup
+dotnet run -c Release --project benchmarks/Bookstore.Filter.Benchmarks -- --filter '*RuleBenchmarks*'
+node --allow-natives-syntax samples/v8-tiers/shapes.js
+node --trace-deopt samples/v8-tiers/deopt.js
 ```

@@ -1,5 +1,9 @@
 <Solution>
+  <Folder Name="/benchmarks/">
+    <Project Path="benchmarks/Bookstore.Filter.Benchmarks/Bookstore.Filter.Benchmarks.csproj" />
+  </Folder>
   <Folder Name="/samples/">
+    <Project Path="samples/JitLab/JitLab.csproj" />
     <Project Path="samples/PipelineTour/PipelineTour.csproj" />
     <Project Path="samples/RegexLexer/RegexLexer.csproj" />
     <Project Path="samples/RoslynSemantic/RoslynSemantic.csproj" />
