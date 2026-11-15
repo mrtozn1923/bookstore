@@ -1,0 +1,14 @@
+[
+  { "text": "The cover of Dune was torn and several pages were wet when the box arrived.", "expected": "Damaged" },
+  { "text": "I ordered Emma but the parcel had Middlemarch in it.", "expected": "WrongItem" },
+  { "text": "The page said hardcover, I got a paperback.", "expected": "NotAsDescribed" },
+  { "text": "I bought The Hobbit as a gift but my nephew already has it.", "expected": "ChangedMind" },
+  { "text": "It was for a book club meeting on Friday and it came on Monday.", "expected": "LateDelivery" },
+  { "text": "The spine is cracked down the middle, it looks like it was dropped.", "expected": "Damaged" },
+  { "text": "This is the 2003 edition, the listing showed the new annotated edition.", "expected": "NotAsDescribed" },
+  { "text": "I don't need it anymore, can I send it back unopened?", "expected": "ChangedMind" },
+  { "text": "You sent two copies of the same book instead of the second volume.", "expected": "WrongItem" },
+  { "text": "The exam was last week; the textbook arrived three days after it.", "expected": "LateDelivery" },
+  { "text": "I want to return it because the font is too small for me to read comfortably.", "expected": "Other" },
+  { "text": "Box was fine but the book inside smells strongly of smoke.", "expected": "Damaged" }
+]
