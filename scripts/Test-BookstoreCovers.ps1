@@ -47,6 +47,7 @@ param(
 )
 
 begin {
+    Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..', 'modules', 'Bookstore.Ops') -Force
     $isbns = [System.Collections.Generic.List[string]]::new()
     if ($Path) {
         foreach ($line in Get-Content -Path $Path) {
@@ -60,31 +61,8 @@ process {
 }
 
 end {
-    # Each block runs in its own runspace: outer variables come in only through $using:
-    $results = $isbns | ForEach-Object -ThrottleLimit $ThrottleLimit -Parallel {
-        # No progress bar for every single request
-        $ProgressPreference = 'SilentlyContinue'
-        $url = "$($using:BaseUrl)/covers/$_.jpg"
-        $watch = [System.Diagnostics.Stopwatch]::StartNew()
-        $statusCode = 0
-        $errorMessage = $null
-        try {
-            $response = Invoke-WebRequest -Uri $url -Method Head -TimeoutSec $using:TimeoutSec -SkipHttpErrorCheck
-            $statusCode = [int]$response.StatusCode
-        }
-        catch {
-            # Connection refused, timeout, DNS: keep the reason, do not hide it
-            $errorMessage = $_.Exception.Message
-        }
-        [pscustomobject]@{
-            Isbn       = $_
-            StatusCode = $statusCode
-            Ms         = $watch.ElapsedMilliseconds
-            Url        = $url
-            Error      = $errorMessage
-        }
-    }
-
+    # The parallel check lives in Bookstore.Ops (Test-BookstoreCover) since post 05
+    $results = $isbns | Test-BookstoreCover -BaseUrl $BaseUrl -ThrottleLimit $ThrottleLimit -TimeoutSec $TimeoutSec
     $broken = @($results | Where-Object StatusCode -ne 200)
     Write-Verbose "Checked $(@($results).Count) covers, $($broken.Count) broken"
     if ($OutFile) {

@@ -33,20 +33,15 @@ param(
     [int] $TimeoutSec = 5
 )
 
-$url = "$($BaseUrl.TrimEnd('/'))/health"
+Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..', 'modules', 'Bookstore.Ops') -Force
 
-try {
-    $response = Invoke-RestMethod -Uri $url -TimeoutSec $TimeoutSec -SkipHttpErrorCheck -StatusCodeVariable statusCode
-}
-catch {
-    Write-Output "FAIL $url ($($_.Exception.Message))"
-    exit 1
-}
-
-if ($statusCode -eq 200 -and $response.status -eq 'Healthy') {
-    Write-Output "OK $url"
+# The module returns an object; this script turns it into a status line and an exit code
+$result = Get-BookstoreHealth -BaseUrl $BaseUrl -TimeoutSec $TimeoutSec
+if ($result.Healthy) {
+    Write-Output "OK $($result.Url)"
     exit 0
 }
 
-Write-Output "FAIL $url (HTTP $statusCode, status: $($response.status))"
+$reason = if ($result.Error) { $result.Error } else { "HTTP $($result.StatusCode), status: $($result.Status)" }
+Write-Output "FAIL $($result.Url) ($reason)"
 exit 1

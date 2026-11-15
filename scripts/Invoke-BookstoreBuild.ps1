@@ -41,22 +41,13 @@ $solution = Join-Path -Path $root -ChildPath 'Bookstore.slnx'
 $project = Join-Path -Path $root -ChildPath 'src', 'Bookstore.Api'
 $staging = Join-Path -Path ([System.IO.Path]::GetTempPath()) -ChildPath "bookstore-publish-$PID"
 
-function Invoke-Dotnet {
-    param(
-        [string] $Command,
-        [string[]] $Arguments
-    )
-    Write-Output "==> dotnet $Command"
-    $watch = [System.Diagnostics.Stopwatch]::StartNew()
-    dotnet $Command @Arguments --nologo -v quiet
-    Write-Output ('    {0} finished in {1:N1} s' -f $Command, $watch.Elapsed.TotalSeconds)
-}
+Import-Module -Name (Join-Path -Path $root -ChildPath 'modules', 'Bookstore.Ops') -Force
 
 try {
-    Invoke-Dotnet -Command restore -Arguments $solution
-    Invoke-Dotnet -Command build -Arguments $solution, '-c', $Configuration, '--no-restore'
-    Invoke-Dotnet -Command test -Arguments $solution, '-c', $Configuration, '--no-build'
-    Invoke-Dotnet -Command publish -Arguments $project, '-c', $Configuration, '--no-build', '-o', $staging
+    Invoke-BookstoreDotnet -Command restore -Arguments $solution
+    Invoke-BookstoreDotnet -Command build -Arguments $solution, '-c', $Configuration, '--no-restore'
+    Invoke-BookstoreDotnet -Command test -Arguments $solution, '-c', $Configuration, '--no-build'
+    Invoke-BookstoreDotnet -Command publish -Arguments $project, '-c', $Configuration, '--no-build', '-o', $staging
 
     # Replace the drop folder only now: every step above has succeeded
     if (Test-Path -Path $OutputPath) { Remove-Item -Path $OutputPath -Recurse -Force }
