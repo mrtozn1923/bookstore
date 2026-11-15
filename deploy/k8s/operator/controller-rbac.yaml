@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: campaign-controller
+  namespace: bookstore
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: campaign-controller
+  namespace: bookstore
+rules:
+  - apiGroups: ["bookstore.example.com"]
+    resources: ["campaigns"]
+    verbs: ["get", "list", "watch", "patch"]
+  - apiGroups: ["bookstore.example.com"]
+    resources: ["campaigns/status"]
+    verbs: ["patch"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "create", "update"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: campaign-controller
+  namespace: bookstore
+subjects:
+  - kind: ServiceAccount
+    name: campaign-controller
+    namespace: bookstore
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: campaign-controller

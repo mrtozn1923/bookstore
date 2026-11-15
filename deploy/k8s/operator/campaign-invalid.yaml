@@ -1,0 +1,12 @@
+apiVersion: bookstore.example.com/v1alpha1
+kind: Campaign
+metadata:
+  name: broken
+  namespace: bookstore
+spec:
+  title: "Broken"
+  discountPercent: 90
+  startsAt: "2026-12-31T00:00:00Z"
+  endsAt: "2026-12-01T00:00:00Z"
+  isbns:
+    - "12345"

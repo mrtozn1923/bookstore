@@ -1,0 +1,13 @@
+apiVersion: bookstore.example.com/v1alpha1
+kind: Campaign
+metadata:
+  name: classics-week
+  namespace: bookstore
+spec:
+  title: "Classics Week"
+  discountPercent: 20
+  startsAt: "2026-11-10T00:00:00Z"
+  endsAt: "2026-11-30T23:59:59Z"
+  isbns:
+    - "9780141439518"
+    - "9780141439549"
