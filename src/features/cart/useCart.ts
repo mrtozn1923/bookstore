@@ -1,9 +1,8 @@
 import { useMutation, useMutationState, useQuery, useQueryClient } from '@tanstack/react-query';
-import { cartApi, cartKey } from '@/features/cart/cartApi';
+import { cartApi, cartKey, cartQuery } from '@/features/cart/cartApi';
 import { useCartId } from '@/features/cart/useCartId';
 import { applyChange, type QuantityChange } from '@/features/cart/cartLines';
 import type { Cart, CartLine } from '@/features/cart/types';
-import { ApiError } from '@/shared/api';
 
 const quantityMutationKey = ['cart', 'setQuantity'];
 
@@ -11,20 +10,7 @@ export function useCart() {
   const { cartId, setCartId } = useCartId();
   const queryClient = useQueryClient();
 
-  const { data: cart = null } = useQuery({
-    queryKey: cartKey(cartId),
-    queryFn: async ({ signal }) => {
-      try {
-        return await cartApi.get(cartId!, signal);
-      } catch (error) {
-        if (error instanceof ApiError && error.status === 404) {
-          return null; // the server forgot this cart (e.g. it was ordered)
-        }
-        throw error;
-      }
-    },
-    enabled: cartId !== null,
-  });
+  const { data: cart = null } = useQuery({ ...cartQuery(cartId), enabled: cartId !== null });
 
   const quantityMutation = useMutation({
     mutationKey: quantityMutationKey,

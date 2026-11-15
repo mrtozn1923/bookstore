@@ -25,11 +25,11 @@ export const router = createBrowserRouter([
         middleware: [requireUser],
         // Code splitting: the checkout chunk is downloaded on the first visit to /checkout
         lazy: async () => {
-          const [{ CheckoutPage }, { checkoutAction }] = await Promise.all([
+          const [{ CheckoutPage }, { checkoutLoader }] = await Promise.all([
             import('@/features/checkout/CheckoutPage'),
-            import('@/features/checkout/checkoutAction'),
+            import('@/features/checkout/checkoutLoader'),
           ]);
-          return { Component: CheckoutPage, action: checkoutAction };
+          return { Component: CheckoutPage, loader: checkoutLoader };
         },
       },
       { path: 'orders/:orderId', loader: orderLoader, Component: OrderPage },

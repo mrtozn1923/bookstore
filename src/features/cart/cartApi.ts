@@ -1,5 +1,6 @@
+import { queryOptions } from '@tanstack/react-query';
 import type { Cart, Order } from '@/features/cart/types';
-import { apiFetch } from '@/shared/api';
+import { ApiError, apiFetch } from '@/shared/api';
 
 export const cartKey = (cartId: string | null) => ['cart', cartId] as const;
 
@@ -13,3 +14,20 @@ export const cartApi = {
     apiFetch<Order>('/api/orders', { method: 'POST', body: JSON.stringify({ cartId, customerName, customerEmail }) }),
   getOrder: (orderId: string, signal?: AbortSignal) => apiFetch<Order>(`/api/orders/${orderId}`, { signal }),
 };
+
+// Shared by useCart and the checkout loader
+export function cartQuery(cartId: string | null) {
+  return queryOptions({
+    queryKey: cartKey(cartId),
+    queryFn: async ({ signal }) => {
+      try {
+        return await cartApi.get(cartId!, signal);
+      } catch (error) {
+        if (error instanceof ApiError && error.status === 404) {
+          return null; // the server forgot this cart (e.g. it was ordered)
+        }
+        throw error;
+      }
+    },
+  });
+}
