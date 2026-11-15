@@ -22,3 +22,10 @@ export function describe(status: OrderStatus): string {
       return assertNever(status);
   }
 }
+
+// Only orders that haven't shipped can be cancelled
+export type Cancellable = Extract<OrderStatus, { kind: "pending" | "paid" }>;
+
+export function cancel(status: Cancellable, reason: string): OrderStatus {
+  return { kind: "cancelled", reason };
+}
