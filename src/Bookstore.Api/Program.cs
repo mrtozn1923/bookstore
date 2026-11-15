@@ -49,11 +49,13 @@ if (app.Environment.IsDevelopment())
     if (app.Configuration.GetValue<bool>("Database:MigrateOnStartup"))
     {
         await app.MigrateDatabaseAsync();
+        await app.SeedDemoOrdersAsync(app.Configuration.GetValue<int>("Database:DemoOrders"));
     }
 }
 
 app.MapCatalogEndpoints();
 app.MapOrderingEndpoints();
+app.MapOrderAdminEndpoints();
 app.MapInstitutionalEndpoints();
 
 app.Run();

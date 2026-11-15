@@ -1,0 +1,39 @@
+h1 {
+  font: var(--mat-sys-headline-small);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+// Scrolls inside the page, so the sticky header and the sticky id column have something to stick to
+.table-container {
+  max-height: 60vh;
+  overflow: auto;
+}
+
+// Fixed widths via the class mat-table puts on every cell of a column
+.mat-column-select {
+  width: 48px;
+}
+
+.mat-column-id {
+  width: 96px;
+}
+
+.mat-column-placedAtUtc,
+.mat-column-customer {
+  white-space: nowrap;
+}
+
+.mat-column-total {
+  width: 120px;
+  text-align: right;
+}
+
+.no-data {
+  padding: 16px;
+}

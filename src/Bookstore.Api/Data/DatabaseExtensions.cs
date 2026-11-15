@@ -1,3 +1,4 @@
+using Bookstore.Ordering;
 using Microsoft.EntityFrameworkCore;
 
 namespace Bookstore.Data;
@@ -16,5 +17,13 @@ public static class DatabaseExtensions
             return;
         }
         await db.Database.MigrateAsync();
+    }
+
+    // Development convenience: demo orders for the back office screens ("Database:DemoOrders": 10000).
+    public static async Task SeedDemoOrdersAsync(this WebApplication app, int count)
+    {
+        await using AsyncServiceScope scope = app.Services.CreateAsyncScope();
+        BookstoreContext db = scope.ServiceProvider.GetRequiredService<BookstoreContext>();
+        await DemoOrders.SeedAsync(db, count, scope.ServiceProvider.GetRequiredService<TimeProvider>());
     }
 }

@@ -1,0 +1,80 @@
+<h1>Orders</h1>
+
+<div class="toolbar">
+  <mat-form-field subscriptSizing="dynamic">
+    <mat-label>Status</mat-label>
+    <mat-select [value]="status()" (valueChange)="statusChanged($event)">
+      <mat-option value="">All</mat-option>
+      @for (s of statuses; track s) {
+        <mat-option [value]="s">{{ s }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  <span class="selected" data-testid="selected">{{ selection.selected.length }} selected</span>
+</div>
+
+<div class="table-container">
+  @if (orders.isLoading()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+  <table mat-table [dataSource]="rows()" matSort [matSortActive]="sort()" [matSortDirection]="dir()"
+         (matSortChange)="sortChanged($event)">
+    <ng-container matColumnDef="select" sticky>
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-checkbox aria-label="Select all orders on this page" [checked]="allOnPageSelected()"
+                      (change)="toggleAllOnPage()" />
+      </th>
+      <td mat-cell *matCellDef="let order">
+        <mat-checkbox [aria-label]="'Select order ' + order.id" [checked]="selection.isSelected(order.id)"
+                      (change)="selection.toggle(order.id)" />
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="id" sticky>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Order</th>
+      <td mat-cell *matCellDef="let order">#{{ order.id }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="placedAtUtc">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Placed</th>
+      <td mat-cell *matCellDef="let order">{{ order.placedAtUtc | date: 'dd.MM.yyyy HH:mm' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="customer">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Customer</th>
+      <td mat-cell *matCellDef="let order">{{ order.customerName }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef>Status</th>
+      <td mat-cell *matCellDef="let order">{{ order.status }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="itemCount">
+      <th mat-header-cell *matHeaderCellDef>Items</th>
+      <td mat-cell *matCellDef="let order">{{ order.itemCount }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="total">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Total</th>
+      <td mat-cell *matCellDef="let order">{{ order.total | currency: order.currency : 'symbol-narrow' }}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="columns; sticky: true"></tr>
+    <tr mat-row *matRowDef="let order; columns: columns"></tr>
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell no-data" [attr.colspan]="columns.length">
+        @if (orders.error()) {
+          The orders could not be loaded.
+        } @else if (orders.isLoading()) {
+          Loading orders…
+        } @else {
+          No orders match this filter.
+        }
+      </td>
+    </tr>
+  </table>
+</div>
+
+<mat-paginator [length]="total()" [pageIndex]="page() - 1" [pageSize]="pageSize" [hidePageSize]="true"
+               (page)="pageChanged($event)" aria-label="Orders pages" />

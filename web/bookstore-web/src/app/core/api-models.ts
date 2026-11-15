@@ -54,3 +54,13 @@ export interface InstitutionUnit {
   name: string;
   kind: string;
 }
+
+export interface OrderRow {
+  id: number;
+  placedAtUtc: string;
+  customerName: string;
+  status: string;
+  itemCount: number;
+  total: number;
+  currency: string;
+}
