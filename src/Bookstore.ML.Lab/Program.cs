@@ -58,7 +58,19 @@ switch (command)
     case "anomalies":
         Unsupervised.Anomalies();
         break;
+    case "tune":
+        ModelSelection.Tune();
+        break;
+    case "automl":
+        await ModelSelection.AutoMlAsync(withLeak: args.Contains("--leak"));
+        break;
+    case "explain":
+        ModelSelection.Explain();
+        break;
+    case "fairness":
+        ModelSelection.Fairness();
+        break;
     default:
-        Console.WriteLine("Commands: rules, explore, quality, clean, split, cv, complexity, first-model, pitfalls, features, inspect, skew, gd, compare, cancel, topics, segments, anomalies");
+        Console.WriteLine("Commands: rules, explore, quality, clean, split, cv, complexity, first-model, pitfalls, features, inspect, skew, gd, compare, cancel, topics, segments, anomalies, tune, automl, explain, fairness");
         break;
 }

@@ -5,6 +5,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.Analysis" Version="0.24.0" />
     <PackageReference Include="Microsoft.ML" Version="6.0.0" />
+    <PackageReference Include="Microsoft.ML.AutoML" Version="0.24.0" />
     <PackageReference Include="Microsoft.ML.FastTree" Version="6.0.0" />
     <PackageReference Include="Microsoft.ML.LightGbm" Version="6.0.0" />
     <PackageReference Include="Microsoft.ML.TimeSeries" Version="6.0.0" />

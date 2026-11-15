@@ -21,6 +21,11 @@ public sealed class CancelInput
     public bool HasBackorderItem { get; set; }
     public float PreviousOrders { get; set; }
     public bool IsFirstOrder { get; set; }
+
+    /// <summary>Post 09: a leakage column, a sensitive column and a possible proxy.</summary>
+    public float TrackingEventCount { get; set; }
+    public float Age { get; set; }
+    public string District { get; set; } = "";
     public bool IsCancelled { get; set; }
 }
 
@@ -53,6 +58,8 @@ public static class Classification
     public static List<CancelInput> LoadOrders()
     {
         Dictionary<string, int> seen = [];
+        Dictionary<string, int> birthYear = Csv.Read("data/customers.csv")
+            .ToDictionary(f => f[0], f => int.Parse(f[3], CultureInfo.InvariantCulture));
         List<CancelInput> rows = [];
         foreach (OrderRow o in OrderRow.Load("data/orders_clean.csv").OrderBy(o => o.OrderedAtUtc))
         {
@@ -65,6 +72,7 @@ public static class Classification
                 ItemCount = o.ItemCount, OrderTotal = (float)o.OrderTotal, DiscountRate = (float)o.DiscountRate,
                 IsCampaign = o.IsCampaign, HasBackorderItem = o.HasBackorderItem,
                 PreviousOrders = previous, IsFirstOrder = previous == 0, IsCancelled = o.IsCancelled,
+                TrackingEventCount = o.TrackingEventCount ?? 0, Age = 2026 - birthYear[o.CustomerId], District = o.District,
             });
         }
         return rows;
