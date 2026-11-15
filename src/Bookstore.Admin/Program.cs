@@ -26,6 +26,7 @@ builder.Services.AddDbContextFactory<BookstoreContext>(options => options
     .UseSqlServer(connectionString)
     .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
 builder.Services.AddScoped<IBookCatalog, EfBookCatalog>();
+builder.Services.AddScoped<SalesReport>();
 builder.Services.AddScoped<QuoteState>();
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<StaffNoteStore>();

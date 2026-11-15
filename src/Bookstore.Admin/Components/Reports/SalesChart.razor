@@ -1,0 +1,79 @@
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+<p class="text-muted">Chart.js @chartVersion</p>
+<canvas @ref="canvas" height="110"></canvas>
+
+@code {
+    private ElementReference canvas;
+    private IJSObjectReference? module;
+    private IJSObjectReference? chart;
+    private DotNetObjectReference<SalesChart>? selfReference;
+    private string? chartVersion;
+
+    [Parameter, EditorRequired]
+    public IReadOnlyList<CategorySales> Sales { get; set; } = [];
+
+    [Parameter]
+    public EventCallback<CategorySales> OnCategorySelected { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        // There is no JS during prerendering; the first interactive render is the earliest point.
+        module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Reports/SalesChart.razor.js");
+        chartVersion = await JS.GetValueAsync<string>("Chart.version");
+        chart = await JS.InvokeConstructorAsync("Chart", canvas, new
+        {
+            type = "bar",
+            data = new
+            {
+                labels = Sales.Select(s => s.Category),
+                datasets = new[] { new { label = "Copies sold", data = Sales.Select(s => s.Copies) } }
+            }
+        });
+        selfReference = DotNetObjectReference.Create(this);
+        await module.InvokeVoidAsync("onBarClick", chart, selfReference);
+        StateHasChanged();
+    }
+
+    // New data from the parent: change the existing chart's data instead of creating a new chart.
+    protected override async Task OnParametersSetAsync()
+    {
+        if (chart is not null)
+        {
+            await chart.SetValueAsync("data.labels", Sales.Select(s => s.Category));
+            await chart.SetValueAsync("data.datasets.0.data", Sales.Select(s => s.Copies));
+            await chart.InvokeVoidAsync("update");
+        }
+    }
+
+    // Called from SalesChart.razor.js with the index of the clicked bar.
+    [JSInvokable]
+    public Task SelectCategory(int index) => OnCategorySelected.InvokeAsync(Sales[index]);
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            if (chart is not null)
+            {
+                await chart.InvokeVoidAsync("destroy");
+                await chart.DisposeAsync();
+            }
+            if (module is not null)
+            {
+                await module.DisposeAsync();
+            }
+        }
+        catch (JSDisconnectedException)
+        {
+            // The circuit is gone, and so is the page: there is nothing left to clean up in the browser.
+        }
+        selfReference?.Dispose();
+    }
+}

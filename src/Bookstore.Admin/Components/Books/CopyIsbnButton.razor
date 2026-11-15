@@ -1,0 +1,35 @@
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+<button type="button" class="btn btn-sm btn-outline-secondary ms-2" disabled="@(!RendererInfo.IsInteractive)"
+        @onclick="CopyAsync">@label</button>
+
+@code {
+    private IJSObjectReference? module;
+    private string label = "Copy";
+
+    [Parameter, EditorRequired]
+    public string Isbn { get; set; } = "";
+
+    private async Task CopyAsync()
+    {
+        // The module is loaded on the first click, so pages that never copy don't download it.
+        module ??= await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Books/CopyIsbnButton.razor.js");
+        label = await module.InvokeAsync<bool>("copyText", Isbn) ? "Copied" : "Copy failed";
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            if (module is not null)
+            {
+                await module.DisposeAsync();
+            }
+        }
+        catch (JSDisconnectedException)
+        {
+            // The circuit is gone; the browser has already dropped the module.
+        }
+    }
+}

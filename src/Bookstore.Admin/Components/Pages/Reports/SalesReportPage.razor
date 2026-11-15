@@ -1,0 +1,35 @@
+@page "/reports/sales"
+@rendermode InteractiveServer
+@using Bookstore.Admin.Components.Reports
+@inject SalesReport Report
+@inject NavigationManager Navigation
+
+<PageTitle>Sales by category</PageTitle>
+
+<h1>Sales by category</h1>
+<p><button class="btn btn-sm btn-secondary" disabled="@(!RendererInfo.IsInteractive)" @onclick="RefreshAsync">Refresh</button></p>
+
+@if (Sales is null)
+{
+    <p>Loading...</p>
+}
+else if (Sales.Count == 0)
+{
+    <p>No orders yet.</p>
+}
+else
+{
+    <SalesChart Sales="Sales" OnCategorySelected="ShowBooks" />
+}
+
+@code {
+    [PersistentState]
+    public List<CategorySales>? Sales { get; set; }
+
+    protected override async Task OnInitializedAsync() => Sales ??= await Report.GetCopiesByCategoryAsync();
+
+    private async Task RefreshAsync() => Sales = await Report.GetCopiesByCategoryAsync();
+
+    // A click on a bar opens the book list filtered to that category.
+    private void ShowBooks(CategorySales category) => Navigation.NavigateTo($"books?category={category.Slug}");
+}

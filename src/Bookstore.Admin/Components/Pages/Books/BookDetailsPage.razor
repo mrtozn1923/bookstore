@@ -11,7 +11,7 @@
     <h1>@book.Title</h1>
     <dl>
         <dt>Author</dt><dd>@book.Author</dd>
-        <dt>ISBN</dt><dd>@book.Isbn</dd>
+        <dt>ISBN</dt><dd>@book.Isbn <CopyIsbnButton Isbn="@book.Isbn" @rendermode="InteractiveServer" /></dd>
         <dt>Price</dt><dd><Money Amount="book.Price" /></dd>
         <dt>Available</dt><dd>@book.Available</dd>
     </dl>
