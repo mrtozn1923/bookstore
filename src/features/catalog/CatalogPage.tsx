@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useRef } from 'react';
+import { Fragment, useRef, type FragmentInstance } from 'react';
 import { useSearchParams } from 'react-router';
 import { useCart } from '@/features/cart';
 import { BookList } from './BookList';
@@ -16,6 +16,8 @@ export function CatalogPage() {
   const page = Number(searchParams.get('page') ?? '1');
   const { quantityOf, add } = useCart();
   const searchInput = useRef<HTMLInputElement>(null);
+  // BookList takes no ref prop: a Fragment ref reaches the DOM it renders without changing BookList
+  const results = useRef<FragmentInstance>(null);
   useKeyboardShortcut('/', () => searchInput.current?.focus());
 
   const search = useDebouncedValue(query.trim(), 300);
@@ -28,6 +30,8 @@ export function CatalogPage() {
   }
 
   function goToPage(next: number) {
+    // The pager is below the list: bring the top of the results back into view
+    results.current?.scrollIntoView(true);
     setSearchParams((params) => {
       params.set('page', String(next));
       return params;
@@ -49,7 +53,9 @@ export function CatalogPage() {
       {data && (
         <>
           <div className={isPlaceholderData ? 'stale' : undefined}>
-            <BookList books={data.items} quantityOf={quantityOf} onAdd={add} />
+            <Fragment ref={results}>
+              <BookList books={data.items} quantityOf={quantityOf} onAdd={add} />
+            </Fragment>
           </div>
           <nav className="pager" aria-label="Pages">
             <button type="button" disabled={page === 1} onClick={() => goToPage(page - 1)}>Previous</button>

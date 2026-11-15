@@ -25,6 +25,8 @@ function BookDetailsView({ book }: { book: BookDetails }) {
 
   return (
     <section className="details" aria-label="Book details">
+      {/* React 19 document metadata: <title> is moved into <head> */}
+      <title>{`${book.title} · Bookstore`}</title>
       <p><Link to="/">← Back to the catalog</Link></p>
       <h1>{book.title}</h1>
       <p>{book.author}, {book.publishedYear} · {book.category} · {formatPrice(book.price)}</p>

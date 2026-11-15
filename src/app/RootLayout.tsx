@@ -1,3 +1,4 @@
+import { ViewTransition } from 'react';
 import { NavLink, Outlet, useNavigation } from 'react-router';
 import { UserMenu } from '@/features/auth';
 import { CartSummary } from '@/features/cart';
@@ -21,7 +22,10 @@ export function RootLayout() {
       </header>
       {navigation.state !== 'idle' && <p className="progress" role="status">Loading page…</p>}
       <main>
-        <Outlet />
+        {/* React 19.3: router navigations run in a transition, so switching pages cross-fades (replaces RR's viewTransition) */}
+        <ViewTransition>
+          <Outlet />
+        </ViewTransition>
       </main>
     </>
   );

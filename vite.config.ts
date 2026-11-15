@@ -33,5 +33,7 @@ export default defineConfig(({ mode }) => ({
     // A DOM in Node: jsdom implements document, window and localStorage
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
+    // next/ and upgrade-lab/ are separate projects with their own setup
+    include: ['src/**/*.test.{ts,tsx}'],
   },
 }))
