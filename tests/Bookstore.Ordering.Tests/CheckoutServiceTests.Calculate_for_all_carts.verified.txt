@@ -1,0 +1,49 @@
+﻿{
+  empty         , False: {},
+  empty         , True : {},
+  one paperback , False: {
+    Subtotal: 12.45,
+    Vat: 1.25,
+    Shipping: 49.90,
+    Total: 63.60
+  },
+  one paperback , True : {
+    Subtotal: 12.45,
+    Vat: 1.25,
+    Shipping: 84.90,
+    Total: 98.60
+  },
+  two hardcovers, False: {
+    Subtotal: 299.80,
+    Vat: 29.98,
+    Shipping: 49.90,
+    Total: 379.68
+  },
+  two hardcovers, True : {
+    Subtotal: 299.80,
+    Vat: 29.98,
+    Shipping: 84.90,
+    Total: 414.68
+  },
+  ebook only    , False: {
+    Subtotal: 59.90,
+    Vat: 11.98,
+    Total: 71.88
+  },
+  ebook only    , True : {
+    Subtotal: 59.90,
+    Vat: 11.98,
+    Total: 71.88
+  },
+  mixed         , False: {
+    Subtotal: 319.40,
+    Vat: 44.93,
+    Total: 364.33
+  },
+  mixed         , True : {
+    Subtotal: 319.40,
+    Vat: 44.93,
+    Shipping: 35.0,
+    Total: 399.33
+  }
+}
