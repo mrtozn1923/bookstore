@@ -24,6 +24,8 @@
       "Read(**/.env)",
       "Read(**/.env.*)",
       "Read(**/appsettings.Production.json)",
+      "Read(~/AppData/Roaming/Microsoft/UserSecrets/**)",
+      "Read(~/.microsoft/usersecrets/**)",
       "Bash(dotnet user-secrets *)",
       "PowerShell(dotnet user-secrets *)",
       "mcp__plugin_bookstore-dev_playwright__browser_run_code_unsafe",
