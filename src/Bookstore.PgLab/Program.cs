@@ -115,9 +115,12 @@ switch (args.FirstOrDefault())
             await Programmability.ArchiveAsync(dataSource, new DateTime(2023, 4, 1, 0, 0, 0, DateTimeKind.Utc));
         }
         break;
+    case "ef-trigger":
+        await Bookstore.PgLab.Triggers.TriggerDemo.RunAsync(connectionString);
+        break;
     default:
         Console.WriteLine("usage: dotnet run -- connections | pool | ef-script | bestsellers | write-skew | queue | advisory | ef-retry\n" +
             "       defaults | types | enum | copy | prepare | listen | otel | ef-seed | ef-query | ef-concurrency | tls | top-books\n" +
-            "       reserve <order-id>... | archive");
+            "       reserve <order-id>... | archive | ef-trigger");
         break;
 }
