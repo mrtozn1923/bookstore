@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"mime"
 	"net/http"
 	"time"
@@ -88,7 +87,7 @@ func (a *API) placeOrder(w http.ResponseWriter, r *http.Request) {
 		writeProblem(w, r, Problem{Status: http.StatusConflict, Detail: err.Error()})
 		return
 	case err != nil:
-		log.Printf("place order: %v rid=%s", err, RequestIDFrom(r.Context()))
+		a.logger().ErrorContext(r.Context(), "place order", "error", err)
 		writeProblem(w, r, Problem{Status: http.StatusInternalServerError})
 		return
 	}
@@ -97,7 +96,7 @@ func (a *API) placeOrder(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	if err := json.NewEncoder(w).Encode(newOrderResponse(o)); err != nil {
-		log.Printf("write json: %v", err)
+		a.logger().WarnContext(r.Context(), "write json", "error", err)
 	}
 }
 
@@ -108,7 +107,7 @@ func (a *API) getOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
-		log.Printf("get order: %v rid=%s", err, RequestIDFrom(r.Context()))
+		a.logger().ErrorContext(r.Context(), "get order", "error", err)
 		writeProblem(w, r, Problem{Status: http.StatusInternalServerError})
 		return
 	}

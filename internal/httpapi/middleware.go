@@ -3,7 +3,7 @@ package httpapi
 import (
 	"context"
 	"crypto/rand"
-	"log"
+	"log/slog"
 	"net/http"
 	"time"
 )
@@ -66,15 +66,48 @@ func (s *statusRecorder) Write(b []byte) (int, error) {
 // Unwrap lets http.ResponseController reach the original writer.
 func (s *statusRecorder) Unwrap() http.ResponseWriter { return s.ResponseWriter }
 
-// Logging writes one line per request after the handler returns.
-func Logging(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		start := time.Now()
-		rec := &statusRecorder{ResponseWriter: w}
-		next.ServeHTTP(rec, r)
-		log.Printf("%s %s %d %dB %v rid=%s", r.Method, r.URL.RequestURI(), rec.status, rec.bytes,
-			time.Since(start).Round(time.Microsecond), RequestIDFrom(r.Context()))
-	})
+// Logging writes one structured record per request after the handler
+// returns. The request ID is added by the handler from NewLogHandler.
+func Logging(logger *slog.Logger) Middleware {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			start := time.Now()
+			rec := &statusRecorder{ResponseWriter: w}
+			next.ServeHTTP(rec, r)
+			logger.InfoContext(r.Context(), "request",
+				"method", r.Method,
+				"path", r.URL.RequestURI(),
+				"status", rec.status,
+				"bytes", rec.bytes,
+				"duration_ms", float64(time.Since(start).Microseconds())/1000,
+			)
+		})
+	}
+}
+
+// NewLogHandler wraps h so that every record logged with a request's
+// context carries that request's ID.
+func NewLogHandler(h slog.Handler) slog.Handler {
+	return logHandler{h}
+}
+
+type logHandler struct{ slog.Handler }
+
+func (h logHandler) Handle(ctx context.Context, r slog.Record) error {
+	if id := RequestIDFrom(ctx); id != "" {
+		r.AddAttrs(slog.String("request_id", id))
+	}
+	return h.Handler.Handle(ctx, r)
+}
+
+// WithAttrs and WithGroup must wrap again; the embedded methods would
+// return the inner handler and lose the request ID.
+func (h logHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
+	return logHandler{h.Handler.WithAttrs(attrs)}
+}
+
+func (h logHandler) WithGroup(name string) slog.Handler {
+	return logHandler{h.Handler.WithGroup(name)}
 }
 
 // CORS lets the Angular app at origin call the API from the browser.

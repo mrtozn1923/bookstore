@@ -4,10 +4,9 @@ package httpapi_test
 
 import (
 	"bytes"
-	"log"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"strings"
 	"testing"
 	"testing/synctest"
@@ -21,16 +20,21 @@ import (
 // over an in-memory network that works inside the bubble.
 func TestLoggingDuration(t *testing.T) {
 	var buf bytes.Buffer
-	log.SetOutput(&buf)
-	log.SetFlags(0)
-	t.Cleanup(func() { log.SetOutput(os.Stderr); log.SetFlags(log.LstdFlags) })
+	logger := slog.New(httpapi.NewLogHandler(slog.NewTextHandler(&buf, &slog.HandlerOptions{
+		ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
+			if a.Key == slog.TimeKey {
+				return slog.Attr{} // drop the time: the bubble's clock starts in 2000
+			}
+			return a
+		},
+	})))
 
 	synctest.Test(t, func(t *testing.T) {
 		slow := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			time.Sleep(2 * time.Second) // returns at once: only the fake clock moves
 			w.Write([]byte("ok\n"))
 		})
-		srv := httptest.NewTestServer(t, httpapi.Chain(slow, httpapi.RequestID, httpapi.Logging))
+		srv := httptest.NewTestServer(t, httpapi.Chain(slow, httpapi.RequestID, httpapi.Logging(logger)))
 
 		req, _ := http.NewRequest(http.MethodGet, "http://bookstore.test/slow", nil)
 		req.Header.Set("X-Request-ID", "test-rid")
@@ -42,7 +46,8 @@ func TestLoggingDuration(t *testing.T) {
 		synctest.Wait() // let the Logging middleware finish its line
 	})
 
-	if got, want := strings.TrimSpace(buf.String()), "GET /slow 200 3B 2s rid=test-rid"; got != want {
+	want := "level=INFO msg=request method=GET path=/slow status=200 bytes=3 duration_ms=2000 request_id=test-rid"
+	if got := strings.TrimSpace(buf.String()); got != want {
 		t.Errorf("log line = %q, want %q", got, want)
 	}
 }

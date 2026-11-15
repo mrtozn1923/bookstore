@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
+	"log/slog"
 	"net/http"
 	"strconv"
 
@@ -17,6 +17,8 @@ import (
 type API struct {
 	Books  catalog.Store
 	Orders *orders.Service
+	Health *Health
+	Log    *slog.Logger
 }
 
 // Routes registers every endpoint on a new ServeMux.
@@ -28,12 +30,16 @@ func (a *API) Routes() *http.ServeMux {
 	mux.HandleFunc("GET /api/authors", a.listAuthors)
 	mux.HandleFunc("POST /api/orders", a.placeOrder)
 	mux.HandleFunc("GET /api/orders/{id}", a.getOrder)
+	if a.Health != nil {
+		mux.HandleFunc("GET /healthz", a.Health.Live)
+		mux.HandleFunc("GET /readyz", a.Health.Ready)
+	}
 	return mux
 }
 
 func (a *API) hello(w http.ResponseWriter, r *http.Request) {
 	if _, err := fmt.Fprintln(w, "Hello from Bookstore API"); err != nil {
-		log.Printf("write hello: %v", err)
+		a.logger().WarnContext(r.Context(), "write hello", "error", err)
 	}
 }
 
@@ -64,7 +70,7 @@ func (a *API) getBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
-		log.Printf("get book: %v", err)
+		a.logger().ErrorContext(r.Context(), "get book", "error", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
@@ -101,11 +107,19 @@ func positiveInt(s string, def int) (int, bool) {
 	return n, true
 }
 
+// logger returns a.Log, or the default logger when a test left it nil.
+func (a *API) logger() *slog.Logger {
+	if a.Log != nil {
+		return a.Log
+	}
+	return slog.Default()
+}
+
 // writeJSON writes v as the response body. Once the body has started there
 // is no way to change the status code, so an encoding error is only logged.
 func writeJSON(w http.ResponseWriter, v any) {
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(v); err != nil {
-		log.Printf("write json: %v", err)
+		slog.Warn("write json", "error", err)
 	}
 }

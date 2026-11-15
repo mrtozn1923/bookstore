@@ -2,7 +2,7 @@ package httpapi
 
 import (
 	"encoding/json"
-	"log"
+	"log/slog"
 	"net/http"
 )
 
@@ -46,6 +46,6 @@ func writeProblem(w http.ResponseWriter, r *http.Request, p Problem) {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(p.Status)
 	if err := json.NewEncoder(w).Encode(p); err != nil {
-		log.Printf("write problem: %v", err)
+		slog.WarnContext(r.Context(), "write problem", "error", err)
 	}
 }

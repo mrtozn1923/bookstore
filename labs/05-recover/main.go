@@ -3,6 +3,7 @@ package main
 
 import (
 	"log"
+	"log/slog"
 	"net/http"
 
 	"bookstore/internal/httpapi"
@@ -15,7 +16,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.Handle("GET /plain", broken)
-	mux.Handle("GET /safe", httpapi.Recover(broken))
+	mux.Handle("GET /safe", httpapi.Recover(slog.Default())(broken)) // since post 13 Recover takes a logger
 
 	addr := "127.0.0.1:52711"
 	log.Printf("lab listening on http://%s", addr)
