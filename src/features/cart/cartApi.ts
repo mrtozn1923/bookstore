@@ -11,4 +11,5 @@ export const cartApi = {
   remove: (cartId: string, isbn: string) => apiFetch<Cart>(`/api/carts/${cartId}/items/${isbn}`, { method: 'DELETE' }),
   placeOrder: (cartId: string, customerName: string, customerEmail: string) =>
     apiFetch<Order>('/api/orders', { method: 'POST', body: JSON.stringify({ cartId, customerName, customerEmail }) }),
+  getOrder: (orderId: string, signal?: AbortSignal) => apiFetch<Order>(`/api/orders/${orderId}`, { signal }),
 };

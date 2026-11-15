@@ -1,14 +1,11 @@
-import { useAuth } from '@/features/auth/AuthContext';
+import { Link } from 'react-router';
+import { useAuth } from '@/features/auth/useAuth';
 
 export function UserMenu() {
-  const { user, signIn, signOut } = useAuth();
+  const { user, signOut } = useAuth();
 
   if (user === null) {
-    return (
-      <button type="button" onClick={() => signIn({ name: 'Ada Lovelace', email: 'ada@example.com' })}>
-        Sign in as Ada
-      </button>
-    );
+    return <Link to="/sign-in">Sign in</Link>;
   }
   return (
     <span>

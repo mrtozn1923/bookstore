@@ -14,10 +14,18 @@ export type Cart = {
   currency: string;
 };
 
+export type OrderLine = {
+  title: string;
+  unitPrice: number;
+  quantity: number;
+  lineTotal: number;
+};
+
 export type Order = {
   id: number;
   status: string;
   placedAtUtc: string;
+  items: OrderLine[];
   total: number;
   currency: string;
 };

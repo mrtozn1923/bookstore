@@ -1,16 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { useAuth } from '@/features/auth/AuthContext';
+import { Link } from 'react-router';
 import type { CartLine } from '@/features/cart/types';
 import { useCart } from '@/features/cart/useCart';
-import { usePlaceOrder } from '@/features/cart/usePlaceOrder';
 import { formatPrice } from '@/shared/format';
 
 const undoMs = 5000;
 
 export function CartPanel() {
-  const { cartId, lines, total, error, setQuantity, remove, restore } = useCart();
-  const { user } = useAuth();
-  const placeOrder = usePlaceOrder();
+  const { lines, total, error, setQuantity, remove, restore } = useCart();
   const [removed, setRemoved] = useState<CartLine | null>(null);
   // The timer id is not shown on screen: a ref keeps it without causing renders
   const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -39,8 +36,8 @@ export function CartPanel() {
   useEffect(() => stopUndoTimer, []);
 
   return (
-    <aside className="cart-panel">
-      <h2>Cart</h2>
+    <section className="cart-panel">
+      <h1>Cart</h1>
       {error && <p className="error" role="alert">Cart not updated: {error.message}</p>}
       {removed && (
         <p role="status">
@@ -48,7 +45,6 @@ export function CartPanel() {
           <button type="button" className="link" onClick={() => handleUndo(removed)}>Undo</button>
         </p>
       )}
-      {placeOrder.data && <p role="status">Order #{placeOrder.data.id} placed · {formatPrice(placeOrder.data.total)}</p>}
       {lines.length === 0 ? (
         <p className="muted">Your cart is empty.</p>
       ) : (
@@ -65,13 +61,9 @@ export function CartPanel() {
             ))}
           </ul>
           <p className="total">Total: {formatPrice(total)}</p>
-          {placeOrder.error && <p className="error" role="alert">Order failed: {placeOrder.error.message}</p>}
-          <button type="button" disabled={!user || !cartId || placeOrder.isPending}
-            onClick={() => user && cartId && placeOrder.mutate({ cartId, name: user.name, email: user.email })}>
-            {user ? (placeOrder.isPending ? 'Placing order…' : 'Place order') : 'Sign in to order'}
-          </button>
+          <Link to="/checkout" className="button">Checkout</Link>
         </>
       )}
-    </aside>
+    </section>
   );
 }

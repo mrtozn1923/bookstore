@@ -1,6 +1,6 @@
 import { useMutation, useMutationState, useQuery, useQueryClient } from '@tanstack/react-query';
 import { cartApi, cartKey } from '@/features/cart/cartApi';
-import { useCartId } from '@/features/cart/CartContext';
+import { useCartId } from '@/features/cart/useCartId';
 import { applyChange, type QuantityChange } from '@/features/cart/cartLines';
 import type { Cart, CartLine } from '@/features/cart/types';
 import { ApiError } from '@/shared/api';

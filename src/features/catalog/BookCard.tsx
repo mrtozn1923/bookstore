@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router';
 import type { BookSummary } from '@/features/catalog/types';
 import { formatPrice } from '@/shared/format';
 
@@ -6,12 +7,11 @@ type BookCardProps = {
   book: BookSummary;
   quantityInCart: number;
   onAdd: (book: BookSummary, amount: number) => void;
-  onSelect: (isbn: string) => void;
 };
 
 const maxAmount = 10;
 
-export function BookCard({ book, quantityInCart, onAdd, onSelect }: BookCardProps) {
+export function BookCard({ book, quantityInCart, onAdd }: BookCardProps) {
   // Local state: only this card cares how many copies are picked
   const [amount, setAmount] = useState(1);
 
@@ -22,7 +22,7 @@ export function BookCard({ book, quantityInCart, onAdd, onSelect }: BookCardProp
 
   return (
     <li className="book-card">
-      <button type="button" className="link" onClick={() => onSelect(book.isbn)}>{book.title}</button>
+      <Link to={`/books/${book.isbn}`} className="title">{book.title}</Link>
       <span className="muted">
         {book.author} · {book.publishedYear}
         {book.publishedYear < 1900 && <span className="badge">Classic</span>}
