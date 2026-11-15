@@ -5,6 +5,10 @@
 # Run with --help for options.
 # Exit codes: 0 success, 1 deploy failed, 2 usage error
 
+if ((BASH_VERSINFO[0] < 5)); then
+    echo "${0##*/}: needs Bash 5 or newer, this is $BASH_VERSION" >&2
+    exit 1
+fi
 set -Eeuo pipefail
 shopt -s inherit_errexit
 
@@ -68,10 +72,10 @@ usage_error() {
 }
 
 parse_args() {
-    while (( $# > 0 )); do
+    while (($# > 0)); do
         case $1 in
             -e | --env)
-                (( $# >= 2 )) || usage_error "option $1 needs a value"
+                (($# >= 2)) || usage_error "option $1 needs a value"
                 ENV_NAME=$2
                 shift 2
                 ;;
@@ -80,7 +84,7 @@ parse_args() {
                 shift
                 ;;
             -v | --version)
-                (( $# >= 2 )) || usage_error "option $1 needs a value"
+                (($# >= 2)) || usage_error "option $1 needs a value"
                 VERSION=$2
                 shift 2
                 ;;
@@ -112,7 +116,7 @@ parse_args() {
                 ;;
         esac
     done
-    (( $# == 0 )) || usage_error "unexpected argument: $1"
+    (($# == 0)) || usage_error "unexpected argument: $1"
 }
 
 validate_args() {
@@ -121,7 +125,7 @@ validate_args() {
         "") usage_error "missing -e ENV" ;;
         *) usage_error "unknown environment: $ENV_NAME (use staging or production)" ;;
     esac
-    if (( ROLLBACK )); then
+    if ((ROLLBACK)); then
         [[ -z $VERSION ]] || usage_error "--rollback does not take -v"
         return 0
     fi
@@ -156,10 +160,10 @@ fetch_artifact() {
     run mkdir -p "$ARTIFACT_DIR"
     run curl -fsSL --retry 3 --retry-connrefused -o "$file.sha256" "$ARTIFACT_BASE_URL/$name.sha256"
     run curl -fsSL --retry 3 --retry-connrefused -o "$file.part" "$ARTIFACT_BASE_URL/$name"
-    if (( DRY_RUN )); then
+    if ((DRY_RUN)); then
         return 0
     fi
-    read -r expected _ < "$file.sha256"
+    read -r expected _ <"$file.sha256"
     actual=$(sha256sum "$file.part")
     actual=${actual%% *}
     if [[ $actual != "$expected" ]]; then
@@ -217,16 +221,16 @@ deploy() {
     fetch_artifact
 
     # Extract into a hidden folder first; releases/VERSION appears only when it is complete.
-    if (( DRY_RUN )); then
+    if ((DRY_RUN)); then
         INCOMING="$ROOT/releases/.incoming-$VERSION.XXXXXX"
     else
         INCOMING=$(mktemp -d "$ROOT/releases/.incoming-$VERSION.XXXXXX")
     fi
     run tar -xzf "$ARTIFACT_DIR/bookstore-api-$VERSION-linux-x64.tar.gz" -C "$INCOMING"
-    if (( DRY_RUN )); then
+    if ((DRY_RUN)); then
         printf '[dry-run] write %s\n' "$INCOMING/RELEASE"
     else
-        release_info > "$INCOMING/RELEASE"
+        release_info >"$INCOMING/RELEASE"
     fi
 
     # The bundle gets the connection string from its environment, not as an argument,
@@ -245,7 +249,7 @@ deploy() {
         die "deploy of $VERSION failed; rolled back to $current"
     fi
 
-    if (( DRY_RUN )); then
+    if ((DRY_RUN)); then
         run "$SCRIPT_DIR/bookstore-prune-releases.sh" -n "$KEEP_RELEASES"
         log "dry run finished, nothing was changed"
     else
@@ -261,7 +265,7 @@ rollback() {
     log "rolling back from $current to $previous"
     switch_current "$ROOT/releases/$previous"
     restart_and_check || die "health check failed after rolling back to $previous"
-    if (( DRY_RUN )); then
+    if ((DRY_RUN)); then
         log "dry run finished, nothing was changed"
     else
         log "rolled back to $previous"
@@ -280,11 +284,11 @@ main() {
     : "${ARTIFACT_BASE_URL:?must be set in $DEPLOY_ENV_FILE}"
     KEEP_RELEASES=${KEEP_RELEASES:-5}
     HEALTH_RETRIES=${HEALTH_RETRIES:-3}
-    if (( ! DRY_RUN )); then
+    if ((! DRY_RUN)); then
         start_log "$DEPLOY_LOG"
         acquire_lock "$ROOT/.deploy.lock"
     fi
-    if (( ROLLBACK )); then
+    if ((ROLLBACK)); then
         rollback
         return
     fi
@@ -293,4 +297,7 @@ main() {
     deploy
 }
 
-main "$@"; exit
+{
+    main "$@"
+    exit
+}

@@ -10,6 +10,10 @@
 #             /etc/bookstore/backup-secrets.env  SQLCMDUSER, SQLCMDPASSWORD (mode 600)
 # Exit codes: 0 success, 1 error, 2 usage error
 
+if ((BASH_VERSINFO[0] < 5)); then
+    echo "${0##*/}: needs Bash 5 or newer, this is $BASH_VERSION" >&2
+    exit 1
+fi
 set -Eeuo pipefail
 shopt -s inherit_errexit
 
@@ -46,7 +50,7 @@ backup() {
 
     # Retention: delete local backups older than RETENTION_DAYS.
     while IFS= read -r -d '' old; do
-        if (( DRY_RUN )); then
+        if ((DRY_RUN)); then
             log "would delete $old"
         else
             rm -f -- "$old"
@@ -84,4 +88,7 @@ main() {
     backup
 }
 
-main "$@"; exit
+{
+    main "$@"
+    exit
+}

@@ -26,12 +26,15 @@ start_log() {
     mkdir -p "$(dirname "$file")" || return 1
     # tee ignores INT and TERM: a Ctrl-C to the whole process group must not stop
     # the log while the script's traps are still writing to it.
-    exec 2> >(trap '' INT TERM; exec tee -a "$file" >&2)
+    exec 2> >(
+        trap '' INT TERM
+        exec tee -a "$file" >&2
+    )
 }
 
 # Runs a command, or only prints it (shell-quoted) when DRY_RUN is 1.
 run() {
-    if (( ${DRY_RUN:-0} )); then
+    if ((${DRY_RUN:-0})); then
         printf '[dry-run]'
         printf ' %q' "$@"
         printf '\n'
@@ -46,7 +49,7 @@ on_error() {
     local status=$1 line=$2 command=$3 i
     log "ERROR: '$command' exited with $status"
     # FUNCNAME[0] is on_error itself; the last entry is the script's top level.
-    for (( i = 1; i < ${#FUNCNAME[@]} - 1; i++ )); do
+    for ((i = 1; i < ${#FUNCNAME[@]} - 1; i++)); do
         log "  at ${FUNCNAME[i]} (${BASH_SOURCE[i]##*/}:$line)"
         line=${BASH_LINENO[i]}
     done
@@ -60,7 +63,7 @@ retry() {
     while true; do
         "$@" && return 0
         status=$?
-        if (( attempt >= attempts )); then
+        if ((attempt >= attempts)); then
             log "giving up after $attempt attempts (exit $status): $*"
             return "$status"
         fi
@@ -74,7 +77,7 @@ retry() {
 # Takes an exclusive lock that is held until the script exits.
 # Fails at once if another process holds it. Usage: acquire_lock FILE
 acquire_lock() {
-    exec 9> "$1"
+    exec 9>"$1"
     flock -n 9 || die "another run holds the lock $1"
 }
 
@@ -86,10 +89,10 @@ load_env_file() {
     local file=$1 private=${2:-} mode line key value n=0
     [[ -r $file ]] || die "cannot read $file"
     mode=$(stat -c %a "$file")
-    if (( 8#$mode & 8#022 )); then
+    if ((8#$mode & 8#022)); then
         die "$file is writable by group or others (mode $mode)"
     fi
-    if [[ $private == private ]] && (( 8#$mode & 8#077 )); then
+    if [[ $private == private ]] && ((8#$mode & 8#077)); then
         die "$file holds secrets and must be mode 600 or 400, not $mode"
     fi
     while IFS= read -r line || [[ -n $line ]]; do
@@ -104,7 +107,7 @@ load_env_file() {
         esac
         printf -v "$key" '%s' "$value"
         export "${key?}"
-    done < "$file"
+    done <"$file"
 }
 
 # Prints the name of the release that ROOT/current points to.

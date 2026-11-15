@@ -8,6 +8,10 @@
 #             HEALTH_RETRIES  retries on refused connections, timeouts and 408/429/500/502/503/504 (default 0)
 # Exit codes: 0 healthy, 1 unhealthy or unreachable, 2 usage error
 
+if ((BASH_VERSINFO[0] < 5)); then
+    echo "${0##*/}: needs Bash 5 or newer, this is $BASH_VERSION" >&2
+    exit 1
+fi
 set -Eeuo pipefail
 shopt -s inherit_errexit
 
@@ -22,7 +26,7 @@ usage() {
 }
 
 main() {
-    if (( $# > 1 )); then
+    if (($# > 1)); then
         usage
         exit 2
     fi
@@ -40,7 +44,7 @@ main() {
     # A known environment name maps to its URL; anything else is used as a URL.
     local url="${HEALTH_URLS[$target]:-$target}"
     local curl_opts=(-fsS --max-time "$timeout" -o /dev/null)
-    if (( retries > 0 )); then
+    if ((retries > 0)); then
         # curl waits 1, 2, 4... seconds between retries.
         curl_opts+=(--retry "$retries" --retry-connrefused)
     fi
@@ -53,4 +57,7 @@ main() {
     fi
 }
 
-main "$@"; exit
+{
+    main "$@"
+    exit
+}

@@ -8,6 +8,10 @@
 # Variables:  BOOKSTORE_ROOT  installation root (default /opt/bookstore)
 # Exit codes: 0 success, 1 error, 2 usage error
 
+if ((BASH_VERSINFO[0] < 5)); then
+    echo "${0##*/}: needs Bash 5 or newer, this is $BASH_VERSION" >&2
+    exit 1
+fi
 set -Eeuo pipefail
 shopt -s inherit_errexit
 
@@ -21,7 +25,7 @@ main() {
         dry_run=1
         shift
     fi
-    if (( $# > 1 )); then
+    if (($# > 1)); then
         usage
         exit 2
     fi
@@ -42,7 +46,7 @@ main() {
 
     shopt -s nullglob
     local dirs=("$releases_dir"/*/)
-    if (( ${#dirs[@]} <= keep )); then
+    if ((${#dirs[@]} <= keep)); then
         echo "Nothing to prune: ${#dirs[@]} releases, keeping $keep"
         return 0
     fi
@@ -55,13 +59,19 @@ main() {
             echo "skip $name (current)"
             continue
         fi
-        if (( dry_run )); then
+        if ((dry_run)); then
             echo "would delete $name"
         else
             rm -rf -- "$dir"
             echo "deleted $name"
         fi
-    done < <(for dir in "${dirs[@]}"; do dir=${dir%/}; echo "${dir##*/}"; done | sort -V -r | tail -n +"$((keep + 1))")
+    done < <(for dir in "${dirs[@]}"; do
+        dir=${dir%/}
+        echo "${dir##*/}"
+    done | sort -V -r | tail -n +"$((keep + 1))")
 }
 
-main "$@"; exit
+{
+    main "$@"
+    exit
+}

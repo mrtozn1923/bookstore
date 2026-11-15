@@ -13,6 +13,10 @@
 # Variables:  BOOKSTORE_ROOT  installation root (default /opt/bookstore)
 # Exit codes: 0 success, 1 error, 2 usage error
 
+if ((BASH_VERSINFO[0] < 5)); then
+    echo "${0##*/}: needs Bash 5 or newer, this is $BASH_VERSION" >&2
+    exit 1
+fi
 set -Eeuo pipefail
 shopt -s inherit_errexit
 
@@ -52,7 +56,7 @@ cmd_releases() {
 
 main() {
     local command="${1:-}"
-    if (( $# > 0 )); then
+    if (($# > 0)); then
         shift
     fi
     case "$command" in
@@ -92,4 +96,7 @@ main() {
     esac
 }
 
-main "$@"; exit
+{
+    main "$@"
+    exit
+}

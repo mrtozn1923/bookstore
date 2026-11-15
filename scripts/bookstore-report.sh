@@ -7,6 +7,10 @@
 #             DEPLOY_LOG      deploy log (default /var/log/bookstore/deploy.log)
 # Exit codes: 0 success, 1 error, 2 usage error
 
+if ((BASH_VERSINFO[0] < 5)); then
+    echo "${0##*/}: needs Bash 5 or newer, this is $BASH_VERSION" >&2
+    exit 1
+fi
 set -Eeuo pipefail
 shopt -s inherit_errexit
 
@@ -44,7 +48,7 @@ release_rows() {
                     deployed_at) deployed_at=$value ;;
                     deployed_by) deployed_by=$value ;;
                 esac
-            done < "$ROOT/releases/$name/RELEASE"
+            done <"$ROOT/releases/$name/RELEASE"
         fi
         is_current=no
         if [[ $name == "$current" ]]; then
@@ -66,7 +70,7 @@ deploy_counts() {
             *" deployed "*) ok=$((ok + 1)) ;;
             *" ERROR: "*) failed=$((failed + 1)) ;;
         esac
-    done < "$DEPLOY_LOG"
+    done <"$DEPLOY_LOG"
     echo "deploys: $ok succeeded, $failed failed (from $DEPLOY_LOG)"
 }
 
@@ -102,4 +106,7 @@ main() {
     esac
 }
 
-main "$@"; exit
+{
+    main "$@"
+    exit
+}
