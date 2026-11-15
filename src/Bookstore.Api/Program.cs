@@ -1,6 +1,7 @@
 using Bookstore.Api.Ai;
 using Bookstore.Api.Assistant;
 using Bookstore.Api.Catalog;
+using Bookstore.Api.Ordering;
 using Bookstore.Api.Returns;
 using Bookstore.Api.Support;
 
@@ -15,6 +16,10 @@ builder.Services.AddScoped<SupportChatService>();
 builder.Services.AddScoped<InvoiceAnalyzer>();
 builder.Services.AddScoped<ReturnClassifier>();
 builder.Services.AddScoped<ShoppingAssistant>();
+builder.Services.AddSingleton<IOrderRepository, InMemoryOrderRepository>();
+builder.Services.AddScoped<BookstoreTools>();
+builder.Services.AddScoped<AssistantAgent>();
+builder.Services.AddScoped<ToolRunnerAssistant>();
 
 WebApplication app = builder.Build();
 
