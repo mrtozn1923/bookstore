@@ -26,5 +26,12 @@ switch (post)
     case "05-flags": Post05.Flags(); break;
     case "05-workflow": Post05.Workflow(); break;
     case "05-json": Post05.Json(); break;
+    case "06-guess": Post06.Guess(); break;
+    case "06-basics": Post06.Basics(); break;
+    case "06-chain": Post06.Chain(); break;
+    case "06-query": Post06.Query(); break;
+    case "06-nested": Post06.Nested(); break;
+    case "06-shapes": await Post06.Shapes(); break;
+    case "06-pitfalls": Post06.Pitfalls(); break;
     default: Console.WriteLine("usage: dotnet run --project src/Bookstore.Fp.Demo -- <post-key>"); break;
 }
