@@ -55,3 +55,12 @@ Every dataset under `data/` is synthetic, made for the examples; none of it is r
 
     # GA4 sessions against server-side Google landings (synthetic data)
     dotnet run --project src/Bookstore.Analytics.Cli -- coverage data/coverage-daily.csv
+
+## 06: Core Web Vitals field data
+    # RUM endpoint + report (p75 per route pattern and form factor, Search Console thresholds)
+    dotnet run --project src/Bookstore.Analytics.Web --urls http://127.0.0.1:52706
+    node web/lab/rum-sim.mjs http://127.0.0.1:52706     # synthetic beacons
+    curl -s http://127.0.0.1:52706/rum/report
+
+    # the beacon the Angular app sends (headless Chromium, lab values)
+    cd web/lab && node rum-check.mjs http://127.0.0.1:52714

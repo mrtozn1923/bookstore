@@ -1,6 +1,9 @@
+using System.Globalization;
 using Bookstore.Analytics.Web.Analytics;
+using Bookstore.Analytics.Web.Rum;
 using Bookstore.Analytics.Web.Security;
 
+CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
@@ -11,6 +14,7 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
     options.MinimumSameSitePolicy = SameSiteMode.Lax;
 });
 builder.Services.AddScoped<CspNonce>();
+builder.Services.AddSingleton<RumStore>();
 builder.Services.Configure<AnalyticsOptions>(builder.Configuration.GetSection(AnalyticsOptions.SectionName));
 builder.Services.AddHttpClient<Ga4MeasurementProtocolClient>(http => http.Timeout = TimeSpan.FromSeconds(2));
 
@@ -21,6 +25,7 @@ app.UseStaticFiles();
 app.UseCookiePolicy();
 app.MapRazorPages();
 app.MapAnalyticsConsent();
+app.MapRum();
 
 app.MapGet("/downloads/{name}.pdf", async (
     string name, HttpContext context, Ga4MeasurementProtocolClient ga, ILogger<Program> logger) =>
