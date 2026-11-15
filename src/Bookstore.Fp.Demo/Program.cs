@@ -18,5 +18,10 @@ switch (post)
     case "03-culture": Post03.Culture(); break;
     case "03-core": Post03.CoreAndShell(); break;
     case "03-memo": Post03.Memoization(); break;
+    case "04-fold": Post04.Fold(); break;
+    case "04-compose": Post04.Composition(); break;
+    case "04-curry": Post04.Currying(); break;
+    case "04-alloc": Post04.Allocations(); break;
+    case "04-enum": Post04.MultipleEnumeration(); break;
     default: Console.WriteLine("usage: dotnet run --project src/Bookstore.Fp.Demo -- <post-key>"); break;
 }
