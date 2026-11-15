@@ -1,6 +1,7 @@
 using System.Globalization;
 using Bookstore.Prompts.Evaluation;
 using Bookstore.Prompts.Lab;
+using Bookstore.Prompts.Tasks.OrderExtraction;
 using Bookstore.Prompts.Tasks.ReturnCheck;
 
 CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
@@ -27,6 +28,17 @@ switch (task)
             args.Contains("--guard") ? ReturnCheckGrader.GradeWithGuard : ReturnCheckGrader.Grade;
         EvalReport report = await runner.RunAsync(prompt, firstOnly ? [.. cases.Take(1)] : cases, grade);
         ReportPrinter.Print(report, LabClient.Model);
+        break;
+    }
+    case "order-extraction":
+    {
+        PromptVersion prompt = version switch
+        {
+            "v2" => OrderExtractionPrompts.V2,
+            "v3" => OrderExtractionPrompts.V3,
+            _ => OrderExtractionPrompts.V1,
+        };
+        await ExtractionLab.RunAsync(runner, prompt, resolveInCode: version != "v1");
         break;
     }
     default:
