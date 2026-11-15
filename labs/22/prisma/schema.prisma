@@ -1,0 +1,42 @@
+// The lab's tables (sql/schema.sql) described for Prisma; table and column names mapped to snake_case
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Category {
+  id    Int    @id @default(autoincrement())
+  slug  String @unique
+  name  String
+  books Book[]
+
+  @@map("categories")
+}
+
+model Author {
+  id    Int    @id @default(autoincrement())
+  name  String
+  books Book[]
+
+  @@map("authors")
+}
+
+model Book {
+  isbn       String   @id @db.Char(13)
+  title      String
+  authorId   Int      @map("author_id")
+  categoryId Int      @map("category_id")
+  price      Decimal  @db.Decimal(10, 2)
+  currency   String   @db.Char(3)
+  stock      BigInt   @default(0)
+  addedAt    DateTime @default(now()) @map("added_at") @db.Timestamptz(6)
+  author     Author   @relation(fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([categoryId, title], map: "ix_books_category")
+  @@map("books")
+}
