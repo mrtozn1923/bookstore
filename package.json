@@ -1,0 +1,10 @@
+{
+  "name": "bookstore-html-attributes",
+  "private": true,
+  "version": "1.0.0",
+  "dependencies": {
+    "html-validate": "11.21.1",
+    "playwright": "1.65.0",
+    "vnu-jar": "26.11.14"
+  }
+}

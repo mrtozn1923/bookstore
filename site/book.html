@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The Hobbit | Bookstore</title>
+</head>
+<body>
+    <svg aria-hidden="true" style="display: none">
+        <symbol id="icon-heart" viewBox="0 0 24 24">
+            <path d="M12 21 3.5 12.5a5 5 0 0 1 8.5-6 5 5 0 0 1 8.5 6z"/>
+        </symbol>
+        <symbol id="icon-phone" viewBox="0 0 24 24">
+            <path d="M6 2h4l2 5-3 2a11 11 0 0 0 6 6l2-3 5 2v4a2 2 0 0 1-2 2A18 18 0 0 1 4 4a2 2 0 0 1 2-2z"/>
+        </symbol>
+        <symbol id="icon-check" viewBox="0 0 24 24">
+            <path d="M4 12l5 5L20 6" fill="none" stroke="currentColor" stroke-width="3"/>
+        </symbol>
+    </svg>
+    <main>
+        <article data-isbn="9780547928227" data-stock-count="12">
+            <h1 translate="no">The Hobbit</h1>
+            <p>by <span translate="no">J. R. R. Tolkien</span>, ISBN <span class="isbn" translate="no">978-0547928227</span></p>
+            <p>
+                Availability:
+                <svg role="img" aria-label="In stock" width="16" height="16"><use href="#icon-check"/></svg>
+            </p>
+            <button type="button" title="Add to wishlist" id="wishlist-old">
+                <svg viewBox="0 0 24 24" width="24" height="24">
+                    <title>Heart</title>
+                    <path d="M12 21 3.5 12.5a5 5 0 0 1 8.5-6 5 5 0 0 1 8.5 6z"/>
+                </svg>
+            </button>
+            <button type="button" aria-label="Add to wishlist" id="wishlist">
+                <svg aria-hidden="true" width="24" height="24"><use href="#icon-heart"/></svg>
+            </button>
+            <section aria-labelledby="toc-title">
+                <h2 id="toc-title">Table of contents</h2>
+                <ol id="toc" hidden="until-found">
+                    <li>An Unexpected Party</li>
+                    <li>Roast Mutton</li>
+                    <li>Riddles in the Dark</li>
+                </ol>
+            </section>
+            <details>
+                <summary>About the edition</summary>
+                <p>Mariner Books paperback with the original maps.</p>
+            </details>
+        </article>
+        <aside aria-labelledby="help-title">
+            <h2 id="help-title">Need help with an order?</h2>
+            <p>
+                <a href="tel:+12025550143">
+                    <svg aria-hidden="true" width="16" height="16"><use href="#icon-phone"/></svg>
+                    +1&nbsp;202&nbsp;555&nbsp;0143
+                </a>
+            </p>
+            <p><a href="mailto:support@example.com?subject=Order%201042">support@example.com</a></p>
+            <p><a href="sms:+12025550143?body=Order%201042">Text us</a></p>
+            <p><a href="/orders/1042/invoice.pdf" download="bookstore-order-1042.pdf">Download invoice (PDF)</a></p>
+            <p><a href="http://127.0.0.1:52114/orders/1042/invoice.pdf" download="bookstore-order-1042.pdf">Invoice from files host</a></p>
+            <p><a href="http://127.0.0.1:52114/orders/1042/invoice.pdf?attachment">Invoice from files host (attachment)</a></p>
+        </aside>
+    </main>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Order 1042 | Bookstore Admin</title>
+</head>
+<body>
+    <main>
+        <h1>Order 1042</h1>
+        <form method="post" action="/admin/orders/1042/notes" autocapitalize="words">
+            <p id="note-label">Internal note</p>
+            <div id="note" contenteditable="plaintext-only" role="textbox" aria-multiline="true"
+                 aria-labelledby="note-label" data-field="note" spellcheck="true"></div>
+            <label for="recipient">Recipient name</label>
+            <input type="text" id="recipient" name="recipient" autocomplete="off">
+            <label for="coupon">Coupon code</label>
+            <input type="text" id="coupon" name="coupon" autocapitalize="characters" spellcheck="false" autocomplete="off">
+            <label for="courier">Courier reference</label>
+            <textarea id="courier" name="courier" spellcheck="false" autocapitalize="none"></textarea>
+            <button type="submit">Save</button>
+        </form>
+    </main>
+</body>
+</html>
