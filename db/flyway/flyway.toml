@@ -1,0 +1,7 @@
+[environments.dev]
+url = "jdbc:sqlserver://host.docker.internal:14333;databaseName=sqls_24_flyway;encrypt=true;trustServerCertificate=true"
+user = "sa"
+
+[flyway]
+environment = "dev"
+locations = ["filesystem:sql"]

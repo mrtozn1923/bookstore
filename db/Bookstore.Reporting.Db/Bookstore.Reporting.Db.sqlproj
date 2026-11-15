@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.Build.Sql/2.3.0">
+  <PropertyGroup>
+    <Name>Bookstore.Reporting.Db</Name>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql170DatabaseSchemaProvider</DSP>
+    <ModelCollation>1033, CI</ModelCollation>
+  </PropertyGroup>
+  <ItemGroup>
+    <RefactorLog Include="Bookstore.Reporting.Db.refactorlog" />
+  </ItemGroup>
+</Project>
