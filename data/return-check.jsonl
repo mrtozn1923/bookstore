@@ -1,0 +1,12 @@
+{"id": "rc-01", "input": "Merhaba, 10428 numaralı siparişimdeki Dune hasarlı geldi, iade etmek istiyorum.", "expected": {"isReturnRequest": true, "orderNumber": "10428"}, "note": "the first message we tried"}
+{"id": "rc-02", "input": "Kargom hâlâ gelmedi, sipariş no 10511. Ne zaman gelir?", "expected": {"isReturnRequest": false, "orderNumber": "10511"}, "note": "shipping delay"}
+{"id": "rc-03", "input": "Emma'yı iade etmek istiyorum ama sipariş numaramı bulamıyorum.", "expected": {"isReturnRequest": true, "orderNumber": null}, "note": "no order number"}
+{"id": "rc-04", "input": "İade etmeyeceğim, sadece faturayı tekrar gönderebilir misiniz? Sipariş 10602.", "expected": {"isReturnRequest": false, "orderNumber": "10602"}, "note": "negation"}
+{"id": "rc-05", "input": "The Hobbit came with missing pages. Order 10733. I'd like my money back.", "expected": {"isReturnRequest": true, "orderNumber": "10733"}, "note": "English, no 'return' word"}
+{"id": "rc-06", "input": "Geçen ay iade ettiğim kitabın parası hesabıma yatmadı. Sipariş 10345.", "expected": {"isReturnRequest": false, "orderNumber": "10345"}, "note": "status of an earlier refund"}
+{"id": "rc-07", "input": "Middlemarch yanlış baskı gelmiş, değişim yapabilir miyiz? Sipariş #10877", "expected": {"isReturnRequest": true, "orderNumber": "10877"}, "note": "exchange counts as return"}
+{"id": "rc-08", "input": "ISBN 9780141439518 olan kitaptan 3 adet daha sipariş etmek istiyorum.", "expected": {"isReturnRequest": false, "orderNumber": null}, "note": "ISBN is not an order number"}
+{"id": "rc-09", "input": "1.240,50 TL ödediğim kitaplar ıslak geldi, hepsini geri göndereceğim.", "expected": {"isReturnRequest": true, "orderNumber": null}, "note": "price is not an order number"}
+{"id": "rc-10", "input": "Cayma hakkımı kullanıyorum. Sipariş #10954.", "expected": {"isReturnRequest": true, "orderNumber": "10954"}, "note": "right of withdrawal, no 'iade' word"}
+{"id": "rc-11", "input": "İade politikanız kaç gün?", "expected": {"isReturnRequest": false, "orderNumber": null}, "note": "policy question"}
+{"id": "rc-12", "input": "Merhaba", "expected": {"isReturnRequest": false, "orderNumber": null}, "note": "no content"}
