@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=../../bookstore/schema/bookstore-settings.schema.json
+Shipping:
+  DefaultCountry: "NO"
+  Cutoff: "12:30"
+  Express: true
+  MaxWeightGrams: 1000
+  ApiVersion: "1.10"
+  Carriers:
+    - standard
+    - express

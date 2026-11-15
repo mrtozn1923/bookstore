@@ -1,0 +1,5 @@
+services:
+  api:
+    image: bookstore-api:dev
+    enviroment:
+      Catalog__PageSize: "20"
