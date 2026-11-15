@@ -1,6 +1,6 @@
 import { expect, test } from './fixtures';
 
-test('search finds a book with a lowercase term', async ({ data, catalog }) => {
+test('search finds a book with a lowercase term', { tag: ['@smoke', '@mobile'] }, async ({ data, catalog }) => {
   const book = await data.book('Persuasion', 41.5);
 
   await catalog.open();

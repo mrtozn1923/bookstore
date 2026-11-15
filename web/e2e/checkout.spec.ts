@@ -1,6 +1,6 @@
 import { expect, test } from './fixtures';
 
-test('a customer orders a book with a coupon', async ({ data, catalog, cart, page }) => {
+test('a customer orders a book with a coupon', { tag: '@smoke' }, async ({ data, catalog, cart, page }) => {
   const book = await data.book('Dune', 64.9);
   const coupon = await data.coupon(10);
 

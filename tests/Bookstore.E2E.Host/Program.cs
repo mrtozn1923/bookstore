@@ -6,7 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Testcontainers.MsSql;
 
 // Playwright'ın webServer'ı bu process'i başlatır: SQL Server container'ı + Kestrel üzerinde API
-const int ApiPort = 5280;
+// Port playwright.config.ts'ten BOOKSTORE_API_PORT ile gelir; yoksa 5280
+int apiPort = int.Parse(Environment.GetEnvironmentVariable("BOOKSTORE_API_PORT") ?? "5280");
 
 // WebApplicationFactory, API'nin content root'unu bulduğu MvcTestingAppManifest.json'u
 // çalışma klasöründe arar; dotnet run ise çalışma klasörünü değiştirmez
@@ -41,7 +42,7 @@ await using (BookstoreDbContext db = new(options))
 
 using FakeProviders providers = new();
 await using E2EApiFactory api = new(connectionString, providers, new E2ETokenIssuer());
-api.UseKestrel(ApiPort);
+api.UseKestrel(apiPort);
 api.StartServer();
 Console.WriteLine($"Bookstore API listening on {api.ClientOptions.BaseAddress}");
 
