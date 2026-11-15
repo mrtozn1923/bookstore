@@ -1,0 +1,34 @@
+# Bookstore command rules for Codex (Starlark). Loaded only when the project is trusted.
+
+# API tests need the local SQL Server, which the sandbox cannot reach: ask before each run outside the sandbox.
+prefix_rule(
+    pattern = ["dotnet", "test"],
+    decision = "prompt",
+    justification = "API tests connect to the local SQL Server outside the sandbox. Approve each run.",
+    match = [
+        "dotnet test",
+        "dotnet test tests/Bookstore.Api.Tests --filter Category=Ordering",
+    ],
+    not_match = ["dotnet build Bookstore.slnx"],
+)
+
+# Only the developer changes a database schema.
+prefix_rule(
+    pattern = ["dotnet", "ef", "database", ["update", "drop"]],
+    decision = "forbidden",
+    justification = "The developer applies migrations. Create one with the add-migration skill instead.",
+    match = [
+        "dotnet ef database update --project src/Bookstore.Api",
+        "dotnet ef database drop --force",
+    ],
+    not_match = ["dotnet ef migrations list --project src/Bookstore.Api"],
+)
+
+# Publishing work always needs a person.
+prefix_rule(
+    pattern = ["git", "push"],
+    decision = "prompt",
+    justification = "Pushing publishes the branch. Review the diff first.",
+    match = ["git push origin feature/order-paging"],
+    not_match = ["git status"],
+)
