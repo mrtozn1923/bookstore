@@ -1,0 +1,7 @@
+14.0
+5
+1       SQLCHAR             0       40      ","    1     Isbn                                     SQL_Latin1_General_CP1_CI_AS
+2       SQLCHAR             0       400     ","    2     Title                                    SQL_Latin1_General_CP1_CI_AS
+3       SQLCHAR             0       40      ","    3     ListPrice                                SQL_Latin1_General_CP1_CI_AS
+4       SQLCHAR             0       20      ","    4     Currency                                 SQL_Latin1_General_CP1_CI_AS
+5       SQLCHAR             0       40      "\n"   5     ValidFrom                                SQL_Latin1_General_CP1_CI_AS
