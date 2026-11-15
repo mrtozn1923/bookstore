@@ -1,0 +1,13 @@
+--- a/src/Bookstore.Institutional/InstitutionalDiscount.cs
++++ b/src/Bookstore.Institutional/InstitutionalDiscount.cs
+@@ -10,6 +10,9 @@ public static class InstitutionalDiscount
+     public static decimal RateFor(int quantity)
+     {
+         ArgumentOutOfRangeException.ThrowIfLessThan(quantity, 1);
+         ArgumentOutOfRangeException.ThrowIfGreaterThan(quantity, MaximumQuantity);
+-        return quantity >= MinimumQuantity ? Rate : 0m;
++        return IsEligible(quantity) ? Rate : 0m;
+     }
++
++    static bool IsEligible(int quantity) => quantity > MinimumQuantity;
+ }

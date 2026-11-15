@@ -36,4 +36,16 @@ public static class ReportPrinter
             ElapsedMs = (int)r.Elapsed.TotalMilliseconds,
         })));
     }
+
+    // Raw outputs of labs that do not go through EvalRunner
+    public static void SaveRaw(string name, IEnumerable<object> rows)
+    {
+        string? folder = Environment.GetEnvironmentVariable("BOOKSTORE_RUN_LOG");
+        if (folder is null)
+        {
+            return;
+        }
+        Directory.CreateDirectory(folder);
+        File.WriteAllLines(Path.Combine(folder, $"{name}.jsonl"), rows.Select(r => JsonSerializer.Serialize(r)));
+    }
 }

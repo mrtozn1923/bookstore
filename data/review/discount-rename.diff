@@ -1,0 +1,14 @@
+--- a/src/Bookstore.Institutional/InstitutionalDiscount.cs
++++ b/src/Bookstore.Institutional/InstitutionalDiscount.cs
+@@ -10,6 +10,6 @@ public static class InstitutionalDiscount
+-    public static decimal RateFor(int quantity)
++    public static decimal RateFor(int copies)
+     {
+-        ArgumentOutOfRangeException.ThrowIfLessThan(quantity, 1);
+-        ArgumentOutOfRangeException.ThrowIfGreaterThan(quantity, MaximumQuantity);
+-        return quantity >= MinimumQuantity ? Rate : 0m;
++        ArgumentOutOfRangeException.ThrowIfLessThan(copies, 1);
++        ArgumentOutOfRangeException.ThrowIfGreaterThan(copies, MaximumQuantity);
++        return copies >= MinimumQuantity ? Rate : 0m;
+     }
+ }

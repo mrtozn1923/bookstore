@@ -8,6 +8,7 @@ using Bookstore.Prompts.Tasks.TicketRouting;
 using Microsoft.Extensions.AI;
 
 CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+CultureInfo.CurrentUICulture = CultureInfo.InvariantCulture;
 
 string task = args.ElementAtOrDefault(0) ?? "return-check";
 string version = args.ElementAtOrDefault(1) ?? "v1";
@@ -90,6 +91,22 @@ switch (task)
         }
         break;
     }
+    case "report-sql":
+        if (version == "repair")
+        {
+            await CodeLab.ReportSqlRepairAsync(LabClient.Create(), LabClient.Options());
+        }
+        else
+        {
+            await CodeLab.ReportSqlAsync(runner, version);
+        }
+        break;
+    case "test-gen":
+        await CodeLab.TestGenAsync(LabClient.Create(), LabClient.Options(), version);
+        break;
+    case "review":
+        await CodeLab.ReviewAsync(LabClient.Create(), LabClient.Options(), version);
+        break;
     default:
         Console.WriteLine($"Unknown task: {task}");
         break;
