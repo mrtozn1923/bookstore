@@ -10,6 +10,7 @@ var demos = new Dictionary<string, Func<Task>>(StringComparer.OrdinalIgnoreCase)
     ["numbers"] = Sync(NumberDemos.Run),
     ["base64"] = Sync(Base64Demos.Run),
     ["process"] = ProcessDemos.RunAsync,
+    ["comparers"] = Sync(ComparerDemos.Run),
 };
 
 if (args.Length == 0 || !demos.TryGetValue(args[0], out Func<Task>? run))
@@ -137,4 +138,29 @@ static class ProcessDemos
             Console.WriteLine($"KillOnParentExit: child exit={process.ExitCode}");
         }
     }
+}
+
+static class ComparerDemos
+{
+    public static void Run()
+    {
+        Book[] books =
+        [
+            new("9780441172719", "Dune", "Frank Herbert"),
+            new("9780441172719", "Dune (anniversary edition)", "Frank Herbert"),
+            new("9780140449136", "The Odyssey", "Homer"),
+            new("9780061120084", "To Kill a Mockingbird", "HARPER LEE"),
+            new("9780446310789", "To Kill a Mockingbird", "Harper Lee"),
+        ];
+
+        EqualityComparer<Book> byIsbn = EqualityComparer<Book>.Create(book => book?.Isbn);
+        HashSet<Book> uniqueByIsbn = new(books, byIsbn);
+        Console.WriteLine($"Distinct by ISBN  : {uniqueByIsbn.Count} of {books.Length}");
+
+        EqualityComparer<Book> byAuthor = EqualityComparer<Book>.Create(book => book?.Author, StringComparer.OrdinalIgnoreCase);
+        Console.WriteLine($"Distinct authors  : {string.Join(", ", books.Distinct(byAuthor).Select(book => book.Author))}");
+        Console.WriteLine($"byIsbn.Equals     : {byIsbn.Equals(books[0], books[1])}, same hash: {byIsbn.GetHashCode(books[0]) == byIsbn.GetHashCode(books[1])}");
+    }
+
+    private sealed record Book(string Isbn, string Title, string Author);
 }

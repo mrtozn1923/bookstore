@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/samples/">
+    <Project Path="samples/Bookstore.Bcl.MultiTarget/Bookstore.Bcl.MultiTarget.csproj" />
     <Project Path="samples/Bookstore.Bcl.Samples/Bookstore.Bcl.Samples.csproj" />
   </Folder>
   <Folder Name="/src/">
