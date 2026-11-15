@@ -1,0 +1,44 @@
+# Builds and tests a .NET solution. The caller's repository must contain the test database script.
+parameters:
+  - name: solution
+    type: string
+  - name: buildConfiguration
+    type: string
+    default: Release
+  - name: runIntegrationTests
+    type: boolean
+    default: true
+  - name: testDbScript
+    type: string
+    default: scripts/start-test-sql.sh
+  - name: extraSteps
+    type: stepList
+    default: []
+
+jobs:
+  - job: Api
+    displayName: Build and test API
+    dependsOn: Version
+    variables:
+      appVersion: $[ dependencies.Version.outputs['setVersion.appVersion'] ]
+    steps:
+      - checkout: self
+
+      - template: ../steps/dotnet-setup.yml
+        parameters:
+          solution: ${{ parameters.solution }}
+
+      - script: dotnet build ${{ parameters.solution }} --no-restore -c ${{ parameters.buildConfiguration }} -p:Version=$(appVersion)
+        displayName: Build $(appVersion)
+
+      - ${{ each step in parameters.extraSteps }}:
+          - ${{ step }}
+
+      - ${{ if eq(parameters.runIntegrationTests, true) }}:
+          - script: bash ${{ parameters.testDbScript }}
+            displayName: Start SQL Server for integration tests
+
+          - script: dotnet test --solution ${{ parameters.solution }} --no-build -c ${{ parameters.buildConfiguration }}
+            displayName: Test
+            env:
+              ConnectionStrings__BookstoreDb: $(TestDbConnection)

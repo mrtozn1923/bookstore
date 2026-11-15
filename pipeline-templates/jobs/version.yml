@@ -1,0 +1,15 @@
+# Computes one version per run; other jobs read it as dependencies.Version.outputs['setVersion.appVersion'].
+parameters:
+  - name: script
+    type: string
+    default: scripts/set-version.sh
+
+jobs:
+  - job: Version
+    displayName: Compute version
+    steps:
+      - checkout: self
+        fetchDepth: 1
+      - script: bash ${{ parameters.script }}
+        name: setVersion
+        displayName: Compute app version

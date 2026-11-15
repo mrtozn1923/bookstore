@@ -1,4 +1,4 @@
-# Bookstore CI: one version per run, build, and integration tests
+# Bookstore CI: extends the shared, version-pinned skeleton from the pipeline-templates repository
 parameters:
   - name: buildConfiguration
     displayName: Build configuration
@@ -20,7 +20,6 @@ trigger:
       - release/*
   paths:
     exclude:
-      - web
       - README.md
 
 schedules:
@@ -31,47 +30,24 @@ schedules:
         - main
     always: false
 
-pool:
-  vmImage: ubuntu-24.04
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: Bookstore/pipeline-templates
+      ref: refs/tags/v1.0.0
 
-variables:
-  buildConfiguration: ${{ parameters.buildConfiguration }}
-
-jobs:
-  - job: Version
-    displayName: Compute version
-    steps:
-      - checkout: self
-        fetchDepth: 1
-      - script: bash scripts/set-version.sh
-        name: setVersion
-        displayName: Compute app version
-
-  - job: Api
-    displayName: Build and test API
-    dependsOn: Version
-    variables:
-      appVersion: $[ dependencies.Version.outputs['setVersion.appVersion'] ]
-    steps:
-      - checkout: self
-
-      - task: UseDotNet@2
-        displayName: Install .NET SDK from global.json
+extends:
+  template: pipelines/bookstore-ci.yml@templates
+  parameters:
+    solution: Bookstore.slnx
+    webDirectory: web/bookstore-web
+    buildConfiguration: ${{ parameters.buildConfiguration }}
+    runIntegrationTests: ${{ parameters.runIntegrationTests }}
+    extraApiSteps:
+      - task: DotNetCoreCLI@2
+        displayName: Check formatting
         inputs:
-          packageType: sdk
-          useGlobalJson: true
-
-      - script: dotnet restore Bookstore.slnx
-        displayName: Restore
-
-      - script: dotnet build Bookstore.slnx --no-restore -c $(buildConfiguration) -p:Version=$(appVersion)
-        displayName: Build $(appVersion)
-
-      - ${{ if eq(parameters.runIntegrationTests, true) }}:
-          - script: bash scripts/start-test-sql.sh
-            displayName: Start SQL Server for integration tests
-
-          - script: dotnet test --solution Bookstore.slnx --no-build -c $(buildConfiguration)
-            displayName: Test
-            env:
-              ConnectionStrings__BookstoreDb: $(TestDbConnection)
+          command: custom
+          custom: format
+          arguments: Bookstore.slnx --verify-no-changes --no-restore

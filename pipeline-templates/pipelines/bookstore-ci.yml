@@ -1,0 +1,67 @@
+# Required skeleton for Bookstore CI pipelines (used with "extends").
+# Application pipelines choose values; the structure, the pool and the audit job stay fixed.
+parameters:
+  - name: solution
+    type: string
+  - name: webDirectory
+    type: string
+    default: ''
+  - name: buildConfiguration
+    type: string
+    default: Release
+    values:
+      - Release
+      - Debug
+  - name: runIntegrationTests
+    type: boolean
+    default: true
+  - name: extraApiSteps
+    type: stepList
+    default: []
+
+stages:
+  - stage: Build
+    displayName: Build and test
+    pool:
+      vmImage: ubuntu-24.04
+    variables:
+      - template: ../variables/common.yml
+    jobs:
+      - template: ../jobs/version.yml
+
+      - template: ../jobs/dotnet-ci.yml
+        parameters:
+          solution: ${{ parameters.solution }}
+          buildConfiguration: ${{ parameters.buildConfiguration }}
+          runIntegrationTests: ${{ parameters.runIntegrationTests }}
+          extraSteps:
+            # Only tasks are accepted here; inline scripts are replaced by a failing step.
+            - ${{ each step in parameters.extraApiSteps }}:
+                - ${{ if or(startsWith(step.task, 'Bash'), startsWith(step.task, 'CmdLine'), startsWith(step.task, 'PowerShell')) }}:
+                    - script: |
+                        echo "##vso[task.logissue type=error]Inline scripts are not allowed in extraApiSteps."
+                        exit 1
+                      displayName: Blocked by template
+                - ${{ else }}:
+                    - ${{ step }}
+
+      - ${{ if ne(parameters.webDirectory, '') }}:
+          - template: ../jobs/angular-ci.yml
+            parameters:
+              workingDirectory: ${{ parameters.webDirectory }}
+
+      - job: Audit
+        displayName: Dependency audit (required)
+        dependsOn: []
+        steps:
+          - checkout: self
+          - template: ../steps/dotnet-setup.yml
+            parameters:
+              solution: ${{ parameters.solution }}
+          - script: |
+              dotnet list ${{ parameters.solution }} package --vulnerable --include-transitive | tee audit.txt
+              if grep -q "has the following vulnerable packages" audit.txt; then
+                echo "##vso[task.logissue type=error]Vulnerable packages found."
+                exit 1
+              fi
+            displayName: Fail on vulnerable packages

@@ -1,0 +1,14 @@
+# Installs the SDK from global.json and restores the solution.
+parameters:
+  - name: solution
+    type: string
+
+steps:
+  - task: UseDotNet@2
+    displayName: Install .NET SDK from global.json
+    inputs:
+      packageType: sdk
+      useGlobalJson: true
+
+  - script: dotnet restore ${{ parameters.solution }}
+    displayName: Restore

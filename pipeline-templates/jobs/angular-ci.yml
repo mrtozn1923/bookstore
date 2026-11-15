@@ -1,0 +1,31 @@
+# Installs, tests and builds an Angular application.
+parameters:
+  - name: workingDirectory
+    type: string
+  - name: nodeVersion
+    type: string
+    default: 24.x
+
+jobs:
+  - job: Web
+    displayName: Build and test web
+    dependsOn: Version
+    steps:
+      - checkout: self
+
+      - task: UseNode@1
+        displayName: Install Node.js ${{ parameters.nodeVersion }}
+        inputs:
+          version: ${{ parameters.nodeVersion }}
+
+      - script: npm ci
+        displayName: npm ci
+        workingDirectory: ${{ parameters.workingDirectory }}
+
+      - script: npm test -- --watch=false
+        displayName: Unit tests
+        workingDirectory: ${{ parameters.workingDirectory }}
+
+      - script: npm run build
+        displayName: Build
+        workingDirectory: ${{ parameters.workingDirectory }}

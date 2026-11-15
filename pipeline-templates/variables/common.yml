@@ -1,0 +1,5 @@
+# Variables every Bookstore pipeline gets. Non-secret variables also reach steps as environment variables.
+variables:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
