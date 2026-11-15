@@ -22,3 +22,11 @@ See README.md for local setup.
 - Never edit an existing migration; add a new migration instead (see the `add-migration` skill).
 - Never put secrets in code or appsettings files; use user-secrets locally.
 - Ask before adding a NuGet or npm package.
+
+## Code Review Rules
+### EF Core queries
+- Flag queries that load related data inside a loop (N+1). Safe path: `Include`, a projection with `Select`, or one query with a join.
+- Flag read-only queries without `AsNoTracking()` and async EF Core calls that drop the `CancellationToken`.
+- Flag list endpoints that return an unbounded result set. Safe path: paging with `Skip` and `Take`, as in `GET /orders`.
+### Money and time
+- Flag money stored or calculated as `double` or `float`, and times stored as local time instead of UTC.
