@@ -1,7 +1,8 @@
-import { test as base, expect, type APIRequestContext } from '@playwright/test';
+import { test as base, expect as baseExpect, type APIRequestContext } from '@playwright/test';
 import { CartPage } from './pages/cart-page';
 import { CatalogPage } from './pages/catalog-page';
 import { apiURL } from './support/config';
+import { priceMatchers } from './support/matchers';
 
 export interface TestBook {
   id: number;
@@ -80,4 +81,4 @@ export const test = base.extend<TestFixtures, WorkerFixtures>({
   },
 });
 
-export { expect };
+export const expect = baseExpect.extend(priceMatchers);

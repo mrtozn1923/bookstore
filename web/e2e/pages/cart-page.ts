@@ -1,10 +1,14 @@
 import type { Locator, Page } from '@playwright/test';
 
 export class CartPage {
+  readonly lines: Locator;
+  readonly subtotal: Locator;
   readonly total: Locator;
   readonly error: Locator;
 
   constructor(private readonly page: Page) {
+    this.lines = page.getByRole('table').getByRole('row').filter({ has: page.getByRole('cell') });
+    this.subtotal = page.getByText(/^Subtotal:/);
     this.total = page.getByText(/^Total:/);
     this.error = page.getByRole('alert');
   }
