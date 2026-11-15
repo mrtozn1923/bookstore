@@ -32,7 +32,7 @@ public sealed class PromptCachingTests
         FakeClaudeHandler handler = new(responses);
         ListLogger<SupportChatService> log = new();
         SupportChatService service = new(handler.CreateClient(), new InMemoryConversationStore(), Knowledge,
-            Options.Create(new ClaudeOptions { CacheDiagnostics = true }), log);
+            new ClaudeUsageMeter(TestMeters.Factory), Options.Create(new ClaudeOptions { CacheDiagnostics = true }), log);
         return (service, handler, log);
     }
 

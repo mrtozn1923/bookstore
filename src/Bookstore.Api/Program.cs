@@ -8,11 +8,35 @@ using Bookstore.Api.Ordering;
 using Bookstore.Api.Reports;
 using Bookstore.Api.Returns;
 using Bookstore.Api.Support;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddProblemDetails();
 builder.Services.AddClaude(builder.Configuration);
+builder.Services.AddExceptionHandler<ClaudeExceptionHandler>();
+builder.Services.AddSingleton<ClaudeUsageMeter>();
+builder.Services.AddClaudeChatClient();
+// Spans and metrics go to an OTLP collector only when one is configured (OTEL_EXPORTER_OTLP_ENDPOINT).
+bool exportOtlp = !string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
+builder.Services.AddOpenTelemetry()
+    .WithTracing(tracing =>
+    {
+        tracing.AddSource("com.anthropic.sdk.csharp*").AddSource("Bookstore.ChatClient").AddAspNetCoreInstrumentation();
+        if (exportOtlp)
+        {
+            tracing.AddOtlpExporter();
+        }
+    })
+    .WithMetrics(metrics =>
+    {
+        metrics.AddMeter(ClaudeUsageMeter.MeterName);
+        if (exportOtlp)
+        {
+            metrics.AddOtlpExporter();
+        }
+    });
 builder.Services.AddSingleton<IBookRepository, InMemoryBookRepository>();
 builder.Services.AddScoped<ClaudeCatalogService>();
 builder.Services.AddSingleton<IConversationStore, InMemoryConversationStore>();

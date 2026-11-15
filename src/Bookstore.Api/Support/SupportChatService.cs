@@ -11,6 +11,7 @@ public sealed class SupportChatService(
     IAnthropicClient claude,
     IConversationStore conversations,
     SupportKnowledge knowledge,
+    ClaudeUsageMeter usageMeter,
     IOptions<ClaudeOptions> options,
     ILogger<SupportChatService> logger)
 {
@@ -74,9 +75,10 @@ public sealed class SupportChatService(
         Message message = await claude.Messages.Create(request, cancellationToken);
         ClaudeReply reply = ClaudeReplyReader.Read(message);
 
+        decimal costUsd = usageMeter.Record("support", options.Value.Model, reply.Usage);
         logger.LogInformation(
-            "Support {ConversationId}: outcome={Outcome} input={Input} cacheRead={CacheRead} cacheWrite={CacheWrite} output={Output}",
-            conversationId, reply.Outcome, reply.Usage.Input, reply.Usage.CacheRead, reply.Usage.CacheWrite, reply.Usage.Output);
+            "Support {ConversationId}: outcome={Outcome} input={Input} cacheRead={CacheRead} cacheWrite={CacheWrite} output={Output} costUsd={CostUsd}",
+            conversationId, reply.Outcome, reply.Usage.Input, reply.Usage.CacheRead, reply.Usage.CacheWrite, reply.Usage.Output, costUsd);
         LogCacheMiss(conversationId, message.Diagnostics);
 
         switch (reply.Outcome)
