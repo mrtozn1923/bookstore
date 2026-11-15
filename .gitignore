@@ -484,3 +484,5 @@ $RECYCLE.BIN/
 # Angular client
 .angular/
 web/bookstore-web/dist/
+web/bookstore-web/test-results/
+web/bookstore-web/coverage/

@@ -1,0 +1,41 @@
+# Combines the api and web artifacts of the same run into one release artifact with a manifest.
+parameters:
+  - name: manifestScript
+    type: string
+    default: scripts/write-release-manifest.sh
+
+jobs:
+  - job: Package
+    displayName: Package release
+    dependsOn:
+      - Version
+      - Api
+      - Web
+      - Audit
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+    variables:
+      appVersion: $[ dependencies.Version.outputs['setVersion.appVersion'] ]
+    steps:
+      - checkout: self
+        fetchDepth: 1
+
+      - download: current
+        artifact: api
+
+      - download: current
+        artifact: web
+
+      - script: |
+          mkdir -p $(Build.ArtifactStagingDirectory)/release
+          cp -R $(Pipeline.Workspace)/api $(Build.ArtifactStagingDirectory)/release/api
+          cp -R $(Pipeline.Workspace)/web $(Build.ArtifactStagingDirectory)/release/web
+          bash ${{ parameters.manifestScript }} $(Build.ArtifactStagingDirectory)/release
+        displayName: Assemble release folder
+        env:
+          APP_VERSION: $(appVersion)
+
+      - task: PublishPipelineArtifact@1
+        displayName: Upload release artifact
+        inputs:
+          targetPath: $(Build.ArtifactStagingDirectory)/release
+          artifact: release

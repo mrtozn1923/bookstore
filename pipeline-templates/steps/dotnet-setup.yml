@@ -1,4 +1,4 @@
-# Installs the SDK from global.json and restores the solution.
+# Installs the SDK from global.json, restores the NuGet cache and restores the solution in locked mode.
 parameters:
   - name: solution
     type: string
@@ -10,5 +10,13 @@ steps:
       packageType: sdk
       useGlobalJson: true
 
-  - script: dotnet restore ${{ parameters.solution }}
-    displayName: Restore
+  - task: Cache@2
+    displayName: Cache NuGet packages
+    inputs:
+      key: 'nuget | "$(Agent.OS)" | $(Build.SourcesDirectory)/**/packages.lock.json'
+      restoreKeys: |
+        nuget | "$(Agent.OS)"
+      path: $(NUGET_PACKAGES)
+
+  - script: dotnet restore ${{ parameters.solution }} --locked-mode
+    displayName: Restore (locked)

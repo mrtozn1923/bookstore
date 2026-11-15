@@ -1,6 +1,8 @@
-# Installs, tests and builds an Angular application.
+# Installs, tests and builds an Angular application, then publishes the build output as an artifact.
 parameters:
   - name: workingDirectory
+    type: string
+  - name: distDirectory
     type: string
   - name: nodeVersion
     type: string
@@ -18,14 +20,37 @@ jobs:
         inputs:
           version: ${{ parameters.nodeVersion }}
 
+      - task: Cache@2
+        displayName: Cache npm
+        inputs:
+          key: 'npm | "$(Agent.OS)" | ${{ parameters.workingDirectory }}/package-lock.json'
+          restoreKeys: |
+            npm | "$(Agent.OS)"
+          path: $(npm_config_cache)
+
       - script: npm ci
         displayName: npm ci
         workingDirectory: ${{ parameters.workingDirectory }}
 
-      - script: npm test -- --watch=false
+      - script: npm run test:ci
         displayName: Unit tests
         workingDirectory: ${{ parameters.workingDirectory }}
+
+      - task: PublishTestResults@2
+        displayName: Publish test results
+        condition: succeededOrFailed()
+        inputs:
+          testResultsFormat: JUnit
+          testResultsFiles: test-results/junit.xml
+          searchFolder: ${{ parameters.workingDirectory }}
+          testRunTitle: Web tests
 
       - script: npm run build
         displayName: Build
         workingDirectory: ${{ parameters.workingDirectory }}
+
+      - task: PublishPipelineArtifact@1
+        displayName: Upload web artifact
+        inputs:
+          targetPath: ${{ parameters.distDirectory }}
+          artifact: web

@@ -1,6 +1,9 @@
-# Builds and tests a .NET solution. The caller's repository must contain the test database script.
+# Builds and tests a .NET solution, publishes test results and coverage, and publishes the API as an artifact.
+# The caller's repository must contain the test database script.
 parameters:
   - name: solution
+    type: string
+  - name: apiProject
     type: string
   - name: buildConfiguration
     type: string
@@ -21,6 +24,7 @@ jobs:
     dependsOn: Version
     variables:
       appVersion: $[ dependencies.Version.outputs['setVersion.appVersion'] ]
+      testResultsDir: $(Agent.TempDirectory)/TestResults
     steps:
       - checkout: self
 
@@ -38,7 +42,35 @@ jobs:
           - script: bash ${{ parameters.testDbScript }}
             displayName: Start SQL Server for integration tests
 
-          - script: dotnet test --solution ${{ parameters.solution }} --no-build -c ${{ parameters.buildConfiguration }}
+          - script: >-
+              dotnet test --solution ${{ parameters.solution }} --no-build -c ${{ parameters.buildConfiguration }}
+              --results-directory $(testResultsDir)
+              --report-trx --report-trx-filename api-tests.trx
+              --coverage --coverage-output-format cobertura --coverage-output api.cobertura.xml
             displayName: Test
             env:
               ConnectionStrings__BookstoreDb: $(TestDbConnection)
+
+          - task: PublishTestResults@2
+            displayName: Publish test results
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: VSTest
+              testResultsFiles: '*.trx'
+              searchFolder: $(testResultsDir)
+              testRunTitle: API tests
+
+          - task: PublishCodeCoverageResults@2
+            displayName: Publish code coverage
+            condition: succeededOrFailed()
+            inputs:
+              summaryFileLocation: $(testResultsDir)/api.cobertura.xml
+
+      - script: dotnet publish ${{ parameters.apiProject }} --no-build -c ${{ parameters.buildConfiguration }} -o $(Build.ArtifactStagingDirectory)/api
+        displayName: Publish API
+
+      - task: PublishPipelineArtifact@1
+        displayName: Upload api artifact
+        inputs:
+          targetPath: $(Build.ArtifactStagingDirectory)/api
+          artifact: api

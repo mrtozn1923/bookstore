@@ -3,9 +3,12 @@
 parameters:
   - name: solution
     type: string
+  - name: apiProject
+    type: string
   - name: webDirectory
     type: string
-    default: ''
+  - name: webDistDirectory
+    type: string
   - name: buildConfiguration
     type: string
     default: Release
@@ -32,6 +35,7 @@ stages:
       - template: ../jobs/dotnet-ci.yml
         parameters:
           solution: ${{ parameters.solution }}
+          apiProject: ${{ parameters.apiProject }}
           buildConfiguration: ${{ parameters.buildConfiguration }}
           runIntegrationTests: ${{ parameters.runIntegrationTests }}
           extraSteps:
@@ -45,10 +49,12 @@ stages:
                 - ${{ else }}:
                     - ${{ step }}
 
-      - ${{ if ne(parameters.webDirectory, '') }}:
-          - template: ../jobs/angular-ci.yml
-            parameters:
-              workingDirectory: ${{ parameters.webDirectory }}
+      - template: ../jobs/angular-ci.yml
+        parameters:
+          workingDirectory: ${{ parameters.webDirectory }}
+          distDirectory: ${{ parameters.webDistDirectory }}
+
+      - template: ../jobs/package.yml
 
       - job: Audit
         displayName: Dependency audit (required)

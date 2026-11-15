@@ -3,3 +3,6 @@ variables:
   DOTNET_NOLOGO: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  # Package caches live under the workspace so Cache@2 can save and restore them.
+  NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
+  npm_config_cache: $(Pipeline.Workspace)/.npm

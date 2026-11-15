@@ -1,4 +1,6 @@
 # Bookstore CI: extends the shared, version-pinned skeleton from the pipeline-templates repository
+name: $(SourceBranchName)-$(Date:yyyyMMdd).$(Rev:r)
+
 parameters:
   - name: buildConfiguration
     displayName: Build configuration
@@ -35,13 +37,15 @@ resources:
     - repository: templates
       type: git
       name: Bookstore/pipeline-templates
-      ref: refs/tags/v1.0.0
+      ref: refs/tags/v1.1.0
 
 extends:
   template: pipelines/bookstore-ci.yml@templates
   parameters:
     solution: Bookstore.slnx
+    apiProject: src/Bookstore.Api/Bookstore.Api.csproj
     webDirectory: web/bookstore-web
+    webDistDirectory: web/bookstore-web/dist/bookstore-web/browser
     buildConfiguration: ${{ parameters.buildConfiguration }}
     runIntegrationTests: ${{ parameters.runIntegrationTests }}
     extraApiSteps:
