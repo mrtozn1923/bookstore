@@ -6,6 +6,7 @@ export type CartAction =
   | { type: 'added'; book: BookSummary; amount: number }
   | { type: 'quantityChanged'; isbn: string; quantity: number }
   | { type: 'removed'; isbn: string }
+  | { type: 'restored'; line: CartLine }
   | { type: 'cleared' };
 
 // A pure function: same (state, action) always gives the same new state; no mutation, no I/O
@@ -23,6 +24,8 @@ export function cartReducer(lines: CartLine[], action: CartAction): CartLine[] {
         : lines.map((line) => (line.isbn === action.isbn ? { ...line, quantity: action.quantity } : line));
     case 'removed':
       return lines.filter((line) => line.isbn !== action.isbn);
+    case 'restored':
+      return lines.some((line) => line.isbn === action.line.isbn) ? lines : [...lines, action.line];
     case 'cleared':
       return [];
     default: {

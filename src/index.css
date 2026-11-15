@@ -69,3 +69,10 @@ button:disabled { opacity: 0.5; cursor: default; }
 .total { font-weight: 700; }
 .details { margin-top: 1rem; padding: 1rem; border: 1px solid #e5e7eb; border-radius: 8px; }
 button.link { padding: 0; border: 0; background: none; color: #1d4ed8; font-weight: 700; text-align: left; }
+
+/* Dark theme: ThemeProvider sets <html data-theme="dark"> */
+:root[data-theme="dark"] { color: #e5e7eb; background: #111827; }
+:root[data-theme="dark"] .book-card, :root[data-theme="dark"] .details { border-color: #374151; }
+:root[data-theme="dark"] button.link, :root[data-theme="dark"] a { color: #93c5fd; }
+:root[data-theme="dark"] input, :root[data-theme="dark"] select { background: #1f2937; color: #e5e7eb; border-color: #4b5563; }
+.site-header { gap: 0.75rem; }

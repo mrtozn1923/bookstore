@@ -1,24 +1,42 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import type { BookSummary } from '@/features/catalog/types';
 import { formatPrice } from '@/shared/format';
 
 type BookDetailsPanelProps = {
   book: BookSummary;
+  onClose: () => void;
 };
 
-export function BookDetailsPanel({ book }: BookDetailsPanelProps) {
+const maxNote = 120;
+
+// Defined outside the component: the same function on every render, so React calls it only on attach
+function revealPanel(node: HTMLElement) {
+  const opener = document.activeElement;
+  node.scrollIntoView({ block: 'nearest' });
+  node.focus();
+  // Cleanup (React 19): when the panel goes away with focus inside it, give focus back to the opener
+  return () => {
+    if (node.contains(document.activeElement) && opener instanceof HTMLElement) {
+      opener.focus();
+    }
+  };
+}
+
+export function BookDetailsPanel({ book, onClose }: BookDetailsPanelProps) {
   // Belongs to one book; the parent resets it with key={book.isbn}
   const [giftNote, setGiftNote] = useState('');
+  // Unique per component instance, stable across renders: safe for id/htmlFor/aria-*
+  const noteId = useId();
 
   return (
-    <section className="details" aria-label="Book details">
+    <section ref={revealPanel} tabIndex={-1} className="details" aria-label="Book details">
       <h2>{book.title}</h2>
       <p>{book.author}, {book.publishedYear} · {book.category} · {formatPrice(book.price)}</p>
-      <label>
-        Gift note{' '}
-        <input value={giftNote} onChange={(e) => setGiftNote(e.target.value)} maxLength={120} />
-      </label>
-      <p className="muted">{120 - giftNote.length} characters left</p>
+      <label htmlFor={noteId}>Gift note</label>{' '}
+      <input id={noteId} aria-describedby={`${noteId}-hint`} value={giftNote}
+        onChange={(e) => setGiftNote(e.target.value)} maxLength={maxNote} />
+      <p id={`${noteId}-hint`} className="muted">{maxNote - giftNote.length} characters left</p>
+      <button type="button" onClick={onClose}>Close</button>
     </section>
   );
 }
