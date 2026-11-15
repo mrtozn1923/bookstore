@@ -1,0 +1,30 @@
+@use '@angular/material' as mat;
+
+.admin-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.container {
+  flex: 1;
+}
+
+mat-sidenav {
+  width: 240px;
+}
+
+.content {
+  padding: 24px;
+}
+
+// Public theming API instead of overriding .mat-toolbar / .mat-mdc-* classes
+mat-toolbar {
+  @include mat.toolbar-overrides((
+    container-background-color: var(--mat-sys-surface-container),
+  ));
+}

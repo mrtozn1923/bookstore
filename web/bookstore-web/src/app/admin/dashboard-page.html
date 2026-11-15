@@ -1,0 +1,19 @@
+<h1>Dashboard</h1>
+<mat-card appearance="outlined">
+  <mat-card-header>
+    <mat-card-title>Catalog</mat-card-title>
+  </mat-card-header>
+  @if (books.isLoading()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+  <mat-card-content>
+    @if (books.error()) {
+      <p>The catalog could not be loaded.</p>
+    } @else if (books.value(); as result) {
+      <p data-testid="catalog-summary">{{ result.total }} books in {{ categories.value().length }} categories</p>
+    }
+  </mat-card-content>
+  <mat-card-actions>
+    <a matButton routerLink="/">Open storefront</a>
+  </mat-card-actions>
+</mat-card>
