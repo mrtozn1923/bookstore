@@ -1,0 +1,7 @@
+# Paste into the organization: Settings > Copilot > Content exclusion, "Repositories and paths to exclude".
+# "*" also covers files outside Git, such as the user-secrets store of every developer. Patterns are case-insensitive.
+"*":
+  - "**/.env"
+  - "**/usersecrets/**/secrets.json"
+bookstore:
+  - "/data/exports/**"

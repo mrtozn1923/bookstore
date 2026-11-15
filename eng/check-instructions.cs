@@ -1,5 +1,5 @@
 #:property PublishAot=false
-// Checks Copilot instruction, prompt, skill, agent, hook and setup-steps files: frontmatter, applyTo globs, AGENTS.md copy, size.
+// Checks Copilot instruction, prompt, skill, agent, hook, setup-steps and MCP allowlist files: frontmatter, applyTo globs, AGENTS.md copy, size.
 // Run from the repository root: dotnet run eng/check-instructions.cs
 using System.Diagnostics;
 using System.Text.Json;
@@ -130,6 +130,29 @@ if (File.Exists(SetupSteps))
             }
         }
         Console.WriteLine($"{SetupSteps}: job copilot-setup-steps ({string.Join(", ", keys)})");
+    }
+}
+
+const string ManagedSettings = "eng/copilot/managed-settings.json";
+if (File.Exists(ManagedSettings) && File.Exists(".mcp.json"))
+{
+    // An enterprise MCP allowlist matches the exact command and arguments; a version bump in .mcp.json blocks the server.
+    using JsonDocument managed = JsonDocument.Parse(File.ReadAllText(ManagedSettings));
+    using JsonDocument mcp = JsonDocument.Parse(File.ReadAllText(".mcp.json"));
+    List<string> allowed = managed.RootElement.GetProperty("allowedMcpServers").EnumerateArray()
+        .Where(e => e.TryGetProperty("serverCommand", out _))
+        .Select(e => string.Join(' ', e.GetProperty("serverCommand").EnumerateArray().Select(a => a.GetString())))
+        .ToList();
+    foreach (JsonProperty server in mcp.RootElement.GetProperty("mcpServers").EnumerateObject())
+    {
+        string command = string.Join(' ', new[] { server.Value.GetProperty("command").GetString() }
+            .Concat(server.Value.GetProperty("args").EnumerateArray().Select(a => a.GetString())));
+        bool ok = allowed.Contains(command);
+        Console.WriteLine($".mcp.json: {server.Name} -> {(ok ? "in" : "NOT in")} the managed MCP allowlist");
+        if (!ok)
+        {
+            errors.Add($".mcp.json: server '{server.Name}' ({command}) is not in {ManagedSettings} allowedMcpServers");
+        }
     }
 }
 

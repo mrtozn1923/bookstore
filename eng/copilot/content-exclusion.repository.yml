@@ -1,0 +1,7 @@
+# Paste into the repository: Settings > Copilot > Content exclusion, "Paths to exclude in this repository".
+# Content exclusion is for sensitive content, not for context size (use search.exclude for that).
+- "/.env"
+- "*.pfx"
+- "appsettings.Production.json"
+# Anonymized order exports used for debugging still contain real addresses.
+- "/data/exports/**"

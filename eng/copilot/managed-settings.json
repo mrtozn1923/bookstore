@@ -1,0 +1,25 @@
+{
+  "model": "auto",
+  "permissions": {
+    "disableBypassPermissionsMode": "disable",
+    "deny": [
+      "Shell(dotnet ef database update *)",
+      "Shell(git push --force *)",
+      "Read(~/.ssh/**)",
+      "Read(~/.microsoft/usersecrets/**)",
+      "Read(~/AppData/Roaming/Microsoft/UserSecrets/**)"
+    ],
+    "ask": [
+      "Shell(git push *)"
+    ]
+  },
+  "allowedMcpServers": [
+    { "serverUrl": "https://api.githubcopilot.com/*" },
+    { "serverCommand": ["dotnet", "run", "--project", "src/Bookstore.Mcp", "--no-build"] },
+    { "serverCommand": ["npx", "-y", "@playwright/mcp@0.0.85", "--isolated", "--allowed-origins", "http://localhost:4200"] }
+  ],
+  "sandbox": {
+    "enabled": true,
+    "allowBypass": false
+  }
+}
