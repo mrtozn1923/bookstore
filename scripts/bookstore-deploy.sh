@@ -11,6 +11,7 @@ source "$SCRIPT_DIR/lib/common.sh"
 
 ROOT="${BOOKSTORE_ROOT:-/opt/bookstore}"
 ARTIFACT_DIR="${ARTIFACT_DIR:-/var/tmp/bookstore}"
+DEPLOY_LOG="${DEPLOY_LOG:-/var/log/bookstore/deploy.log}"
 SERVICE="bookstore-api"
 
 # Set by parse_args
@@ -34,6 +35,8 @@ Environment:
   BOOKSTORE_ROOT  installation root (default /opt/bookstore)
   ARTIFACT_DIR    folder with bookstore-api-VERSION-linux-x64.tar.gz
                   (default /var/tmp/bookstore)
+  DEPLOY_LOG      messages are appended here as well
+                  (default /var/log/bookstore/deploy.log)
 
 Example:
   ${0##*/} -e staging -v 1.4.2 --dry-run
@@ -100,6 +103,16 @@ validate_args() {
     [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || usage_error "VERSION must look like 1.4.2, got: $VERSION"
 }
 
+# Prints the content of the RELEASE file that is written into each release.
+release_info() {
+    cat <<EOF_INFO
+version=$VERSION
+environment=$ENV_NAME
+deployed_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+deployed_by=${SUDO_USER:-$(id -un)}
+EOF_INFO
+}
+
 deploy() {
     local artifact="$ARTIFACT_DIR/bookstore-api-$VERSION-linux-x64.tar.gz"
     local release_dir="$ROOT/releases/$VERSION"
@@ -110,6 +123,11 @@ deploy() {
     log "deploying $VERSION to $ENV_NAME"
     run mkdir -p "$release_dir"
     run tar -xzf "$artifact" -C "$release_dir"
+    if (( DRY_RUN )); then
+        printf '[dry-run] write %s\n' "$release_dir/RELEASE"
+    else
+        release_info > "$release_dir/RELEASE"
+    fi
     run ln -sfn "$release_dir" "$ROOT/current"
     run sudo systemctl restart "$SERVICE"
     run "$SCRIPT_DIR/bookstore-health.sh" local || die "health check failed after deploying $VERSION"
@@ -123,6 +141,9 @@ deploy() {
 main() {
     parse_args "$@"
     validate_args
+    if (( ! DRY_RUN )); then
+        start_log "$DEPLOY_LOG"
+    fi
     deploy
 }
 

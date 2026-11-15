@@ -7,6 +7,7 @@
 #             status              current release and health check
 #             releases            list releases, newest last
 #             prune [-n] [KEEP]   delete old releases (see bookstore-prune-releases.sh)
+#             report [--json]     releases and deploy counts (see bookstore-report.sh)
 # Variables:  BOOKSTORE_ROOT  installation root (default /opt/bookstore)
 # Exit codes: 0 success, 1 error, 2 usage error
 
@@ -17,7 +18,7 @@ source "$SCRIPT_DIR/lib/common.sh"
 ROOT="${BOOKSTORE_ROOT:-/opt/bookstore}"
 
 usage() {
-    echo "Usage: ${0##*/} deploy|status|releases|prune [ARGS...]" >&2
+    echo "Usage: ${0##*/} deploy|status|releases|prune|report [ARGS...]" >&2
 }
 
 cmd_status() {
@@ -60,6 +61,9 @@ main() {
             ;;
         prune)
             "$SCRIPT_DIR/bookstore-prune-releases.sh" "$@"
+            ;;
+        report)
+            "$SCRIPT_DIR/bookstore-report.sh" "$@"
             ;;
         -h | --help | help)
             usage

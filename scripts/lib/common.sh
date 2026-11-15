@@ -19,6 +19,14 @@ die() {
     exit "${2:-1}"
 }
 
+# Copies everything written to stderr from now on into FILE as well.
+# stdout is left alone, so it stays clean for data. Usage: start_log FILE
+start_log() {
+    local file=$1
+    mkdir -p "$(dirname "$file")" || return 1
+    exec 2> >(tee -a "$file" >&2)
+}
+
 # Runs a command, or only prints it (shell-quoted) when DRY_RUN is 1.
 run() {
     if (( ${DRY_RUN:-0} )); then
