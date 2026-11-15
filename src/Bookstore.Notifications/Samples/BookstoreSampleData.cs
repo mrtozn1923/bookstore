@@ -18,6 +18,19 @@ public static class BookstoreSampleData
 
     private static readonly string[] Customers = ["ada", "alan", "grace", "linus", "barbara", "edsger"];
 
+    // Same rows as MonthlySales, but generated one by one (unsorted) so nothing is held in memory
+    public static IEnumerable<SalesRow> MonthlySalesStream(DateOnly month, int rowCount)
+    {
+        Random random = new(month.Year * 100 + month.Month);
+        int days = DateTime.DaysInMonth(month.Year, month.Month);
+        for (int i = 0; i < rowCount; i++)
+        {
+            (string isbn, string title, decimal price) = Books[random.Next(Books.Count)];
+            DateTime placedAt = new DateTime(month.Year, month.Month, random.Next(1, days + 1), random.Next(0, 24), random.Next(0, 60), 0, DateTimeKind.Utc);
+            yield return new SalesRow(1000 + i, placedAt, $"{Customers[random.Next(Customers.Length)]}@example.com", isbn, title, random.Next(1, 4), price);
+        }
+    }
+
     public static MonthlySalesReport MonthlySales(DateOnly month, int rowCount)
     {
         Random random = new(month.Year * 100 + month.Month);

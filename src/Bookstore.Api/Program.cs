@@ -4,6 +4,7 @@ using Bookstore.Api.Institutional;
 using Bookstore.Api.Reports;
 using Bookstore.Notifications;
 using Bookstore.Notifications.Documents;
+using Bookstore.Notifications.Documents.Excel;
 using Bookstore.Notifications.Outbox;
 using Bookstore.Notifications.Samples;
 using Microsoft.EntityFrameworkCore;
@@ -15,8 +16,7 @@ builder.Services.AddDbContext<BookstoreContext>(options => options.UseSqlite(bui
 builder.Services.AddEmailOutbox<BookstoreContext>(builder.Configuration);
 builder.Services.AddScoped<ApprovalReminderJob>();
 builder.Services.AddSingleton<IDocumentRenderer<InvoiceModel>, PlainTextInvoiceRenderer>();
-builder.Services.AddSingleton<IDocumentRenderer<MonthlySalesReport>>(
-    new PlainTextSalesReportRenderer(builder.Configuration.GetValue("Reports:SimulatedRenderTime", TimeSpan.FromSeconds(8))));
+builder.Services.AddSingleton<IDocumentRenderer<MonthlySalesReport>, MonthlySalesExcelRenderer>();
 builder.Services.AddSingleton<ReportJobQueue>();
 builder.Services.AddSingleton<ReportJobStore>();
 builder.Services.AddHostedService<ReportJobWorker>();
@@ -68,7 +68,7 @@ app.MapPost("/api/reports/monthly-sales", async (MonthlySalesRequest request, Re
 app.MapGet("/api/reports/{jobId:guid}", (Guid jobId, ReportJobStore store) =>
     store.Get(jobId) is { } status ? Results.Ok(status) : Results.NotFound());
 
-app.MapGet("/api/reports/{jobId:guid}/file", async (Guid jobId, ReportJobStore store, IFileStore files, CancellationToken ct) =>
+app.MapGet("/api/reports/{jobId:guid}/file", async (Guid jobId, ReportJobStore store, IFileStore files, IDocumentRenderer<MonthlySalesReport> renderer, CancellationToken ct) =>
 {
     if (store.Get(jobId) is not { State: ReportJobState.Completed, FilePath: { } path })
     {
@@ -76,7 +76,25 @@ app.MapGet("/api/reports/{jobId:guid}/file", async (Guid jobId, ReportJobStore s
     }
 
     Stream content = await files.OpenReadAsync(path, ct);
-    return Results.Stream(content, FileFormat.PlainText.ContentType, Path.GetFileName(path));
+    return Results.Stream(content, renderer.Format.ContentType, Path.GetFileName(path));
+});
+
+// Excel straight into the response: ClosedXML writes synchronously, so render into memory first
+app.MapGet("/api/reports/monthly-sales/{month}/excel", async (string month, IDocumentRenderer<MonthlySalesReport> renderer, CancellationToken ct) =>
+{
+    MonthlySalesReport report = BookstoreSampleData.MonthlySales(DateOnly.ParseExact(month + "-01", "yyyy-MM-dd"), rowCount: 2_000);
+    MemoryStream buffer = new();
+    await renderer.RenderAsync(report, buffer, ct);
+    buffer.Position = 0;
+    return Results.File(buffer, renderer.Format.ContentType, $"Aylık Satış Raporu {month}.xlsx");
+});
+
+// The wrong way, kept to show the error: writing the workbook directly to Response.Body
+app.MapGet("/api/reports/monthly-sales/{month}/excel-direct", async (string month, HttpContext http, IDocumentRenderer<MonthlySalesReport> renderer) =>
+{
+    MonthlySalesReport report = BookstoreSampleData.MonthlySales(DateOnly.ParseExact(month + "-01", "yyyy-MM-dd"), rowCount: 2_000);
+    http.Response.ContentType = renderer.Format.ContentType;
+    await renderer.RenderAsync(report, http.Response.Body, http.RequestAborted);
 });
 
 // In production a daily recurring job calls this; exposed here to trigger it by hand
