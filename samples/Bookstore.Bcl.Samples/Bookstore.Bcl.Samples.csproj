@@ -6,6 +6,7 @@
   <ItemGroup>
     <!-- QueryHelpers (Microsoft.AspNetCore.WebUtilities) comes with the ASP.NET Core shared framework. -->
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" Version="11.0.0" />
     <ProjectReference Include="..\..\src\Bookstore.Bcl\Bookstore.Bcl.csproj" />
   </ItemGroup>
 </Project>
