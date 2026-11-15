@@ -9,7 +9,9 @@
     "build:03": "tailwindcss -i 03/inline.css -o 03/inline.out.css && tailwindcss -i 03/dark.css -o 03/dark.out.css",
     "test:03": "node scripts/03-namespaces.mjs && node scripts/03-inline.mjs && node scripts/03-dark.mjs && node scripts/03-theme.mjs",
     "build:04": "tailwindcss -i 04/input.css -o 04/index.out.css && tailwindcss -i 04/custom.css -o 04/custom.out.css",
-    "test:04": "node scripts/04-variants.mjs && node scripts/04-custom.mjs"
+    "test:04": "node scripts/04-variants.mjs && node scripts/04-custom.mjs",
+    "serve:05": "node scripts/serve.mjs ../web/dist/bookstore-web/browser 52862",
+    "test:05": "node scripts/05-catalog.mjs"
   },
   "type": "module",
   "devDependencies": {

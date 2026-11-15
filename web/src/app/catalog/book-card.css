@@ -1,0 +1,5 @@
+@reference "../../styles.css";
+
+.price {
+  @apply text-lg font-bold text-ink-900;
+}
