@@ -1,0 +1,8 @@
+@import "tailwindcss" source(none);
+@source "./static.html";
+
+@theme static {
+    --color-brand-50: oklch(0.97 0.014 264);
+    --color-brand-600: oklch(0.54 0.178 264);
+    --color-brand-700: oklch(0.47 0.16 264);
+}

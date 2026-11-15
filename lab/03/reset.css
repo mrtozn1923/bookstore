@@ -1,0 +1,9 @@
+@import "tailwindcss" source(none);
+@source "./reset.html";
+
+@theme {
+    /* only Bookstore's own colors: the default palette is dropped */
+    --color-*: initial;
+    --color-white: oklch(1 0 0);
+    --color-brand-600: oklch(0.54 0.178 264);
+}

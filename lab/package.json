@@ -5,7 +5,9 @@
     "build:01": "tailwindcss -i 01/cms.css -o 01/cms.out.css && tailwindcss -i 01/unlayered.css -o 01/unlayered.out.css",
     "test:01": "node scripts/01-growth.mjs && node scripts/01-html-size.mjs && node scripts/01-preflight.mjs && node scripts/01-unlayered.mjs",
     "build:02": "vite build --config 02-vite/vite.config.js",
-    "test:02": "node scripts/02-scan.mjs && node scripts/02-assets.mjs && node scripts/02-badges.mjs"
+    "test:02": "node scripts/02-scan.mjs && node scripts/02-assets.mjs && node scripts/02-badges.mjs",
+    "build:03": "tailwindcss -i 03/inline.css -o 03/inline.out.css && tailwindcss -i 03/dark.css -o 03/dark.out.css",
+    "test:03": "node scripts/03-namespaces.mjs && node scripts/03-inline.mjs && node scripts/03-dark.mjs && node scripts/03-theme.mjs"
   },
   "type": "module",
   "devDependencies": {

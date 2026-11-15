@@ -1,0 +1,23 @@
+{
+  "color": {
+    "$type": "color",
+    "brand": {
+      "50": { "$value": { "colorSpace": "oklch", "components": [0.97, 0.014, 264], "hex": "#f0f5ff" } },
+      "100": { "$value": { "colorSpace": "oklch", "components": [0.93, 0.033, 264], "hex": "#dde8ff" } },
+      "500": { "$value": { "colorSpace": "oklch", "components": [0.62, 0.17, 264], "hex": "#5080eb" } },
+      "600": { "$value": { "colorSpace": "oklch", "components": [0.54, 0.178, 264], "hex": "#3766d4" } },
+      "700": { "$value": { "colorSpace": "oklch", "components": [0.47, 0.16, 264], "hex": "#2a53b3" } }
+    },
+    "ink": {
+      "900": { "$value": { "colorSpace": "oklch", "components": [0.21, 0.03, 264], "hex": "#111826" } }
+    }
+  },
+  "radius": {
+    "$type": "dimension",
+    "card": { "$value": { "value": 0.875, "unit": "rem" } }
+  },
+  "font": {
+    "$type": "fontFamily",
+    "display": { "$value": ["Georgia", "Cambria", "serif"] }
+  }
+}

@@ -1,0 +1,19 @@
+@import "tailwindcss" source(none);
+@source "./namespaces.html";
+
+@theme {
+    --color-brand-600: oklch(0.54 0.178 264);
+    --font-display: Georgia, Cambria, serif;
+    --text-hero: 2.75rem;
+    --text-hero--line-height: 1.1;
+    --font-weight-heavy: 850;
+    --tracking-tightest: -0.04em;
+    --leading-cozy: 1.4;
+    --breakpoint-3xl: 120rem;
+    --container-shelf: 72rem;
+    --spacing-gutter: 1.25rem;
+    --radius-card: 0.875rem;
+    --shadow-card: 0 1px 2px oklch(0 0 0 / 0.06), 0 4px 12px oklch(0 0 0 / 0.08);
+    --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
+    --animate-pulse-once: pulse 1s ease-in-out 1;
+}

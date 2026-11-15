@@ -2,11 +2,13 @@
   "name": "bookstore-web-styles",
   "private": true,
   "scripts": {
+    "tokens": "style-dictionary build --config tokens/sd.config.mjs",
     "css:watch": "tailwindcss -i ./Styles/input.css -o ./wwwroot/css/site.css --watch",
     "css:build": "tailwindcss -i ./Styles/input.css -o ./wwwroot/css/site.css --minify"
   },
   "devDependencies": {
     "@tailwindcss/cli": "4.3.5",
+    "style-dictionary": "5.8.0",
     "tailwindcss": "4.3.5"
   }
 }

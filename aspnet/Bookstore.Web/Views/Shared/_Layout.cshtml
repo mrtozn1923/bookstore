@@ -4,11 +4,27 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@ViewData["Title"] - Bookstore</title>
+    <script>
+        // runs before the first paint: the page never flashes in the wrong theme
+        (function () {
+            var stored = null;
+            try { stored = localStorage.getItem("theme"); } catch (e) { }
+            var dark = stored ? stored === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+            document.documentElement.classList.toggle("dark", dark);
+        })();
+    </script>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true">
 </head>
-<body class="bg-slate-50 text-slate-900">
+<body class="bg-canvas text-fg">
+    <header class="border-b border-line bg-surface">
+        <div class="mx-auto flex max-w-5xl items-center justify-between px-6 py-3">
+            <a href="/" class="font-display text-xl font-bold">Bookstore</a>
+            <button type="button" data-theme-toggle class="rounded-md border border-line px-3 py-1.5 text-sm text-fg-muted hover:text-fg">Toggle theme</button>
+        </div>
+    </header>
     <main class="mx-auto max-w-5xl p-6">
         @RenderBody()
     </main>
+    <script src="~/js/theme.js" asp-append-version="true"></script>
 </body>
 </html>

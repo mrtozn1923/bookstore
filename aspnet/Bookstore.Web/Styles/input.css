@@ -1,7 +1,31 @@
 @import "tailwindcss";
+@import "./theme.css";
 
 /* third-party scripts copied into wwwroot/lib: not ours, do not scan */
 @source not "../wwwroot/lib";
 
 /* classes that only appear in CMS content: not in our source, generate them anyway */
 @source inline("{hover:,}bg-amber-{100,200}");
+
+/* dark mode follows the .dark class on <html>, not only the OS setting */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* semantic colors: components use these names, not the palette */
+@theme {
+    --color-canvas: oklch(0.985 0.003 264);
+    --color-surface: oklch(1 0 0);
+    --color-fg: var(--color-ink-900);
+    --color-fg-muted: oklch(0.45 0.03 264);
+    --color-line: oklch(0.92 0.01 264);
+}
+
+@layer base {
+    .dark {
+        color-scheme: dark;
+        --color-canvas: oklch(0.18 0.025 264);
+        --color-surface: oklch(0.24 0.03 264);
+        --color-fg: oklch(0.96 0.01 264);
+        --color-fg-muted: oklch(0.75 0.02 264);
+        --color-line: oklch(0.34 0.03 264);
+    }
+}
