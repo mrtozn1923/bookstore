@@ -16,7 +16,16 @@ switch (command)
     case "clean":
         Clean.Run();
         break;
+    case "split":
+        Splits.Run();
+        break;
+    case "cv":
+        Splits.CrossValidation();
+        break;
+    case "complexity":
+        Splits.Complexity();
+        break;
     default:
-        Console.WriteLine("Commands: rules, explore, quality, clean");
+        Console.WriteLine("Commands: rules, explore, quality, clean, split, cv, complexity");
         break;
 }
