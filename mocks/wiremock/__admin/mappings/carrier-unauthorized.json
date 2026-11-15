@@ -1,0 +1,14 @@
+{
+  "Guid": "6d1f0c52-7d0a-4a43-9a9e-0c2a3f6c1002",
+  "Title": "Carrier quote: wrong or missing API key",
+  "Priority": 100,
+  "Request": {
+    "Path": { "Matchers": [ { "Name": "ExactMatcher", "Pattern": "/v1/quotes" } ] },
+    "Methods": [ "POST" ]
+  },
+  "Response": {
+    "StatusCode": 401,
+    "Headers": { "Content-Type": "application/json" },
+    "BodyAsJson": { "error": "invalid_api_key" }
+  }
+}

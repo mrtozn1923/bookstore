@@ -497,3 +497,4 @@ reports/
 tools/fake-carrier/.certs/
 .mitmproxy/
 *.mitm
+/openapi.json

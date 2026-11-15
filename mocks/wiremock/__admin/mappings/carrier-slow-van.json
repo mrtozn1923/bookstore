@@ -1,0 +1,16 @@
+{
+  "Guid": "6d1f0c52-7d0a-4a43-9a9e-0c2a3f6c1003",
+  "Title": "Carrier quote: Van answers after 3 seconds",
+  "Priority": 1,
+  "Request": {
+    "Path": { "Matchers": [ { "Name": "ExactMatcher", "Pattern": "/v1/quotes" } ] },
+    "Methods": [ "POST" ],
+    "Body": { "Matcher": { "Name": "JsonPartialMatcher", "Pattern": { "destinationCity": "Van" } } }
+  },
+  "Response": {
+    "StatusCode": 200,
+    "Delay": 3000,
+    "Headers": { "Content-Type": "application/json" },
+    "BodyAsJson": { "quoteId": "wm-slow", "price": 89.90, "currency": "TRY", "estimatedDays": 4 }
+  }
+}

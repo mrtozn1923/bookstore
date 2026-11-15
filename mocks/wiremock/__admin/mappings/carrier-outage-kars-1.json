@@ -1,0 +1,17 @@
+{
+  "Guid": "6d1f0c52-7d0a-4a43-9a9e-0c2a3f6c1004",
+  "Title": "Carrier outage for Kars: first call fails",
+  "Priority": 1,
+  "Scenario": "carrier-outage",
+  "SetStateTo": "recovered",
+  "Request": {
+    "Path": { "Matchers": [ { "Name": "ExactMatcher", "Pattern": "/v1/quotes" } ] },
+    "Methods": [ "POST" ],
+    "Body": { "Matcher": { "Name": "JsonPartialMatcher", "Pattern": { "destinationCity": "Kars" } } }
+  },
+  "Response": {
+    "StatusCode": 503,
+    "Headers": { "Content-Type": "application/json" },
+    "BodyAsJson": { "error": "temporarily_unavailable" }
+  }
+}

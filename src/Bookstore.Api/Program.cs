@@ -4,6 +4,7 @@ using Bookstore.Data;
 using Bookstore.Identity;
 using Bookstore.Inventory;
 using Bookstore.Ordering;
+using Bookstore.Payments;
 using Bookstore.Shipping;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
@@ -19,7 +20,7 @@ builder.Services.AddDbContext<BookstoreContext>(options => options.UseSqlServer(
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddProblemDetails();
 builder.Services.AddValidation();
-builder.Services.AddOpenApi(options => options.AddBearerSecurity());
+builder.Services.AddOpenApi(options => options.AddBearerSecurity().AddShippingExamples());
 builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
@@ -28,7 +29,8 @@ builder.Services
     .AddCatalogModule()
     .AddInventoryModule()
     .AddOrderingModule()
-    .AddShippingModule(builder.Configuration, builder.Environment);
+    .AddShippingModule(builder.Configuration, builder.Environment)
+    .AddPaymentsModule();
 
 WebApplication app = builder.Build();
 
@@ -52,5 +54,6 @@ app.MapAuthEndpoints();
 app.MapCatalogEndpoints();
 app.MapOrderingEndpoints();
 app.MapShippingEndpoints();
+app.MapPaymentsEndpoints();
 
 app.Run();

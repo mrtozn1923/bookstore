@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="WireMock.Net" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Bookstore.Api\Bookstore.Api.csproj" />
+  </ItemGroup>
+
+  <!-- The same mapping files the standalone WireMock server reads (mocks/wiremock). -->
+  <ItemGroup>
+    <None Include="..\..\mocks\wiremock\__admin\mappings\*.json" LinkBase="mappings" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,17 @@
+{
+  "Guid": "6d1f0c52-7d0a-4a43-9a9e-0c2a3f6c1001",
+  "Title": "Carrier quote: normal answer",
+  "Priority": 10,
+  "Request": {
+    "Path": { "Matchers": [ { "Name": "ExactMatcher", "Pattern": "/v1/quotes" } ] },
+    "Methods": [ "POST" ],
+    "Headers": [
+      { "Name": "Authorization", "Matchers": [ { "Name": "ExactMatcher", "Pattern": "Bearer fake-carrier-key-for-tests" } ] }
+    ]
+  },
+  "Response": {
+    "StatusCode": 200,
+    "Headers": { "Content-Type": "application/json" },
+    "BodyAsJson": { "quoteId": "wm-0001", "price": 49.90, "currency": "TRY", "estimatedDays": 2 }
+  }
+}
