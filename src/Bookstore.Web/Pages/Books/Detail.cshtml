@@ -15,6 +15,16 @@
         <img src="@CoverImages.Url(book, 640, "jpg", img)" srcset="@CoverImages.SrcSet(book, "jpg", img)" sizes="@Sizes"
              alt="@CoverImages.Alt(book, Model.Lang)" width="320" height="480" fetchpriority="high">
     </picture>
+    @if (Model.Video is not null)
+    {
+        @* kitap sayfası bu videonun watch page'i değil: VideoObject yok, watch page'e link var *@
+        <p>
+            <a href="@Model.VideoPath">
+                <img src="@(img + Model.Video.ThumbnailPath)" alt="" width="320" height="180" loading="lazy">
+                @Model.Video.Title
+            </a>
+        </p>
+    }
     @* dekoratif görsel: boş alt, ekran okuyucu atlar *@
     <img src="/images/divider.svg" alt="" width="240" height="12">
     <h2>@(Model.Lang == "tr" ? "Benzer kitaplar" : "Related books")</h2>

@@ -2,18 +2,21 @@ using System.Text.Json;
 using Bookstore.Web.Catalog;
 using Bookstore.Web.Images;
 using Bookstore.Web.Seo;
+using Bookstore.Web.Videos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Options;
 
 namespace Bookstore.Web.Pages.Books;
 
-public sealed class DetailModel(BookCatalog catalog, IOptions<SiteOptions> options) : PageModel
+public sealed class DetailModel(BookCatalog catalog, VideoCatalog videos, IOptions<SiteOptions> options) : PageModel
 {
     private readonly SiteOptions _site = options.Value;
 
     public Book Book { get; private set; } = null!;
     public IReadOnlyList<Book> Related { get; private set; } = [];
+    public Video? Video { get; private set; }
+    public string VideoPath => $"{(Lang == "en" ? "/en" : "")}/videos/{Video?.Slug}";
     public string Lang => Request.Path.StartsWithSegments("/en") ? "en" : "tr";
     public string ImageBase => _site.ImageBaseUrl;
 
@@ -26,6 +29,7 @@ public sealed class DetailModel(BookCatalog catalog, IOptions<SiteOptions> optio
             return NotFound();
 
         Book = book;
+        Video = videos.Videos.FirstOrDefault(v => v.BookSlug == book.Slug);
         Related = [.. catalog.Books.Where(b => b.Genre == book.Genre && b.Slug != book.Slug).Take(4)];
 
         string canonical = _site.BaseUrl + BookPath(book);

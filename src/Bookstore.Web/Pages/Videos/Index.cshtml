@@ -1,0 +1,23 @@
+@page "/videos"
+@inject Bookstore.Web.Videos.VideoCatalog Videos
+@inject Microsoft.Extensions.Options.IOptions<SiteOptions> Site
+@{
+    bool en = HttpContext.Request.Path.StartsWithSegments("/en");
+    string prefix = en ? "/en" : "";
+    // liste sayfası watch page değil: VideoObject yok, her video kendi sayfasına link
+    ViewData["Meta"] = new PageMeta(en ? "en" : "tr", en ? "Videos | Bookstore" : "Videolar | Bookstore",
+        en ? "Reading guides and talks about the books in our catalog." : "Katalogdaki kitaplar üzerine okuma rehberleri ve söyleşiler.",
+        Site.Value.BaseUrl + prefix + "/videos", Site.Value.BaseUrl + "/videos", Site.Value.BaseUrl + "/en/videos");
+}
+<h1>@(en ? "Videos" : "Videolar")</h1>
+<ul>
+    @foreach (Bookstore.Web.Videos.Video v in Videos.Videos)
+    {
+        <li>
+            <a href="@prefix/videos/@v.Slug">
+                <img src="@(Site.Value.ImageBaseUrl + v.ThumbnailPath)" alt="" width="320" height="180" loading="lazy">
+                @v.Title
+            </a>
+        </li>
+    }
+</ul>

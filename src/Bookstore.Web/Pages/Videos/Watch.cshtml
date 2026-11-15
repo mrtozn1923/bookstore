@@ -1,0 +1,36 @@
+@page "/videos/{slug}"
+@model Bookstore.Web.Pages.Videos.WatchModel
+@{
+    Bookstore.Web.Videos.Video video = Model.Video;
+    string start = Model.Start > 0 ? Model.Start.ToString() : "";
+}
+<article>
+    <h1>@video.Title</h1>
+    @* video sayfanın asıl içeriği: ilk HTML'de, tıklama beklemeden; lazy değil *@
+    @if (video.ContentUrl is not null)
+    {
+        <video controls preload="metadata" poster="@Model.ThumbnailUrl" width="1280" height="720">
+            <source src="@(start.Length > 0 ? $"{video.ContentUrl}#t={start}" : video.ContentUrl)" type="video/mp4">
+        </video>
+    }
+    else
+    {
+        <iframe src="@(start.Length > 0 ? $"{video.PlayerUrl}?start={start}" : video.PlayerUrl)" title="@video.Title"
+                width="1280" height="720" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>
+    }
+    <p>@video.Description</p>
+    @if (video.Chapters is { Length: > 0 } chapters)
+    {
+        <h2>@(Model.Lang == "tr" ? "Bölümler" : "Chapters")</h2>
+        <ol>
+            @foreach (Bookstore.Web.Videos.Chapter c in chapters)
+            {
+                <li><a href="?t=@c.StartSeconds">@TimeSpan.FromSeconds(c.StartSeconds).ToString(@"m\:ss") @c.Label</a></li>
+            }
+        </ol>
+    }
+    @if (video.BookSlug is not null)
+    {
+        <p><a href="@(Model.Lang == "en" ? "/en" : "")/books/@video.BookSlug">@(Model.Lang == "tr" ? "Kitabın sayfası" : "Book page")</a></p>
+    }
+</article>
