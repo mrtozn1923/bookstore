@@ -1,0 +1,3 @@
+[submodule "contracts"]
+	path = contracts
+	url = http://127.0.0.1:52030/git/bookstore-contracts.git
