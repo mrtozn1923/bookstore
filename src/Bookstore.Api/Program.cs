@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using Bookstore.Catalog;
 using Bookstore.Data;
+using Bookstore.Institutional;
 using Bookstore.Inventory;
 using Bookstore.Ordering;
 using Microsoft.EntityFrameworkCore;
@@ -41,5 +42,6 @@ if (app.Environment.IsDevelopment())
 
 app.MapCatalogEndpoints();
 app.MapOrderingEndpoints();
+app.MapInstitutionalEndpoints();
 
 app.Run();

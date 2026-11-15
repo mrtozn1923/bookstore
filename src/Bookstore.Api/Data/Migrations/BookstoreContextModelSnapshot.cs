@@ -456,6 +456,116 @@ namespace Bookstore.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Bookstore.Institutional.Institution", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("Institutions", "institutional");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = "RHS",
+                            Kind = "School",
+                            Name = "Riverside High School"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Code = "CCL",
+                            Kind = "Library",
+                            Name = "Central City Library"
+                        });
+                });
+
+            modelBuilder.Entity("Bookstore.Institutional.InstitutionUnit", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("InstitutionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int?>("ParentUnitId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InstitutionId");
+
+                    b.HasIndex("ParentUnitId");
+
+                    b.ToTable("InstitutionUnits", "institutional");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            InstitutionId = 1,
+                            Name = "North Campus"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            InstitutionId = 1,
+                            Name = "South Campus"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            InstitutionId = 1,
+                            Name = "Science Department",
+                            ParentUnitId = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            InstitutionId = 2,
+                            Name = "Main Branch"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            InstitutionId = 2,
+                            Name = "Children's Section",
+                            ParentUnitId = 4
+                        });
+                });
+
             modelBuilder.Entity("Bookstore.Inventory.StockItem", b =>
                 {
                     b.Property<int>("Id")
@@ -790,6 +900,22 @@ namespace Bookstore.Data.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("Bookstore.Institutional.InstitutionUnit", b =>
+                {
+                    b.HasOne("Bookstore.Institutional.Institution", null)
+                        .WithMany("Units")
+                        .HasForeignKey("InstitutionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Bookstore.Institutional.InstitutionUnit", "ParentUnit")
+                        .WithMany()
+                        .HasForeignKey("ParentUnitId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ParentUnit");
+                });
+
             modelBuilder.Entity("Bookstore.Inventory.StockItem", b =>
                 {
                     b.HasOne("Bookstore.Catalog.Book", null)
@@ -843,6 +969,11 @@ namespace Bookstore.Data.Migrations
             modelBuilder.Entity("Bookstore.Catalog.Author", b =>
                 {
                     b.Navigation("Books");
+                });
+
+            modelBuilder.Entity("Bookstore.Institutional.Institution", b =>
+                {
+                    b.Navigation("Units");
                 });
 
             modelBuilder.Entity("Bookstore.Ordering.Cart", b =>
