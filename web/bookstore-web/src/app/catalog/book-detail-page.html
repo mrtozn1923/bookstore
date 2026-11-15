@@ -16,7 +16,7 @@
         Quantity
         <input #qty type="number" min="1" [max]="b.available" value="1" />
       </label>
-      <button type="button" (click)="addToCart(qty.valueAsNumber)">Add to cart</button>
+      <button type="button" (click)="addToCart(b, qty.valueAsNumber)">Add to cart</button>
       @if (added()) {
         <p class="success">Added. <a routerLink="/cart">Go to cart</a></p>
       }

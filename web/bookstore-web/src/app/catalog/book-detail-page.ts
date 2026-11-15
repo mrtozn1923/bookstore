@@ -5,6 +5,7 @@ import { Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { BookDetails } from '../core/api-models';
 import { CartStore } from '../cart/cart-store';
+import { Announcer } from '../core/announcer';
 import { PageHeading } from '../core/page-heading';
 
 @Component({
@@ -14,6 +15,7 @@ import { PageHeading } from '../core/page-heading';
 })
 export class BookDetailPage {
   private readonly cartStore = inject(CartStore);
+  private readonly announcer = inject(Announcer);
 
   // Bound from the route parameter :isbn (withComponentInputBinding).
   readonly isbn = input.required<string>();
@@ -32,8 +34,11 @@ export class BookDetailPage {
     });
   }
 
-  protected async addToCart(quantity: number): Promise<void> {
-    await this.cartStore.add(this.isbn(), quantity);
+  protected async addToCart(book: BookDetails, quantity: number): Promise<void> {
+    await this.cartStore.add(book.isbn, quantity);
     this.added.set(true);
+    // The visible "Added." stays the same on the second click; the announcement names the book and the new count
+    const count = this.cartStore.itemCount();
+    this.announcer.announce(`${book.title} added to your cart. Cart: ${count} ${count === 1 ? 'item' : 'items'}.`);
   }
 }

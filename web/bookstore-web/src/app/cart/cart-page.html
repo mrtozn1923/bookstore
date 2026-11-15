@@ -1,9 +1,10 @@
 <h1 #heading appPageHeading>Your cart</h1>
 
 @if (placedOrder(); as order) {
-  <p class="success" data-testid="order-confirmation">
+  <!-- Takes focus after the order: the form and its button are gone, so focus would otherwise fall back to <body> -->
+  <h2 #confirmation tabindex="-1" class="success" data-testid="order-confirmation">
     Order #{{ order.id }} placed ({{ order.status }}). Total: {{ order.total | currency: 'TRY' : 'symbol-narrow' }}
-  </p>
+  </h2>
   <a routerLink="/">Continue shopping</a>
 } @else if (store.cart()?.items?.length) {
   <table class="cart">
@@ -28,6 +29,24 @@
   </table>
   <p class="total" data-testid="cart-total">Total: {{ store.cart()!.total | currency: 'TRY' : 'symbol-narrow' }}</p>
 
+  @if (errorSummary().length) {
+    <!-- Receives focus after a failed submit: the heading is its name, the list its description -->
+    <section #summary class="error-summary" tabindex="-1" aria-labelledby="error-summary-title"
+             aria-describedby="error-summary-list" data-testid="error-summary">
+      <h2 id="error-summary-title">There is a problem</h2>
+      <ul id="error-summary-list">
+        @for (item of errorSummary(); track item.message) {
+          <li>
+            @if (item.fieldId) {
+              <a [href]="'#' + item.fieldId" (click)="focusField($event, item.fieldId)">{{ item.message }}</a>
+            } @else {
+              {{ item.message }}
+            }
+          </li>
+        }
+      </ul>
+    </section>
+  }
   <form class="checkout" novalidate (submit)="checkout($event, nameBox, emailBox)">
     <div class="field">
       <label for="customer-name">Full name</label>
@@ -49,9 +68,6 @@
     </div>
     <button type="submit">Place order</button>
   </form>
-  @if (errorMessage()) {
-    <p class="error">{{ errorMessage() }}</p>
-  }
 } @else {
   <p class="muted">Your cart is empty. <a routerLink="/">Browse the catalog</a></p>
 }

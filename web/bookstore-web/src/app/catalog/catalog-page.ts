@@ -1,6 +1,6 @@
 import { CurrencyPipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { BookSummary, CategoryView, PagedResult } from '../core/api-models';
 import { CartStore } from '../cart/cart-store';
@@ -24,6 +24,20 @@ export class CatalogPage {
     url: '/api/books',
     params: { search: this.search(), category: this.category(), pageSize: 50 },
   }));
+
+  // The text of the status message: what the list shows now, including the filters that produced it
+  protected readonly resultText = computed(() => {
+    if (this.books.error()) {
+      return 'The catalog could not be loaded. Is Bookstore.Api running?';
+    }
+    const result = this.books.value();
+    if (!result) {
+      return '';
+    }
+    const category = this.categories.value().find(c => c.slug === this.category())?.name;
+    return `${result.total} ${result.total === 1 ? 'book' : 'books'}` +
+      (category ? ` in ${category}` : '') + (this.search() ? ` for "${this.search()}"` : '');
+  });
 
   protected applySearch(event: Event, value: string): void {
     event.preventDefault();

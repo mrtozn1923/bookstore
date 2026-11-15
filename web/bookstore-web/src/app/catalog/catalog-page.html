@@ -21,24 +21,27 @@
   </fieldset>
 </section>
 
-@if (books.isLoading()) {
-  <p class="muted">Loading books…</p>
-} @else if (books.error()) {
-  <p class="error">The catalog could not be loaded. Is Bookstore.Api running?</p>
-} @else if (books.value(); as result) {
-  <p class="muted" data-testid="book-count">{{ result.total }} {{ result.total === 1 ? 'book' : 'books' }}</p>
-  <ul class="book-grid">
-    @for (book of result.items; track book.isbn) {
-      <li class="book-card">
-        <a [routerLink]="['/books', book.isbn]">{{ book.title }}</a>
-        <span class="muted">{{ book.author }} · {{ book.publishedYear }}</span>
-        <span class="muted">{{ book.category }}</span>
-        <strong>{{ book.price | currency: 'TRY' : 'symbol-narrow' }}</strong>
-        <!-- The name starts with the visible text, so "Click Add to cart" still works with voice control (WCAG 2.5.3) -->
-        <button type="button" [attr.aria-label]="'Add to cart: ' + book.title" (click)="cartStore.add(book.isbn)">Add to cart</button>
-      </li>
-    } @empty {
-      <li class="muted">No books match your search.</li>
-    }
-  </ul>
-}
+<!-- aria-busy while a new result is loading; the status inside is read once the list is ready -->
+<section class="results" [attr.aria-busy]="books.isLoading()">
+  <!-- Always in the DOM: screen readers announce changes to its text, not a region that appears with its text (WCAG 4.1.3).
+       aria-live repeats what role="status" already means, for older browser and screen reader pairs. -->
+  <p class="muted" role="status" aria-live="polite" data-testid="book-count" [class.error]="books.error()">{{ resultText() }}</p>
+  @if (books.isLoading()) {
+    <p class="muted">Loading books…</p>
+  } @else if (books.value(); as result) {
+    <ul class="book-grid">
+      @for (book of result.items; track book.isbn) {
+        <li class="book-card">
+          <a [routerLink]="['/books', book.isbn]">{{ book.title }}</a>
+          <span class="muted">{{ book.author }} · {{ book.publishedYear }}</span>
+          <span class="muted">{{ book.category }}</span>
+          <strong>{{ book.price | currency: 'TRY' : 'symbol-narrow' }}</strong>
+          <!-- The name starts with the visible text, so "Click Add to cart" still works with voice control (WCAG 2.5.3) -->
+          <button type="button" [attr.aria-label]="'Add to cart: ' + book.title" (click)="cartStore.add(book.isbn)">Add to cart</button>
+        </li>
+      } @empty {
+        <li class="muted">No books match your search.</li>
+      }
+    </ul>
+  }
+</section>

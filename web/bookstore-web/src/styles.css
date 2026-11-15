@@ -95,6 +95,8 @@ input, select {
 .field { display: flex; flex-direction: column; gap: 0.25rem; }
 .field-error { margin: 0; }
 .checkout button[type="submit"] { margin-top: 1.4rem; }
+.error-summary { border: 3px solid #b91c1c; border-radius: 8px; padding: 0 1rem; margin-top: 1rem; }
+.error-summary h2 { font-size: 1.1rem; }
 .filters-toggle { background: #ffffff; color: #1d4ed8; }
 
 /* Hidden on screen, still in the accessibility tree */

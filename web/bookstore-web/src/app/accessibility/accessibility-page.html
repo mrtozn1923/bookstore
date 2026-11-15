@@ -19,6 +19,8 @@
   <ul>
     @for (item of limitations; track item.problem) {
       <li>{{ item.problem }} (WCAG {{ item.criteria }}; planned fix: {{ item.plannedFix }})</li>
+    } @empty {
+      <li>No known limitations at the moment. Tell us if you find one.</li>
     }
   </ul>
 
