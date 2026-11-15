@@ -4,6 +4,7 @@ using Bookstore.Data;
 using Bookstore.Institutional;
 using Bookstore.Inventory;
 using Bookstore.Ordering;
+using Bookstore.Security;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
@@ -52,5 +53,6 @@ if (app.Environment.IsDevelopment())
 app.MapCatalogEndpoints();
 app.MapOrderingEndpoints();
 app.MapInstitutionalEndpoints();
+app.MapSecurityTxt();
 
 app.Run();
