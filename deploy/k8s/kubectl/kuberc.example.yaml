@@ -1,0 +1,21 @@
+aliases:
+- command: get
+  name: images
+  options:
+  - default: "true"
+    name: all-namespaces
+  - default: custom-columns=NAMESPACE:.metadata.namespace,NAME:.metadata.name,IMAGE:.spec.template.spec.containers[*].image
+    name: output
+  prependArgs:
+  - deployments
+apiVersion: kubectl.config.k8s.io/v1beta1
+defaults:
+- command: delete
+  options:
+  - default: "true"
+    name: interactive
+- command: apply
+  options:
+  - default: "true"
+    name: server-side
+kind: Preference
