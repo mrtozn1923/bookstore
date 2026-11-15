@@ -1,0 +1,41 @@
+@using System.Diagnostics
+@using System.Globalization
+
+<div class="probe">
+    <h3>@RendererInfo.Name</h3>
+    <button class="btn btn-primary" @onclick="Run" disabled="@(!RendererInfo.IsInteractive)">Run</button>
+    <p class="result">@result</p>
+</div>
+
+@code {
+    private const int Count = 2_000_000;
+    private string result = "";
+    private int runs;
+
+    // CPU-only work: no I/O, no JS interop, so the time is the .NET code itself.
+    private void Run()
+    {
+        Stopwatch watch = Stopwatch.StartNew();
+        long checksum = 0;
+        for (long first12 = 978_000_000_000; first12 < 978_000_000_000 + Count; first12++)
+        {
+            checksum += CheckDigit(first12);
+        }
+        watch.Stop();
+        result = string.Create(CultureInfo.InvariantCulture,
+            $"Run {++runs}: {Count:N0} ISBN-13 check digits in {watch.ElapsedMilliseconds} ms (checksum {checksum})");
+    }
+
+    // Weights 1 and 3 alternate from the left; the rightmost of the first 12 digits has weight 3.
+    private static int CheckDigit(long first12)
+    {
+        int total = 0;
+        for (int i = 0; i < 12; i++)
+        {
+            total += (int)(first12 % 10) * (i % 2 == 0 ? 3 : 1);
+            first12 /= 10;
+        }
+
+        return (10 - total % 10) % 10;
+    }
+}

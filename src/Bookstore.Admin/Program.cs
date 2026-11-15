@@ -3,9 +3,11 @@ using Bookstore.Admin.Client.Catalog;
 using Bookstore.Admin.Client.Ordering;
 using Bookstore.Admin.Client.Shared;
 using Bookstore.Admin.Identity;
+using Bookstore.Admin.Security;
 using Bookstore.Admin.Services;
 using Bookstore.Admin.Validation;
 using Bookstore.Data;
+using Microsoft.AspNetCore.Components.Server;
 using Microsoft.EntityFrameworkCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -14,6 +16,8 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents()
     .AddAuthenticationStateSerialization();
+// Circuit limits come from configuration (Blazor:Circuits), so they can be tuned per environment without a build.
+builder.Services.Configure<CircuitOptions>(builder.Configuration.GetSection("Blazor:Circuits"));
 
 string apiBaseUrl = builder.Configuration["BookstoreApi:BaseUrl"]
     ?? throw new InvalidOperationException("BookstoreApi:BaseUrl is missing (see appsettings.json).");
@@ -58,6 +62,11 @@ else
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
 
+if (app.Configuration.GetValue<bool>("Security:ContentSecurityPolicy"))
+{
+    app.UseContentSecurityPolicy();
+}
+
 app.UseAntiforgery();
 
 // CSS, scripts and the WebAssembly files must load on the login page too.
@@ -65,7 +74,8 @@ app.MapStaticAssets().AllowAnonymous();
 app.MapAccountEndpoints();
 app.MapPanelCatalogEndpoints();
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode()
+    // Blazor sends its own "frame-ancestors 'self'" header for interactive server rendering; nobody frames the panel.
+    .AddInteractiveServerRenderMode(options => options.ContentSecurityFrameAncestorsPolicy = "'none'")
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(Bookstore.Admin.Client._Imports).Assembly);
 

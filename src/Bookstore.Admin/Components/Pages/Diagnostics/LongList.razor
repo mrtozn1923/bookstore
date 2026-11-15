@@ -6,13 +6,13 @@
 <h1>Long list (@movements.Count rows)</h1>
 <label><input type="checkbox" @bind="virtualize" /> Use Virtualize</label>
 
-<div class="border mt-2" style="height: 400px; overflow-y: auto;">
+<div class="list-viewport border mt-2">
     <table class="table table-sm mb-0">
         <tbody>
             @if (virtualize)
             {
                 <Virtualize Items="movements" ItemSize="33" OverscanCount="5" SpacerElement="tr" Context="movement">
-                    <tr @key="movement.Id" style="height: 33px">
+                    <tr @key="movement.Id" class="movement">
                         <td>@movement.Id</td><td>@movement.Isbn</td><td class="text-end">@movement.Change</td><td>@movement.AtUtc.ToString("u")</td>
                     </tr>
                 </Virtualize>
@@ -21,7 +21,7 @@
             {
                 @foreach (StockMovement movement in movements)
                 {
-                    <tr @key="movement.Id" style="height: 33px">
+                    <tr @key="movement.Id" class="movement">
                         <td>@movement.Id</td><td>@movement.Isbn</td><td class="text-end">@movement.Change</td><td>@movement.AtUtc.ToString("u")</td>
                     </tr>
                 }

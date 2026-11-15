@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
     <link rel="stylesheet" href="@Assets["app.css"]" />
     <link rel="stylesheet" href="@Assets["Bookstore.Admin.styles.css"]" />
-    <ImportMap />
+    <ImportMap nonce="@Nonce" />
     <link rel="icon" type="image/png" href="favicon.png" />
     <HeadOutlet />
 </head>
@@ -21,3 +21,11 @@
 </body>
 
 </html>
+
+@code {
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    // Set by UseContentSecurityPolicy; the inline import map is allowed by this nonce.
+    private string? Nonce => HttpContext?.Items[Bookstore.Admin.Security.ContentSecurityPolicy.NonceKey] as string;
+}

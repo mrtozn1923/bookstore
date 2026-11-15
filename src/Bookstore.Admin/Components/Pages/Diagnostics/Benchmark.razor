@@ -1,0 +1,9 @@
+@page "/diagnostics/benchmark"
+@using Bookstore.Admin.Client.Diagnostics
+
+<PageTitle>Benchmark</PageTitle>
+
+<h1>The same CPU work on the server and in WebAssembly</h1>
+
+<CheckDigitBenchmark @rendermode="InteractiveServer" />
+<CheckDigitBenchmark @rendermode="InteractiveWebAssembly" />

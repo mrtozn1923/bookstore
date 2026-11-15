@@ -1,0 +1,9 @@
+/* Sizes live in CSS instead of style attributes: the Content-Security-Policy (style-src 'self') blocks inline styles. */
+.list-viewport {
+    height: 400px;
+    overflow-y: auto;
+}
+
+tr.movement {
+    height: 33px;
+}
