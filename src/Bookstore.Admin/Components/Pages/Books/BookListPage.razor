@@ -1,33 +1,84 @@
 @page "/books"
+@attribute [StreamRendering]
 @inject BookstoreApiClient Api
+@inject NavigationManager Navigation
 
 <PageTitle>Books</PageTitle>
 
 <h1>Books</h1>
 
-<table class="table">
-    <thead>
-        <tr><th>Title</th><th>Author</th><th>Category</th><th class="text-end">Price</th></tr>
-    </thead>
-    <tbody>
-        @foreach (BookSummary book in books)
+<form method="get" data-enhance class="d-flex gap-2 mb-3">
+    <input name="search" value="@Search" placeholder="Title, author or ISBN" class="form-control w-auto" />
+    <select name="category" class="form-select w-auto">
+        <option value="">All categories</option>
+        @foreach (CategoryView category in categories)
         {
-            <tr>
-                <td><a href="books/@book.Isbn">@book.Title</a></td>
-                <td>@book.Author</td>
-                <td>@book.Category</td>
-                <td class="text-end">@book.Price.ToString("N2") TRY</td>
-            </tr>
+            <option value="@category.Slug" selected="@(category.Slug == Category)">@category.Name</option>
         }
-    </tbody>
-</table>
+    </select>
+    <button type="submit" class="btn btn-primary">Search</button>
+    <a href="books" class="btn btn-link">Clear</a>
+</form>
+
+@if (result is null)
+{
+    <p><em>Loading books...</em></p>
+}
+else if (result.Items.Count == 0)
+{
+    <p>No books match your search.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr><th>Title</th><th>Author</th><th>Category</th><th class="text-end">Price</th></tr>
+        </thead>
+        <tbody>
+            @foreach (BookSummary book in result.Items)
+            {
+                <tr>
+                    <td><a href="books/@book.Isbn">@book.Title</a></td>
+                    <td>@book.Author</td>
+                    <td>@book.Category</td>
+                    <td class="text-end">@book.Price.ToString("N2") TRY</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <nav class="d-flex gap-2">
+        @for (int number = 1; number <= pageCount; number++)
+        {
+            <a class="btn btn-sm @(number == result.Page ? "btn-primary" : "btn-outline-primary")"
+               href="@Navigation.GetUriWithQueryParameter("page", number)">@number</a>
+        }
+    </nav>
+    <p class="text-muted mt-2">@result.Total books, page @result.Page of @pageCount</p>
+}
 
 @code {
-    private IReadOnlyList<BookSummary> books = [];
+    private const int PageSize = 5;
+    private PagedResult<BookSummary>? result;
+    private IReadOnlyList<CategoryView> categories = [];
+    private int pageCount;
+
+    [SupplyParameterFromQuery]
+    public string? Search { get; set; }
+
+    [SupplyParameterFromQuery]
+    public string? Category { get; set; }
+
+    [SupplyParameterFromQuery(Name = "page")]
+    public int? PageNumber { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        PagedResult<BookSummary> result = await Api.GetBooksAsync(page: 1, pageSize: 50);
-        books = result.Items;
+        Task<IReadOnlyList<CategoryView>> categoriesTask = Api.GetCategoriesAsync();
+        Task<PagedResult<BookSummary>> booksTask = Api.GetBooksAsync(Search, Category, PageNumber ?? 1, PageSize);
+        await Task.WhenAll(categoriesTask, booksTask);
+
+        categories = categoriesTask.Result;
+        result = booksTask.Result;
+        pageCount = (int)Math.Ceiling(result.Total / (double)PageSize);
     }
 }

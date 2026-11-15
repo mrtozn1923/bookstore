@@ -12,7 +12,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        PagedResult<BookSummary> firstPage = await Api.GetBooksAsync(page: 1, pageSize: 1);
+        PagedResult<BookSummary> firstPage = await Api.GetBooksAsync(search: null, category: null, page: 1, pageSize: 1);
         totalBooks = firstPage.Total;
     }
 }

@@ -1,14 +1,11 @@
 @page "/books/{Isbn}"
 @inject BookstoreApiClient Api
+@inject NavigationManager Navigation
+@inject ILogger<BookDetailsPage> Logger
 
 <PageTitle>@(book?.Title ?? "Book")</PageTitle>
 
-@if (book is null)
-{
-    <h1>Book not found</h1>
-    <p>No book with ISBN <code>@Isbn</code>.</p>
-}
-else
+@if (book is not null)
 {
     <h1>@book.Title</h1>
     <dl>
@@ -17,13 +14,63 @@ else
         <dt>Price</dt><dd>@book.Price.ToString("N2") TRY</dd>
         <dt>Available</dt><dd>@book.Available</dd>
     </dl>
+
+    <h2>Stock count</h2>
+    @if (Saved)
+    {
+        <p class="alert alert-success">Stock saved.</p>
+    }
+    @if (error is not null)
+    {
+        <p class="alert alert-danger">@error</p>
+    }
+    <EditForm Model="StockCount" FormName="stock-count" OnSubmit="SaveStockAsync" Enhance>
+        <label>
+            Counted quantity on hand
+            <InputNumber @bind-Value="StockCount!.QuantityOnHand" class="form-control w-auto" />
+        </label>
+        <button type="submit" class="btn btn-primary">Save</button>
+    </EditForm>
 }
 
 @code {
     private BookDetails? book;
+    private string? error;
 
     [Parameter]
     public string Isbn { get; set; } = "";
 
-    protected override async Task OnParametersSetAsync() => book = await Api.GetBookAsync(Isbn);
+    [SupplyParameterFromQuery]
+    public bool Saved { get; set; }
+
+    [SupplyParameterFromForm(FormName = "stock-count")]
+    private StockCountForm? StockCount { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        StockCount ??= new();
+        book = await Api.GetBookAsync(Isbn);
+        if (book is null)
+        {
+            Navigation.NotFound();
+        }
+    }
+
+    private async Task SaveStockAsync()
+    {
+        if (!await Api.SetQuantityOnHandAsync(Isbn, StockCount!.QuantityOnHand))
+        {
+            error = "The counted quantity cannot be lower than the reserved quantity.";
+            return;
+        }
+
+        Navigation.NavigateTo($"books/{Isbn}?saved=true");
+        // With BlazorDisableThrowNavigationException (on in the .NET 10 template) this line still runs.
+        Logger.LogInformation("Stock count for {Isbn} saved, redirecting", Isbn);
+    }
+
+    public sealed class StockCountForm
+    {
+        public int QuantityOnHand { get; set; }
+    }
 }

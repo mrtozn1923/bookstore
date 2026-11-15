@@ -1,14 +1,29 @@
+using System.Globalization;
 using System.Net;
 using Bookstore.Admin.Client.Contracts;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace Bookstore.Admin.Services;
 
 // Typed HttpClient for Bookstore.Api; the base address comes from configuration (BookstoreApi:BaseUrl).
 public sealed class BookstoreApiClient(HttpClient http)
 {
-    public async Task<PagedResult<BookSummary>> GetBooksAsync(int page, int pageSize, CancellationToken ct = default) =>
-        await http.GetFromJsonAsync<PagedResult<BookSummary>>($"api/books?page={page}&pageSize={pageSize}", ct)
-        ?? new PagedResult<BookSummary>([], 0, page, pageSize);
+    public async Task<PagedResult<BookSummary>> GetBooksAsync(
+        string? search, string? category, int page, int pageSize, CancellationToken ct = default)
+    {
+        string uri = QueryHelpers.AddQueryString("api/books", new Dictionary<string, string?>
+        {
+            ["search"] = search,
+            ["category"] = category,
+            ["page"] = page.ToString(CultureInfo.InvariantCulture),
+            ["pageSize"] = pageSize.ToString(CultureInfo.InvariantCulture)
+        });
+        return await http.GetFromJsonAsync<PagedResult<BookSummary>>(uri, ct)
+            ?? new PagedResult<BookSummary>([], 0, page, pageSize);
+    }
+
+    public async Task<IReadOnlyList<CategoryView>> GetCategoriesAsync(CancellationToken ct = default) =>
+        await http.GetFromJsonAsync<List<CategoryView>>("api/categories", ct) ?? [];
 
     public Task<BookDetails?> GetBookAsync(string isbn, CancellationToken ct = default) =>
         GetOrNullAsync<BookDetails>($"api/books/{Uri.EscapeDataString(isbn)}", ct);
@@ -19,11 +34,18 @@ public sealed class BookstoreApiClient(HttpClient http)
     public async Task<IReadOnlyList<StockView>> GetStockAsync(CancellationToken ct = default) =>
         await http.GetFromJsonAsync<List<StockView>>("api/inventory", ct) ?? [];
 
-    public async Task SetQuantityOnHandAsync(string isbn, int quantityOnHand, CancellationToken ct = default)
+    // False when the API rejects the value (400), for example a count below the reserved quantity.
+    public async Task<bool> SetQuantityOnHandAsync(string isbn, int quantityOnHand, CancellationToken ct = default)
     {
         using HttpResponseMessage response = await http.PutAsJsonAsync(
             $"api/inventory/{Uri.EscapeDataString(isbn)}", new SetStockRequest(quantityOnHand), ct);
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            return false;
+        }
+
         response.EnsureSuccessStatusCode();
+        return true;
     }
 
     private async Task<T?> GetOrNullAsync<T>(string uri, CancellationToken ct) where T : class

@@ -8,5 +8,7 @@ public sealed record BookDetails(
 
 public sealed record PagedResult<T>(IReadOnlyList<T> Items, int Total, int Page, int PageSize);
 
+public sealed record CategoryView(string Name, string Slug);
+
 // The minimum a browser-side price calculation needs; passed as a serialized component parameter.
 public sealed record BookPrice(string Isbn, string Title, decimal Price);
