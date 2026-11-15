@@ -1,0 +1,37 @@
+<article class="statement">
+  <h1>Accessibility statement</h1>
+  <p>
+    We want everyone to be able to find, buy and follow up on books at Bookstore, including people who use
+    a screen reader, only a keyboard, zoom or voice control.
+  </p>
+
+  <h2>Conformance status</h2>
+  <p>
+    Our target is WCAG 2.2 level AA. Bookstore is partially conformant: most pages meet the target,
+    the parts listed below do not yet.
+  </p>
+  <p>
+    Under Presidential Circular No. 2025/10 we also follow the Level A checklist of the Ministry of Family
+    and Social Services.
+  </p>
+
+  <h2>Known limitations</h2>
+  <ul>
+    @for (item of limitations; track item.problem) {
+      <li>{{ item.problem }} (WCAG {{ item.criteria }}; planned fix: {{ item.plannedFix }})</li>
+    }
+  </ul>
+
+  <h2>How we checked</h2>
+  <p>
+    Self-evaluation: automated checks with axe-core 4.14 and Lighthouse 13.6, then manual checks with the keyboard,
+    at 320 CSS pixels wide and against the checklist. Screen reader testing is planned.
+  </p>
+
+  <h2>Feedback</h2>
+  <p>
+    If something does not work for you, write to <a [href]="'mailto:' + contactEmail">{{ contactEmail }}</a>.
+    We answer within five working days.
+  </p>
+  <p class="muted">Last reviewed on {{ reviewedOn }}.</p>
+</article>

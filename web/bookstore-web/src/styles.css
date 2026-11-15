@@ -20,7 +20,8 @@ button {
 
 input, select {
   padding: 0.4rem;
-  border: 1px solid #d1d5db;
+  /* #6b7280 on white is 4.83:1; form field borders need at least 3:1 (WCAG 1.4.11) */
+  border: 1px solid #6b7280;
   border-radius: 6px;
 }
 
@@ -48,4 +49,18 @@ input, select {
 .cart th, .cart td { text-align: left; padding: 0.5rem; border-bottom: 1px solid #e5e7eb; }
 .cart input { width: 4rem; }
 .total { font-weight: 700; }
-.checkout { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem; }
+.checkout { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: end; margin-top: 1rem; }
+.field { display: flex; flex-direction: column; gap: 0.25rem; }
+
+/* Hidden on screen, still in the accessibility tree */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

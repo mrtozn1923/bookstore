@@ -10,6 +10,7 @@ export const pages = {
     await page.locator('.book-card').first().getByRole('button', { name: /Add to cart/ }).click();
     await page.getByTestId('cart-link').filter({ hasText: '(1)' }).waitFor();
   } },
+  statement: { path: '/accessibility', ready: 'h1' },
 };
 
 export async function open(page, name) {

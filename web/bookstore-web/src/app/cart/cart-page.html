@@ -8,7 +8,7 @@
 } @else if (store.cart()?.items?.length) {
   <table class="cart">
     <thead>
-      <tr><th>Book</th><th>Price</th><th>Quantity</th><th>Total</th><th></th></tr>
+      <tr><th>Book</th><th>Price</th><th>Quantity</th><th>Total</th><th><span class="visually-hidden">Actions</span></th></tr>
     </thead>
     <tbody>
       @for (line of store.cart()!.items; track line.isbn) {
@@ -16,7 +16,8 @@
           <td><a [routerLink]="['/books', line.isbn]">{{ line.title }}</a></td>
           <td>{{ line.unitPrice | currency: 'TRY' : 'symbol-narrow' }}</td>
           <td>
-            <input type="number" min="1" max="99" [value]="line.quantity"
+            <label class="visually-hidden" [for]="'qty-' + line.isbn">Quantity of {{ line.title }}</label>
+            <input [id]="'qty-' + line.isbn" type="number" min="1" max="99" [value]="line.quantity"
                    (change)="changeQuantity(line.isbn, $any($event.target).valueAsNumber)" />
           </td>
           <td>{{ line.lineTotal | currency: 'TRY' : 'symbol-narrow' }}</td>
@@ -28,8 +29,14 @@
   <p class="total" data-testid="cart-total">Total: {{ store.cart()!.total | currency: 'TRY' : 'symbol-narrow' }}</p>
 
   <form class="checkout" (submit)="checkout($event, nameBox.value, emailBox.value)">
-    <input #nameBox name="name" placeholder="Full name" required />
-    <input #emailBox name="email" type="email" placeholder="E-mail" required />
+    <div class="field">
+      <label for="customer-name">Full name</label>
+      <input #nameBox id="customer-name" name="name" autocomplete="name" required />
+    </div>
+    <div class="field">
+      <label for="customer-email">E-mail</label>
+      <input #emailBox id="customer-email" name="email" type="email" autocomplete="email" required />
+    </div>
     <button type="submit">Place order</button>
   </form>
   @if (errorMessage()) {
