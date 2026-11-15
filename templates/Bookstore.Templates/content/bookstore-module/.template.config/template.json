@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Bookstore",
+  "classifications": [ "Bookstore", "Library" ],
+  "identity": "Bookstore.Module",
+  "name": "Bookstore module",
+  "shortName": "bookstore-module",
+  "sourceName": "ModuleName",
+  "preferNameDirectory": false,
+  "tags": { "language": "C#", "type": "project" },
+  "symbols": {
+    "includeTests": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "Also create a test project under tests/."
+    }
+  },
+  "sources": [
+    {
+      "modifiers": [
+        { "condition": "(!includeTests)", "exclude": [ "tests/**" ] }
+      ]
+    }
+  ],
+  "primaryOutputs": [
+    { "path": "src/Bookstore.ModuleName/Bookstore.ModuleName.csproj" },
+    { "condition": "(includeTests)", "path": "tests/Bookstore.ModuleName.Tests/Bookstore.ModuleName.Tests.csproj" }
+  ],
+  "postActions": [
+    {
+      "description": "Add the projects to Bookstore.slnx",
+      "actionId": "D396686C-DE0E-4DE6-906D-291CD29FC5DE",
+      "continueOnError": true,
+      "manualInstructions": [ { "text": "Run dotnet sln add for the new projects." } ]
+    }
+  ]
+}

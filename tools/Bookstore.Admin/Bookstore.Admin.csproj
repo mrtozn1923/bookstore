@@ -5,6 +5,11 @@
     <AssemblyName>bookstore-admin</AssemblyName>
     <!-- Trim, single-file and AOT analyzers run on every build, not only on publish. -->
     <IsAotCompatible>true</IsAotCompatible>
+    <!-- dotnet pack produces a .NET tool package; the command name defaults to AssemblyName. -->
+    <PackAsTool>true</PackAsTool>
+    <PackageId>Bookstore.Admin</PackageId>
+    <Version>1.0.0</Version>
+    <Description>Admin commands for Bookstore: info, ISBN check, price formatting.</Description>
   </PropertyGroup>
 
   <ItemGroup>

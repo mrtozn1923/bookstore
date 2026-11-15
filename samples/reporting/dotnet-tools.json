@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "bookstore.admin": {
+      "version": "1.0.0",
+      "commands": [
+        "bookstore-admin"
+      ],
+      "rollForward": false
+    }
+  }
+}

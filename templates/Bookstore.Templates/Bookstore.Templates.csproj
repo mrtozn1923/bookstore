@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageType>Template</PackageType>
+    <PackageId>Bookstore.Templates</PackageId>
+    <Version>1.0.0</Version>
+    <Description>dotnet new templates for the Bookstore solution.</Description>
+    <!-- The package carries only the content folder: no assembly, no compiled code. -->
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <!-- A template package has no lib folder and no dependencies; otherwise NU5128. -->
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <ContentTargetFolders>content</ContentTargetFolders>
+    <!-- Without this, NuGet drops dot-folders such as .template.config. -->
+    <NoDefaultExcludes>true</NoDefaultExcludes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="content/**" Exclude="content/**/bin/**;content/**/obj/**" />
+    <!-- The .cs files under content/ are template text, not part of this project. -->
+    <Compile Remove="content/**" />
+  </ItemGroup>
+
+</Project>
