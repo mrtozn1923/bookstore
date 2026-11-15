@@ -7,6 +7,9 @@
 #             DEPLOY_LOG      deploy log (default /var/log/bookstore/deploy.log)
 # Exit codes: 0 success, 1 error, 2 usage error
 
+set -Eeuo pipefail
+shopt -s inherit_errexit
+
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 # shellcheck source=lib/common.sh
 source "$SCRIPT_DIR/lib/common.sh"

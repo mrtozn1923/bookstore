@@ -5,6 +5,9 @@
 # Run with --help for options.
 # Exit codes: 0 success, 1 deploy failed, 2 usage error
 
+set -Eeuo pipefail
+shopt -s inherit_errexit
+
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 # shellcheck source=lib/common.sh
 source "$SCRIPT_DIR/lib/common.sh"
@@ -18,6 +21,9 @@ SERVICE="bookstore-api"
 ENV_NAME=""
 VERSION=""
 DRY_RUN=0
+
+# Release folder that is being prepared; cleanup removes it if the deploy stops early.
+INCOMING=""
 
 usage() {
     cat <<EOF_USAGE
@@ -113,24 +119,55 @@ deployed_by=${SUDO_USER:-$(id -un)}
 EOF_INFO
 }
 
+# ShellCheck 0.11 does not see the call from the trap when main is followed by "; exit".
+# shellcheck disable=SC2329
+cleanup() {
+    if [[ -n $INCOMING && -d $INCOMING ]]; then
+        log "removing unfinished release folder $INCOMING"
+        rm -rf -- "$INCOMING"
+    fi
+}
+
 deploy() {
     local artifact="$ARTIFACT_DIR/bookstore-api-$VERSION-linux-x64.tar.gz"
     local release_dir="$ROOT/releases/$VERSION"
+    local current
+    current=$(current_release "$ROOT") || current=""
 
+    # Running the same deploy twice is not an error: the second run has nothing to do.
+    if [[ $current == "$VERSION" ]]; then
+        log "release $VERSION is already current, nothing to do"
+        return 0
+    fi
+    [[ ! -e $release_dir ]] || die "release $VERSION already exists but is not current: $release_dir"
     [[ -f $artifact ]] || die "artifact not found: $artifact"
-    [[ ! -e $release_dir ]] || die "release $VERSION already exists: $release_dir"
 
     log "deploying $VERSION to $ENV_NAME"
-    run mkdir -p "$release_dir"
-    run tar -xzf "$artifact" -C "$release_dir"
+    # Leftovers of a deploy that was killed with SIGKILL, where no trap can run.
+    local stale
+    for stale in "$ROOT"/releases/.incoming-*; do
+        [[ -d $stale ]] || continue
+        log "removing leftover $stale"
+        run rm -rf -- "$stale"
+    done
+    # Extract into a hidden folder first; releases/VERSION appears only when it is complete.
     if (( DRY_RUN )); then
-        printf '[dry-run] write %s\n' "$release_dir/RELEASE"
+        INCOMING="$ROOT/releases/.incoming-$VERSION.XXXXXX"
     else
-        release_info > "$release_dir/RELEASE"
+        INCOMING=$(mktemp -d "$ROOT/releases/.incoming-$VERSION.XXXXXX")
     fi
+    run tar -xzf "$artifact" -C "$INCOMING"
+    if (( DRY_RUN )); then
+        printf '[dry-run] write %s\n' "$INCOMING/RELEASE"
+    else
+        release_info > "$INCOMING/RELEASE"
+    fi
+    run mv -T "$INCOMING" "$release_dir"
+    INCOMING=""
+
     run ln -sfn "$release_dir" "$ROOT/current"
     run sudo systemctl restart "$SERVICE"
-    run "$SCRIPT_DIR/bookstore-health.sh" local || die "health check failed after deploying $VERSION"
+    run retry 5 1 "$SCRIPT_DIR/bookstore-health.sh" local || die "health check failed after deploying $VERSION"
     if (( DRY_RUN )); then
         log "dry run finished, nothing was changed"
     else
@@ -139,10 +176,16 @@ deploy() {
 }
 
 main() {
+    trap cleanup EXIT
+    trap 'exit 130' INT
+    trap 'exit 143' TERM
+    trap 'on_error "$?" "$LINENO" "$BASH_COMMAND"' ERR
+
     parse_args "$@"
     validate_args
     if (( ! DRY_RUN )); then
         start_log "$DEPLOY_LOG"
+        acquire_lock "$ROOT/.deploy.lock"
     fi
     deploy
 }

@@ -24,7 +24,9 @@ die() {
 start_log() {
     local file=$1
     mkdir -p "$(dirname "$file")" || return 1
-    exec 2> >(tee -a "$file" >&2)
+    # tee ignores INT and TERM: a Ctrl-C to the whole process group must not stop
+    # the log while the script's traps are still writing to it.
+    exec 2> >(trap '' INT TERM; exec tee -a "$file" >&2)
 }
 
 # Runs a command, or only prints it (shell-quoted) when DRY_RUN is 1.
@@ -36,6 +38,44 @@ run() {
         return 0
     fi
     "$@"
+}
+
+# ERR trap handler: logs the failed command, its exit code and the call stack.
+# Usage: trap 'on_error "$?" "$LINENO" "$BASH_COMMAND"' ERR   (with set -E)
+on_error() {
+    local status=$1 line=$2 command=$3 i
+    log "ERROR: '$command' exited with $status"
+    # FUNCNAME[0] is on_error itself; the last entry is the script's top level.
+    for (( i = 1; i < ${#FUNCNAME[@]} - 1; i++ )); do
+        log "  at ${FUNCNAME[i]} (${BASH_SOURCE[i]##*/}:$line)"
+        line=${BASH_LINENO[i]}
+    done
+}
+
+# Runs a command until it succeeds, at most ATTEMPTS times; the delay doubles after each failure.
+# Usage: retry ATTEMPTS DELAY_SECONDS COMMAND [ARGS...]; returns the last exit code.
+retry() {
+    local attempts=$1 delay=$2 attempt=1 status
+    shift 2
+    while true; do
+        "$@" && return 0
+        status=$?
+        if (( attempt >= attempts )); then
+            log "giving up after $attempt attempts (exit $status): $*"
+            return "$status"
+        fi
+        log "attempt $attempt failed (exit $status), retrying in ${delay}s: $*"
+        sleep "$delay"
+        attempt=$((attempt + 1))
+        delay=$((delay * 2))
+    done
+}
+
+# Takes an exclusive lock that is held until the script exits.
+# Fails at once if another process holds it. Usage: acquire_lock FILE
+acquire_lock() {
+    exec 9> "$1"
+    flock -n 9 || die "another run holds the lock $1"
 }
 
 # Prints the name of the release that ROOT/current points to.

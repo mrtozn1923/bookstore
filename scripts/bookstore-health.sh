@@ -7,6 +7,9 @@
 # Variables:  HEALTH_TIMEOUT  seconds before curl gives up (default 5)
 # Exit codes: 0 healthy, 1 unhealthy or unreachable, 2 usage error
 
+set -Eeuo pipefail
+shopt -s inherit_errexit
+
 declare -rA HEALTH_URLS=(
     [local]="http://127.0.0.1:5000/health"
     [staging]="https://staging.bookstore.test/health"

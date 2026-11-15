@@ -8,6 +8,9 @@
 # Variables:  BOOKSTORE_ROOT  installation root (default /opt/bookstore)
 # Exit codes: 0 success, 1 error, 2 usage error
 
+set -Eeuo pipefail
+shopt -s inherit_errexit
+
 usage() {
     echo "Usage: ${0##*/} [-n] [KEEP]" >&2
 }

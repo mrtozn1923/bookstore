@@ -11,6 +11,9 @@
 # Variables:  BOOKSTORE_ROOT  installation root (default /opt/bookstore)
 # Exit codes: 0 success, 1 error, 2 usage error
 
+set -Eeuo pipefail
+shopt -s inherit_errexit
+
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 # shellcheck source=lib/common.sh
 source "$SCRIPT_DIR/lib/common.sh"
@@ -30,7 +33,8 @@ cmd_status() {
 
 cmd_releases() {
     local current name
-    current=$(readlink -f "$ROOT/current")
+    [[ -d $ROOT/releases ]] || die "no releases under $ROOT"
+    current=$(readlink -f "$ROOT/current") || current=""
     shopt -s nullglob
     for name in "$ROOT"/releases/*/; do
         name=${name%/}
