@@ -3,6 +3,7 @@ using Bookstore.Api;
 using Bookstore.Data;
 using Bookstore.Ordering;
 using Bookstore.Privacy;
+using Bookstore.Privacy.Consent;
 using Bookstore.Privacy.Retention;
 using Bookstore.Privacy.Telemetry;
 using Microsoft.AspNetCore.Authentication;
@@ -25,6 +26,10 @@ builder.Services.AddScoped<PeriodicDestructionJob>();
 builder.Services.AddHostedService<DestructionWorker>();
 builder.Services.AddScoped<CheckoutService>();
 builder.Services.AddScoped<OrderLookupService>();
+builder.Services.AddScoped<ConsentService>();
+builder.Services.AddScoped<CommercialMessages>();
+builder.Services.AddSingleton(new HolidayCalendar(
+    builder.Configuration.GetSection("Holidays").Get<HashSet<DateOnly>>() ?? []));
 builder.Services.AddAuthentication(DemoCustomerAuthHandler.SchemeName)
     .AddScheme<AuthenticationSchemeOptions, DemoCustomerAuthHandler>(DemoCustomerAuthHandler.SchemeName, null);
 builder.Services.AddAuthorization();
@@ -57,6 +62,26 @@ me.MapPost("/checkout", async (CheckoutRequest request, ClaimsPrincipal user, Ch
 
 app.MapPost("/api/orders/lookup", async (OrderLookupRequest request, OrderLookupService lookup, CancellationToken ct) =>
     await lookup.FindAsync(request, ct) is { } status ? Results.Ok(status) : Results.NotFound());
+
+// The banner asks the API which notice version is current and which purposes need consent.
+app.MapGet("/api/consent/config", () => Results.Ok(new { ConsentCatalog.NoticeVersion, Purposes = ConsentCatalog.CookiePurposes }));
+
+app.MapPost("/api/consents", async (CookieConsentDecision decision, ClaimsPrincipal user, ConsentService consents, CancellationToken ct) =>
+{
+    int? customerId = user.Identity?.IsAuthenticated == true ? CustomerId(user) : null;
+    return await consents.RecordCookieChoicesAsync(decision, customerId, ct) switch
+    {
+        ConsentResult.Recorded => Results.NoContent(),
+        ConsentResult.StaleNotice => Results.Conflict(new { ConsentCatalog.NoticeVersion }),
+        _ => Results.BadRequest(),
+    };
+});
+
+me.MapPut("/commercial-messages/email", async (EmailPermission permission, ClaimsPrincipal user, CommercialMessages messages, CancellationToken ct) =>
+{
+    await messages.SetEmailPermissionAsync(CustomerId(user), permission.Granted, "account-settings", ct);
+    return Results.NoContent();
+});
 
 // Our own collector for browser errors: we decide what is kept before anything is written.
 app.MapPost("/api/client-errors", (ClientErrorReport report, HttpContext http, ILogger<ClientErrorReport> logger) =>

@@ -26,6 +26,10 @@ public static class ProcessingActivities
         // Logs, traces and browser error reports: no table of their own, but the same questions apply.
         new("telemetry", "Operations, debugging, security monitoring", "Legitimate interest",
             "Example: logs 30 days, traces 7 days, error reports 30 days", ["Developer", "SRE"], ["log-store", "trace-store", "error-reports"]),
+        new("consent", "Proof of consent and its withdrawal", "Legal obligation",
+            "Ask legal: while the consent is in use, then for the proof period", ["PrivacyOfficer"], ["db", "backup"]),
+        new("commercial-message", "Reporting e-mail permissions to İYS", "Legal obligation",
+            "Example: until İYS confirms, then 30 days", ["PrivacyOfficer"], ["db", "backup", "iys"]),
         new("privacy-request", "Handling data subject requests", "Legal obligation",
             "Example: 3 years after completion", ["PrivacyOfficer"], ["db", "backup"]),
     ];

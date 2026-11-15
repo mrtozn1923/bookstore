@@ -2,6 +2,7 @@ using Bookstore.Institutional;
 using Bookstore.Ordering;
 using Bookstore.Payments;
 using Bookstore.Privacy;
+using Bookstore.Privacy.Consent;
 using Bookstore.Privacy.Retention;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +17,8 @@ public sealed class BookstoreContext(DbContextOptions<BookstoreContext> options)
     public DbSet<Payment> Payments => Set<Payment>();
     public DbSet<InstitutionUser> InstitutionUsers => Set<InstitutionUser>();
     public DbSet<DestructionLogEntry> DestructionLog => Set<DestructionLogEntry>();
+    public DbSet<ConsentRecord> ConsentRecords => Set<ConsentRecord>();
+    public DbSet<IysSyncItem> IysSyncItems => Set<IysSyncItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -28,5 +31,7 @@ public sealed class BookstoreContext(DbContextOptions<BookstoreContext> options)
                 .OnDelete(DeleteBehavior.Cascade);
         });
         modelBuilder.Entity<Order>().HasIndex(o => o.BillingNationalIdIndex);
+        modelBuilder.Entity<ConsentRecord>().HasIndex(r => new { r.CustomerId, r.Purpose, r.RecordedAtUtc });
+        modelBuilder.Entity<IysSyncItem>().HasIndex(i => new { i.SentAtUtc, i.DueDate });
     }
 }
