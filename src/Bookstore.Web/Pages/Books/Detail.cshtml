@@ -26,4 +26,22 @@
         </form>
     }
     <p class="description">@Model.Book.Description.Get(lang)</p>
+    <section class="reviews">
+        <h2>@BookTexts.ReviewsHeading(lang)</h2>
+        @if (Model.Reviews.Summary is { } summary)
+        {
+            <p class="rating-summary">@BookTexts.RatingSummary(summary.RatingValue, summary.RatingCount, summary.ReviewCount, lang)</p>
+        }
+        @foreach (BookReview review in Model.Reviews.Latest)
+        {
+            <article class="review">
+                <p><span class="review-author">@review.AuthorName</span> · <span class="review-rating">@review.Rating/5</span> · <time datetime="@review.CreatedAt.ToString("yyyy-MM-dd")">@review.CreatedAt.ToString("yyyy-MM-dd")</time></p>
+                @if (review.IsIncentivized)
+                {
+                    <p class="incentive-note">@BookTexts.IncentiveNote(lang)</p>
+                }
+                <p class="review-text">@review.Text</p>
+            </article>
+        }
+    </section>
 </article>

@@ -42,7 +42,9 @@ public sealed record BookProductNode(
     [property: JsonPropertyName("bookFormat")] string BookFormat,
     [property: JsonPropertyName("numberOfPages")] int NumberOfPages,
     [property: JsonPropertyName("inLanguage")] string InLanguage,
-    [property: JsonPropertyName("offers")] OfferNode Offers)
+    [property: JsonPropertyName("offers")] OfferNode Offers,
+    [property: JsonPropertyName("aggregateRating")] AggregateRatingNode? AggregateRating = null,
+    [property: JsonPropertyName("review")] IReadOnlyList<ReviewNode>? Review = null)
 {
     [JsonPropertyName("@type"), JsonPropertyOrder(-2)]
     public IReadOnlyList<string> Type => ["Product", "Book"];

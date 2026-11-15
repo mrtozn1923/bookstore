@@ -1,5 +1,6 @@
 using Bookstore.Web.Catalog;
 using Bookstore.Web.Content;
+using Bookstore.Web.Reviews;
 
 namespace Bookstore.Web.StructuredData;
 
@@ -63,7 +64,11 @@ public sealed class SiteGraph(string baseUrl)
 
     public string ProductId(BookEdition book) => $"{baseUrl}/books/{book.Slug}#product";
 
-    public JsonLdDocument Book(BookEdition book, PriceQuote quote, string lang)
+    // Incentivized reviews stay visible with their note, but schema.org has no field for the note
+    private static List<BookReview> MarkupReviews(ReviewSection reviews) =>
+        [.. reviews.Latest.Where(r => !r.IsIncentivized)];
+
+    public JsonLdDocument Book(BookEdition book, PriceQuote quote, ReviewSection reviews, string lang)
     {
         string url = PageUrl(lang, $"/books/{book.Slug}");
         var offer = new OfferNode(
@@ -91,7 +96,18 @@ public sealed class SiteGraph(string baseUrl)
             BookFormat: $"https://schema.org/{book.Format}",
             NumberOfPages: book.NumberOfPages,
             InLanguage: book.InLanguage,
-            Offers: offer);
+            Offers: offer,
+            // no reviews, no rating: never publish ratingValue 0 or an empty list
+            AggregateRating: reviews.Summary is { } summary
+                ? new AggregateRatingNode(summary.RatingValue, summary.RatingCount, summary.ReviewCount)
+                : null,
+            Review: MarkupReviews(reviews) is { Count: > 0 } marked
+                ? [.. marked.Select(r => new ReviewNode(
+                    new NamedNode("Person", r.AuthorName),
+                    r.CreatedAt.ToString("yyyy-MM-dd"),
+                    r.Text!,
+                    new RatingNode(r.Rating)))]
+                : null);
 
         var breadcrumb = new BreadcrumbListNode($"{url}#breadcrumb",
         [

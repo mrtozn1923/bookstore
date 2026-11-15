@@ -1,5 +1,6 @@
 using Bookstore.Web.Catalog;
 using Bookstore.Web.Content;
+using Bookstore.Web.Reviews;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,9 @@ builder.Services.AddSingleton<PostCatalog>();
 builder.Services.AddSingleton<BookCatalog>();
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<PricingService>();
+builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<IReviewSource, SampleReviewSource>();
+builder.Services.AddSingleton<ReviewService>();
 
 WebApplication app = builder.Build();
 
