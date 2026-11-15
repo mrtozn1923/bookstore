@@ -1,0 +1,6 @@
+interface:
+  display_name: "Add EF Core migration"
+  short_description: "Create a migration, review its SQL and write rollback notes"
+
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,8 @@
+#:schema https://developers.openai.com/codex/config-schema.json
+# Bookstore project settings for Codex. Codex loads this file only when the project is trusted.
+
+[mcp_servers.playwright]
+command = "npx"
+args = ["-y", "@playwright/mcp@0.0.85"]
+startup_timeout_sec = 30
+default_tools_approval_mode = "prompt"
