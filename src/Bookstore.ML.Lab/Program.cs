@@ -46,7 +46,13 @@ switch (command)
     case "compare":
         Regression.Compare();
         break;
+    case "cancel":
+        Classification.Cancel();
+        break;
+    case "topics":
+        Classification.Topics();
+        break;
     default:
-        Console.WriteLine("Commands: rules, explore, quality, clean, split, cv, complexity, first-model, pitfalls, features, inspect, skew, gd, compare");
+        Console.WriteLine("Commands: rules, explore, quality, clean, split, cv, complexity, first-model, pitfalls, features, inspect, skew, gd, compare, cancel, topics");
         break;
 }
