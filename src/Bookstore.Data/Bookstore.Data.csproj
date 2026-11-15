@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- BookstoreContext, the entities and the migrations, shared by Bookstore.Api and Bookstore.Admin. -->
+  <PropertyGroup>
+    <RootNamespace>Bookstore</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
+  </ItemGroup>
+
+</Project>

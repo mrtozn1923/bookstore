@@ -1,0 +1,30 @@
+@using Bookstore.Admin.Client.Catalog
+@inject IBookCatalog Catalog
+@inject QuoteState Quote
+
+<div class="d-flex gap-2 mb-2">
+    <input class="form-control w-auto" placeholder="Title, author or ISBN" @bind="search" />
+    <input type="number" min="1" max="500" class="form-control w-auto" @bind="quantity" />
+    <button class="btn btn-secondary" disabled="@(!RendererInfo.IsInteractive)" @onclick="SearchAsync">Search</button>
+</div>
+
+@if (results is not null)
+{
+    <ul class="list-unstyled">
+        @foreach (BookSummary book in results.Items)
+        {
+            <li @key="book.Isbn">
+                <button class="btn btn-sm btn-outline-primary" @onclick="() => Quote.Add(book, quantity)">Add</button>
+                @book.Title (<Money Amount="book.Price" />)
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    private string? search;
+    private int quantity = 1;
+    private PagedResult<BookSummary>? results;
+
+    private async Task SearchAsync() => results = await Catalog.SearchAsync(search, page: 1, pageSize: 5);
+}

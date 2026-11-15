@@ -3,6 +3,8 @@
 @implements IDisposable
 @inject BookstoreApiClient Api
 @inject ILogger<InventoryPage> Logger
+@inject ProtectedLocalStorage Storage
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 
 <PageTitle>Inventory</PageTitle>
 
@@ -11,10 +13,10 @@
 <p>
     <label>Low-stock threshold
         <input type="number" class="form-control form-control-sm d-inline w-auto"
-               @bind:get="Filter!.Threshold" @bind:set="SetThreshold" @bind:event="oninput" />
+               @bind:get="Filter!.Threshold" @bind:set="SetThresholdAsync" @bind:event="oninput" />
     </label>
     <label class="ms-3">
-        <input type="checkbox" @bind="Filter!.OnlyLow" @bind:after="LoadAsync" /> Only low stock
+        <input type="checkbox" @bind="Filter!.OnlyLow" @bind:after="FilterChangedAsync" /> Only low stock
     </label>
 </p>
 
@@ -29,6 +31,7 @@ else
 }
 
 @code {
+    private const string FilterKey = "inventory-filter";
     private System.Timers.Timer? timer;
 
     // Filled during prerendering and handed to the interactive instance; reloaded after a circuit resumes.
@@ -53,7 +56,7 @@ else
         }
     }
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender)
         {
@@ -64,6 +67,18 @@ else
         timer = new System.Timers.Timer(TimeSpan.FromSeconds(30));
         timer.Elapsed += OnTimerElapsed;
         timer.Start();
+
+        // Browser storage needs JS interop, so it can only be read once the page is interactive.
+        ProtectedBrowserStorageResult<InventoryFilter> saved = await Storage.GetAsync<InventoryFilter>(FilterKey);
+        if (saved.Success && saved.Value is { } stored
+            && (stored.Threshold != Filter!.Threshold || stored.OnlyLow != Filter.OnlyLow))
+        {
+            Logger.LogInformation("Filter restored from local storage: threshold {Threshold}, only low {OnlyLow}",
+                stored.Threshold, stored.OnlyLow);
+            Filter = stored;
+            await LoadAsync();
+            StateHasChanged();
+        }
     }
 
     private async Task LoadAsync()
@@ -73,7 +88,17 @@ else
         RefreshedAt = DateTime.UtcNow;
     }
 
-    private void SetThreshold(int value) => Filter!.Threshold = Math.Clamp(value, 0, 50);
+    private async Task SetThresholdAsync(int value)
+    {
+        Filter!.Threshold = Math.Clamp(value, 0, 50);
+        await Storage.SetAsync(FilterKey, Filter);
+    }
+
+    private async Task FilterChangedAsync()
+    {
+        await Storage.SetAsync(FilterKey, Filter!);
+        await LoadAsync();
+    }
 
     private async Task RestockAsync(RestockRequest request)
     {

@@ -48,9 +48,6 @@ public sealed class BookstoreApiClient(HttpClient http)
         return true;
     }
 
-    public async Task<IReadOnlyList<AuthorView>> GetAuthorsAsync(CancellationToken ct = default) =>
-        await http.GetFromJsonAsync<List<AuthorView>>("api/authors", ct) ?? [];
-
     // Null when the author was created; otherwise the API's validation errors by key, for example "Books[1].Isbn".
     public async Task<IDictionary<string, string[]>?> CreateAuthorAsync(NewAuthorRequest request, CancellationToken ct = default)
     {

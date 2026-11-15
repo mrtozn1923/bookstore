@@ -1,7 +1,9 @@
 @page "/authors"
 @rendermode InteractiveServer
+@inherits OwningComponentBase<BookstoreContext>
+@using Bookstore.Data
 @using Microsoft.AspNetCore.Components.QuickGrid
-@inject BookstoreApiClient Api
+@using Microsoft.EntityFrameworkCore
 
 <PageTitle>Authors</PageTitle>
 
@@ -28,5 +30,10 @@ else
     [PersistentState]
     public List<AuthorView>? Authors { get; set; }
 
-    protected override async Task OnInitializedAsync() => Authors ??= [.. await Api.GetAuthorsAsync()];
+    // Service is a BookstoreContext from a DI scope that belongs to this component and is disposed with it.
+    protected override async Task OnInitializedAsync() =>
+        Authors ??= await Service.Authors
+            .OrderBy(a => a.Name)
+            .Select(a => new AuthorView(a.Id, a.Name, a.Books.Count))
+            .ToListAsync();
 }

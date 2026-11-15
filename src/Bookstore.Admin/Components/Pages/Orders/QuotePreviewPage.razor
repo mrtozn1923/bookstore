@@ -1,19 +1,8 @@
 @page "/orders/preview"
-@inject BookstoreApiClient Api
 
 <PageTitle>Quote preview</PageTitle>
 
 <h1>Quote preview</h1>
-<p>Prices come from the catalog; the calculation runs in the browser.</p>
+<p>Search the catalog and build an institutional quote; the calculation runs wherever the component runs.</p>
 
-<CartPreview Books="prices" @rendermode="InteractiveWebAssembly" />
-
-@code {
-    private BookPrice[] prices = [];
-
-    protected override async Task OnInitializedAsync()
-    {
-        PagedResult<BookSummary> page = await Api.GetBooksAsync(search: null, category: null, page: 1, pageSize: 50);
-        prices = [.. page.Items.Select(b => new BookPrice(b.Isbn, b.Title, b.Price))];
-    }
-}
+<QuoteBuilder @rendermode="InteractiveAuto" />
