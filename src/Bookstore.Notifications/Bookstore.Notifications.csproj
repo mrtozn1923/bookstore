@@ -14,6 +14,9 @@
     <PackageReference Include="PdfPig" />
     <PackageReference Include="PreMailer.Net" />
     <PackageReference Include="QuestPDF" />
+    <PackageReference Include="SkiaSharp" />
+    <!-- SkiaSharp ships Windows and macOS binaries only; Linux containers need this package -->
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" />
   </ItemGroup>
 
   <ItemGroup>

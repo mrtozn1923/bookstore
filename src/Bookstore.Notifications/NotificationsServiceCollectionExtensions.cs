@@ -1,5 +1,6 @@
 using Bookstore.Notifications.Documents.Html;
 using Bookstore.Notifications.Email;
+using Bookstore.Notifications.Images;
 using Bookstore.Notifications.Outbox;
 using Bookstore.Notifications.Storage;
 using Bookstore.Notifications.Templates;
@@ -37,6 +38,12 @@ public static class NotificationsServiceCollectionExtensions
         services.AddLogging();
         services.AddOptions<EmailTemplateOptions>().Bind(configuration.GetSection("Notifications:Templates"));
         services.AddSingleton<EmailTemplates>();
+
+        services.AddOptions<CoverImageOptions>()
+            .Bind(configuration.GetSection("Notifications:CoverImages"))
+            .PostConfigure(o => o.Widths = o.Widths is [] ? CoverImageOptions.DefaultWidths : o.Widths)
+            .ValidateDataAnnotations();
+        services.AddSingleton<CoverImageProcessor>();
 
         // HTML to PDF: one Chromium per application, started on the first document
         services.AddSingleton<RazorHtmlRenderer>();

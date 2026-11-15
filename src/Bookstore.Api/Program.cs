@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Bookstore.Api.Catalog;
 using Bookstore.Api.Data;
 using Bookstore.Api.Institutional;
 using Bookstore.Api.Reports;
@@ -26,6 +27,8 @@ builder.Services.AddSingleton<IDocumentRenderer<MonthlySalesReport>, MonthlySale
 builder.Services.AddSingleton<ReportJobQueue>();
 builder.Services.AddSingleton<ReportJobStore>();
 builder.Services.AddHostedService<ReportJobWorker>();
+builder.Services.AddSingleton<CoverThumbnailQueue>();
+builder.Services.AddHostedService<CoverThumbnailWorker>();
 builder.Services.AddRequestTimeouts();
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
@@ -35,6 +38,7 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 
 WebApplication app = builder.Build();
 app.UseRequestTimeouts();
+app.MapCoverEndpoints();
 
 await using (AsyncServiceScope scope = app.Services.CreateAsyncScope())
 {

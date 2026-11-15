@@ -2,6 +2,7 @@
   <Folder Name="/samples/">
     <Project Path="samples/Bookstore.ExcelLab/Bookstore.ExcelLab.csproj" />
     <Project Path="samples/Bookstore.HtmlPdfLab/Bookstore.HtmlPdfLab.csproj" />
+    <Project Path="samples/Bookstore.ImageLab/Bookstore.ImageLab.csproj" />
     <Project Path="samples/Bookstore.MailLab/Bookstore.MailLab.csproj" />
     <Project Path="samples/Bookstore.PdfLab/Bookstore.PdfLab.csproj" />
   </Folder>
