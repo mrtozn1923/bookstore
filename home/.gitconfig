@@ -1,0 +1,17 @@
+[user]
+	name = Ada Lovelace
+	email = ada@example.org
+[init]
+	defaultBranch = main
+[includeIf "gitdir:~/work/"]
+	path = ~/.gitconfig-work
+[includeIf "hasconfig:remote.*.url:https://github.com/bookstore-example/**"]
+	path = ~/.gitconfig-work
+[includeIf "hasconfig:remote.*.url:git@github-work:bookstore-example/**"]
+	path = ~/.gitconfig-work
+[url "git@github-work:bookstore-example/"]
+	insteadOf = https://github.com/bookstore-example/
+[credential "https://github.com"]
+	useHttpPath = true
+[include]
+	path = ~/team.gitconfig
