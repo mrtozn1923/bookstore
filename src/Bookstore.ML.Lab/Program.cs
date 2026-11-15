@@ -31,7 +31,16 @@ switch (command)
     case "pitfalls":
         Pitfalls.Run();
         break;
+    case "features":
+        FeatureLab.Run();
+        break;
+    case "inspect":
+        FeatureLab.Inspect();
+        break;
+    case "skew":
+        FeatureLab.Skew();
+        break;
     default:
-        Console.WriteLine("Commands: rules, explore, quality, clean, split, cv, complexity, first-model, pitfalls");
+        Console.WriteLine("Commands: rules, explore, quality, clean, split, cv, complexity, first-model, pitfalls, features, inspect, skew");
         break;
 }
