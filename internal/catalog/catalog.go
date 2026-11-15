@@ -4,6 +4,7 @@ package catalog
 import (
 	"errors"
 	"fmt"
+	"iter"
 	"slices"
 )
 
@@ -25,6 +26,8 @@ var books = []Book{
 	{ISBN: "9780547928227", Title: "The Hobbit", Author: "J.R.R. Tolkien", Price: 28950, Stock: 0},
 	{ISBN: "9780141439549", Title: "Middlemarch", Author: "George Eliot", Price: 31000, Stock: 4},
 	{ISBN: "9780141439587", Title: "Emma", Author: "Jane Austen", Price: 19900, Stock: 7},
+	{ISBN: "9780141439686", Title: "Persuasion", Author: "Jane Austen", Price: 18500, Stock: 3},
+	{ISBN: "9780141439662", Title: "Sense and Sensibility", Author: "Jane Austen", Price: 21000, Stock: 5},
 }
 
 // ErrBookNotFound is returned when no book has the requested ISBN.
@@ -57,6 +60,31 @@ func (Store) ByISBN(isbn string) (Book, error) {
 		}
 	}
 	return Book{}, fmt.Errorf("isbn %s: %w", isbn, ErrBookNotFound)
+}
+
+// Books yields every book in catalog order. Each value is a copy.
+func (Store) Books() iter.Seq[Book] {
+	return slices.Values(books)
+}
+
+// ByAuthor yields each author once, in the order they first appear in the
+// catalog, together with that author's books.
+func (Store) ByAuthor() iter.Seq2[string, []Book] {
+	return func(yield func(string, []Book) bool) {
+		var authors []string
+		groups := make(map[string][]Book)
+		for _, b := range books {
+			if _, seen := groups[b.Author]; !seen {
+				authors = append(authors, b.Author)
+			}
+			groups[b.Author] = append(groups[b.Author], b)
+		}
+		for _, a := range authors {
+			if !yield(a, groups[a]) {
+				return
+			}
+		}
+	}
 }
 
 // String formats the amount for people: Money(34990) prints as "349.90 TRY".
