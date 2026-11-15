@@ -1,0 +1,36 @@
+﻿{
+  Lines: [
+    {
+      CustomerId: 7,
+      Isbn: {
+        Value: 9780441013593
+      },
+      Quantity: 1,
+      UnitPrice: 12.45
+    },
+    {
+      CustomerId: 7,
+      Isbn: {
+        Value: 9780261103344
+      },
+      Quantity: 2,
+      UnitPrice: 1149.90
+    },
+    {
+      CustomerId: 8,
+      Isbn: {
+        Value: 9780141439587
+      },
+      Quantity: 1,
+      UnitPrice: 5990.0
+    }
+  ],
+  Errors: [
+    Row 5: quantity '0' must be between 1 and 10.,
+    Row 6: '9780141439548' is not a valid ISBN.,
+    Row 7: customer id 'x' is not a number.,
+    Row 8: expected 4 fields, found 3.,
+    Row 9: price 'abc' is not a number.,
+    Row 10: price '1,234.50' is not a number.
+  ]
+}

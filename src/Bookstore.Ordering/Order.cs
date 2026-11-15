@@ -38,6 +38,8 @@ public class Order
     public decimal Total => _items.Sum(i => i.LineTotal);
     public Customer Customer { get; init; } = new();
     public Address ShippingAddress { get; init; } = new("", "", "");
+    public DateOnly PlacedOn { get; init; }
+    public int CustomerId => Customer.Id;
 
     public void AddItem(OrderItem item)
     {
