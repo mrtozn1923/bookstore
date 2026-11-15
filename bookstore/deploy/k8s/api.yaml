@@ -1,3 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-config
+data:
+  appsettings.Production.json: |
+    {
+      "Catalog": {
+        "PageSize": 20,
+        "MaxPageSize": 100
+      },
+      "Shipping": {
+        "DefaultCountry": "NO"
+      }
+    }
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -26,6 +42,26 @@ spec:
               value: "NO"
             - name: Catalog__PageSize
               value: "20"
+          volumeMounts:
+            - name: config
+              mountPath: /app/appsettings.Production.json
+              subPath: appsettings.Production.json
           resources:
             limits:
               memory: 512Mi
+      volumes:
+        - name: config
+          configMap:
+            name: api-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+spec:
+  selector:
+    app.kubernetes.io/name: bookstore-api
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

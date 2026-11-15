@@ -1,0 +1,13 @@
+# the anchor is defined in the first document, the alias used in the second
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-config
+  labels: &labels
+    app.kubernetes.io/part-of: bookstore
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+  labels: *labels

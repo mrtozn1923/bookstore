@@ -1,0 +1,17 @@
+name: bookstore
+
+x-api-env: &api-env
+  ASPNETCORE_ENVIRONMENT: Development
+  Catalog__PageSize: "20"
+
+services:
+  api:
+    image: bookstore-api:dev
+    environment:
+      <<: *api-env
+      Shipping__DefaultCountry: "NO"
+  worker:
+    image: bookstore-worker:dev
+    environment:
+      <<: *api-env
+      Catalog__PageSize: "50"

@@ -1,0 +1,4 @@
+# the first line of the note starts with spaces, so the indentation must be given
+invoiceNote: |2
+      Institutional order: 25 copies
+    Discount: 10%

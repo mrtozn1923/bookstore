@@ -1,0 +1,17 @@
+extends: default
+
+rules:
+  # Kubernetes and Compose files rarely start with ---
+  document-start: disable
+  # GitHub Actions' "on:" key is fine; values must be true/false
+  truthy:
+    allowed-values: ["true", "false"]
+    check-keys: false
+    level: error
+  # 0755 is 493 in YAML 1.1 and 755 in YAML 1.2
+  octal-values:
+    forbid-implicit-octal: true
+  line-length:
+    max: 120
+  anchors:
+    forbid-unused-anchors: true

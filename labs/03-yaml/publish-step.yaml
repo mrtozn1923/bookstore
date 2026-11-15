@@ -1,0 +1,6 @@
+# A step from Bookstore's release workflow
+steps:
+  - name: Show build info
+    run: >
+      echo "Building Bookstore.Api"
+      echo "Commit: abc1234"

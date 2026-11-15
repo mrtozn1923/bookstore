@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+spec:
+  selector:
+    matchLabels: &labels
+      app.kubernetes.io/name: bookstore-api
+  template:
+    metadata:
+      labels:
+        <<: *labels
+        app.kubernetes.io/version: "1.10"
+    spec:
+      containers:
+        - name: api
+          image: bookstore-api:1.10.0

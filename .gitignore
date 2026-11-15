@@ -9,3 +9,4 @@ labs/01-json/orders.jsonl
 labs/01-json/broken.json*
 labs/01-json/stock-bom.json
 labs/02-yaml/tab.yaml
+labs/03-yaml/shipping.kyaml

@@ -1,0 +1,10 @@
+# The same retry policy for two HTTP clients
+defaults: &retry
+  maxAttempts: 3
+  delayMs: 200
+payments:
+  retry: *retry
+shipping:
+  retry:
+    <<: *retry
+    delayMs: 500

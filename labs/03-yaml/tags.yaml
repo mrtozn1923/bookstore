@@ -1,0 +1,3 @@
+apiVersion: !!str 1.10
+isbn: !!str 9780441013593
+unsafe: !!python/object/apply:os.system ["echo this should not run"]
