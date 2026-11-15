@@ -23,3 +23,8 @@ See @README.md for local setup.
 - Never edit an existing migration; add a new migration instead.
 - Never put secrets in code or appsettings files; use user-secrets locally.
 - Ask before adding a NuGet or npm package.
+
+## Compact Instructions
+When compacting, keep: the approved plan and which of its steps are done,
+the exact test commands and their last results, and every rule I gave in
+this session that is not already in this file.
