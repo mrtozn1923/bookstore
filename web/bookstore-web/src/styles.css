@@ -33,6 +33,9 @@ a { color: #1d4ed8; }
 /* main and h1 only receive focus from script (tabindex="-1"); they are not controls */
 main:focus, h1:focus { outline: none; }
 
+/* display: flex would beat the hidden attribute; keep hidden elements hidden */
+[hidden] { display: none !important; }
+
 .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; border: 0; padding: 0; margin: 0; }
 .chips legend { float: left; margin-right: 0.5rem; padding: 0.3rem 0; }
 .chips label { padding: 0.3rem 0.8rem; border: 1px solid #6b7280; border-radius: 999px; cursor: pointer; }
@@ -88,8 +91,11 @@ input, select {
 .cart th, .cart td { text-align: left; padding: 0.5rem; border-bottom: 1px solid #e5e7eb; }
 .cart input { width: 4rem; }
 .total { font-weight: 700; }
-.checkout { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: end; margin-top: 1rem; }
+.checkout { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: start; margin-top: 1rem; }
 .field { display: flex; flex-direction: column; gap: 0.25rem; }
+.field-error { margin: 0; }
+.checkout button[type="submit"] { margin-top: 1.4rem; }
+.filters-toggle { background: #ffffff; color: #1d4ed8; }
 
 /* Hidden on screen, still in the accessibility tree */
 .visually-hidden {

@@ -1,10 +1,11 @@
 // Scans Bookstore's pages with axe-core and prints the violations per page.
-// Usage: node scan.mjs   (BOOKSTORE_URL defaults to http://127.0.0.1:52411)
+// Usage: node scan.mjs [experimental]   (BOOKSTORE_URL defaults to http://127.0.0.1:52411)
 import { chromium } from 'playwright';
 import { AxeBuilder } from '@axe-core/playwright';
 import { open, pages } from './lib.mjs';
 
-const wcagTags = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
+// "node scan.mjs experimental" also runs axe's experimental rules (for example label-content-name-mismatch)
+const wcagTags = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', ...(process.argv[2] === 'experimental' ? ['experimental'] : [])];
 const browser = await chromium.launch();
 // AxeBuilder needs a browser context; a page from browser.newPage() throws
 const page = await (await browser.newContext()).newPage();

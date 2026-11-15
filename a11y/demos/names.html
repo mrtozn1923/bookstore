@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Accessible name demo</title>
+  <style>
+    .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Accessible name demo</h1>
+    <button id="all" aria-labelledby="all-label" aria-label="Label" title="Tip">Content</button>
+    <span id="all-label">Labelledby</span>
+
+    <button id="aria-label" aria-label="Add Dune to cart">Add to cart</button>
+    <button id="hidden-text">Add to cart<span class="visually-hidden">: Dune</span></button>
+    <button id="described" aria-describedby="dune-title">Add to cart</button>
+    <span id="dune-title">Dune</span>
+
+    <input id="title-only" type="search" title="Search books" placeholder="Title or author">
+    <input id="placeholder-only" type="email" placeholder="E-mail">
+
+    <button id="icon-only"><svg aria-hidden="true" width="16" height="16"><path d="M2 2 L14 14 M14 2 L2 14" stroke="currentColor"/></svg></button>
+    <button id="icon-labelled" aria-label="Remove Dune"><svg aria-hidden="true" width="16" height="16"><path d="M2 2 L14 14 M14 2 L2 14" stroke="currentColor"/></svg></button>
+
+    <a id="arrow" href="/">← Back to catalog</a>
+    <a id="arrow-hidden" href="/"><span aria-hidden="true">←</span> Back to catalog</a>
+
+    <div id="div-button" role="button" tabindex="0" onclick="this.dataset.clicks = Number(this.dataset.clicks ?? 0) + 1">Add to cart</div>
+  </main>
+</body>
+</html>

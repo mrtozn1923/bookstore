@@ -2,8 +2,11 @@
 <header class="site-header">
   <a routerLink="/" class="brand">Bookstore</a>
   <nav>
-    <a routerLink="/">Catalog</a>
-    <a routerLink="/cart" data-testid="cart-link">Cart ({{ cartStore.itemCount() }})</a>
+    <a routerLink="/" routerLinkActive="active" ariaCurrentWhenActive="page"
+       [routerLinkActiveOptions]="{ exact: true }">Catalog</a>
+    <a routerLink="/cart" routerLinkActive="active" ariaCurrentWhenActive="page" data-testid="cart-link">
+      Cart ({{ cartStore.itemCount() }})
+    </a>
   </nav>
 </header>
 <main #main id="main-content" tabindex="-1">

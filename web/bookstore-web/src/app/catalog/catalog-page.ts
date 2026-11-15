@@ -15,6 +15,7 @@ export class CatalogPage {
   protected readonly cartStore = inject(CartStore);
   protected readonly search = signal('');
   protected readonly category = signal('');
+  protected readonly filtersOpen = signal(true);
 
   protected readonly categories = httpResource<CategoryView[]>(() => '/api/categories', { defaultValue: [] });
 

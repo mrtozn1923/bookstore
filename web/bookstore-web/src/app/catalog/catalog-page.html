@@ -5,7 +5,11 @@
     <input #searchBox type="search" placeholder="Search by title, author or ISBN" aria-label="Search books" />
     <button type="submit">Search</button>
   </form>
-  <fieldset class="chips">
+  <button type="button" class="filters-toggle" aria-controls="category-filters"
+          [attr.aria-expanded]="filtersOpen()" (click)="filtersOpen.set(!filtersOpen())">
+    Filters
+  </button>
+  <fieldset id="category-filters" class="chips" [hidden]="!filtersOpen()">
     <legend>Category</legend>
     <label><input type="radio" name="category" value="" [checked]="category() === ''" (change)="category.set('')" /> All</label>
     @for (c of categories.value(); track c.slug) {
@@ -30,7 +34,8 @@
         <span class="muted">{{ book.author }} · {{ book.publishedYear }}</span>
         <span class="muted">{{ book.category }}</span>
         <strong>{{ book.price | currency: 'TRY' : 'symbol-narrow' }}</strong>
-        <button type="button" (click)="cartStore.add(book.isbn)">Add to cart</button>
+        <!-- The name starts with the visible text, so "Click Add to cart" still works with voice control (WCAG 2.5.3) -->
+        <button type="button" [attr.aria-label]="'Add to cart: ' + book.title" (click)="cartStore.add(book.isbn)">Add to cart</button>
       </li>
     } @empty {
       <li class="muted">No books match your search.</li>

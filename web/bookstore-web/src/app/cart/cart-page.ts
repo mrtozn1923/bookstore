@@ -16,6 +16,8 @@ export class CartPage {
   protected readonly placedOrder = signal<OrderView | null>(null);
   protected readonly errorMessage = signal('');
   protected readonly pendingRemoval = signal<CartLine | null>(null);
+  protected readonly nameError = signal('');
+  protected readonly emailError = signal('');
 
   private readonly injector = inject(Injector);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -55,11 +57,21 @@ export class CartPage {
     }
   }
 
-  protected async checkout(event: Event, name: string, email: string): Promise<void> {
+  protected async checkout(event: Event, nameBox: HTMLInputElement, emailBox: HTMLInputElement): Promise<void> {
     event.preventDefault();
     this.errorMessage.set('');
+    // The form has novalidate: we check the fields ourselves and show the messages next to them (WCAG 3.3.1)
+    this.nameError.set(nameBox.validity.valueMissing ? 'Enter your full name.' : '');
+    this.emailError.set(emailBox.validity.valueMissing ? 'Enter your e-mail address.'
+      : emailBox.validity.typeMismatch ? 'Enter an e-mail address like name@example.com.' : '');
+    const firstInvalid = this.nameError() ? nameBox : this.emailError() ? emailBox : null;
+    if (firstInvalid) {
+      // Focus after the next render, when aria-invalid and aria-describedby are already on the field
+      afterNextRender(() => firstInvalid.focus(), { injector: this.injector });
+      return;
+    }
     try {
-      this.placedOrder.set(await this.store.placeOrder(name, email));
+      this.placedOrder.set(await this.store.placeOrder(nameBox.value, emailBox.value));
     } catch (error) {
       // The API answers with ProblemDetails: 400 validation errors or 409 when stock is not enough.
       const problem = error instanceof HttpErrorResponse ? error.error : null;

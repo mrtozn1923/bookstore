@@ -20,3 +20,16 @@ export async function open(page, name) {
   await page.locator(p.ready).first().waitFor();
   return p;
 }
+
+// Role, name, description and invalid state of the focused element, from Chromium's accessibility tree
+export async function focusedAx(page) {
+  const cdp = await page.context().newCDPSession(page);
+  const { nodes } = await cdp.send('Accessibility.getFullAXTree');
+  await cdp.detach();
+  const node = nodes.findLast(n => n.role?.value !== 'RootWebArea' && n.properties?.some(p => p.name === 'focused' && p.value.value));
+  if (!node) return '(nothing focused)';
+  const prop = name => node.properties.find(p => p.name === name)?.value.value;
+  return `${node.role.value} "${node.name?.value ?? ''}"` +
+    (node.description?.value ? ` description="${node.description.value}"` : '') +
+    (prop('invalid') && prop('invalid') !== 'false' ? ` invalid=${prop('invalid')}` : '');
+}

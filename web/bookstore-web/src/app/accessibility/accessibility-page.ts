@@ -24,8 +24,8 @@ export class AccessibilityPage {
       plannedFix: 'January 2027',
     },
     {
-      problem: 'Order errors are shown below the form but are not linked to the fields they belong to.',
-      criteria: '3.3.1, 3.3.3',
+      problem: 'Errors returned by the server, such as missing stock, are shown below the form but are not announced.',
+      criteria: '3.3.1, 4.1.3',
       plannedFix: 'January 2027',
     },
   ];

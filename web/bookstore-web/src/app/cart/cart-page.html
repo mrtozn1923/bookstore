@@ -21,21 +21,31 @@
                    (change)="changeQuantity(line.isbn, $any($event.target).valueAsNumber)" />
           </td>
           <td>{{ line.lineTotal | currency: 'TRY' : 'symbol-narrow' }}</td>
-          <td><button type="button" (click)="askToRemove(line)">Remove</button></td>
+          <td><button type="button" [attr.aria-label]="'Remove ' + line.title" (click)="askToRemove(line)">Remove</button></td>
         </tr>
       }
     </tbody>
   </table>
   <p class="total" data-testid="cart-total">Total: {{ store.cart()!.total | currency: 'TRY' : 'symbol-narrow' }}</p>
 
-  <form class="checkout" (submit)="checkout($event, nameBox.value, emailBox.value)">
+  <form class="checkout" novalidate (submit)="checkout($event, nameBox, emailBox)">
     <div class="field">
       <label for="customer-name">Full name</label>
-      <input #nameBox id="customer-name" name="name" autocomplete="name" required />
+      <input #nameBox id="customer-name" name="name" autocomplete="name" required
+             [attr.aria-invalid]="nameError() ? 'true' : null"
+             [attr.aria-describedby]="nameError() ? 'customer-name-error' : null" />
+      @if (nameError()) {
+        <p id="customer-name-error" class="error field-error">{{ nameError() }}</p>
+      }
     </div>
     <div class="field">
       <label for="customer-email">E-mail</label>
-      <input #emailBox id="customer-email" name="email" type="email" autocomplete="email" required />
+      <input #emailBox id="customer-email" name="email" type="email" autocomplete="email" required
+             [attr.aria-invalid]="emailError() ? 'true' : null"
+             [attr.aria-describedby]="emailError() ? 'customer-email-error' : null" />
+      @if (emailError()) {
+        <p id="customer-email-error" class="error field-error">{{ emailError() }}</p>
+      }
     </div>
     <button type="submit">Place order</button>
   </form>
