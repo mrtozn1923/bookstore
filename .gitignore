@@ -492,3 +492,8 @@ App_Data/
 http-client.private.env.json
 tests/http/reports/
 reports/
+
+# Local dev tools (API Tools 06-07)
+tools/fake-carrier/.certs/
+.mitmproxy/
+*.mitm

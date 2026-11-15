@@ -4,6 +4,7 @@ using Bookstore.Data;
 using Bookstore.Identity;
 using Bookstore.Inventory;
 using Bookstore.Ordering;
+using Bookstore.Shipping;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
@@ -26,7 +27,8 @@ builder.Services
     .AddAuthModule(builder.Configuration, builder.Environment)
     .AddCatalogModule()
     .AddInventoryModule()
-    .AddOrderingModule();
+    .AddOrderingModule()
+    .AddShippingModule(builder.Configuration, builder.Environment);
 
 WebApplication app = builder.Build();
 
@@ -49,5 +51,6 @@ app.UseAuthorization();
 app.MapAuthEndpoints();
 app.MapCatalogEndpoints();
 app.MapOrderingEndpoints();
+app.MapShippingEndpoints();
 
 app.Run();
