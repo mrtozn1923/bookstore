@@ -100,8 +100,24 @@ switch (args.FirstOrDefault())
     case "top-books":
         await Bookstore.PgLab.Reporting.TopBooksReport.RunAsync(connectionString);
         break;
+    case "reserve":
+        await using (NpgsqlDataSource dataSource = NpgsqlDataSource.Create(connectionString))
+        {
+            foreach (string id in args.Skip(1))
+            {
+                await Programmability.ReserveAsync(dataSource, int.Parse(id));
+            }
+        }
+        break;
+    case "archive":
+        await using (NpgsqlDataSource dataSource = NpgsqlDataSource.Create(connectionString))
+        {
+            await Programmability.ArchiveAsync(dataSource, new DateTime(2023, 4, 1, 0, 0, 0, DateTimeKind.Utc));
+        }
+        break;
     default:
         Console.WriteLine("usage: dotnet run -- connections | pool | ef-script | bestsellers | write-skew | queue | advisory | ef-retry\n" +
-            "       defaults | types | enum | copy | prepare | listen | otel | ef-seed | ef-query | ef-concurrency | tls | top-books");
+            "       defaults | types | enum | copy | prepare | listen | otel | ef-seed | ef-query | ef-concurrency | tls | top-books\n" +
+            "       reserve <order-id>... | archive");
         break;
 }
