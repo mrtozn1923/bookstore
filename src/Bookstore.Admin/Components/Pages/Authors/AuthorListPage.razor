@@ -1,0 +1,32 @@
+@page "/authors"
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Components.QuickGrid
+@inject BookstoreApiClient Api
+
+<PageTitle>Authors</PageTitle>
+
+<h1>Authors</h1>
+<p><a href="authors/new" class="btn btn-sm btn-primary">New author</a></p>
+
+@if (Authors is null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <QuickGrid Items="Authors.AsQueryable()" Pagination="pagination" class="table table-sm">
+        <PropertyColumn Property="a => a.Name" Sortable="true" IsDefaultSortColumn="true" />
+        <PropertyColumn Property="a => a.BookCount" Title="Books" Sortable="true" Align="Align.End" />
+    </QuickGrid>
+    <Paginator State="pagination" />
+}
+
+@code {
+    private readonly PaginationState pagination = new() { ItemsPerPage = 5 };
+
+    // Loaded once during prerendering (see post 06); sorting and paging then happen in memory on the circuit.
+    [PersistentState]
+    public List<AuthorView>? Authors { get; set; }
+
+    protected override async Task OnInitializedAsync() => Authors ??= [.. await Api.GetAuthorsAsync()];
+}

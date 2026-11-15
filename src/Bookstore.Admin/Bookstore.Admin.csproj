@@ -10,6 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Bookstore.Admin.Client\Bookstore.Admin.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" />
   </ItemGroup>
 
 </Project>

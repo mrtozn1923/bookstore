@@ -24,7 +24,7 @@
         NewBookForm book = form.Books[i];
         <fieldset class="border rounded p-2 mb-2">
             <legend class="fs-6">Book @(i + 1)</legend>
-            <label>ISBN <InputText @bind-Value="book.Isbn" class="form-control" /></label>
+            <label>ISBN <InputText @ref="lastIsbnInput" @bind-Value="book.Isbn" class="form-control" /></label>
             <ValidationMessage For="() => book.Isbn" />
             <label>Title <InputText @bind-Value="book.Title" class="form-control" /></label>
             <ValidationMessage For="() => book.Title" />
@@ -47,7 +47,7 @@
         </fieldset>
     }
 
-    <button type="button" class="btn btn-outline-secondary" @onclick="() => form.Books.Add(new())">Add another book</button>
+    <button type="button" class="btn btn-outline-secondary" @onclick="AddBook">Add another book</button>
     <button type="submit" class="btn btn-primary" disabled="@saving">Save</button>
 </EditForm>
 
@@ -57,6 +57,9 @@
     private ValidationMessageStore serverErrors = null!;
     private IReadOnlyList<CategoryView> categories = [];
     private bool saving;
+    // Inside the loop every row assigns this field, so after a render it holds the last book's input.
+    private InputText? lastIsbnInput;
+    private bool focusLastBook;
 
     protected override async Task OnInitializedAsync()
     {
@@ -66,6 +69,21 @@
         editContext.OnFieldChanged += (_, e) => serverErrors.Clear(e.FieldIdentifier);
         editContext.OnValidationRequested += (_, _) => serverErrors.Clear();
         categories = await Api.GetCategoriesAsync();
+    }
+
+    private void AddBook()
+    {
+        form.Books.Add(new());
+        focusLastBook = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (focusLastBook && lastIsbnInput?.Element is ElementReference input)
+        {
+            focusLastBook = false;
+            await input.FocusAsync();
+        }
     }
 
     private async Task SaveAsync()

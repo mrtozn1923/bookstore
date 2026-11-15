@@ -1,16 +1,14 @@
 @inject ILogger<BookList> Logger
 
-<table class="table table-sm align-middle">
-    <thead>
-        <tr><th>Title</th><th class="text-end">On hand</th><th class="text-end">Reserved</th><th class="text-end">Available</th><th></th></tr>
-    </thead>
-    <tbody>
-        @foreach (StockView item in Items)
-        {
-            <BookRow Item="item" LowStockThreshold="LowStockThreshold" OnRestock="OnRestock" />
-        }
-    </tbody>
-</table>
+<DataTable Items="Items" ItemKey="item => item.Isbn">
+    <HeaderTemplate>
+        <th>Title</th><th class="text-end">On hand</th><th class="text-end">Reserved</th><th class="text-end">Available</th><th></th>
+    </HeaderTemplate>
+    <RowTemplate Context="item">
+        <BookRow Item="item" LowStockThreshold="LowStockThreshold" OnRestock="OnRestock" />
+    </RowTemplate>
+    <EmptyTemplate>No books match the filter.</EmptyTemplate>
+</DataTable>
 <p>@Items.Count(i => i.Available <= LowStockThreshold) of @Items.Count books are at or below the threshold.</p>
 
 @code {

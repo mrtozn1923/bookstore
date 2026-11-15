@@ -4,7 +4,7 @@
         <select class="form-select w-auto" @bind="selectedIsbn">
             @foreach (BookPrice book in Books)
             {
-                <option value="@book.Isbn">@book.Title (@book.Price.ToString("N2") TRY)</option>
+                <option value="@book.Isbn">@book.Title (<Money Amount="book.Price" />)</option>
             }
         </select>
         <input type="number" min="1" max="500" class="form-control w-auto" @bind="quantity" />
@@ -15,13 +15,13 @@
         <tbody>
             @foreach (CartLine line in lines)
             {
-                <tr><td>@line.Quantity x @line.Title</td><td class="text-end">@line.Total.ToString("N2") TRY</td></tr>
+                <tr><td>@line.Quantity x @line.Title</td><td class="text-end"><Money Amount="line.Total" /></td></tr>
             }
         </tbody>
     </table>
     <p>
-        @TotalQuantity items, subtotal @Subtotal.ToString("N2") TRY,
-        discount @Discount.ToString("N2") TRY, total <strong>@((Subtotal - Discount).ToString("N2")) TRY</strong>
+        @TotalQuantity items, subtotal <Money Amount="Subtotal" />,
+        discount <Money Amount="Discount" />, total <strong><Money Amount="Subtotal - Discount" /></strong>
     </p>
 </div>
 

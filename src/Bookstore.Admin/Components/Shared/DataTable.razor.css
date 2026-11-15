@@ -1,0 +1,12 @@
+/* Header and body cells come from the parent's templates and don't get this component's scope attribute,
+   so both rules go through ::deep. Only <table> itself, rendered here, carries the attribute. */
+.data-table ::deep thead th {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #6c757d;
+}
+
+.data-table ::deep tbody td {
+    padding-top: 0.35rem;
+    padding-bottom: 0.35rem;
+}

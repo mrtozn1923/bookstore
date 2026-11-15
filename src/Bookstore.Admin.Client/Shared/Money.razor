@@ -1,0 +1,9 @@
+@Amount.ToString(Options.AmountFormat) @Options.Currency
+
+@code {
+    [Parameter, EditorRequired]
+    public decimal Amount { get; set; }
+
+    [CascadingParameter]
+    public PanelOptions Options { get; set; } = null!;
+}

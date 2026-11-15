@@ -1,0 +1,36 @@
+@page "/diagnostics/long-list"
+@rendermode InteractiveServer
+
+<PageTitle>Long list</PageTitle>
+
+<h1>Long list (@movements.Count rows)</h1>
+<label><input type="checkbox" @bind="virtualize" /> Use Virtualize</label>
+
+<div class="border mt-2" style="height: 400px; overflow-y: auto;">
+    <table class="table table-sm mb-0">
+        <tbody>
+            @if (virtualize)
+            {
+                <Virtualize Items="movements" ItemSize="33" OverscanCount="5" SpacerElement="tr" Context="movement">
+                    <tr @key="movement.Id" style="height: 33px">
+                        <td>@movement.Id</td><td>@movement.Isbn</td><td class="text-end">@movement.Change</td><td>@movement.AtUtc.ToString("u")</td>
+                    </tr>
+                </Virtualize>
+            }
+            else
+            {
+                @foreach (StockMovement movement in movements)
+                {
+                    <tr @key="movement.Id" style="height: 33px">
+                        <td>@movement.Id</td><td>@movement.Isbn</td><td class="text-end">@movement.Change</td><td>@movement.AtUtc.ToString("u")</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    private readonly List<StockMovement> movements = StockMovement.Generate(10_000);
+    private bool virtualize = true;
+}

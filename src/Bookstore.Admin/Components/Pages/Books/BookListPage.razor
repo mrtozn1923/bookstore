@@ -41,7 +41,7 @@ else
                     <td><a href="books/@book.Isbn">@book.Title</a></td>
                     <td>@book.Author</td>
                     <td>@book.Category</td>
-                    <td class="text-end">@book.Price.ToString("N2") TRY</td>
+                    <td class="text-end"><Money Amount="book.Price" /></td>
                 </tr>
             }
         </tbody>
