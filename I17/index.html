@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bookstore: animation and scroll demo</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <strong>Bookstore</strong>
+    <span class="sale-badge">Sale</span>
+    <a id="cart-icon" href="#checkout" aria-label="Cart">Cart <span id="cart-count">0</span></a>
+  </header>
+
+  <p class="sale-banner">Spring sale: 10% off classics</p>
+
+  <section aria-label="Bestsellers">
+    <h2>Bestsellers</h2>
+    <div class="shelf-wrap">
+      <button id="shelf-prev" aria-label="Previous books">&lt;</button>
+      <ul class="shelf">
+        <li class="book" id="book-dune"><div class="cover" style="--c: #c2410c">Dune</div><button class="add-to-cart">Add to cart</button></li>
+        <li class="book" id="book-emma"><div class="cover" style="--c: #7c3aed">Emma</div><button class="add-to-cart">Add to cart</button></li>
+        <li class="book" id="book-hobbit"><div class="cover" style="--c: #15803d">The Hobbit</div><button class="add-to-cart">Add to cart</button></li>
+        <li class="book" id="book-middlemarch"><div class="cover" style="--c: #1d4ed8">Middlemarch</div><button class="add-to-cart">Add to cart</button></li>
+        <li class="book" id="book-frankenstein"><div class="cover" style="--c: #374151">Frankenstein</div><button class="add-to-cart" disabled>Out of stock</button></li>
+        <li class="book" id="book-pride"><div class="cover" style="--c: #be185d">Pride and Prejudice</div><button class="add-to-cart">Add to cart</button></li>
+      </ul>
+      <button id="shelf-next" aria-label="Next books">&gt;</button>
+    </div>
+  </section>
+
+  <section class="filler" aria-hidden="true"></section>
+
+  <form id="checkout" novalidate>
+    <h2>Checkout</h2>
+    <label for="full-name">Full name</label>
+    <input id="full-name" name="fullName" required>
+    <label for="email">E-mail</label>
+    <input id="email" name="email" type="email" required>
+    <label for="address">Address</label>
+    <textarea id="address" name="address" rows="3" required></textarea>
+    <label for="postal-code">Postal code</label>
+    <input id="postal-code" name="postalCode" required pattern="[0-9]{5}">
+    <button type="submit">Place order</button>
+  </form>
+
+  <section class="filler" aria-hidden="true"></section>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
