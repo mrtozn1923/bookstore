@@ -1,4 +1,4 @@
-// Package httpapi holds HTTP helpers shared by the Bookstore commands.
+// Package httpapi holds the HTTP handlers and middleware of the Bookstore API.
 package httpapi
 
 import (
@@ -17,7 +17,7 @@ func Recover(next http.Handler) http.Handler {
 			if v == http.ErrAbortHandler {
 				panic(v) // net/http uses this value to abort a response on purpose
 			}
-			log.Printf("panic serving %s %s: %v", r.Method, r.URL.Path, v)
+			log.Printf("panic serving %s %s: %v rid=%s", r.Method, r.URL.Path, v, RequestIDFrom(r.Context()))
 			http.Error(w, "internal server error", http.StatusInternalServerError)
 		}()
 		next.ServeHTTP(w, r)
