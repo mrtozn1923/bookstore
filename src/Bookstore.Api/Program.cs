@@ -1,4 +1,8 @@
+using Bookstore.Catalog;
+using Bookstore.FileDrops;
 using Bookstore.Infrastructure;
+using Bookstore.Inventory.SupplierFeed;
+using Bookstore.Payments.BankStatements;
 using Bookstore.Institutional;
 using Bookstore.Invoicing;
 using Bookstore.Notifications;
@@ -176,6 +180,22 @@ builder.Services.AddSingleton<InstitutionDirectory>();
 builder.Services.AddSingleton<InvoiceStore>();
 builder.Services.AddScoped<InvoiceService>();
 
+// File-based integrations: the publisher's SFTP server and the bank's FTPS server, polled by a background job.
+builder.Services.Configure<SftpDropOptions>(SupplierFeedProcessor.DropName, builder.Configuration.GetSection("FileDrops:Supplier"));
+builder.Services.Configure<FtpDropOptions>(BankStatementReconciler.DropName, builder.Configuration.GetSection("FileDrops:Bank"));
+builder.Services.AddKeyedSingleton<IFileDrop>(SupplierFeedProcessor.DropName, (sp, key) =>
+    new SftpFileDrop(sp.GetRequiredService<IOptionsMonitor<SftpDropOptions>>(), (string)key!, sp.GetRequiredService<ILogger<SftpFileDrop>>()));
+builder.Services.AddKeyedSingleton<IFileDrop>(BankStatementReconciler.DropName, (sp, key) =>
+    new FtpFileDrop(sp.GetRequiredService<IOptionsMonitor<FtpDropOptions>>(), (string)key!));
+var fileDropFolder = builder.Configuration["FileDrops:WorkFolder"]!;
+builder.Services.AddSingleton(new FileDropFolders(fileDropFolder));
+builder.Services.AddSingleton(_ => new FileDropLedger(Path.Combine(fileDropFolder, "ledger.jsonl")));
+builder.Services.AddSingleton<CatalogStore>();
+builder.Services.AddSingleton<SupplierFeedProcessor>();
+builder.Services.AddScoped<BankStatementReconciler>();
+builder.Services.Configure<FileDropPollingOptions>(builder.Configuration.GetSection("FileDrops:Polling"));
+builder.Services.AddHostedService<FileDropPollingJob>();
+
 // Exchange rates: read-only GET served from two regions, so hedging instead of plain retries.
 var rateEndpoints = builder.Configuration.GetSection("ExchangeRates:Endpoints").Get<string[]>()!;
 builder.Services.AddHttpClient(ExchangeRateClient.ClientName, client => client.BaseAddress = new Uri(rateEndpoints[0]))
@@ -273,6 +293,13 @@ app.MapPost("/webhooks/payment-provider", PaymentWebhookEndpoint.ReceiveAsync);
 
 app.MapPost("/api/orders/{id:int}/invoice", async (int id, InvoiceService invoices, CancellationToken ct) =>
     await invoices.IssueAsync(id, ct) is { } invoice ? Results.Ok(invoice) : Results.NotFound());
+
+// Run a file drop now instead of waiting for the next poll (back office button; no auth in this sample).
+app.MapPost("/admin/file-drops/supplier-feed/run", async (SupplierFeedProcessor feed, CancellationToken ct) =>
+    Results.Ok(await feed.RunAsync(ct)));
+app.MapPost("/admin/file-drops/bank-statements/run", async (BankStatementReconciler bank, CancellationToken ct) =>
+    Results.Ok(await bank.RunAsync(ct)));
+app.MapGet("/api/books", (CatalogStore catalog) => catalog.All());
 
 app.MapHealthChecks("/health");
 

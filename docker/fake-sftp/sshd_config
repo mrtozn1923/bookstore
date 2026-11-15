@@ -1,0 +1,15 @@
+Port 22
+HostKey /etc/ssh/ssh_host_ed25519_key
+HostKey /etc/ssh/ssh_host_rsa_key
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+PermitRootLogin no
+AuthorizedKeysFile /etc/ssh/authorized_keys/%u
+Subsystem sftp internal-sftp
+LogLevel VERBOSE
+
+Match User supplier
+    ChrootDirectory /srv/sftp/supplier
+    ForceCommand internal-sftp
+    AllowTcpForwarding no
+    X11Forwarding no

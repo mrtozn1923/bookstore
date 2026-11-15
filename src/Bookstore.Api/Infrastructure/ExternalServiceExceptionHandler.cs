@@ -1,3 +1,4 @@
+using Bookstore.FileDrops;
 using Bookstore.Invoicing;
 using Bookstore.Ordering;
 using Bookstore.Payments;
@@ -28,6 +29,8 @@ public sealed class ExternalServiceExceptionHandler(IProblemDetailsService probl
                 (StatusCodes.Status422UnprocessableEntity, "The e-invoice was rejected by the integrator."),
             InvoiceIntegratorException { Kind: InvoiceFailureKind.Transient or InvoiceFailureKind.Unavailable } =>
                 (StatusCodes.Status503ServiceUnavailable, "E-invoice service is temporarily unavailable."),
+            FileDropException =>
+                (StatusCodes.Status503ServiceUnavailable, "A partner's file server is not reachable."),
             PaymentGatewayException or ShippingCarrierException or InvoiceIntegratorException =>
                 (StatusCodes.Status502BadGateway, "An external service returned an unexpected response."),
             _ => null

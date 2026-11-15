@@ -28,5 +28,8 @@
     <PackageVersion Include="System.ServiceModel.Primitives" Version="10.1.0" />
     <PackageVersion Include="CoreWCF.Http" Version="1.9.1" />
     <PackageVersion Include="CoreWCF.Primitives" Version="1.9.1" />
+    <!-- Post 11: SFTP and FTP/FTPS clients -->
+    <PackageVersion Include="SSH.NET" Version="2026.0.1" />
+    <PackageVersion Include="FluentFTP" Version="55.1.0" />
   </ItemGroup>
 </Project>
