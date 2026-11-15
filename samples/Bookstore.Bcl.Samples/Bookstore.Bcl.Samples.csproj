@@ -9,4 +9,8 @@
     <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" Version="11.0.0" />
     <ProjectReference Include="..\..\src\Bookstore.Bcl\Bookstore.Bcl.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <!-- Ends up in Bookstore.Bcl.Samples.runtimeconfig.json; read with AppContext.TryGetSwitch. -->
+    <RuntimeHostConfigurationOption Include="Bookstore.Reports.UseLegacyCsv" Value="true" />
+  </ItemGroup>
 </Project>

@@ -1,22 +1,31 @@
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text;
 
 // Usage: dotnet run --project samples/Bookstore.Bcl.Net11 -- <demo>
-var demos = new Dictionary<string, Action>(StringComparer.OrdinalIgnoreCase)
+var demos = new Dictionary<string, Func<Task>>(StringComparer.OrdinalIgnoreCase)
 {
-    ["runes"] = RuneDemos.Run,
-    ["hexfloat"] = HexFloatDemos.Run,
-    ["numbers"] = NumberDemos.Run,
-    ["base64"] = Base64Demos.Run,
+    ["runes"] = Sync(RuneDemos.Run),
+    ["hexfloat"] = Sync(HexFloatDemos.Run),
+    ["numbers"] = Sync(NumberDemos.Run),
+    ["base64"] = Sync(Base64Demos.Run),
+    ["process"] = ProcessDemos.RunAsync,
 };
 
-if (args.Length == 0 || !demos.TryGetValue(args[0], out Action? run))
+if (args.Length == 0 || !demos.TryGetValue(args[0], out Func<Task>? run))
 {
     Console.Error.WriteLine("Demos: " + string.Join(", ", demos.Keys.Order(StringComparer.Ordinal)));
     return 1;
 }
 
-run();
+await run();
 return 0;
+
+static Func<Task> Sync(Action action) => () =>
+{
+    action();
+    return Task.CompletedTask;
+};
 
 static class RuneDemos
 {
@@ -87,5 +96,45 @@ static class Base64Demos
         Console.WriteLine($"Base64.DecodeFromChars: {Convert.ToHexString(decoded)}");
         Console.WriteLine($"Same as Convert       : {encoded == Convert.ToBase64String(token)}");
         Console.WriteLine($"Uri.UriSchemeData     : {Uri.UriSchemeData}");
+    }
+}
+
+static class ProcessDemos
+{
+    public static async Task RunAsync()
+    {
+        string dir = Path.Combine(Path.GetTempPath(), "bookstore-nightly");
+        Directory.CreateDirectory(dir);
+        await File.WriteAllTextAsync(Path.Combine(dir, "orders.csv"), "OrderNumber,Total\n");
+
+        ProcessStartInfo tar = new("tar", ["-czf", "nightly.tar.gz", "orders.csv", "missing.csv"])
+        {
+            WorkingDirectory = dir,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+        };
+        ProcessTextOutput result = await Process.RunAndCaptureTextAsync(tar);
+        Console.WriteLine($"RunAndCaptureTextAsync: exit={result.ExitStatus.ExitCode} canceled={result.ExitStatus.Canceled}");
+        Console.Write($"stderr: {result.StandardError}");
+
+        ProcessExitStatus version = await Process.RunAsync("tar", ["--version"], silent: true);
+        Console.WriteLine($"RunAsync(silent): exit={version.ExitCode}");
+
+        using CancellationTokenSource cts = new(TimeSpan.FromSeconds(1));
+        ProcessExitStatus slow = await Process.RunAsync("sleep", ["30"], cancellationToken: cts.Token);
+        Console.WriteLine($"sleep 30 with 1 s token: exit={slow.ExitCode} canceled={slow.Canceled} signal={slow.Signal}");
+
+        using Process sleeper = Process.Start("sleep", "30");
+        sleeper.Signal(PosixSignal.SIGTERM);
+        ProcessExitStatus status = await sleeper.WaitForExitStatusAsync();
+        Console.WriteLine($"SIGTERM: exit={status.ExitCode} signal={status.Signal}");
+
+        if (OperatingSystem.IsWindows() || OperatingSystem.IsLinux())
+        {
+            ProcessStartInfo child = new("sleep", ["1"]) { KillOnParentExit = true };
+            using Process process = Process.Start(child)!;
+            await process.WaitForExitAsync();
+            Console.WriteLine($"KillOnParentExit: child exit={process.ExitCode}");
+        }
     }
 }

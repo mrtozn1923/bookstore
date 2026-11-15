@@ -4,17 +4,18 @@ using Bookstore.Bcl.Samples.Encodings;
 using Bookstore.Bcl.Samples.Formatting;
 using Bookstore.Bcl.Samples.Globalization;
 using Bookstore.Bcl.Samples.Numbers;
+using Bookstore.Bcl.Samples.Runtime;
 using Bookstore.Bcl.Samples.Strings;
 
 // Usage: dotnet run --project samples/Bookstore.Bcl.Samples -- <demo> [--culture tr-TR|en-US|invariant]
 var demos = new Dictionary<string, Func<Task>>(StringComparer.OrdinalIgnoreCase);
-foreach (var (name, demo) in StringDemos.All.Concat(FormatDemos.All).Concat(NumberDemos.All).Concat(EncodingDemos.All).Concat(DateDemos.All))
+foreach (var (name, demo) in StringDemos.All.Concat(FormatDemos.All).Concat(NumberDemos.All).Concat(EncodingDemos.All).Concat(DateDemos.All).Concat(EnvironmentDemos.All))
     demos[name] = () =>
     {
         demo();
         return Task.CompletedTask;
     };
-foreach (var (name, demo) in GlobalizationDemos.All)
+foreach (var (name, demo) in GlobalizationDemos.All.Concat(ProcessDemos.All).Concat(StopwatchDemos.All))
     demos[name] = demo;
 
 int cultureIndex = Array.IndexOf(args, "--culture");
