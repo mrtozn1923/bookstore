@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using Bookstore.Catalog;
@@ -43,17 +44,29 @@ public static class ExpressionCompiler
     {
         Expression left = Emit(c.Left, book, mode);
         Expression right = Emit(c.Right, book, mode);
-        return c.Operator switch
+        (ExpressionType kind, string name) = c.Operator switch
         {
-            ComparisonOperator.Equal => Expression.Equal(left, right),
-            ComparisonOperator.NotEqual => Expression.NotEqual(left, right),
-            ComparisonOperator.Less => Expression.LessThan(left, right),
-            ComparisonOperator.LessOrEqual => Expression.LessThanOrEqual(left, right),
-            ComparisonOperator.Greater => Expression.GreaterThan(left, right),
-            ComparisonOperator.GreaterOrEqual => Expression.GreaterThanOrEqual(left, right),
-            _ => Expression.Call(left, StringContains, right),
+            ComparisonOperator.Equal => (ExpressionType.Equal, "op_Equality"),
+            ComparisonOperator.NotEqual => (ExpressionType.NotEqual, "op_Inequality"),
+            ComparisonOperator.Less => (ExpressionType.LessThan, "op_LessThan"),
+            ComparisonOperator.LessOrEqual => (ExpressionType.LessThanOrEqual, "op_LessThanOrEqual"),
+            ComparisonOperator.Greater => (ExpressionType.GreaterThan, "op_GreaterThan"),
+            ComparisonOperator.GreaterOrEqual => (ExpressionType.GreaterThanOrEqual, "op_GreaterThanOrEqual"),
+            _ => (ExpressionType.Call, ""),
         };
+        if (kind == ExpressionType.Call)
+            return Expression.Call(left, StringContains, right);
+
+        // decimal and string compare through operator methods; naming them here keeps them in a Native AOT build
+        MethodInfo? method = left.Type == typeof(decimal) ? OperatorMethod(typeof(decimal), name)
+            : left.Type == typeof(string) ? OperatorMethod(typeof(string), name)
+            : null;
+        return Expression.MakeBinary(kind, left, right, liftToNull: false, method);
     }
+
+    private static MethodInfo OperatorMethod(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] Type type, string name) =>
+        type.GetMethod(name, [type, type])!;
 
     private static Expression EmitLiteral(BoundLiteral literal, LiteralMode mode)
     {
@@ -67,14 +80,24 @@ public static class ExpressionCompiler
         if (mode == LiteralMode.Inline)
             return Expression.Constant(literal.Value, type);
 
-        // same shape the C# compiler produces for a captured local: a field read on a closure object
-        object holder = Activator.CreateInstance(typeof(Captured<>).MakeGenericType(type), literal.Value)!;
-        return Expression.Field(Expression.Constant(holder), "value");
+        // every holder type is written out, so Native AOT knows each Captured<T> at compile time
+        return literal.Value switch
+        {
+            int value => Captured<int>.Read(value),
+            decimal value => Captured<decimal>.Read(value),
+            string value => Captured<string>.Read(value),
+            _ => Captured<bool>.Read((bool)literal.Value),
+        };
     }
 
+    // same shape the C# compiler produces for a captured local: a field read on a closure object
     private sealed class Captured<T>(T value)
     {
+        private static readonly FieldInfo ValueField = typeof(Captured<T>).GetField("value")!;
+
         // the field name becomes the SQL parameter name (@value, @value1, ...)
         public readonly T value = value;
+
+        public static MemberExpression Read(T value) => Expression.Field(Expression.Constant(new Captured<T>(value)), ValueField);
     }
 }

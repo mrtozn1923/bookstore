@@ -3,11 +3,13 @@
     <Project Path="benchmarks/Bookstore.Filter.Benchmarks/Bookstore.Filter.Benchmarks.csproj" />
   </Folder>
   <Folder Name="/samples/">
+    <Project Path="samples/Bookstore.Api/Bookstore.Api.csproj" />
     <Project Path="samples/JitLab/JitLab.csproj" />
     <Project Path="samples/PipelineTour/PipelineTour.csproj" />
     <Project Path="samples/RegexLexer/RegexLexer.csproj" />
     <Project Path="samples/RoslynSemantic/RoslynSemantic.csproj" />
     <Project Path="samples/RoslynTrivia/RoslynTrivia.csproj" />
+    <Project Path="samples/StartupProbe/StartupProbe.csproj" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Bookstore.Filter.Cli/Bookstore.Filter.Cli.csproj" />

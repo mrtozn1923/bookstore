@@ -30,4 +30,11 @@ dotnet run -c Release --project samples/JitLab -f net10.0 -- warmup
 dotnet run -c Release --project benchmarks/Bookstore.Filter.Benchmarks -- --filter '*RuleBenchmarks*'
 node --allow-natives-syntax samples/v8-tiers/shapes.js
 node --trace-deopt samples/v8-tiers/deopt.js
+
+# 06: JIT vs ReadyToRun vs Native AOT (Native AOT needs the platform toolchain, e.g. the VS C++ workload on Windows)
+dotnet publish samples/Bookstore.Api -c Release -o publish/jit
+dotnet publish samples/Bookstore.Api -c Release -p:PublishReadyToRun=true -o publish/r2r
+dotnet publish samples/Bookstore.Api -c Release -p:PublishAot=true -o publish/aot
+dotnet run -c Release --project samples/StartupProbe -- 5 publish/aot/Bookstore.Api
+dotnet run -c Release --project benchmarks/Bookstore.Filter.Benchmarks -- --filter '*CompileBenchmarks*'
 ```
