@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sync"
 	"time"
 
 	"bookstore/internal/catalog"
@@ -27,11 +28,13 @@ type Line struct {
 	Quantity int
 }
 
-// Service places orders.
+// Service places orders. It is safe for concurrent use.
 type Service struct {
-	repo   Repository
-	books  Catalog
-	now    func() time.Time
+	repo  Repository
+	books Catalog
+	now   func() time.Time
+
+	mu     sync.Mutex // guards nextID
 	nextID int
 }
 
@@ -58,9 +61,8 @@ func (s *Service) Place(ctx context.Context, customerID string, lines []Line) (*
 		items = append(items, Item{ISBN: b.ISBN, Title: b.Title, UnitPrice: b.Price, Quantity: l.Quantity})
 	}
 
-	s.nextID++ // not safe for concurrent use yet; fixed in 08
 	now := s.now()
-	o := NewOrder(fmt.Sprintf("ORD-%d", s.nextID), customerID, now)
+	o := NewOrder(s.newID(), customerID, now)
 	for _, it := range items {
 		o.AddItem(it, now)
 	}
@@ -68,6 +70,15 @@ func (s *Service) Place(ctx context.Context, customerID string, lines []Line) (*
 		return nil, fmt.Errorf("save order %s: %w", o.ID, err)
 	}
 	return o, nil
+}
+
+// newID returns the next order ID. Only the counter is locked, not the
+// catalog lookups or the repository call.
+func (s *Service) newID() string {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.nextID++
+	return fmt.Sprintf("ORD-%d", s.nextID)
 }
 
 // validate collects every problem instead of stopping at the first one.
