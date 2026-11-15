@@ -17,6 +17,9 @@ drift.txt
 crash.log
 crash.*.log
 
+# TF_LOG_PATH output: provider debug lines contain secret values
+terraform.log
+
 # CLI configuration files may contain credentials
 .terraformrc
 terraform.rc
