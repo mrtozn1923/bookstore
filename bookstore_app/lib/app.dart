@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
+import 'config/api_config.dart';
 import 'routing/router.dart';
 import 'ui/core/themes/theme.dart';
 
@@ -43,6 +44,14 @@ class _BookstoreAppState extends State<BookstoreApp> {
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
       supportedLocales: const [Locale('en'), Locale('tr')],
       routerConfig: _router,
+      // Testers should never mistake a staging build for the real app
+      builder: (context, child) => appEnvironment == 'prod'
+          ? child!
+          : Banner(
+              message: appEnvironment.toUpperCase(),
+              location: BannerLocation.topStart,
+              child: child!,
+            ),
     );
   }
 }
