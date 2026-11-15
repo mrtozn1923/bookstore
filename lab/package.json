@@ -3,13 +3,17 @@
   "version": "1.0.0",
   "scripts": {
     "build:01": "tailwindcss -i 01/cms.css -o 01/cms.out.css && tailwindcss -i 01/unlayered.css -o 01/unlayered.out.css",
-    "test:01": "node scripts/01-growth.mjs && node scripts/01-html-size.mjs && node scripts/01-preflight.mjs && node scripts/01-unlayered.mjs"
+    "test:01": "node scripts/01-growth.mjs && node scripts/01-html-size.mjs && node scripts/01-preflight.mjs && node scripts/01-unlayered.mjs",
+    "build:02": "vite build --config 02-vite/vite.config.js",
+    "test:02": "node scripts/02-scan.mjs && node scripts/02-assets.mjs && node scripts/02-badges.mjs"
   },
   "type": "module",
   "devDependencies": {
     "@tailwindcss/cli": "^4.3.5",
+    "@tailwindcss/vite": "^4.3.5",
     "playwright": "^1.65.0",
-    "tailwindcss": "^4.3.5"
+    "tailwindcss": "^4.3.5",
+    "vite": "^8.3.8"
   },
   "private": true
 }

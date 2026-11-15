@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+/* third-party scripts copied into wwwroot/lib: not ours, do not scan */
+@source not "../wwwroot/lib";
+
+/* classes that only appear in CMS content: not in our source, generate them anyway */
+@source inline("{hover:,}bg-amber-{100,200}");

@@ -6,4 +6,22 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <!-- npm files are build inputs, not part of the app -->
+    <Content Update="package.json;package-lock.json" CopyToOutputDirectory="Never" CopyToPublishDirectory="Never" />
+  </ItemGroup>
+
+  <!-- fresh clone or CI: install the exact versions from package-lock.json -->
+  <Target Name="NpmInstall" BeforeTargets="TailwindBuild" Condition="!Exists('node_modules')">
+    <Exec Command="npm ci" />
+  </Target>
+
+  <!-- runs before static web assets are collected; a file created during the build must be added to Content by hand -->
+  <Target Name="TailwindBuild" BeforeTargets="BeforeBuild" Condition="'$(Configuration)' == 'Release' Or !Exists('wwwroot/css/site.css')">
+    <Exec Command="npm run css:build" />
+    <ItemGroup>
+      <Content Include="wwwroot/css/site.css" Exclude="@(Content)" />
+    </ItemGroup>
+  </Target>
+
 </Project>
