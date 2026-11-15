@@ -30,6 +30,9 @@
 .OUTPUTS
     Progress lines prefixed with the server name. Exit codes: 0 all servers deployed, 1 rollout stopped.
 #>
+# PSScriptAnalyzer does not see parameters used through $using: in a remote script block
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', 'SitePath', Justification = 'Used through $using:')]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', 'HealthUrl', Justification = 'Used through $using:')]
 [CmdletBinding()]
 param(
     [Parameter(Mandatory)]

@@ -12,7 +12,7 @@
 RootModule = 'Bookstore.Ops.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.2.0'
+ModuleVersion = '0.3.0'
 
 # Supported PSEditions
 CompatiblePSEditions = 'Core'
@@ -69,8 +69,8 @@ PowerShellVersion = '7.6'
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Get-BookstoreHealth', 'Test-BookstoreCover', 
-               'Invoke-BookstoreBackup', 'Invoke-BookstoreDotnet', 
+FunctionsToExport = 'Get-BookstoreHealth', 'Test-BookstoreCover',
+               'Invoke-BookstoreBackup', 'Invoke-BookstoreDotnet',
                'Restart-BookstorePool', 'Wait-BookstoreHealthy'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.

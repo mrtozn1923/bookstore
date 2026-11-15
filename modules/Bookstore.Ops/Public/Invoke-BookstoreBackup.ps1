@@ -29,7 +29,8 @@ function Invoke-BookstoreBackup {
         [int] $KeepLast = 7
     )
 
-    $zip = Join-Path -Path $Destination -ChildPath ('bookstore-{0:yyyyMMdd-HHmmss}.zip' -f [datetime]::UtcNow)
+    # Milliseconds too: two backups in the same second must not collide
+    $zip = Join-Path -Path $Destination -ChildPath ('bookstore-{0:yyyyMMdd-HHmmss-fff}.zip' -f [datetime]::UtcNow)
     if ($PSCmdlet.ShouldProcess($zip, "Back up $Path")) {
         $null = New-Item -Path $Destination -ItemType Directory -Force
         Compress-Archive -Path (Join-Path -Path $Path -ChildPath '*') -DestinationPath $zip

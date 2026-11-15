@@ -43,8 +43,10 @@ function Get-BookstoreHealth {
         $status = $null
         $errorMessage = $null
         try {
-            $response = Invoke-RestMethod -Uri $url -TimeoutSec $TimeoutSec -SkipHttpErrorCheck -StatusCodeVariable statusCode
-            $status = $response.status
+            # Invoke-WebRequest returns the status code on the object; -StatusCodeVariable cannot be mocked
+            $response = Invoke-WebRequest -Uri $url -TimeoutSec $TimeoutSec -SkipHttpErrorCheck
+            $statusCode = [int]$response.StatusCode
+            $status = ($response.Content | ConvertFrom-Json).status
         }
         catch {
             # Unreachable is a result, not an exception: the caller decides what to do
