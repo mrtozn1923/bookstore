@@ -107,6 +107,14 @@ switch (task)
     case "review":
         await CodeLab.ReviewAsync(LabClient.Create(), LabClient.Options(), version);
         break;
+    case "order-assistant" when version == "regrade":
+        AgentLab.Regrade(args[2]);
+        break;
+    case "order-assistant":
+        await AgentLab.RunAsync(version, args.Contains("--approval"),
+            args.SkipWhile(a => a != "--only").Skip(1).FirstOrDefault(),
+            int.TryParse(args.SkipWhile(a => a != "--repeat-history").Skip(1).FirstOrDefault(), out int repeat) ? repeat : 1);
+        break;
     default:
         Console.WriteLine($"Unknown task: {task}");
         break;
