@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/Bookstore.Api/Bookstore.Api.csproj" />
     <Project Path="src/Bookstore.Catalog/Bookstore.Catalog.csproj" />
     <Project Path="src/Bookstore.Ordering/Bookstore.Ordering.csproj" />
     <Project Path="src/Bookstore.Shipping/Bookstore.Shipping.csproj" />
