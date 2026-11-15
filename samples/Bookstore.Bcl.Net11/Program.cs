@@ -6,6 +6,7 @@ var demos = new Dictionary<string, Action>(StringComparer.OrdinalIgnoreCase)
     ["runes"] = RuneDemos.Run,
     ["hexfloat"] = HexFloatDemos.Run,
     ["numbers"] = NumberDemos.Run,
+    ["base64"] = Base64Demos.Run,
 };
 
 if (args.Length == 0 || !demos.TryGetValue(args[0], out Action? run))
@@ -71,5 +72,20 @@ static class NumberDemos
         Console.WriteLine($"(decimal)0.1    = {((decimal)0.1).ToString(invariant)}");
         Console.WriteLine($"(decimal)349.90 = {((decimal)349.90).ToString(invariant)}");
         Console.WriteLine($"349.90m         = {349.90m.ToString(invariant)}");
+    }
+}
+
+static class Base64Demos
+{
+    public static void Run()
+    {
+        byte[] token = [0xFB, 0xEF, 0xFF, 0x3E, 0x3F, 0x00, 0x10];
+
+        string encoded = System.Buffers.Text.Base64.EncodeToString(token);
+        byte[] decoded = System.Buffers.Text.Base64.DecodeFromChars(encoded);
+        Console.WriteLine($"Base64.EncodeToString : {encoded}");
+        Console.WriteLine($"Base64.DecodeFromChars: {Convert.ToHexString(decoded)}");
+        Console.WriteLine($"Same as Convert       : {encoded == Convert.ToBase64String(token)}");
+        Console.WriteLine($"Uri.UriSchemeData     : {Uri.UriSchemeData}");
     }
 }

@@ -4,6 +4,8 @@
     <RootNamespace>Bookstore.Bcl.Samples</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <!-- QueryHelpers (Microsoft.AspNetCore.WebUtilities) comes with the ASP.NET Core shared framework. -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <ProjectReference Include="..\..\src\Bookstore.Bcl\Bookstore.Bcl.csproj" />
   </ItemGroup>
 </Project>
