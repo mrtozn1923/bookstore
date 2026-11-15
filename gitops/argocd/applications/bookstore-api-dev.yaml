@@ -15,3 +15,17 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: bookstore-dev
+  # An HPA (or a person during an incident) owns replicas, not Git.
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      name: api
+      jsonPointers:
+        - /spec/replicas
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - PruneLast=true
+      - RespectIgnoreDifferences=true

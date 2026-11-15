@@ -6,6 +6,8 @@ metadata:
     app.kubernetes.io/name: api
 spec:
   replicas: 1
+  revisionHistoryLimit: 3
+  progressDeadlineSeconds: 120
   selector:
     matchLabels:
       app.kubernetes.io/name: api

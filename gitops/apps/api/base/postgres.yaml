@@ -16,6 +16,9 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: postgres
+  annotations:
+    # Never delete the database automatically, even if it disappears from Git.
+    argocd.argoproj.io/sync-options: Prune=false
   labels:
     app.kubernetes.io/name: postgres
 spec:
