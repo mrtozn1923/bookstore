@@ -3,12 +3,14 @@ import { Component, inject, signal } from '@angular/core';
 import { FieldTree, FormField, FormRoot, TreeValidationResult, form } from '@angular/forms/signals';
 import { firstValueFrom } from 'rxjs';
 import { FieldErrorsComponent } from '../field-errors/field-errors.component';
+import { GiftWrapToggleComponent } from '../gift-wrap-toggle/gift-wrap-toggle.component';
+import { QuantityStepperComponent } from '../quantity-stepper/quantity-stepper.component';
 import { ApiFieldError, OrderApiService } from '../order-api.service';
 import { CheckoutModel, emptyCheckout } from './checkout.model';
 import { checkoutSchema } from './checkout.schema';
 
 @Component({
-  imports: [FormField, FormRoot, FieldErrorsComponent],
+  imports: [FormField, FormRoot, FieldErrorsComponent, QuantityStepperComponent, GiftWrapToggleComponent],
   selector: 'app-checkout-form',
   styleUrl: './checkout-form.component.css',
   templateUrl: './checkout-form.component.html',

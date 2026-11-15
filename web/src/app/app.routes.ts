@@ -13,7 +13,6 @@ import { AddressEditComponent } from './address-edit/address-edit.component';
 import { authGuard, authMatchGuard, roleGuard } from './auth.guard';
 import { unsavedChangesGuard } from './unsaved-changes.guard';
 import { bookResolver } from './book.resolver';
-import { CheckoutFormComponent } from './checkout-form/checkout-form.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
 
 export const routes: Routes = [
@@ -36,7 +35,11 @@ export const routes: Routes = [
     title: 'About'
   },
   { path: 'login', component: LoginComponent },
-  { path: 'checkout', component: CheckoutFormComponent, title: 'Checkout' },
+  {
+    path: 'checkout',
+    loadComponent: () => import('./checkout-form/checkout-form.component').then(m => m.CheckoutFormComponent),
+    title: 'Checkout'
+  },
   { path: 'sign-up', component: SignUpComponent, title: 'Sign up' },
   { path: 'orders', component: OrderListComponent, canActivate: [authGuard], title: 'My orders' },
   { path: 'account/address', component: AddressEditComponent, canDeactivate: [unsavedChangesGuard] },

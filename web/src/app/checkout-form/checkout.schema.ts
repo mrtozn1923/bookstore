@@ -23,6 +23,10 @@ export const checkoutSchema = schema<CheckoutModel>((order) => {
   required(order.address.street, { message: 'Street is required' });
   pattern(order.address.zip, /^[0-9]{5}$/, { message: 'Postal code must be 5 digits' });
 
+  disabled(order.giftWrap, {
+    when: ({ valueOf }) => valueOf(order.shipping) === 'pickup' && 'Gift wrap is not available for store pickup'
+  });
+
   applyEach(order.lines, (line) => {
     min(line.quantity, 1, { message: 'Quantity must be at least 1' });
   });

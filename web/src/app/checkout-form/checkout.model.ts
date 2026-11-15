@@ -11,6 +11,7 @@ export interface CheckoutModel {
   email: string;
   shipping: ShippingMethod;
   address: { city: string; street: string; zip: string };
+  giftWrap: boolean;
   institutional: boolean;
   institutionName: string;
   couponCode: string;
@@ -23,6 +24,7 @@ export function emptyCheckout(): CheckoutModel {
     email: '',
     shipping: 'standard',
     address: { city: '', street: '', zip: '' },
+    giftWrap: false,
     institutional: false,
     institutionName: '',
     couponCode: '',

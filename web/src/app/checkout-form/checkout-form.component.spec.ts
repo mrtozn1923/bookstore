@@ -78,7 +78,7 @@ describe('CheckoutFormComponent', () => {
     const quantities = el.querySelectorAll<HTMLInputElement>('input[type=number]');
     quantities[0].value = '15';
     quantities[0].dispatchEvent(new Event('input'));
-    quantities[0].dispatchEvent(new Event('blur'));
+    quantities[0].dispatchEvent(new FocusEvent('focusout', { bubbles: true }));
     await settle();
     expect(errors()).toContain('Institutional orders need at least 20 books (now 16)');
 

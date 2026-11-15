@@ -28,13 +28,13 @@
   }
 
   @for (line of checkoutForm.lines; track line) {
-    <label>
-      {{ line.title().value() }}
-      <input type="number" [formField]="line.quantity" />
-    </label>
+    <span>{{ line.title().value() }}</span>
+    <app-quantity-stepper [formField]="line.quantity" [label]="'Quantity of ' + line.title().value()" />
     <app-field-errors [field]="line.quantity" />
   }
   <app-field-errors [field]="checkoutForm.lines" />
+
+  <app-gift-wrap-toggle [formField]="checkoutForm.giftWrap" />
 
   <label><input type="checkbox" [formField]="checkoutForm.institutional" /> Institutional order</label>
   @if (checkoutForm.institutional().value()) {
