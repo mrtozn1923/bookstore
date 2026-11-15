@@ -1,0 +1,6 @@
+{"id": "tr-01", "input": "<p><b>Dune</b>, Frank Herbert'ın 1965'te yayımlanan bilimkurgu klasiği. Çöl gezegeni Arrakis'te geçen hikâye siyaseti, dini ve ekolojiyi bir araya getiriyor.</p>\n<p>Kurumsal Sipariş ile 20 adet ve üzeri alımlarda %10 indirim. Fiyat: {price}</p>", "expected": ""}
+{"id": "tr-02", "input": "<p><b>Emma</b>, Jane Austen'ın 1815 tarihli romanı. Kendine fazlasıyla güvenen Emma Woodhouse'un çevresindekilerin hayatına karışmasını anlatıyor.</p>\n<p>Hediye Paketi seçeneğiyle gönderilebilir. Tahmini teslim: {deliveryDate}</p>", "expected": ""}
+{"id": "tr-03", "input": "<p>{customerName}, <b>The Hobbit</b> kitabını Okul Listesi'ne ekleyebilirsiniz. Bilbo Baggins'in beklenmedik yolculuğu, Tolkien'in 1937'de yayımlanan ilk büyük eseri.</p>", "expected": ""}
+{"id": "tr-04", "input": "<p><b>Middlemarch</b>, George Eliot'ın taşra hayatını anlatan büyük romanı. Bookstore'a özel ciltli baskı, sınırlı sayıda.</p>\n<p>Stokta {stock} adet kaldı.</p>", "expected": ""}
+{"id": "tr-05", "input": "<p><b>Frankenstein</b>, Mary Shelley'nin <i>Modern Prometheus</i> alt başlığıyla 1818'de yayımlanan romanı. Kurumsal Sipariş ve Hediye Paketi seçenekleri mevcut.</p>", "expected": ""}
+{"id": "tr-06", "input": "<p><b>Pride and Prejudice</b> kampanyada: 1.240,50 TL yerine 989,90 TL. Kampanya 15 Aralık 2026'ya kadar geçerli.</p>", "expected": ""}

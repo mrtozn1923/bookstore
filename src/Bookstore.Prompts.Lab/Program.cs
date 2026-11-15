@@ -57,6 +57,15 @@ switch (task)
         await work;
         break;
     }
+    case "translate":
+        await LocalizationLab.TranslateAsync(runner, version);
+        break;
+    case "campaign":
+        await LocalizationLab.CampaignAsync(LabClient.Create(), LabClient.Options(), version);
+        break;
+    case "summary":
+        await LocalizationLab.SummaryAsync(LabClient.Create(), LabClient.Options());
+        break;
     default:
         Console.WriteLine($"Unknown task: {task}");
         break;

@@ -1,0 +1,16 @@
+{
+  "terms": {
+    "Kurumsal Sipariş": "Institutional Order",
+    "Hediye Paketi": "Gift Wrap",
+    "Okul Listesi": "School List"
+  },
+  "doNotTranslate": [
+    "Bookstore",
+    "Dune",
+    "Emma",
+    "The Hobbit",
+    "Middlemarch",
+    "Frankenstein",
+    "Pride and Prejudice"
+  ]
+}
