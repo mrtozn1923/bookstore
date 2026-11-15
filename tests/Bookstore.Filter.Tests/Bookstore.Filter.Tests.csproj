@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../src/Bookstore.Filter/Bookstore.Filter.csproj" />
+    <ProjectReference Include="../../src/Bookstore.Filter.Data/Bookstore.Filter.Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>

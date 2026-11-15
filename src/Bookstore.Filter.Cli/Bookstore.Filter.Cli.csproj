@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../Bookstore.Filter/Bookstore.Filter.csproj" />
+    <ProjectReference Include="../Bookstore.Filter.Data/Bookstore.Filter.Data.csproj" />
   </ItemGroup>
 
 </Project>

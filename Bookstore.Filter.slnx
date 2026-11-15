@@ -2,10 +2,12 @@
   <Folder Name="/samples/">
     <Project Path="samples/PipelineTour/PipelineTour.csproj" />
     <Project Path="samples/RegexLexer/RegexLexer.csproj" />
+    <Project Path="samples/RoslynSemantic/RoslynSemantic.csproj" />
     <Project Path="samples/RoslynTrivia/RoslynTrivia.csproj" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Bookstore.Filter.Cli/Bookstore.Filter.Cli.csproj" />
+    <Project Path="src/Bookstore.Filter.Data/Bookstore.Filter.Data.csproj" />
     <Project Path="src/Bookstore.Filter/Bookstore.Filter.csproj" />
   </Folder>
   <Folder Name="/tests/">
