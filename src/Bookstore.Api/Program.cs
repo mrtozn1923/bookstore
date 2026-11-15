@@ -36,7 +36,9 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 builder.Services
     .AddCatalogModule()
     .AddInventoryModule()
-    .AddOrderingModule();
+    .AddOrderingModule()
+    .AddReadingList()
+    .AddInstitutionalOrders();
 
 WebApplication app = builder.Build();
 
@@ -57,5 +59,7 @@ app.MapCatalogEndpoints();
 app.MapOrderingEndpoints();
 app.MapOrderAdminEndpoints();
 app.MapInstitutionalEndpoints();
+app.MapReadingListEndpoints();
+app.MapInstitutionalOrderEndpoints();
 
 app.Run();

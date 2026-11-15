@@ -15,6 +15,11 @@ export const adminRoutes: Routes = [
         title: 'Orders · Bookstore Admin',
       },
       {
+        path: 'institutional-orders/1042/shipments',
+        loadComponent: () => import('./shipments/shipment-plan-page').then(m => m.ShipmentPlanPage),
+        title: 'Shipments · Bookstore Admin',
+      },
+      {
         path: 'institutional-orders/new',
         // Forms, autocomplete and datepicker load only with this page
         loadComponent: () => import('./institutional-order/institutional-order-page').then(m => m.InstitutionalOrderPage),

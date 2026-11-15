@@ -69,5 +69,6 @@ export class AdminShell {
     { path: 'dashboard', icon: 'dashboard', label: 'Dashboard' },
     { path: 'orders', icon: 'receipt_long', label: 'Orders' },
     { path: 'institutional-orders/new', icon: 'assignment', label: 'Institutional order' },
+    { path: 'institutional-orders/1042/shipments', icon: 'local_shipping', label: 'Shipments' },
   ];
 }

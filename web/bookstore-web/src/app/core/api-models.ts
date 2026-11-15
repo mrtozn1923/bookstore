@@ -64,3 +64,17 @@ export interface OrderRow {
   total: number;
   currency: string;
 }
+
+export interface InstitutionalOrderLine {
+  id: number;
+  isbn: string;
+  title: string;
+  quantity: number;
+  shipment: 'This' | 'Next';
+}
+
+export interface InstitutionalOrder {
+  id: number;
+  unit: string;
+  lines: InstitutionalOrderLine[];
+}

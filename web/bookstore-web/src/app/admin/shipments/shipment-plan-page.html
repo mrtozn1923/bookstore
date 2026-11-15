@@ -1,0 +1,30 @@
+<h1>Shipments · order #{{ order()?.id }}</h1>
+<p class="unit">{{ order()?.unit }}</p>
+
+<!-- cdkDropListGroup connects every drop list inside it: lines can move between the two columns -->
+<div class="columns" cdkDropListGroup>
+  @for (slot of slots; track slot.id) {
+    <section class="column">
+      <h2 [id]="slot.id + '-title'">{{ slot.title }}</h2>
+      <p class="summary">{{ lists()[slot.id].length }} lines · {{ copies(slot.id) }} copies</p>
+      <ul class="lines" cdkDropList [cdkDropListData]="slot.id" [attr.aria-labelledby]="slot.id + '-title'"
+          (cdkDropListDropped)="dropped($event)">
+        @for (line of lists()[slot.id]; track line.id) {
+          <li class="line" cdkDrag>
+            <span class="title">{{ line.title }}</span>
+            <span class="quantity">× {{ line.quantity }}</span>
+            <button matButton type="button" (click)="moveTo(line, slot.id)"
+                    [attr.aria-label]="'Move ' + line.title + ' to ' + slot.other + ' shipment'">{{ slot.action }}</button>
+          </li>
+        } @empty {
+          <li class="empty">Drop lines here</li>
+        }
+      </ul>
+    </section>
+  }
+</div>
+
+<button matButton="filled" type="button" [disabled]="!canSave()" (click)="save()">Save plan</button>
+@if (!lists().this.length) {
+  <p class="hint">The first shipment needs at least one line.</p>
+}

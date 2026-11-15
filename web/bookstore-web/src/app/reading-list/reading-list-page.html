@@ -1,0 +1,25 @@
+<h1>My reading list</h1>
+<p class="muted">Drag a book by its handle, or use the arrows.</p>
+
+@if (!loaded()) {
+  <p class="muted">Loading…</p>
+} @else {
+  <ol class="reading-list" cdkDropList cdkDropListLockAxis="y" (cdkDropListDropped)="dropped($event)">
+    @for (book of books(); track book.isbn; let i = $index, first = $first, last = $last) {
+      <li class="row" cdkDrag cdkDragBoundary=".reading-list">
+        <span class="handle" cdkDragHandle aria-hidden="true">⠿</span>
+        <span class="title">
+          <a [routerLink]="['/books', book.isbn]">{{ book.title }}</a>
+          <span class="muted">{{ book.author }}</span>
+        </span>
+        <button #move type="button" class="secondary" [attr.data-isbn]="book.isbn" data-dir="up" [disabled]="first"
+                [attr.aria-label]="'Move ' + book.title + ' up'" (click)="moveBy(i, -1, 'up')">↑</button>
+        <button #move type="button" class="secondary" [attr.data-isbn]="book.isbn" data-dir="down" [disabled]="last"
+                [attr.aria-label]="'Move ' + book.title + ' down'" (click)="moveBy(i, 1, 'down')">↓</button>
+        <div class="placeholder" *cdkDragPlaceholder></div>
+      </li>
+    }
+  </ol>
+}
+<!-- Screen readers hear where the book went -->
+<p class="visually-hidden" aria-live="polite">{{ status() }}</p>
