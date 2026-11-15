@@ -1,17 +1,15 @@
-import 'dart:async';
-
 import 'package:flutter/widget_previews.dart';
+import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 import '../../../config/dependencies.dart';
-import '../../../domain/models/book.dart';
-import '../../book_details/widgets/book_details_screen.dart';
-import '../../cart/view_models/cart_view_model.dart';
-import '../../cart/widgets/cart_screen.dart';
+import '../../../routing/routes.dart';
 import '../../catalog/view_models/catalog_view_model.dart';
 import '../../catalog/widgets/catalog_screen.dart';
 
+/// The catalog tab. Owns the CatalogViewModel so that it survives rebuilds of
+/// the route (sign-in, sign-out) and is disposed with the tab.
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -20,7 +18,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // One ViewModel per screen instance, created once, disposed with the screen
   late final CatalogViewModel _catalog;
 
   @override
@@ -35,33 +32,17 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  // Navigator and go_router come in the navigation post; for now a plain push
-  void _push(Widget screen) {
-    unawaited(
-      Navigator.of(context)
-          .push(MaterialPageRoute<void>(builder: (_) => screen)),
-    );
-  }
-
-  void _openDetails(Book book) {
-    final cart = context.read<CartViewModel>();
-    _push(
-      BookDetailsScreen(book: book, onAddToCart: () => cart.add.execute(book)),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return CatalogScreen(
       viewModel: _catalog,
-      onOpenBook: _openDetails,
-      onOpenCart: () =>
-          _push(CartScreen(viewModel: context.read<CartViewModel>())),
+      onOpenBook: (book) => context.go(Routes.book(book.isbn)),
+      onOpenCart: () => context.go(Routes.cart),
     );
   }
 }
 
-@Preview(name: 'Home screen')
+@Preview(name: 'Catalog tab')
 Widget homeScreenPreview() => MultiProvider(
   providers: appProviders(),
   child: const MaterialApp(home: HomeScreen()),

@@ -25,6 +25,15 @@ class SampleCatalog {
     return [for (var i = start; i < end; i++) _bookAt(i)];
   }
 
+  Future<Book?> byIsbn(String isbn) async {
+    await Future<void>.delayed(latency);
+    for (var i = 0; i < total; i++) {
+      final book = _bookAt(i);
+      if (book.isbn == isbn) return book;
+    }
+    return null;
+  }
+
   Book _bookAt(int i) => i < sampleBooks.length
       ? sampleBooks[i]
       : Book(

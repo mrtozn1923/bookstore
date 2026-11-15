@@ -22,6 +22,12 @@ class FakeBookRepository implements BookRepository {
     }
     return Result.ok(await _catalog.page(page));
   }
+
+  @override
+  Future<Result<Book>> getByIsbn(String isbn) async {
+    final book = await _catalog.byIsbn(isbn);
+    return book == null ? Result.failure(BookNotFound(isbn)) : Result.ok(book);
+  }
 }
 
 /// The in-memory cart, plus a way to change a price as the server would.

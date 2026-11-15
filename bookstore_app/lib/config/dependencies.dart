@@ -1,6 +1,7 @@
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
+import '../data/repositories/auth_repository.dart';
 import '../data/repositories/book_repository.dart';
 import '../data/repositories/book_repository_sample.dart';
 import '../data/repositories/cart_repository.dart';
@@ -11,7 +12,11 @@ import '../ui/cart/view_models/cart_view_model.dart';
 List<SingleChildWidget> appProviders({
   BookRepository? bookRepository,
   CartRepository? cartRepository,
+  AuthRepository? authRepository,
 }) => [
+  ChangeNotifierProvider<AuthRepository>(
+    create: (_) => authRepository ?? SampleAuthRepository(),
+  ),
   Provider<BookRepository>(
     create: (_) => bookRepository ?? SampleBookRepository(SampleCatalog()),
   ),

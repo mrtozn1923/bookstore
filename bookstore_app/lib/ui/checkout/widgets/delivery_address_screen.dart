@@ -38,9 +38,43 @@ class _DeliveryAddressScreenState extends State<DeliveryAddressScreen> {
     for (final field in AddressField.values)
       field: GlobalKey<FormFieldState<String>>(),
   };
+  var _dirty = false;
   var _serverErrors = <String, String>{};
   String? _formError;
   var _submitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    for (final controller in _controllers.values) {
+      controller.addListener(_updateDirty);
+    }
+  }
+
+  void _updateDirty() {
+    final dirty = _controllers.values.any((c) => c.text.isNotEmpty);
+    if (dirty != _dirty) setState(() => _dirty = dirty);
+  }
+
+  Future<bool> _confirmDiscard() async {
+    final discard = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Discard this address?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Keep editing'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Discard'),
+          ),
+        ],
+      ),
+    );
+    return discard ?? false;
+  }
 
   @override
   void dispose() {
@@ -141,72 +175,82 @@ class _DeliveryAddressScreenState extends State<DeliveryAddressScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Delivery address')),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Form(
-            key: _formKey,
-            autovalidateMode: AutovalidateMode.onUserInteractionIfError,
-            child: AutofillGroup(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (_formError case final error?)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: Text(
-                        error,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.error,
+    // Back button and back gesture ask first when the user has typed something
+    return PopScope<Object?>(
+      canPop: !_dirty,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        if (await _confirmDiscard() && context.mounted) {
+          Navigator.of(context).pop();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Delivery address')),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Form(
+              key: _formKey,
+              autovalidateMode: AutovalidateMode.onUserInteractionIfError,
+              child: AutofillGroup(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (_formError case final error?)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Text(
+                          error,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
                         ),
                       ),
+                    _field(
+                      .fullName,
+                      'Full name',
+                      Validators.required,
+                      autofillHints: const [AutofillHints.name],
                     ),
-                  _field(
-                    .fullName,
-                    'Full name',
-                    Validators.required,
-                    autofillHints: const [AutofillHints.name],
-                  ),
-                  _field(
-                    .addressLine,
-                    'Address',
-                    Validators.required,
-                    keyboardType: TextInputType.streetAddress,
-                    autofillHints: const [AutofillHints.fullStreetAddress],
-                  ),
-                  _field(
-                    .city,
-                    'City',
-                    Validators.required,
-                    autofillHints: const [AutofillHints.addressCity],
-                  ),
-                  _field(
-                    .postalCode,
-                    'Postal code',
-                    Validators.postalCode,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(5),
-                    ],
-                    autofillHints: const [AutofillHints.postalCode],
-                  ),
-                  _field(
-                    .phone,
-                    'Phone',
-                    Validators.phone,
-                    keyboardType: TextInputType.phone,
-                    autofillHints: const [AutofillHints.telephoneNumber],
-                    action: TextInputAction.done,
-                  ),
-                  const SizedBox(height: 12),
-                  FilledButton(
-                    onPressed: _submitting ? null : _submit,
-                    child: const Text('Use this address'),
-                  ),
-                ],
+                    _field(
+                      .addressLine,
+                      'Address',
+                      Validators.required,
+                      keyboardType: TextInputType.streetAddress,
+                      autofillHints: const [AutofillHints.fullStreetAddress],
+                    ),
+                    _field(
+                      .city,
+                      'City',
+                      Validators.required,
+                      autofillHints: const [AutofillHints.addressCity],
+                    ),
+                    _field(
+                      .postalCode,
+                      'Postal code',
+                      Validators.postalCode,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(5),
+                      ],
+                      autofillHints: const [AutofillHints.postalCode],
+                    ),
+                    _field(
+                      .phone,
+                      'Phone',
+                      Validators.phone,
+                      keyboardType: TextInputType.phone,
+                      autofillHints: const [AutofillHints.telephoneNumber],
+                      action: TextInputAction.done,
+                    ),
+                    const SizedBox(height: 12),
+                    FilledButton(
+                      onPressed: _submitting ? null : _submit,
+                      child: const Text('Use this address'),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

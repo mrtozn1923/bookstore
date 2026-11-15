@@ -17,4 +17,10 @@ class SampleBookRepository implements BookRepository {
       return Result.failure(e);
     }
   }
+
+  @override
+  Future<Result<Book>> getByIsbn(String isbn) async {
+    final book = await _catalog.byIsbn(isbn);
+    return book == null ? Result.failure(BookNotFound(isbn)) : Result.ok(book);
+  }
 }
