@@ -97,8 +97,11 @@ switch (args.FirstOrDefault())
     case "tls":
         await SecurityDemo.TlsAsync(connectionString, Environment.GetEnvironmentVariable("BOOKSTORE_PG_ROOT_CERT"));
         break;
+    case "top-books":
+        await Bookstore.PgLab.Reporting.TopBooksReport.RunAsync(connectionString);
+        break;
     default:
         Console.WriteLine("usage: dotnet run -- connections | pool | ef-script | bestsellers | write-skew | queue | advisory | ef-retry\n" +
-            "       defaults | types | enum | copy | prepare | listen | otel | ef-seed | ef-query | ef-concurrency | tls");
+            "       defaults | types | enum | copy | prepare | listen | otel | ef-seed | ef-query | ef-concurrency | tls | top-books");
         break;
 }
