@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"slices"
 	"strings"
 	"testing"
 
@@ -73,5 +74,32 @@ func TestPlaceOrderEndToEnd(t *testing.T) {
 	}
 	if resp.Header.Get("X-Request-ID") == "" {
 		t.Error("X-Request-ID header is missing")
+	}
+}
+
+func TestListBooksSorted(t *testing.T) {
+	routes := newAPI().Routes()
+	rec := httptest.NewRecorder()
+	routes.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/api/books?sort=-price,title&pageSize=3", nil))
+	var page struct {
+		Items []struct {
+			Title string `json:"title"`
+		} `json:"items"`
+	}
+	if err := json.NewDecoder(rec.Body).Decode(&page); err != nil {
+		t.Fatal(err)
+	}
+	var got []string
+	for _, b := range page.Items {
+		got = append(got, b.Title)
+	}
+	if want := []string{"Dune", "Middlemarch", "The Left Hand of Darkness"}; !slices.Equal(got, want) {
+		t.Errorf("titles = %q, want %q", got, want)
+	}
+
+	rec = httptest.NewRecorder()
+	routes.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/api/books?sort=rating", nil))
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("sort=rating: status %d, want 400", rec.Code)
 	}
 }

@@ -30,6 +30,7 @@ func (a *API) Routes() *http.ServeMux {
 	mux.HandleFunc("GET /api/books", a.listBooks)
 	mux.HandleFunc("GET /api/books/{isbn}", a.getBook)
 	mux.HandleFunc("GET /api/authors", a.listAuthors)
+	mux.HandleFunc("GET /api/categories", a.listCategories)
 	mux.HandleFunc("POST /api/orders", a.placeOrder)
 	mux.HandleFunc("GET /api/orders/{id}", a.getOrder)
 	if a.Health != nil {
@@ -55,6 +56,12 @@ func (a *API) listBooks(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		list = a.Books.CheaperThan(catalog.Money(limit))
+	}
+	if s := q.Get("sort"); s != "" {
+		if err := catalog.SortBooks(list, s); err != nil { // list is our own copy
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 	}
 	page, okPage := positiveInt(q.Get("page"), 1)
 	size, okSize := positiveInt(q.Get("pageSize"), 20)
@@ -82,6 +89,10 @@ func (a *API) getBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, book)
+}
+
+func (a *API) listCategories(w http.ResponseWriter, r *http.Request) {
+	writeJSON(w, a.Books.Categories())
 }
 
 // authorSummary is one entry of GET /api/authors.

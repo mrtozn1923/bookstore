@@ -13,21 +13,24 @@ type Money int64
 
 // Book is one title in the catalog.
 type Book struct {
-	ISBN   string `json:"isbn"`
-	Title  string `json:"title"`
-	Author string `json:"author"`
-	Price  Money  `json:"price"`
-	Stock  int    `json:"stock"`
+	ISBN     string `json:"isbn"`
+	Title    string `json:"title"`
+	Author   string `json:"author"`
+	Category string `json:"category"`
+	Price    Money  `json:"price"`
+	Stock    int    `json:"stock"`
 }
 
 // books is unexported: other packages can only reach it through Store.
 var books = []Book{
-	{ISBN: "9780441172719", Title: "Dune", Author: "Frank Herbert", Price: 34990, Stock: 12},
-	{ISBN: "9780547928227", Title: "The Hobbit", Author: "J.R.R. Tolkien", Price: 28950, Stock: 0},
-	{ISBN: "9780141439549", Title: "Middlemarch", Author: "George Eliot", Price: 31000, Stock: 4},
-	{ISBN: "9780141439587", Title: "Emma", Author: "Jane Austen", Price: 19900, Stock: 7},
-	{ISBN: "9780141439686", Title: "Persuasion", Author: "Jane Austen", Price: 18500, Stock: 3},
-	{ISBN: "9780141439662", Title: "Sense and Sensibility", Author: "Jane Austen", Price: 21000, Stock: 5},
+	{ISBN: "9780441172719", Title: "Dune", Author: "Frank Herbert", Category: "Science Fiction", Price: 34990, Stock: 12},
+	{ISBN: "9780547928227", Title: "The Hobbit", Author: "J.R.R. Tolkien", Category: "Fantasy", Price: 28950, Stock: 0},
+	{ISBN: "9780141439549", Title: "Middlemarch", Author: "George Eliot", Category: "Classics", Price: 31000, Stock: 4},
+	{ISBN: "9780141439587", Title: "Emma", Author: "Jane Austen", Category: "Classics", Price: 19900, Stock: 7},
+	{ISBN: "9780141439686", Title: "Persuasion", Author: "Jane Austen", Category: "Classics", Price: 18500, Stock: 3},
+	{ISBN: "9780141439662", Title: "Sense and Sensibility", Author: "Jane Austen", Category: "Classics", Price: 21000, Stock: 5},
+	{ISBN: "9780553293357", Title: "Foundation", Author: "Isaac Asimov", Category: "Science Fiction", Price: 27500, Stock: 9},
+	{ISBN: "9780441478125", Title: "The Left Hand of Darkness", Author: "Ursula K. Le Guin", Category: "Science Fiction", Price: 31000, Stock: 2},
 }
 
 // ErrBookNotFound is returned when no book has the requested ISBN.
