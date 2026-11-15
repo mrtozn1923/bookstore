@@ -1,9 +1,10 @@
 using System.Globalization;
+using Bookstore.Bcl.Samples.Formatting;
 using Bookstore.Bcl.Samples.Strings;
 
 // Usage: dotnet run --project samples/Bookstore.Bcl.Samples -- <demo> [--culture tr-TR|en-US|invariant]
 var demos = new Dictionary<string, Action>(StringComparer.OrdinalIgnoreCase);
-foreach (var (name, demo) in StringDemos.All) demos[name] = demo;
+foreach (var (name, demo) in StringDemos.All.Concat(FormatDemos.All)) demos[name] = demo;
 
 int cultureIndex = Array.IndexOf(args, "--culture");
 if (cultureIndex >= 0 && cultureIndex + 1 < args.Length)

@@ -4,6 +4,7 @@ using System.Text;
 var demos = new Dictionary<string, Action>(StringComparer.OrdinalIgnoreCase)
 {
     ["runes"] = RuneDemos.Run,
+    ["hexfloat"] = HexFloatDemos.Run,
 };
 
 if (args.Length == 0 || !demos.TryGetValue(args[0], out Action? run))
@@ -29,5 +30,23 @@ static class RuneDemos
         Console.WriteLine($"Trim(Rune)      : [{shelfLabel.Trim(books).Trim()}]");
         Console.WriteLine($"Split(Rune)     : {string.Join(" | ", "Dune📚Emma📚Middlemarch".Split(books, StringSplitOptions.None))}");
         Console.WriteLine($"Replace(Rune, Rune): {shelfLabel.Replace(books, new Rune('*'))}");
+    }
+}
+
+static class HexFloatDemos
+{
+    public static void Run()
+    {
+        double price = 0.1 + 0.2;
+        var invariant = System.Globalization.CultureInfo.InvariantCulture;
+        var tr = System.Globalization.CultureInfo.GetCultureInfo("tr-TR");
+
+        string hex = price.ToString("X", invariant);
+        double back = double.Parse(hex, System.Globalization.NumberStyles.HexFloat, invariant);
+
+        Console.WriteLine($"G17 (invariant): {price.ToString("G17", invariant)}");
+        Console.WriteLine($"X (invariant)  : {hex}");
+        Console.WriteLine($"X (tr-TR)      : {price.ToString("X", tr)}");
+        Console.WriteLine($"Round-trip equal: {back == price}");
     }
 }
