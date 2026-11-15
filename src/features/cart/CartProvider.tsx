@@ -1,21 +1,22 @@
-import { useReducer, type ReactNode } from 'react';
-import { CartContext, type CartContextValue } from '@/features/cart/CartContext';
-import { cartItemCount, cartReducer, cartTotal } from '@/features/cart/cartReducer';
+import { useState, type ReactNode } from 'react';
+import { CartIdContext, type CartIdContextValue } from '@/features/cart/CartContext';
 
-// Owns the cart state; every component below can read it with useCart()
+const storageKey = 'bookstore.cartId';
+
+// Remembers which server-side cart belongs to this browser
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [lines, dispatch] = useReducer(cartReducer, []);
+  const [cartId, setCartIdState] = useState<string | null>(() => localStorage.getItem(storageKey));
 
-  const value: CartContextValue = {
-    lines,
-    itemCount: cartItemCount(lines),
-    total: cartTotal(lines),
-    add: (book, amount) => dispatch({ type: 'added', book, amount }),
-    setQuantity: (isbn, quantity) => dispatch({ type: 'quantityChanged', isbn, quantity }),
-    remove: (isbn) => dispatch({ type: 'removed', isbn }),
-    restore: (line) => dispatch({ type: 'restored', line }),
-    clear: () => dispatch({ type: 'cleared' }),
+  const value: CartIdContextValue = {
+    cartId,
+    setCartId: (id) => {
+      if (id === null) {
+        localStorage.removeItem(storageKey);
+      } else {
+        localStorage.setItem(storageKey, id);
+      }
+      setCartIdState(id);
+    },
   };
-
-  return <CartContext value={value}>{children}</CartContext>;
+  return <CartIdContext value={value}>{children}</CartIdContext>;
 }

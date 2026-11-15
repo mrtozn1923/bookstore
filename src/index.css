@@ -76,3 +76,5 @@ button.link { padding: 0; border: 0; background: none; color: #1d4ed8; font-weig
 :root[data-theme="dark"] button.link, :root[data-theme="dark"] a { color: #93c5fd; }
 :root[data-theme="dark"] input, :root[data-theme="dark"] select { background: #1f2937; color: #e5e7eb; border-color: #4b5563; }
 .site-header { gap: 0.75rem; }
+.stale { opacity: 0.6; }
+.pager { display: flex; gap: 0.75rem; align-items: center; margin-top: 0.75rem; }

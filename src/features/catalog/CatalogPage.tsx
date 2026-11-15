@@ -1,54 +1,64 @@
-import { useRef, useState } from 'react';
-import { useCart } from '@/features/cart/CartContext';
+import { useQuery } from '@tanstack/react-query';
+import { Suspense, useRef, useState } from 'react';
+import { useCart } from '@/features/cart/useCart';
 import { BookDetailsPanel } from '@/features/catalog/BookDetailsPanel';
 import { BookList } from '@/features/catalog/BookList';
+import { booksQuery, pageSize } from '@/features/catalog/catalogApi';
 import { SearchBox } from '@/features/catalog/SearchBox';
-import { useBookSearch } from '@/features/catalog/useBookSearch';
+import { ErrorBoundary } from '@/shared/ErrorBoundary';
+import { useDebouncedValue } from '@/shared/useDebouncedValue';
 import { useKeyboardShortcut } from '@/shared/useKeyboardShortcut';
-
-type SortBy = 'title' | 'price';
 
 export function CatalogPage() {
   const [query, setQuery] = useState('');
-  const [sortBy, setSortBy] = useState<SortBy>('title');
+  const [page, setPage] = useState(1);
   const [selectedIsbn, setSelectedIsbn] = useState<string | null>(null);
-  const { lines, itemCount, add } = useCart();
-  // Like @ViewChild: a handle to the <input> DOM node, filled in after commit
+  const { quantityOf, add } = useCart();
   const searchInput = useRef<HTMLInputElement>(null);
-
-  const { result, isLoading } = useBookSearch(query, (searched, total) => {
-    console.info(`[search] "${searched}" -> ${total} book(s), cart has ${itemCount} item(s)`);
-  });
   useKeyboardShortcut('/', () => searchInput.current?.focus());
-  // Always called; the condition lives inside the callback, not around the hook
   useKeyboardShortcut('Escape', () => setSelectedIsbn(null));
 
-  const quantities = Object.fromEntries(lines.map((line) => [line.isbn, line.quantity]));
-  const books = result?.status === 'success'
-    ? result.books.toSorted((a, b) => (sortBy === 'price' ? a.price - b.price : a.title.localeCompare(b.title)))
-    : [];
-  const selectedBook = books.find((b) => b.isbn === selectedIsbn) ?? null;
+  // Replaces the hand-written effect: caching, deduplication, cancellation and retries come with it
+  const search = useDebouncedValue(query.trim(), 300);
+  const { data, error, isFetching, isPlaceholderData } = useQuery(booksQuery(search, page));
+  const pageCount = data ? Math.max(1, Math.ceil(data.total / pageSize)) : 1;
+
+  function handleQueryChange(value: string) {
+    setQuery(value);
+    setPage(1); // a new search starts on the first page
+  }
 
   return (
     <>
       <h1>Catalog</h1>
       <div className="toolbar">
-        <SearchBox ref={searchInput} value={query} onChange={setQuery} />
-        <label>
-          Sort by{' '}
-          <select value={sortBy} onChange={(e) => setSortBy(e.target.value as SortBy)}>
-            <option value="title">Title</option>
-            <option value="price">Price</option>
-          </select>
-        </label>
+        <SearchBox ref={searchInput} value={query} onChange={handleQueryChange} />
       </div>
       <p className="muted" role="status">
-        {isLoading ? 'Loading…' : result.status === 'error' ? `Could not load books (${result.message})` : `${result.total} book(s) found`}
+        {error ? `Could not load books (${error.message})`
+          : !data ? 'Loading…'
+          : `${data.total} book(s) found${isFetching ? ' · updating…' : ''}`}
       </p>
-      {(books.length > 0 || !isLoading) && (
-        <BookList books={books} quantities={quantities} onAdd={add} onSelect={setSelectedIsbn} />
+      {data && (
+        <>
+          <div className={isPlaceholderData ? 'stale' : undefined}>
+            <BookList books={data.items} quantityOf={quantityOf} onAdd={add} onSelect={setSelectedIsbn} />
+          </div>
+          <nav className="pager" aria-label="Pages">
+            <button type="button" disabled={page === 1} onClick={() => setPage(page - 1)}>Previous</button>
+            <span>Page {page} of {pageCount}</span>
+            <button type="button" disabled={page >= pageCount} onClick={() => setPage(page + 1)}>Next</button>
+          </nav>
+        </>
       )}
-      {selectedBook && <BookDetailsPanel key={selectedBook.isbn} book={selectedBook} onClose={() => setSelectedIsbn(null)} />}
+      {selectedIsbn && (
+        // key: another book gets a fresh boundary, a fresh panel and an empty gift note
+        <ErrorBoundary key={selectedIsbn} fallback={(e) => <p className="error" role="alert">Could not load details ({e.message})</p>}>
+          <Suspense fallback={<p className="muted">Loading details…</p>}>
+            <BookDetailsPanel isbn={selectedIsbn} onClose={() => setSelectedIsbn(null)} />
+          </Suspense>
+        </ErrorBoundary>
+      )}
     </>
   );
 }

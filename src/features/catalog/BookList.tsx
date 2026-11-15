@@ -3,12 +3,12 @@ import type { BookSummary } from '@/features/catalog/types';
 
 type BookListProps = {
   books: BookSummary[];
-  quantities: Record<string, number>;
+  quantityOf: (isbn: string) => number;
   onAdd: (book: BookSummary, amount: number) => void;
   onSelect: (isbn: string) => void;
 };
 
-export function BookList({ books, quantities, onAdd, onSelect }: BookListProps) {
+export function BookList({ books, quantityOf, onAdd, onSelect }: BookListProps) {
   if (books.length === 0) {
     return <p className="muted">No books match your search.</p>;
   }
@@ -17,7 +17,7 @@ export function BookList({ books, quantities, onAdd, onSelect }: BookListProps) 
     <ul className="book-grid">
       {books.map((book) => (
         // key: a stable identity like @for's track; never the array index
-        <BookCard key={book.isbn} book={book} quantityInCart={quantities[book.isbn] ?? 0} onAdd={onAdd} onSelect={onSelect} />
+        <BookCard key={book.isbn} book={book} quantityInCart={quantityOf(book.isbn)} onAdd={onAdd} onSelect={onSelect} />
       ))}
     </ul>
   );

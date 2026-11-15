@@ -8,6 +8,11 @@ export type BookSummary = {
   publishedYear: number;
 };
 
+export type BookDetails = BookSummary & {
+  description: string;
+  available: number;
+};
+
 export type CategoryView = {
   name: string;
   slug: string;

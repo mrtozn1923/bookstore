@@ -1,9 +1,10 @@
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { useId, useState } from 'react';
-import type { BookSummary } from '@/features/catalog/types';
+import { bookQuery } from '@/features/catalog/catalogApi';
 import { formatPrice } from '@/shared/format';
 
 type BookDetailsPanelProps = {
-  book: BookSummary;
+  isbn: string;
   onClose: () => void;
 };
 
@@ -22,8 +23,10 @@ function revealPanel(node: HTMLElement) {
   };
 }
 
-export function BookDetailsPanel({ book, onClose }: BookDetailsPanelProps) {
-  // Belongs to one book; the parent resets it with key={book.isbn}
+export function BookDetailsPanel({ isbn, onClose }: BookDetailsPanelProps) {
+  // Suspends until the details are in the cache; errors go to the nearest error boundary
+  const { data: book } = useSuspenseQuery(bookQuery(isbn));
+  // Belongs to one book; the parent resets it with a key
   const [giftNote, setGiftNote] = useState('');
   // Unique per component instance, stable across renders: safe for id/htmlFor/aria-*
   const noteId = useId();
@@ -32,6 +35,8 @@ export function BookDetailsPanel({ book, onClose }: BookDetailsPanelProps) {
     <section ref={revealPanel} tabIndex={-1} className="details" aria-label="Book details">
       <h2>{book.title}</h2>
       <p>{book.author}, {book.publishedYear} · {book.category} · {formatPrice(book.price)}</p>
+      <p>{book.description}</p>
+      <p className="muted">{book.available > 0 ? `${book.available} in stock` : 'Out of stock'}</p>
       <label htmlFor={noteId}>Gift note</label>{' '}
       <input id={noteId} aria-describedby={`${noteId}-hint`} value={giftNote}
         onChange={(e) => setGiftNote(e.target.value)} maxLength={maxNote} />

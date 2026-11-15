@@ -1,25 +1,17 @@
 import { createContext, use } from 'react';
-import type { CartLine } from '@/features/cart/types';
-import type { BookSummary } from '@/features/catalog/types';
 
-export type CartContextValue = {
-  lines: CartLine[];
-  itemCount: number;
-  total: number;
-  add: (book: BookSummary, amount: number) => void;
-  setQuantity: (isbn: string, quantity: number) => void;
-  remove: (isbn: string) => void;
-  restore: (line: CartLine) => void;
-  clear: () => void;
+// Only the cart's id is client state; the cart itself is server state in the query cache
+export type CartIdContextValue = {
+  cartId: string | null;
+  setCartId: (cartId: string | null) => void;
 };
 
-// null default: reading the cart outside <CartProvider> is a bug, not a state
-export const CartContext = createContext<CartContextValue | null>(null);
+export const CartIdContext = createContext<CartIdContextValue | null>(null);
 
-export function useCart(): CartContextValue {
-  const cart = use(CartContext);
-  if (cart === null) {
-    throw new Error('useCart must be used inside <CartProvider>');
+export function useCartId(): CartIdContextValue {
+  const value = use(CartIdContext);
+  if (value === null) {
+    throw new Error('useCartId must be used inside <CartProvider>');
   }
-  return cart;
+  return value;
 }
