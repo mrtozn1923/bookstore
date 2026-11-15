@@ -1,0 +1,28 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color: #1f2937;
+  background: #f8fafc;
+}
+body { margin: 0; }
+.site-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; background: #1e293b; }
+.site-header a { color: #e2e8f0; text-decoration: none; margin-left: 16px; }
+.site-header a.active { color: #38bdf8; }
+.site-header .brand { margin-left: 0; font-weight: 700; font-size: 20px; }
+main { max-width: 960px; margin: 0 auto; padding: 24px; }
+.search { display: flex; gap: 8px; align-items: center; margin-bottom: 16px; }
+.search input { padding: 6px 8px; min-width: 260px; }
+.book-list { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+.book-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; }
+.book-card h2 { font-size: 18px; margin: 0 0 8px; }
+.btn-primary, button[type='submit'] { background: #0369a1; color: #fff; border: 0; border-radius: 8px; padding: 8px 12px; cursor: pointer; }
+.btn-primary:disabled { background: #94a3b8; cursor: not-allowed; }
+.cart-lines { border-collapse: collapse; width: 100%; }
+.cart-lines th, .cart-lines td { text-align: left; padding: 8px; border-bottom: 1px solid #e2e8f0; }
+.toast { position: fixed; right: 24px; bottom: 24px; background: #1e293b; color: #fff; padding: 12px 16px; border-radius: 8px; animation: toast-in 300ms ease-out; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+.coupon, .checkout { display: flex; gap: 8px; align-items: center; margin: 16px 0; }
+.error { color: #b91c1c; }
+.order-summary { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; }
+.order-summary dt { font-weight: 600; }
+.slot-widget { width: 100%; height: 90px; border: 1px solid #e2e8f0; border-radius: 8px; background: #fff; }
+.summary, .slot, .placed { font-weight: 600; }

@@ -1,0 +1,31 @@
+{
+  "name": "bookstore-web",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "api:types": "npx --yes openapi-typescript@7.13.0 ../contracts/Bookstore.Api.json -o src/app/api/bookstore-api.d.ts",
+    "typecheck": "tsc -p tsconfig.app.json --noEmit",
+    "e2e": "playwright test"
+  },
+  "dependencies": {
+    "@angular/common": "22.2.6",
+    "@angular/compiler": "22.2.6",
+    "@angular/core": "22.2.6",
+    "@angular/forms": "22.2.6",
+    "@angular/platform-browser": "22.2.6",
+    "@angular/router": "22.2.6",
+    "rxjs": "7.8.2",
+    "tslib": "2.8.1"
+  },
+  "devDependencies": {
+    "@angular/build": "22.2.6",
+    "@angular/cli": "22.2.6",
+    "@angular/compiler-cli": "22.2.6",
+    "@axe-core/playwright": "4.14.0",
+    "@playwright/test": "1.65.0",
+    "typescript": "6.0.3"
+  }
+}

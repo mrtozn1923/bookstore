@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Delivery slot</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 12px; }
+    form { display: flex; gap: 8px; align-items: center; }
+  </style>
+</head>
+<body>
+  <!-- Kargo firmasının gömülü widget'ını temsil eder; production'da başka bir origin'den gelir -->
+  <form id="slot-form">
+    <label for="day">Delivery day</label>
+    <select id="day">
+      <option>Monday morning</option>
+      <option>Wednesday afternoon</option>
+      <option>Friday morning</option>
+    </select>
+    <button type="submit">Reserve slot</button>
+  </form>
+  <p id="message" role="status"></p>
+  <script>
+    document.getElementById('slot-form').addEventListener('submit', (event) => {
+      event.preventDefault();
+      const value = document.getElementById('day').value;
+      document.getElementById('message').textContent = `Reserved: ${value}`;
+      parent.postMessage({ type: 'delivery-slot', value }, location.origin);
+    });
+  </script>
+</body>
+</html>
