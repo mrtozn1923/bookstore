@@ -34,6 +34,10 @@ export const router = createBrowserRouter([
       },
       { path: 'orders/:orderId', loader: orderLoader, Component: OrderPage },
       { path: 'sign-in', Component: SignInPage },
+      {
+        path: 'admin/stock',
+        lazy: async () => ({ Component: (await import('@/features/admin/StockPage')).StockPage }),
+      },
       { path: '*', Component: NotFoundPage },
     ],
   },

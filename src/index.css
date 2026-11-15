@@ -91,3 +91,12 @@ input[aria-invalid="true"] { border-color: #b91c1c; }
 .recent { margin: 0.5rem 0 1rem; padding: 0.5rem 1rem; border: 1px solid #e5e7eb; border-radius: 8px; }
 .recent h2 { font-size: 1rem; margin: 0 0 0.25rem; }
 .recent ul { display: flex; gap: 1rem; flex-wrap: wrap; list-style: none; padding: 0; margin: 0 0 0.25rem; }
+table.stock { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+table.stock th, table.stock td { padding: 0.15rem 0.5rem; border-bottom: 1px solid #e5e7eb; text-align: left; }
+table.stock td.num { text-align: right; }
+table.stock tr.pinned { background: #fef3c7; }
+table.stock button { padding: 0 0.5rem; }
+.stock-scroll { height: 600px; overflow: auto; border: 1px solid #e5e7eb; border-radius: 8px; }
+table.stock tr { height: 30px; }
+.tabs { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; }
+.tabs [aria-selected="false"] { background: #ffffff; color: #1d4ed8; }
