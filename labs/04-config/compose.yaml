@@ -1,0 +1,6 @@
+name: bookstore
+
+services:
+  api:
+    image: bookstore-api:dev
+    env_file: sample.env

@@ -1,0 +1,10 @@
+# Bookstore.Api shipping settings (YAML)
+Shipping:
+  DefaultCountry: NO
+  Cutoff: 12:30
+  Express: yes
+  MaxWeightGrams: 1000
+  ApiVersion: 1.10
+  Carriers:
+    - standard
+    - express

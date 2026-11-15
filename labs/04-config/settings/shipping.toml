@@ -1,0 +1,17 @@
+# Bookstore.Api shipping settings (TOML 1.1)
+[Shipping]
+DefaultCountry = "NO"
+Cutoff = 12:30
+Express = true
+MaxWeightGrams = 1_000
+ApiVersion = "1.10"
+Carriers = ["standard", "express"]
+
+# array of tables: each [[...]] header adds one element
+[[Shipping.Rates]]
+Region = "domestic"
+Price = 49.90
+
+[[Shipping.Rates]]
+Region = "international"
+Price = 349.90

@@ -1,0 +1,8 @@
+{
+  "name": "fmtseries-04-config",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "dotenv": "18.0.10"
+  }
+}
