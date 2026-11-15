@@ -1,0 +1,23 @@
+@import "tailwindcss" source(none);
+@source "./custom.html";
+
+/* our own variant: anything inside the school portal */
+@custom-variant school (&:where([data-tenant="school"] *));
+
+/* functional utility with a default value (v4.3) */
+@utility stripes-* {
+    background-image: repeating-linear-gradient(45deg, --value(--color-*, [color], --default(var(--color-slate-300))) 0 6px, transparent 6px 12px);
+}
+
+/* a class from the old checkout, kept as plain CSS */
+@layer components {
+    .legacy-checkout-button {
+        background-color: var(--color-indigo-600);
+        @variant hover, focus-visible {
+            background-color: var(--color-indigo-500);
+        }
+        @variant school {
+            background-color: var(--color-emerald-600);
+        }
+    }
+}

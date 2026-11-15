@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="index.out.css">
+</head>
+<body class="p-6 text-slate-900">
+    <!-- 1) nested groups: plain group-hover vs named group -->
+    <section id="featured" class="group rounded-xl bg-slate-100 p-8">
+        <article class="group rounded-lg bg-white p-3">
+            <h3 id="title-plain" class="group-hover:text-indigo-600">Dune</h3>
+        </article>
+    </section>
+    <section id="featured-named" class="group/section rounded-xl bg-slate-100 p-8">
+        <article class="group/card rounded-lg bg-white p-3">
+            <h3 id="title-named" class="group-hover/card:text-indigo-600">Dune</h3>
+        </article>
+    </section>
+
+    <!-- 2) filters: peer needs the input first, has-* works from the parent -->
+    <fieldset class="flex gap-2">
+        <input id="in-stock" type="checkbox" class="peer sr-only">
+        <label for="in-stock" class="rounded-full border px-3 py-1 peer-checked:bg-indigo-600 peer-checked:text-white peer-focus-visible:outline-2">In stock</label>
+        <label id="hardcover" class="rounded-full border px-3 py-1 has-checked:bg-indigo-50 has-checked:border-indigo-600">
+            <input type="checkbox" class="accent-indigo-600"> Hardcover
+        </label>
+    </fieldset>
+
+    <!-- 3) a headless disclosure: state lives in aria-* and data-* attributes -->
+    <button id="format-button" type="button" aria-expanded="false" aria-controls="format-panel" class="group/trigger inline-flex items-center gap-1">
+        Format
+        <span id="chevron" class="inline-block transition-transform group-aria-expanded/trigger:rotate-180">▾</span>
+    </button>
+    <div id="format-panel" data-state="closed" class="hidden data-[state=open]:block">
+        <p>Hardcover, Paperback, E-book</p>
+    </div>
+
+    <!-- 4) container queries: the same card in two widths, one viewport -->
+    <div id="narrow" class="@container w-[300px]">
+        <article class="flex flex-col gap-3 @md:flex-row"><div class="h-24 w-16 bg-amber-700"></div><p>Dune</p></article>
+    </div>
+    <div id="wide" class="@container w-[600px]">
+        <article class="flex flex-col gap-3 @md:flex-row"><div class="h-24 w-16 bg-amber-700"></div><p>Dune</p></article>
+    </div>
+    <div id="size-box" class="@container-size h-[300px] w-[300px]">
+        <div id="half" class="h-[50cqb]"></div>
+    </div>
+    <div id="inline-box" class="@container h-[300px] w-[300px]">
+        <div id="half-inline" class="h-[50cqb]"></div>
+    </div>
+
+    <!-- 5) enter animation for a popover with starting: -->
+    <button type="button" popovertarget="cart-preview">Cart</button>
+    <div id="cart-preview" popover class="rounded-lg p-4 opacity-100 shadow-lg transition-all transition-discrete duration-300 starting:open:opacity-0">
+        2 books in your cart
+    </div>
+
+    <!-- 6) logical properties in a right-to-left block and a thin scrollbar -->
+    <div dir="rtl">
+        <p id="rtl-note" class="border-s-4 border-amber-500 ps-4 pbs-2">Free shipping over 500 TRY</p>
+    </div>
+    <ul id="order-list" class="h-24 overflow-auto scrollbar-thin scrollbar-thumb-slate-400 scrollbar-track-slate-100">
+        <li>Order 1001</li><li>Order 1002</li><li>Order 1003</li><li>Order 1004</li><li>Order 1005</li><li>Order 1006</li>
+    </ul>
+
+    <script>
+        // the disclosure only flips attributes; Tailwind variants do the styling
+        const button = document.getElementById("format-button");
+        const panel = document.getElementById("format-panel");
+        button.addEventListener("click", () => {
+            const open = button.getAttribute("aria-expanded") !== "true";
+            button.setAttribute("aria-expanded", String(open));
+            panel.dataset.state = open ? "open" : "closed";
+        });
+    </script>
+</body>
+</html>
