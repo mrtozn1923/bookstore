@@ -30,6 +30,8 @@ public static class ProcessingActivities
             "Ask legal: while the consent is in use, then for the proof period", ["PrivacyOfficer"], ["db", "backup"]),
         new("commercial-message", "Reporting e-mail permissions to İYS", "Legal obligation",
             "Example: until İYS confirms, then 30 days", ["PrivacyOfficer"], ["db", "backup", "iys"]),
+        new("access-audit", "Breach scoping and access control", "Legal obligation",
+            "Example: 2 years", ["Security"], ["db", "backup"]),
         new("privacy-request", "Handling data subject requests", "Legal obligation",
             "Example: 3 years after completion", ["PrivacyOfficer"], ["db", "backup"]),
     ];

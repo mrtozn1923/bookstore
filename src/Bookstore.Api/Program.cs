@@ -6,6 +6,7 @@ using Bookstore.Privacy;
 using Bookstore.Privacy.Consent;
 using Bookstore.Privacy.Retention;
 using Bookstore.Privacy.Telemetry;
+using Bookstore.Privacy.Transfers;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,8 +29,16 @@ builder.Services.AddScoped<CheckoutService>();
 builder.Services.AddScoped<OrderLookupService>();
 builder.Services.AddScoped<ConsentService>();
 builder.Services.AddScoped<CommercialMessages>();
-builder.Services.AddSingleton(new HolidayCalendar(
-    builder.Configuration.GetSection("Holidays").Get<HashSet<DateOnly>>() ?? []));
+var holidays = new HolidayCalendar(builder.Configuration.GetSection("Holidays").Get<HashSet<DateOnly>>() ?? []);
+builder.Services.AddSingleton(holidays);
+
+// A new external service in configuration without an inventory entry stops the start-up (Law No. 6698 Art. 9).
+IReadOnlyList<string> transferProblems = TransferInventoryCheck.Validate(
+    builder.Configuration.GetSection("ExternalServices"), SubProcessors.All, holidays);
+if (transferProblems.Count > 0)
+{
+    throw new InvalidOperationException("Transfer inventory: " + string.Join("; ", transferProblems));
+}
 builder.Services.AddAuthentication(DemoCustomerAuthHandler.SchemeName)
     .AddScheme<AuthenticationSchemeOptions, DemoCustomerAuthHandler>(DemoCustomerAuthHandler.SchemeName, null);
 builder.Services.AddAuthorization();

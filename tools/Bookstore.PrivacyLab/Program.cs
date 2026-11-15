@@ -15,7 +15,13 @@ switch (command)
     case "erase":
         await EraseDemo.RunAsync();
         break;
+    case "transfers":
+        TransfersCommand.Run();
+        break;
+    case "breach":
+        await BreachDemo.RunAsync();
+        break;
     default:
-        Console.WriteLine("usage: dotnet run -- <hash-link|inventory [--sql]|protect|erase>");
+        Console.WriteLine("usage: dotnet run -- <hash-link|inventory [--sql]|protect|erase|transfers|breach>");
         break;
 }
