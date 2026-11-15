@@ -12,5 +12,10 @@ switch (demo)
     case "lru-threads": CacheDemos.Threads(); break;
     case "memorycache": CacheDemos.MemoryCacheSizeLimit(); break;
     case "thumbnails": CacheDemos.Thumbnails(); break;
+    case "kmp": StringDemos.WorstCase(); break;
+    case "moderation": StringDemos.Moderation(); break;
+    case "authors": StringDemos.Authors(); break;
+    case "turkish": StringDemos.Turkish(); break;
+    case "plagiarism": StringDemos.Plagiarism(); break;
     default: Console.WriteLine("usage: dotnet run --project src/Algorithms.Demos -- <demo>"); break;
 }
