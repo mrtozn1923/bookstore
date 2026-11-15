@@ -14,6 +14,7 @@ class CartViewModel extends ChangeNotifier {
     load = Command0(_load);
     add = Command1(_add);
     setQuantity = Command1(_setQuantity);
+    clear = Command0(() => _apply(_repository.clear()));
     // The constructor cannot await; the command reports the outcome itself
     unawaited(load.execute());
   }
@@ -24,6 +25,7 @@ class CartViewModel extends ChangeNotifier {
   late final Command0<void> load;
   late final Command1<void, Book> add;
   late final Command1<void, CartLine> setQuantity;
+  late final Command0<void> clear;
 
   List<CartLine> get lines => _lines;
   int get itemCount => summarizeCart(_lines).itemCount;

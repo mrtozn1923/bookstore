@@ -5,6 +5,7 @@ import '../../utils/result.dart';
 abstract class CartRepository {
   Future<Result<List<CartLine>>> getLines();
   Future<Result<List<CartLine>>> setQuantity(Book book, int quantity);
+  Future<Result<List<CartLine>>> clear();
 }
 
 class TooManyCopies implements Exception {
@@ -38,5 +39,11 @@ class InMemoryCartRepository implements CartRepository {
       _lines.add((book: book, quantity: quantity));
     }
     return Result.ok(List.of(_lines));
+  }
+
+  @override
+  Future<Result<List<CartLine>>> clear() async {
+    _lines.clear();
+    return const Result.ok([]);
   }
 }

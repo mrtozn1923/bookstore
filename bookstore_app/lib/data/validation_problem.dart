@@ -1,9 +1,14 @@
 /// The field errors of an ASP.NET Core ValidationProblemDetails response:
 /// {"title": "...", "status": 400, "errors": {"PostalCode": ["..."]}}
 class ValidationProblem {
-  const ValidationProblem({required this.title, required this.errors});
+  const ValidationProblem({
+    required this.title,
+    required this.errors,
+    this.detail,
+  });
 
   final String title;
+  final String? detail;
   final Map<String, List<String>> errors;
 
   factory ValidationProblem.fromJson(Map<String, Object?> json) {
@@ -17,6 +22,7 @@ class ValidationProblem {
     }
     return ValidationProblem(
       title: json['title'] as String? ?? 'The request is not valid.',
+      detail: json['detail'] as String?,
       errors: errors,
     );
   }

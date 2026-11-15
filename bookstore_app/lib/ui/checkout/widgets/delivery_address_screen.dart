@@ -133,7 +133,12 @@ class _DeliveryAddressScreenState extends State<DeliveryAddressScreen> {
         for (final MapEntry(:key, :value) in errors.entries)
           if (known.contains(key)) key: value,
       };
-      _formError = unmapped.isEmpty ? null : unmapped.join('\n');
+      _formError = switch (unmapped) {
+        [] when validation.errors.isEmpty =>
+          validation.detail ?? validation.title, // e.g. 409 out of stock
+        [] => null,
+        _ => unmapped.join('\n'),
+      };
     });
     WidgetsBinding.instance.addPostFrameCallback((_) => _focusFirstInvalid());
   }

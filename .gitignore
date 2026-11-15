@@ -6,3 +6,10 @@ build/
 .widget_preview/
 .flutter-plugins-dependencies
 pubspec_overrides.yaml
+
+# Bookstore.Api copy (post 13)
+api/**/bin/
+api/**/obj/
+*.db
+*.db-shm
+*.db-wal

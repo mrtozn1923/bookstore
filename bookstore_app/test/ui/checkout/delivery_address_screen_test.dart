@@ -118,4 +118,27 @@ void main() {
       '(keyboard top ${568 - 260})',
     );
   });
+
+  testWidgets('a problem without field errors is shown above the form', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: DeliveryAddressScreen(
+          onSubmit: (_) async => {
+            'title': 'Conflict',
+            'status': 409,
+            'detail': 'Not enough stock for: 9780060934347.',
+          },
+        ),
+      ),
+    );
+    await fillValid(tester);
+    await tester.tap(find.text('Use this address'));
+    await tester.pumpAndSettle();
+    debugPrint(
+      'form error: '
+      '${find.text('Not enough stock for: 9780060934347.').evaluate().length}',
+    );
+  });
 }

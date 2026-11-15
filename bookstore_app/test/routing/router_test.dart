@@ -92,52 +92,51 @@ void main() {
     debugPrint('after back: ${location(router)}');
   });
 
-  testWidgets(
-    'the address form asks before discarding, then returns the address',
-    (tester) async {
-      final auth = SampleAuthRepository();
-      await auth.signIn(email: 'ada@example.com', password: 'change-me-123');
-      final router = await pumpApp(tester, at: '/cart', auth: auth);
+  testWidgets('the address form asks before discarding, then returns the order', (
+    tester,
+  ) async {
+    final auth = SampleAuthRepository();
+    await auth.signIn(email: 'ada@example.com', password: 'change-me-123');
+    final router = await pumpApp(tester, at: '/cart', auth: auth);
 
-      Object? result;
-      unawaited(
-        router.push<Object?>('/cart/address').then((value) => result = value),
-      );
-      await tester.pumpAndSettle();
-      await tester.enterText(
-        find.widgetWithText(TextFormField, 'Full name'),
-        'Ada Lovelace',
-      );
-      await tester.pump();
-      await tester.pageBack();
-      await tester.pumpAndSettle();
-      debugPrint(
-        'back with text: dialog ${find.text('Discard this address?').evaluate().length}',
-      );
-      await tester.tap(find.text('Keep editing'));
-      await tester.pumpAndSettle();
+    Object? result;
+    unawaited(
+      router.push<Object?>('/cart/address').then((value) => result = value),
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Full name'),
+      'Ada Lovelace',
+    );
+    await tester.pump();
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    debugPrint(
+      'back with text: dialog ${find.text('Discard this address?').evaluate().length}',
+    );
+    await tester.tap(find.text('Keep editing'));
+    await tester.pumpAndSettle();
 
-      await tester.enterText(
-        find.widgetWithText(TextFormField, 'Address'),
-        '1 Example Street',
-      );
-      await tester.enterText(
-        find.widgetWithText(TextFormField, 'City'),
-        'Istanbul',
-      );
-      await tester.enterText(
-        find.widgetWithText(TextFormField, 'Postal code'),
-        '34710',
-      );
-      await tester.enterText(
-        find.widgetWithText(TextFormField, 'Phone'),
-        '0212 555 01 01',
-      );
-      await tester.tap(find.text('Use this address'));
-      await tester.pumpAndSettle();
-      debugPrint(
-        'push result: ${result.runtimeType}, location ${location(router)}',
-      );
-    },
-  );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Address'),
+      '1 Example Street',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'City'),
+      'Istanbul',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Postal code'),
+      '34710',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Phone'),
+      '0212 555 01 01',
+    );
+    await tester.tap(find.text('Use this address'));
+    await tester.pumpAndSettle();
+    debugPrint(
+      'push result: ${result.runtimeType}, location ${location(router)}',
+    );
+  });
 }
