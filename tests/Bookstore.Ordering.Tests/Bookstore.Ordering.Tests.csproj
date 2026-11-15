@@ -14,6 +14,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Pict\*.txt" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\Bookstore.Ordering\Bookstore.Ordering.csproj" />
   </ItemGroup>
 

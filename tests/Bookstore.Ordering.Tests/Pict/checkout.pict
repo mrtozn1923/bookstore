@@ -1,0 +1,11 @@
+# Bookstore checkout: customer type, payment, delivery and language
+Customer: Individual, Institutional, Guest
+Payment:  CreditCard, BankTransfer, OnAccount
+Delivery: Standard, Express, StorePickup
+Language: tr, en
+
+# Guests pay by credit card only; on-account payment is for institutional customers only
+IF [Customer] = "Guest" THEN [Payment] = "CreditCard";
+IF [Payment] = "OnAccount" THEN [Customer] = "Institutional";
+# Institutional orders are not picked up in store
+IF [Customer] = "Institutional" THEN [Delivery] <> "StorePickup";
