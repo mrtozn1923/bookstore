@@ -1,16 +1,23 @@
-replicaCount: 1
-
+# Bookstore.Api
 image:
   repository: helmseries-bookstore-api
   # Empty tag: the chart uses appVersion from Chart.yaml.
   tag: ""
   pullPolicy: IfNotPresent
 
+replicaCount: 1
 environment: Development
 
 database:
   # InMemory needs no database server; SqlServer comes in post 04.
   provider: InMemory
+
+# Non-secret settings; they reach the API as environment variables through a ConfigMap.
+config:
+  storeName: Bookstore
+
+# Escape hatch for settings the chart does not model, e.g. Logging__LogLevel__Default: Debug
+extraEnv: {}
 
 service:
   type: ClusterIP
@@ -26,3 +33,22 @@ resources:
     memory: 128Mi
   limits:
     memory: 256Mi
+
+# bookstore-web (Angular build served by nginx; /api is proxied to the API Service)
+web:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: helmseries-bookstore-web
+    tag: ""
+    pullPolicy: IfNotPresent
+  # Rendered with tpl, so it may use template expressions.
+  apiUpstream: 'http://{{ include "bookstore.fullname" . }}-api.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}'
+  service:
+    port: 8080
+  resources:
+    requests:
+      cpu: 50m
+      memory: 32Mi
+    limits:
+      memory: 64Mi

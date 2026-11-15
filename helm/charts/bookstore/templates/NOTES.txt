@@ -1,7 +1,15 @@
-Bookstore API {{ .Chart.AppVersion }} (chart {{ .Chart.Name }}-{{ .Chart.Version }})
-Release {{ .Release.Name }} in namespace {{ .Release.Namespace }}, revision {{ .Release.Revision }}{{ if .Release.IsUpgrade }} (upgrade){{ end }}
-Cluster: Kubernetes {{ .Capabilities.KubeVersion.Version }}
+Bookstore {{ .Chart.AppVersion }} (chart {{ .Chart.Name }}-{{ .Chart.Version }}), release {{ .Release.Name }}, revision {{ .Release.Revision }}
+{{- $ns := lookup "v1" "Namespace" "" .Release.Namespace }}
+{{- if and $ns (not (index ($ns.metadata.labels | default dict) "pod-security.kubernetes.io/enforce")) }}
+
+WARNING: namespace {{ .Release.Namespace }} has no pod-security.kubernetes.io/enforce label.
+{{- end }}
 
 Try it:
+{{- if .Values.web.enabled }}
+  kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "bookstore.fullname" . }}-web 8080:{{ .Values.web.service.port }}
+  Browse to http://127.0.0.1:8080/
+{{- else }}
   kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "bookstore.fullname" . }}-api 8080:{{ .Values.service.port }}
   curl http://127.0.0.1:8080/api/info
+{{- end }}

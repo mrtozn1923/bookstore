@@ -1,10 +1,10 @@
+{{- $component := dict "ctx" . "component" "api" -}}
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "bookstore.fullname" . }}-api
   labels:
-    {{- include "bookstore.labels" . | nindent 4 }}
-    app.kubernetes.io/component: api
+    {{- include "bookstore.labels" $component | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -12,5 +12,4 @@ spec:
       port: {{ .Values.service.port }}
       targetPort: http
   selector:
-    {{- include "bookstore.selectorLabels" . | nindent 4 }}
-    app.kubernetes.io/component: api
+    {{- include "bookstore.selectorLabels" $component | nindent 4 }}

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "bookstore.fullname" . }}-api
+  labels:
+    {{- include "bookstore.labels" (dict "ctx" . "component" "api") | nindent 4 }}
+data:
+  ASPNETCORE_ENVIRONMENT: {{ .Values.environment | quote }}
+  Database__Provider: {{ .Values.database.provider | quote }}
+  Bookstore__StoreName: {{ .Values.config.storeName | quote }}
+  {{- range $key, $value := .Values.extraEnv }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}

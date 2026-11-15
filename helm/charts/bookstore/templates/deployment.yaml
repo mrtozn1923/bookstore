@@ -1,45 +1,39 @@
+{{- $component := dict "ctx" . "component" "api" -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "bookstore.fullname" . }}-api
   labels:
-    {{- include "bookstore.labels" . | nindent 4 }}
-    app.kubernetes.io/component: api
+    {{- include "bookstore.labels" $component | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "bookstore.selectorLabels" . | nindent 6 }}
-      app.kubernetes.io/component: api
+      {{- include "bookstore.selectorLabels" $component | nindent 6 }}
   template:
     metadata:
+      annotations:
+        # A config change changes this hash, the pod template changes and the Deployment rolls.
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
       labels:
-        {{- include "bookstore.selectorLabels" . | nindent 8 }}
-        app.kubernetes.io/component: api
+        {{- include "bookstore.selectorLabels" $component | nindent 8 }}
     spec:
       serviceAccountName: {{ include "bookstore.fullname" . }}-api
       automountServiceAccountToken: false
       securityContext:
-        runAsNonRoot: true
-        seccompProfile:
-          type: RuntimeDefault
+        {{- include "bookstore.podSecurityContext" . | nindent 8 }}
       containers:
         - name: api
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: {{ include "bookstore.image" (dict "ctx" . "image" .Values.image) | quote }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
               containerPort: 8080
-          env:
-            - name: ASPNETCORE_ENVIRONMENT
-              value: {{ .Values.environment }}
-            - name: Database__Provider
-              value: {{ .Values.database.provider }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "bookstore.fullname" . }}-api
           securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
-            capabilities:
-              drop: ["ALL"]
+            {{- include "bookstore.containerSecurityContext" . | nindent 12 }}
           startupProbe:
             httpGet:
               path: {{ .Values.probes.livePath }}
@@ -56,8 +50,10 @@ spec:
               path: {{ .Values.probes.readyPath }}
               port: http
             periodSeconds: 5
+          {{- with .Values.resources }}
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: tmp
               mountPath: /tmp

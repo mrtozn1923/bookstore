@@ -1,0 +1,74 @@
+{{- if .Values.web.enabled }}
+{{- $component := dict "ctx" . "component" "web" -}}
+{{- with .Values.web }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "bookstore.fullname" $ }}-web
+  labels:
+    {{- include "bookstore.labels" $component | nindent 4 }}
+spec:
+  replicas: {{ .replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "bookstore.selectorLabels" $component | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "bookstore.selectorLabels" $component | nindent 8 }}
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        {{- include "bookstore.podSecurityContext" $ | nindent 8 }}
+      containers:
+        - name: web
+          image: {{ include "bookstore.image" (dict "ctx" $ "image" .image) | quote }}
+          imagePullPolicy: {{ .image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: API_UPSTREAM
+              value: {{ tpl .apiUpstream $ | quote }}
+          securityContext:
+            {{- include "bookstore.containerSecurityContext" $ | nindent 12 }}
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 5
+          {{- with .resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            # nginx writes its pid, cache and the rendered config; the root filesystem stays read-only.
+            - name: tmp
+              mountPath: /tmp
+            - name: cache
+              mountPath: /var/cache/nginx
+            - name: conf
+              mountPath: /etc/nginx/conf.d
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: cache
+          emptyDir: {}
+        - name: conf
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "bookstore.fullname" $ }}-web
+  labels:
+    {{- include "bookstore.labels" $component | nindent 4 }}
+spec:
+  ports:
+    - name: http
+      port: {{ .service.port }}
+      targetPort: http
+  selector:
+    {{- include "bookstore.selectorLabels" $component | nindent 4 }}
+{{- end }}
+{{- end }}
