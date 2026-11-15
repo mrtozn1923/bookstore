@@ -7,3 +7,8 @@ output "volume_names" {
   description = "Docker volume names, keyed by data set."
   value       = module.bookstore.volume_names
 }
+
+output "subnet" {
+  description = "This environment's /24 inside address_space."
+  value       = module.bookstore.subnet
+}

@@ -67,6 +67,32 @@ run "dev_uses_small_tiers" {
   }
 }
 
+run "settings_file_is_flattened" {
+  command = plan
+
+  variables {
+    api = {
+      image_name = "bookstore/bookstore-api"
+      image_tag  = "1.1.0"
+      settings = {
+        Logging   = { LogLevel__Default = "Warning" }
+        Bookstore = { Catalog__PageSize = 20 }
+      }
+      app_settings = { Logging__LogLevel__Default = "Information" }
+    }
+  }
+
+  assert {
+    condition     = local.app_settings["Bookstore__Catalog__PageSize"] == "20"
+    error_message = "Nested settings should become Section__Key app settings."
+  }
+
+  assert {
+    condition     = local.app_settings["Logging__LogLevel__Default"] == "Information"
+    error_message = "app_settings should override values from the settings file."
+  }
+}
+
 run "prod_rejects_b1" {
   command = plan
 

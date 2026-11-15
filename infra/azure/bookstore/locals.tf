@@ -15,8 +15,16 @@ locals {
     managed_by  = "terraform"
   }
 
+  # Same Section__Key flattening as infra/local: App Service on Linux reads the same names
+  file_settings = merge([
+    for section, values in var.api.settings : {
+      for key, value in values : "${section}__${key}" => value
+    }
+  ]...)
+
   app_settings = merge(
     { Bookstore__Environment = var.environment },
+    local.file_settings,
     var.api.app_settings,
   )
 }

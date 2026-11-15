@@ -1,0 +1,6 @@
+# Non-secret API settings; Section: { Key: value } becomes Section__Key=value
+Logging:
+  LogLevel__Default: Information
+Bookstore:
+  Catalog__PageSize: 20
+  Features__Recommendations: false

@@ -1,0 +1,5 @@
+Logging:
+  LogLevel__Default: Information
+Bookstore:
+  Catalog__PageSize: 20
+  Features__Recommendations: false

@@ -21,6 +21,7 @@ variable "api" {
     registry_url = optional(string, "https://ghcr.io")
     sku_name     = optional(string, "B1")
     app_settings = optional(map(string), {})
+    settings     = optional(map(map(string)), {})
   })
   description = "Bookstore API: container image and App Service settings."
 

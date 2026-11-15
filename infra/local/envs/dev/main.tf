@@ -7,9 +7,7 @@ module "bookstore" {
   api = {
     image_tag     = "1.1.0"
     external_port = 18480
-    app_settings = {
-      Logging__LogLevel__Default = "Information"
-    }
+    settings      = yamldecode(file("${path.module}/appsettings.yaml"))
   }
   payments_api_key = var.payments_api_key
 }

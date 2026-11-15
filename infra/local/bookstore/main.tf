@@ -12,6 +12,11 @@ data "docker_network" "shared" {
 resource "docker_network" "bookstore" {
   name = local.name_prefix
 
+  ipam_config {
+    subnet  = local.subnet
+    gateway = cidrhost(local.subnet, 1)
+  }
+
   dynamic "labels" {
     for_each = local.labels
     content {
@@ -30,7 +35,8 @@ module "api" {
   restart       = var.environment == "prod" ? "always" : "unless-stopped"
   env           = local.app_settings
   secret_env    = { Bookstore__Payments__ApiKey = var.payments_api_key }
-  networks      = [docker_network.bookstore.name, data.docker_network.shared.name]
+  # The ID changes when the network is replaced, so the container is replaced with it (post 14)
+  networks      = [docker_network.bookstore.id, data.docker_network.shared.name]
   data_volumes  = var.volume_names
   external_port = var.api.external_port
   labels        = local.labels
