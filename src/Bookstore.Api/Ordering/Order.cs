@@ -5,6 +5,7 @@ public sealed record Order(string Id, Guid CustomerId, string Status, DateTime P
 public interface IOrderRepository
 {
     Order? Find(string orderId);
+    IReadOnlyList<Order> PlacedBetween(DateTime fromUtc, DateTime toUtc);
 }
 
 public sealed class InMemoryOrderRepository : IOrderRepository
@@ -19,6 +20,9 @@ public sealed class InMemoryOrderRepository : IOrderRepository
     ];
 
     public Order? Find(string orderId) => Orders.FirstOrDefault(o => o.Id == orderId);
+
+    public IReadOnlyList<Order> PlacedBetween(DateTime fromUtc, DateTime toUtc) =>
+        Orders.Where(o => o.PlacedAtUtc >= fromUtc && o.PlacedAtUtc < toUtc).ToList();
 }
 
 // The signed-in customer; authentication itself is covered in the ASP.NET Core Web API series.

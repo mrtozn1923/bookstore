@@ -4,6 +4,7 @@ using Bookstore.Api.Catalog;
 using Bookstore.Api.Catalog.Publishers;
 using Bookstore.Api.Catalog.Seo;
 using Bookstore.Api.Ordering;
+using Bookstore.Api.Reports;
 using Bookstore.Api.Returns;
 using Bookstore.Api.Support;
 
@@ -32,6 +33,8 @@ builder.Services.AddOptions<SeoBatchOptions>().Bind(builder.Configuration.GetSec
 builder.Services.AddHostedService<SeoBatchWorker>();
 builder.Services.AddSingleton<IPublisherCatalogStore, InMemoryPublisherCatalogStore>();
 builder.Services.AddScoped<PublisherCatalogService>();
+builder.Services.AddOptions<SalesReportOptions>().Bind(builder.Configuration.GetSection(SalesReportOptions.SectionName));
+builder.Services.AddScoped<SalesReportService>();
 
 WebApplication app = builder.Build();
 
@@ -45,6 +48,7 @@ app.MapPublisherCatalogEndpoints();
 if (app.Environment.IsDevelopment())
 {
     app.MapModelEndpoints();
+    app.MapReportEndpoints();
 }
 
 app.Run();
