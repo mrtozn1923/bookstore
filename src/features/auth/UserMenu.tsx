@@ -1,8 +1,9 @@
 import { Link } from 'react-router';
-import { useAuth } from '@/features/auth/useAuth';
+import { useAuthStore } from '@/features/auth/authStore';
 
 export function UserMenu() {
-  const { user, signOut } = useAuth();
+  const user = useAuthStore((state) => state.user);
+  const signOut = useAuthStore((state) => state.signOut);
 
   if (user === null) {
     return <Link to="/sign-in">Sign in</Link>;

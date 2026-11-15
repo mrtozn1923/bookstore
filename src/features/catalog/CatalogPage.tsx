@@ -5,6 +5,7 @@ import { useCart } from '@/features/cart/useCart';
 import { BookList } from '@/features/catalog/BookList';
 import { booksQuery, pageSize } from '@/features/catalog/catalogApi';
 import { SearchBox } from '@/features/catalog/SearchBox';
+import { RecentlyViewed } from '@/features/history/RecentlyViewed';
 import { useDebouncedValue } from '@/shared/useDebouncedValue';
 import { useKeyboardShortcut } from '@/shared/useKeyboardShortcut';
 
@@ -36,6 +37,7 @@ export function CatalogPage() {
   return (
     <>
       <h1>Catalog</h1>
+      <RecentlyViewed />
       <div className="toolbar">
         <SearchBox ref={searchInput} value={query} onChange={handleQueryChange} />
       </div>

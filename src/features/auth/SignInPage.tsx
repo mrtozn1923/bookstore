@@ -1,8 +1,8 @@
 import { useNavigate, useSearchParams } from 'react-router';
-import { useAuth } from '@/features/auth/useAuth';
+import { useAuthStore } from '@/features/auth/authStore';
 
 export function SignInPage() {
-  const { signIn } = useAuth();
+  const signIn = useAuthStore((state) => state.signIn);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   // Only allow paths inside this app as a target (no open redirect to another site)

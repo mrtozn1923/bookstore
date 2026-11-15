@@ -3,17 +3,17 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useId, type ReactNode } from 'react';
 import { useFieldArray, useForm, useWatch, type FieldError } from 'react-hook-form';
 import { useNavigate } from 'react-router';
-import { useAuth } from '@/features/auth/useAuth';
+import { useAuthStore } from '@/features/auth/authStore';
 import { cartApi, cartKey } from '@/features/cart/cartApi';
-import { cartIdStore } from '@/features/cart/cartIdStore';
 import { useCart } from '@/features/cart/useCart';
 import { checkoutSchema, type CheckoutValues } from '@/features/checkout/checkoutSchema';
 import { applyServerErrors } from '@/features/checkout/serverErrors';
 import { ApiError } from '@/shared/api';
+import { useClientStore } from '@/shared/clientStore';
 import { formatPrice } from '@/shared/format';
 
 export function CheckoutPage() {
-  const { user } = useAuth();
+  const user = useAuthStore((state) => state.user);
   const { cartId, lines } = useCart();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -47,7 +47,7 @@ export function CheckoutPage() {
       const order = await cartApi.placeOrder(cartId!, values.name, values.email);
       queryClient.removeQueries({ queryKey: ['cart'] });
       queryClient.invalidateQueries({ queryKey: ['book'] });
-      cartIdStore.set(null);
+      useClientStore.getState().setCartId(null);
       navigate(`/orders/${order.id}`);
     } catch (error) {
       if (error instanceof ApiError && error.problem) {

@@ -1,7 +1,8 @@
-import { useSyncExternalStore } from 'react';
-import { cartIdStore } from '@/features/cart/cartIdStore';
+import { useClientStore } from '@/shared/clientStore';
 
 export function useCartId() {
-  const cartId = useSyncExternalStore(cartIdStore.subscribe, cartIdStore.get);
-  return { cartId, setCartId: cartIdStore.set };
+  // Two selectors: this component re-renders only when cartId changes, not on every store update
+  const cartId = useClientStore((state) => state.cartId);
+  const setCartId = useClientStore((state) => state.setCartId);
+  return { cartId, setCartId };
 }

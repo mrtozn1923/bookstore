@@ -1,21 +1,16 @@
-// Demo sign-in kept outside React: components read it with useSyncExternalStore, router middleware with get()
+import { create } from 'zustand';
+
 export type User = { name: string; email: string };
 
-let user: User | null = null;
-const listeners = new Set<() => void>();
-
-export const authStore = {
-  get: () => user,
-  subscribe(listener: () => void) {
-    listeners.add(listener);
-    return () => listeners.delete(listener);
-  },
-  signIn(next: User) {
-    user = next;
-    listeners.forEach((l) => l());
-  },
-  signOut() {
-    user = null;
-    listeners.forEach((l) => l());
-  },
+type AuthState = {
+  user: User | null;
+  signIn: (user: User) => void;
+  signOut: () => void;
 };
+
+// Demo sign-in, in memory only. Components select from it; router middleware reads useAuthStore.getState()
+export const useAuthStore = create<AuthState>()((set) => ({
+  user: null,
+  signIn: (user) => set({ user }),
+  signOut: () => set({ user: null }),
+}));
