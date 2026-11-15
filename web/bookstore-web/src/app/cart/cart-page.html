@@ -20,7 +20,7 @@
                    (change)="changeQuantity(line.isbn, $any($event.target).valueAsNumber)" />
           </td>
           <td>{{ line.lineTotal | currency: 'TRY' : 'symbol-narrow' }}</td>
-          <td><button type="button" (click)="store.remove(line.isbn)">Remove</button></td>
+          <td><button type="button" (click)="remove(line)">Remove</button></td>
         </tr>
       }
     </tbody>

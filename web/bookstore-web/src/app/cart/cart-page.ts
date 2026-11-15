@@ -1,8 +1,9 @@
 import { CurrencyPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { RouterLink } from '@angular/router';
-import { OrderView } from '../core/api-models';
+import { CartLine, OrderView } from '../core/api-models';
 import { CartStore } from './cart-store';
 
 @Component({
@@ -12,6 +13,7 @@ import { CartStore } from './cart-store';
 })
 export class CartPage {
   protected readonly store = inject(CartStore);
+  private readonly snackBar = inject(MatSnackBar);
   protected readonly placedOrder = signal<OrderView | null>(null);
   protected readonly errorMessage = signal('');
 
@@ -19,6 +21,13 @@ export class CartPage {
     if (quantity >= 1 && quantity <= 99) {
       await this.store.setQuantity(isbn, quantity);
     }
+  }
+
+  // Remove at once, offer "Undo" for 5 seconds: Undo puts the same quantity back
+  protected async remove(line: CartLine): Promise<void> {
+    await this.store.remove(line.isbn);
+    const snackBarRef = this.snackBar.open(`Removed ${line.title}`, 'Undo', { duration: 5000 });
+    snackBarRef.onAction().subscribe(() => void this.store.setQuantity(line.isbn, line.quantity));
   }
 
   protected async checkout(event: Event, name: string, email: string): Promise<void> {

@@ -1,9 +1,12 @@
+using System.ComponentModel.DataAnnotations;
 using Bookstore.Catalog;
 using Bookstore.Data;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace Bookstore.Ordering;
+
+public sealed record CancelOrderRequest([property: Required, StringLength(200)] string Reason);
 
 public sealed record OrderRow(
     int Id, DateTime PlacedAtUtc, string CustomerName, string Status, int ItemCount, decimal Total, string Currency);
@@ -14,6 +17,7 @@ public static class OrderAdminEndpoints
     public static IEndpointRouteBuilder MapOrderAdminEndpoints(this IEndpointRouteBuilder app)
     {
         app.MapGet("/api/admin/orders", SearchOrders).WithTags("Ordering");
+        app.MapPost("/api/admin/orders/{orderId:int}/cancel", CancelOrder).WithTags("Ordering");
         return app;
     }
 
@@ -61,5 +65,26 @@ public static class OrderAdminEndpoints
             .ToListAsync(ct);
 
         return TypedResults.Ok(new PagedResult<OrderRow>(items, total, page, pageSize));
+    }
+
+    // Only orders that have not left the warehouse can be cancelled.
+    private static async Task<Results<NoContent, NotFound, ProblemHttpResult>> CancelOrder(
+        int orderId, CancelOrderRequest request, BookstoreContext db, ILogger<CancelOrderRequest> logger, CancellationToken ct)
+    {
+        Order? order = await db.Orders.FirstOrDefaultAsync(o => o.Id == orderId, ct);
+        if (order is null)
+        {
+            return TypedResults.NotFound();
+        }
+        if (order.Status is OrderStatus.Shipped or OrderStatus.Delivered or OrderStatus.Cancelled)
+        {
+            return TypedResults.Problem(
+                $"Order {orderId} is {order.Status} and cannot be cancelled.", statusCode: StatusCodes.Status409Conflict);
+        }
+
+        order.Status = OrderStatus.Cancelled;
+        await db.SaveChangesAsync(ct);
+        logger.LogInformation("Order {OrderId} cancelled: {Reason}", orderId, request.Reason);
+        return TypedResults.NoContent();
     }
 }
