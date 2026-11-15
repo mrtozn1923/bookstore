@@ -1,0 +1,28 @@
+replicaCount: 1
+
+image:
+  repository: helmseries-bookstore-api
+  # Empty tag: the chart uses appVersion from Chart.yaml.
+  tag: ""
+  pullPolicy: IfNotPresent
+
+environment: Development
+
+database:
+  # InMemory needs no database server; SqlServer comes in post 04.
+  provider: InMemory
+
+service:
+  type: ClusterIP
+  port: 8080
+
+probes:
+  livePath: /health/live
+  readyPath: /health/ready
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    memory: 256Mi

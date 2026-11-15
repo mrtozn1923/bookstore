@@ -1,0 +1,7 @@
+Bookstore API {{ .Chart.AppVersion }} (chart {{ .Chart.Name }}-{{ .Chart.Version }})
+Release {{ .Release.Name }} in namespace {{ .Release.Namespace }}, revision {{ .Release.Revision }}{{ if .Release.IsUpgrade }} (upgrade){{ end }}
+Cluster: Kubernetes {{ .Capabilities.KubeVersion.Version }}
+
+Try it:
+  kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "bookstore.fullname" . }}-api 8080:{{ .Values.service.port }}
+  curl http://127.0.0.1:8080/api/info
