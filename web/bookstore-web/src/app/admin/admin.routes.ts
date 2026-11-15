@@ -9,6 +9,12 @@ export const adminRoutes: Routes = [
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
       { path: 'dashboard', component: DashboardPage, title: 'Dashboard · Bookstore Admin' },
+      {
+        path: 'institutional-orders/new',
+        // Forms, autocomplete and datepicker load only with this page
+        loadComponent: () => import('./institutional-order/institutional-order-page').then(m => m.InstitutionalOrderPage),
+        title: 'New institutional order · Bookstore Admin',
+      },
     ],
   },
 ];

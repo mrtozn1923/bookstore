@@ -48,3 +48,9 @@ export interface OrderView {
   total: number;
   currency: string;
 }
+
+export interface InstitutionUnit {
+  id: number;
+  name: string;
+  kind: string;
+}

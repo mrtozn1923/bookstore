@@ -1,0 +1,64 @@
+<h1>New institutional order</h1>
+<form class="order-form" novalidate (submit)="save($event)">
+  <mat-form-field>
+    <mat-label>Deliver to units</mat-label>
+    <mat-select [formField]="orderForm.units" multiple [compareWith]="sameUnit">
+      @for (unit of units.value(); track unit.id) {
+        <mat-option [value]="unit">{{ unit.name }}</mat-option>
+      }
+    </mat-select>
+    <mat-hint>Split the delivery between campuses or departments</mat-hint>
+    <mat-error>{{ firstError(orderForm.units) }}</mat-error>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Book</mat-label>
+    <mat-icon matPrefix>search</mat-icon>
+    <input matInput [formField]="orderForm.book" [matAutocomplete]="bookList" />
+    <mat-autocomplete #bookList [displayWith]="bookTitle">
+      @for (book of matches(); track book.isbn) {
+        <mat-option [value]="book">{{ book.title }} · {{ book.author }}</mat-option>
+      }
+    </mat-autocomplete>
+    <mat-hint>Type at least two letters of the title or author</mat-hint>
+    <mat-error>{{ firstError(orderForm.book) }}</mat-error>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Quantity</mat-label>
+    <input matInput type="number" [formField]="orderForm.quantity" />
+    <mat-hint>10% institutional discount from 20 copies</mat-hint>
+    <mat-error>{{ firstError(orderForm.quantity) }}</mat-error>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Delivery date</mat-label>
+    <input matInput [matDatepicker]="picker" [min]="tomorrow" [formField]="orderForm.deliveryDate" />
+    <mat-datepicker-toggle matIconSuffix [for]="picker" />
+    <mat-datepicker #picker />
+    <mat-hint>DD.MM.YYYY</mat-hint>
+    <mat-error>{{ firstError(orderForm.deliveryDate) }}</mat-error>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Contact e-mail</mat-label>
+    <mat-icon matPrefix>mail</mat-icon>
+    <input matInput type="email" autocomplete="email" [formField]="orderForm.contactEmail"
+           [errorStateMatcher]="whileTyping" />
+    <mat-error>{{ firstError(orderForm.contactEmail) }}</mat-error>
+  </mat-form-field>
+
+  <mat-form-field class="wide">
+    <mat-label>Notes for the warehouse</mat-label>
+    <textarea matInput class="notes" [formField]="orderForm.notes"></textarea>
+  </mat-form-field>
+
+  <div class="actions">
+    <button matButton="filled" type="submit">Create order</button>
+  </div>
+</form>
+
+@if (request()) {
+  <h2>Request</h2>
+  <pre data-testid="request">{{ request() }}</pre>
+}

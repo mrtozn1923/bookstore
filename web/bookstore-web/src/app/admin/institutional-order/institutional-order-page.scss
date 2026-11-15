@@ -1,0 +1,26 @@
+h1 {
+  font: var(--mat-sys-headline-small);
+}
+
+h2 {
+  font: var(--mat-sys-title-medium);
+}
+
+.order-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 8px 16px;
+  max-width: 920px;
+}
+
+.wide,
+.actions {
+  grid-column: 1 / -1;
+}
+
+// Grows with its content between 2 and 6 lines (Baseline 2026: Chrome 123, Firefox 152, Safari 26.2)
+.notes {
+  field-sizing: content;
+  min-height: 2lh;
+  max-height: 6lh;
+}

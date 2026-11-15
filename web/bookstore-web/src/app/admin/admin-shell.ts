@@ -28,5 +28,6 @@ export class AdminShell {
 
   protected readonly links = [
     { path: 'dashboard', icon: 'dashboard', label: 'Dashboard' },
+    { path: 'institutional-orders/new', icon: 'assignment', label: 'Institutional order' },
   ];
 }
