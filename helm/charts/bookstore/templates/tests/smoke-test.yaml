@@ -1,0 +1,28 @@
+{{- $api := printf "http://%s-api:%v" (include "bookstore.fullname" .) .Values.service.port -}}
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ include "bookstore.fullname" . }}-smoke-test
+  labels:
+    {{- include "bookstore.labels" (dict "ctx" . "component" "test") | nindent 4 }}
+  annotations:
+    # Runs only with "helm test"; the pod is deleted before the next run.
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  restartPolicy: Never
+  automountServiceAccountToken: false
+  securityContext:
+    {{- include "bookstore.podSecurityContext" . | nindent 4 }}
+    runAsUser: 100
+  containers:
+    - name: smoke
+      image: curlimages/curl:8.17.0
+      command: ["sh", "-c"]
+      args:
+        - >-
+          curl -sSf -o /dev/null -m 5 --retry 5 --retry-connrefused --retry-delay 2 {{ $api }}/health/ready &&
+          curl -sSf -m 5 "{{ $api }}/api/books?pageSize=1" | grep -q '"isbn"' &&
+          echo "smoke test passed: {{ $api }}"
+      securityContext:
+        {{- include "bookstore.containerSecurityContext" . | nindent 8 }}

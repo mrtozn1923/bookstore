@@ -1,0 +1,3 @@
+# chart-testing installs the chart once per file in ci/; no database server in CI.
+database:
+  provider: InMemory

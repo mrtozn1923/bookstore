@@ -11,7 +11,12 @@
   ],
   "properties": {
     "global": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "imageRegistry": {
+          "type": "string"
+        }
+      }
     },
     "nameOverride": {
       "type": "string"
@@ -139,6 +144,14 @@
         },
         "resources": {
           "type": "object"
+        }
+      }
+    },
+    "valkey": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
         }
       }
     }

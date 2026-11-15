@@ -1,3 +1,8 @@
+# Shared with subcharts: every chart can read .Values.global.
+global:
+  # Mirror registry for all images, e.g. registry.example.com/mirror (empty: use the image names as they are).
+  imageRegistry: ""
+
 # Bookstore.Api
 image:
   repository: helmseries-bookstore-api
@@ -65,3 +70,7 @@ web:
       memory: 32Mi
     limits:
       memory: 64Mi
+
+# Optional dependency (subchart). Its values go under its name; Bookstore.Api does not use it yet.
+valkey:
+  enabled: false

@@ -45,10 +45,13 @@ helm.sh/chart: {{ printf "%s-%s" .ctx.Chart.Name .ctx.Chart.Version | replace "+
 
 {{/*
 Image reference. Usage: include "bookstore.image" (dict "ctx" . "image" .Values.web.image)
-An empty tag falls back to appVersion from Chart.yaml.
+An empty tag falls back to appVersion from Chart.yaml; global.imageRegistry, if set, is put in front.
 */}}
 {{- define "bookstore.image" -}}
 {{- $repository := required "image.repository is required" .image.repository -}}
+{{- with .ctx.Values.global.imageRegistry }}
+{{- $repository = printf "%s/%s" (trimSuffix "/" .) $repository }}
+{{- end }}
 {{- printf "%s:%s" $repository (.image.tag | default .ctx.Chart.AppVersion) -}}
 {{- end }}
 
