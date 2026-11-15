@@ -9,8 +9,11 @@ replicaCount: 1
 environment: Development
 
 database:
-  # InMemory needs no database server; SqlServer comes in post 04.
-  provider: InMemory
+  # SqlServer for real environments; InMemory only for demos and chart tests.
+  provider: SqlServer
+  # Name of an existing Secret with the connection string. The chart never creates it.
+  existingSecret: ""
+  secretKey: connection-string
 
 # Non-secret settings; they reach the API as environment variables through a ConfigMap.
 config:

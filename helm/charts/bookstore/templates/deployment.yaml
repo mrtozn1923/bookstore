@@ -1,4 +1,7 @@
 {{- $component := dict "ctx" . "component" "api" -}}
+{{- if and (eq .Values.environment "Production") (eq .Values.database.provider "InMemory") }}
+{{- fail "database.provider InMemory is for demos and tests; Production needs SqlServer" }}
+{{- end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -32,6 +35,14 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "bookstore.fullname" . }}-api
+          {{- if eq .Values.database.provider "SqlServer" }}
+          env:
+            - name: ConnectionStrings__BookstoreDb
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "database.existingSecret is required when database.provider is SqlServer" .Values.database.existingSecret }}
+                  key: {{ .Values.database.secretKey }}
+          {{- end }}
           securityContext:
             {{- include "bookstore.containerSecurityContext" . | nindent 12 }}
           startupProbe:

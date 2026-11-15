@@ -1,0 +1,6 @@
+environment: Staging
+database:
+  provider: SqlServer
+  existingSecret: bookstore-db-connection
+config:
+  storeName: Bookstore (staging)
