@@ -3,6 +3,10 @@
     <Project Path="src/Bookstore.Web/Bookstore.Web.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/Bookstore.SeoAudit.Tests/Bookstore.SeoAudit.Tests.csproj" />
     <Project Path="tests/Bookstore.Web.Tests/Bookstore.Web.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/Bookstore.SeoAudit/Bookstore.SeoAudit.csproj" />
   </Folder>
 </Solution>

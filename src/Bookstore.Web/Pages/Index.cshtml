@@ -1,0 +1,19 @@
+@page "/"
+@inject BookCatalog Catalog
+@inject Microsoft.Extensions.Options.IOptions<SiteOptions> Site
+@{
+    bool en = HttpContext.Request.Path.StartsWithSegments("/en");
+    string prefix = en ? "/en" : "";
+    string b = Site.Value.BaseUrl;
+    ViewData["Meta"] = new PageMeta(en ? "en" : "tr", en ? "Bookstore: online bookstore" : "Bookstore: online kitapçı",
+        en ? "Science fiction, fantasy and classics." : "Bilim kurgu, fantastik ve klasikler.",
+        b + prefix + "/", b + "/", b + "/en/");
+}
+<h1>Bookstore</h1>
+<ul>
+    @foreach (Genre g in BookCatalog.Genres)
+    {
+        <li><a href="@prefix/books/genre/@g.Slug">@(en ? g.NameEn : g.NameTr)</a></li>
+    }
+    <li><a href="@prefix/videos">@(en ? "Videos" : "Videolar")</a></li>
+</ul>

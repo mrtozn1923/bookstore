@@ -14,6 +14,7 @@ public sealed class GenreModel(BookCatalog catalog, IOptions<SiteOptions> option
     public IReadOnlyList<Book> Items { get; private set; } = [];
     public int TotalPages { get; private set; }
     public string Heading { get; private set; } = "";
+    public IReadOnlyList<string> NarrowingLanguages { get; private set; } = [];
     public string Lang => Request.Path.StartsWithSegments("/en") ? "en" : "tr";
     public string Prefix => Lang == "en" ? "/en" : "";
 
@@ -33,6 +34,10 @@ public sealed class GenreModel(BookCatalog catalog, IOptions<SiteOptions> option
         if (normalized is not null)
             return RedirectPermanent(Prefix + normalized);
 
+        // sitemap'teki kuralla aynı: yalnız listeyi daraltan dil sayfaları
+        int genreCount = catalog.Books.Count(b => b.Genre == genre);
+        NarrowingLanguages = [.. new[] { "tr", "en" }.Where(l =>
+            catalog.Books.Count(b => b.Genre == genre && b.Language == l) is int n && n > 0 && n < genreCount)];
         Items = [.. all.Skip((Query.Page - 1) * CatalogQuery.PageSize).Take(CatalogQuery.PageSize)];
         Genre g = BookCatalog.Genres.Single(x => x.Slug == genre);
         string name = Lang == "tr" ? g.NameTr : g.NameEn;

@@ -5,6 +5,16 @@
     bool tr = Model.Lang == "tr";
 }
 <h1>@Model.Heading</h1>
+@* index'lenen dil alt sayfaları sitemap'te; link'le de ulaşılabilir olmalı (orphan kalmasın) *@
+@if (Model.Query.Language is null)
+{
+    <p>
+        @foreach (string language in Model.NarrowingLanguages)
+        {
+            <a href="@p/books/genre/@Model.Query.Genre/@language">@(language == "tr" ? (tr ? "Türkçe" : "In Turkish") : (tr ? "İngilizce" : "In English"))</a>
+        }
+    </p>
+}
 <ul>
     @foreach (Book book in Model.Items)
     {

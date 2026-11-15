@@ -19,6 +19,7 @@ builder.Services.AddRazorPages(o =>
     o.Conventions.AddPageRoute("/Videos/Watch", "en/videos/{slug}");
     o.Conventions.AddPageRoute("/Videos/Index", "en/videos");
     o.Conventions.AddPageRoute("/Books/Genre", "en/books/genre/{genre}/{language?}");
+    o.Conventions.AddPageRoute("/Index", "en");
 });
 
 WebApplication app = builder.Build();

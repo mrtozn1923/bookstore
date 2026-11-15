@@ -51,7 +51,7 @@ public sealed class CatalogFacetTests(WebApplicationFactory<Program> factory) : 
     public async Task Filter_links_are_normalized_catalog_urls()
     {
         IDocument doc = new HtmlParser().ParseDocument(await _client.GetStringAsync("/books/genre/science-fiction?page=2"));
-        string[] filters = [.. doc.QuerySelectorAll("main p a").Select(a => a.GetAttribute("href")!)];
+        string[] filters = [.. doc.QuerySelectorAll("main p a").Select(a => a.GetAttribute("href")!).Where(h => h.Contains('?'))];
         Assert.Equal(["/books/genre/science-fiction?format=hardcover", "/books/genre/science-fiction?format=paperback",
             "/books/genre/science-fiction?format=ebook", "/books/genre/science-fiction?sort=price"], filters);
     }
