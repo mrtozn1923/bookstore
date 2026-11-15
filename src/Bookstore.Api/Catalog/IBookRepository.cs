@@ -4,6 +4,7 @@ public interface IBookRepository
 {
     Book? FindByIsbn(string isbn);
     IReadOnlyList<Book> Search(string query, decimal? maxPrice);
+    IReadOnlyList<Book> All();
 }
 
 // A small in-memory catalog; persistence is not this series' topic.
@@ -22,6 +23,8 @@ public sealed class InMemoryBookRepository : IBookRepository
     ];
 
     public Book? FindByIsbn(string isbn) => Books.FirstOrDefault(b => b.Isbn == isbn);
+
+    public IReadOnlyList<Book> All() => Books;
 
     public IReadOnlyList<Book> Search(string query, decimal? maxPrice) =>
         Books.Where(b => (b.Title.Contains(query, StringComparison.OrdinalIgnoreCase)

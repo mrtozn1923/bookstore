@@ -20,7 +20,10 @@ public static class ClaudePricing
 
     public static IReadOnlyCollection<string> KnownModels => Prices.Keys;
 
-    public static decimal EstimateUsd(string model, TokenUsage usage)
+    // Message Batches: every token type is billed at 50% of the standard price.
+    public const decimal BatchMultiplier = 0.5m;
+
+    public static decimal EstimateUsd(string model, TokenUsage usage, bool batch = false)
     {
         if (!Prices.TryGetValue(model, out ModelPrice? price))
         {
@@ -41,6 +44,6 @@ public static class ClaudePricing
                         + usage.CacheWrite1h * price.CacheWrite1h
                         + usage.CacheRead * price.CacheRead
                         + usage.Output * price.Output;
-        return total / 1_000_000m;
+        return (batch ? total * BatchMultiplier : total) / 1_000_000m;
     }
 }

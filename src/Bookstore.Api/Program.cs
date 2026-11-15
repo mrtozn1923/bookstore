@@ -1,6 +1,8 @@
 using Bookstore.Api.Ai;
 using Bookstore.Api.Assistant;
 using Bookstore.Api.Catalog;
+using Bookstore.Api.Catalog.Publishers;
+using Bookstore.Api.Catalog.Seo;
 using Bookstore.Api.Ordering;
 using Bookstore.Api.Returns;
 using Bookstore.Api.Support;
@@ -23,6 +25,13 @@ builder.Services.AddScoped<AssistantAgent>();
 builder.Services.AddScoped<ToolRunnerAssistant>();
 builder.Services.AddScoped<ReturnRequestExtractor>();
 builder.Services.AddScoped<ReturnPolicy>();
+builder.Services.AddSingleton<IBookSeoStore, InMemoryBookSeoStore>();
+builder.Services.AddSingleton<ISeoBatchJobStore, InMemorySeoBatchJobStore>();
+builder.Services.AddScoped<SeoBatchProcessor>();
+builder.Services.AddOptions<SeoBatchOptions>().Bind(builder.Configuration.GetSection(SeoBatchOptions.SectionName));
+builder.Services.AddHostedService<SeoBatchWorker>();
+builder.Services.AddSingleton<IPublisherCatalogStore, InMemoryPublisherCatalogStore>();
+builder.Services.AddScoped<PublisherCatalogService>();
 
 WebApplication app = builder.Build();
 
@@ -31,6 +40,7 @@ app.MapCatalogEndpoints();
 app.MapSupportEndpoints();
 app.MapAssistantEndpoints();
 app.MapReturnEndpoints();
+app.MapPublisherCatalogEndpoints();
 
 if (app.Environment.IsDevelopment())
 {

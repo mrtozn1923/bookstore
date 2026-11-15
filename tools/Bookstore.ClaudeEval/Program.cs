@@ -21,11 +21,12 @@ if (mode == "estimate")
     TokenUsage perRequest = new(input, output, CacheRead: 0, CacheWrite: 0, Thinking: 0);
 
     Console.WriteLine($"Assumed tokens per request: input={input} output={output}");
-    Console.WriteLine($"{"model",-20}{"per request",14}{"per 1,000",12}");
+    Console.WriteLine($"{"model",-20}{"per request",14}{"per 1,000",12}{"batch 1,000",13}");
     foreach (string model in ClaudePricing.KnownModels)
     {
         decimal one = ClaudePricing.EstimateUsd(model, perRequest);
-        Console.WriteLine($"{model,-20}{one,14:0.000000}{one * 1000,12:0.0000}");
+        decimal batched = ClaudePricing.EstimateUsd(model, perRequest, batch: true);
+        Console.WriteLine($"{model,-20}{one,14:0.000000}{one * 1000,12:0.0000}{batched * 1000,13:0.0000}");
     }
 
     return;
