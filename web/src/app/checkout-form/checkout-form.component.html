@@ -1,0 +1,59 @@
+<h2>Checkout</h2>
+<form [formRoot]="checkoutForm">
+  <label for="fullName">Full name</label>
+  <input id="fullName" [formField]="checkoutForm.fullName" />
+  <app-field-errors [field]="checkoutForm.fullName" />
+
+  <label for="email">Email</label>
+  <input id="email" type="email" [formField]="checkoutForm.email" />
+  <app-field-errors [field]="checkoutForm.email" />
+
+  <label for="shipping">Shipping</label>
+  <select id="shipping" [formField]="checkoutForm.shipping">
+    <option value="standard">Standard</option>
+    <option value="express">Express</option>
+    <option value="pickup">Pick up at the store</option>
+  </select>
+
+  @if (!checkoutForm.address().hidden()) {
+    <fieldset>
+      <legend>Address</legend>
+      <input aria-label="City" placeholder="City" [formField]="checkoutForm.address.city" />
+      <app-field-errors [field]="checkoutForm.address.city" />
+      <input aria-label="Street" placeholder="Street" [formField]="checkoutForm.address.street" />
+      <app-field-errors [field]="checkoutForm.address.street" />
+      <input aria-label="Postal code" placeholder="Postal code" [formField]="checkoutForm.address.zip" />
+      <app-field-errors [field]="checkoutForm.address.zip" />
+    </fieldset>
+  }
+
+  @for (line of checkoutForm.lines; track line) {
+    <label>
+      {{ line.title().value() }}
+      <input type="number" [formField]="line.quantity" />
+    </label>
+    <app-field-errors [field]="line.quantity" />
+  }
+  <app-field-errors [field]="checkoutForm.lines" />
+
+  <label><input type="checkbox" [formField]="checkoutForm.institutional" /> Institutional order</label>
+  @if (checkoutForm.institutional().value()) {
+    <input aria-label="Institution" placeholder="Institution" [formField]="checkoutForm.institutionName" />
+    <app-field-errors [field]="checkoutForm.institutionName" />
+  }
+
+  <label for="coupon">Coupon code</label>
+  <input id="coupon" [formField]="checkoutForm.couponCode" />
+  @for (reason of checkoutForm.couponCode().disabledReasons(); track reason) {
+    <p class="hint">{{ reason.message }}</p>
+  }
+  @if (checkoutForm.couponCode().pending()) {
+    <p class="hint">Checking the coupon...</p>
+  }
+  <app-field-errors [field]="checkoutForm.couponCode" />
+
+  <button type="submit" [disabled]="checkoutForm().submitting()">Place order</button>
+  @if (placedOrderId(); as id) {
+    <p>Order {{ id }} placed.</p>
+  }
+</form>

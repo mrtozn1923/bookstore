@@ -9,5 +9,8 @@
     { "id": 1041, "customerId": 3, "books": "Middlemarch", "total": 380, "status": "shipped" },
     { "id": 1042, "customerId": 1, "books": "Dune, Emma", "total": 770, "status": "pending" },
     { "id": 1043, "customerId": 1, "books": "Frankenstein", "total": 280, "status": "delivered" }
+  ],
+  "coupons": [
+    { "id": 1, "code": "BOOK10", "percent": 10 }
   ]
 }
