@@ -10,6 +10,7 @@ import { logger } from "../src/diagnostics/logger.ts";
 import { TrackingNotFoundError } from "../src/integrations/carrierClient.ts";
 import type { TrackingLookup } from "#routes/shipments";
 import { createInMemoryPaymentEvents } from "../src/payments/paymentWebhook.ts";
+import parseCatalog from "../src/workers/catalogParseWorker.ts";
 
 export const WEBHOOK_SECRET = "test-webhook-secret-not-real";
 
@@ -52,7 +53,9 @@ export const fakeCarrier: TrackingLookup = {
 export function createTestApp(stock?: Record<string, number>, options: Partial<AppOptions> = {}, carrier: TrackingLookup = fakeCarrier) {
     const services = createTestServices(stock);
     const app = createApp(
-        { books: services.books, orders: services.orders, readiness: async () => ({ status: "ready", checks: {} }), carrier, paymentEvents: createInMemoryPaymentEvents() },
+        { books: services.books, orders: services.orders, readiness: async () => ({ status: "ready", checks: {} }), carrier, paymentEvents: createInMemoryPaymentEvents(),
+            // The worker's function called directly: route tests need no threads
+            catalogParser: async (csv) => parseCatalog({ csv: new Uint8Array(csv).buffer }) },
         {
             corsOrigins: ["http://localhost:4200"],
             trustProxy: 0,

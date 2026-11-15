@@ -8,6 +8,7 @@ import { registerGracefulShutdown } from "./lifecycle/shutdown.ts";
 import { createJwtVerifier } from "./auth/tokenVerifier.ts";
 import { CarrierClient, createCarrierAgent } from "./integrations/carrierClient.ts";
 import { createInMemoryPaymentEvents } from "./payments/paymentWebhook.ts";
+import { createCatalogParsePool } from "./services/catalogParsePool.ts";
 
 let config: AppConfig;
 try {
@@ -30,8 +31,10 @@ const carrier = new CarrierClient({
     dispatcher: carrierAgent,
     onRetry: ({ attempt, delayMs, err }) => logger.warn({ attempt, delayMs, reason: (err as Error).message }, "retrying carrier call"),
 });
+// Worker threads for CPU-bound catalog parsing, started once like the pools above
+const catalogPool = createCatalogParsePool();
 const app = createApp(
-    { ...createServices(pool), readiness: createReadinessCheck(pool, lifecycle), carrier, paymentEvents: createInMemoryPaymentEvents() },
+    { ...createServices(pool), readiness: createReadinessCheck(pool, lifecycle), carrier, paymentEvents: createInMemoryPaymentEvents(), catalogParser: catalogPool.parse },
     { ...config.http, verifyToken: createJwtVerifier(config.auth) },
 );
 app.set("env", config.env);
@@ -50,4 +53,4 @@ server.headersTimeout = 10_000;
 server.requestTimeout = 30_000;
 server.keepAliveTimeout = 5_000;
 
-registerGracefulShutdown({ server, pool, lifecycle, config: config.shutdown, closeAfterServer: [() => carrierAgent.close()] });
+registerGracefulShutdown({ server, pool, lifecycle, config: config.shutdown, closeAfterServer: [() => carrierAgent.close(), () => catalogPool.close()] });

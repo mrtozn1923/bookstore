@@ -29,6 +29,7 @@ const app = createApp(
         readiness: async () => ({ status: "ready", checks: {} }),
         carrier,
         paymentEvents: async () => true,
+        catalogParser: async () => ({ ok: false, reason: "not used" }),
     },
     {
         corsOrigins: [],

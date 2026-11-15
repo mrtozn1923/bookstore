@@ -12,7 +12,7 @@ const buggyBooks = {
 
 // readiness (post 14), the options (post 15) and the carrier (post 18) are not used here
 const app = createApp(
-    { books: buggyBooks, orders: {} as OrderService, readiness: async () => ({ status: "ready", checks: {} }), carrier: {} as TrackingLookup, paymentEvents: async () => true },
+    { books: buggyBooks, orders: {} as OrderService, readiness: async () => ({ status: "ready", checks: {} }), carrier: {} as TrackingLookup, paymentEvents: async () => true, catalogParser: async () => ({ ok: false, reason: "not used" }) },
     { corsOrigins: [], trustProxy: 0, rateLimitPerMinute: 100, verifyToken: async () => ({ userId: "ada", roles: [] }), paymentWebhookSecret: "test-webhook-secret-not-real" },
 );
 const server = app.listen(0, "127.0.0.1", async () => {
