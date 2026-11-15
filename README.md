@@ -64,3 +64,14 @@ Every dataset under `data/` is synthetic, made for the examples; none of it is r
 
     # the beacon the Angular app sends (headless Chromium, lab values)
     cd web/lab && node rum-check.mjs http://127.0.0.1:52714
+
+## 07: before/after with a control group
+    # synthetic daily page data and a change log; the change day is left out, windows are 4 whole weeks
+    dotnet run --project src/Bookstore.Analytics.Cli -- impact data/daily-pages.csv data/changes.csv 2026-10-14
+    dotnet run --project src/Bookstore.Analytics.Cli -- impact data/daily-pages.csv data/changes.csv 2026-09-02
+
+    # the same CSV shape from your own archive (SQL Server)
+    sql/daily-pages.sql
+
+    # the synthetic dataset itself (known truth: +15% CTR on the retitled posts from 2026-10-14)
+    python3 tools/synthetic/daily_pages.py
