@@ -27,6 +27,9 @@ parameters:
   - name: extraApiSteps
     type: stepList
     default: []
+  - name: deploy
+    type: boolean
+    default: true
 
 stages:
   - stage: Build
@@ -80,3 +83,21 @@ stages:
                 exit 1
               fi
             displayName: Fail on vulnerable packages
+
+  # Build once, deploy many: every environment gets the same release artifact, in a fixed order.
+  - ${{ if eq(parameters.deploy, true) }}:
+      - template: ../stages/deploy.yml
+        parameters:
+          environment: dev
+          dependsOn: Build
+
+      - template: ../stages/deploy.yml
+        parameters:
+          environment: staging
+          dependsOn: Deploy_dev
+
+      - template: ../stages/deploy.yml
+        parameters:
+          environment: production
+          dependsOn: Deploy_staging
+          mainOnly: true

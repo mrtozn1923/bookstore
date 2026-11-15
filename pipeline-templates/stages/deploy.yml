@@ -1,0 +1,48 @@
+# One deployment stage per environment. It deploys the release artifact built once in the Build stage.
+# Approvals and checks are not defined here: the owners of the bookstore-<environment> environment add them in the web UI.
+parameters:
+  - name: environment
+    type: string
+    values:
+      - dev
+      - staging
+      - production
+  - name: dependsOn
+    type: string
+  - name: mainOnly
+    type: boolean
+    default: false
+
+stages:
+  - stage: Deploy_${{ parameters.environment }}
+    displayName: Deploy to ${{ parameters.environment }}
+    dependsOn: ${{ parameters.dependsOn }}
+    ${{ if eq(parameters.mainOnly, true) }}:
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+      lockBehavior: sequential
+    ${{ else }}:
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+    pool:
+      vmImage: ubuntu-24.04
+    variables:
+      - group: bookstore-${{ parameters.environment }}
+    jobs:
+      - deployment: Deploy
+        displayName: Deploy release to ${{ parameters.environment }}
+        environment: bookstore-${{ parameters.environment }}
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                # Only the release artifact; api and web are already inside it.
+                - download: current
+                  artifact: release
+
+                # Deployment jobs do not check out the repository; the scripts live there.
+                - checkout: self
+                  fetchDepth: 1
+
+                - script: bash scripts/verify-release.sh $(Pipeline.Workspace)/release
+                  displayName: Verify release artifact
+                  env:
+                    EXPECTED_COMMIT: $(Build.SourceVersion)
