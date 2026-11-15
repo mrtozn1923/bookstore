@@ -45,6 +45,10 @@ jobs:
       - ${{ if eq(parameters.runIntegrationTests, true) }}:
           - script: bash ${{ parameters.testDbScript }}
             displayName: Start SQL Server for integration tests
+            # The script may set only this variable; anything else it tries to set is ignored with a warning.
+            target:
+              settableVariables:
+                - TestDbConnection
 
           - script: >-
               dotnet test --solution ${{ parameters.solution }} --no-build -c ${{ parameters.buildConfiguration }}

@@ -37,7 +37,7 @@ resources:
     - repository: templates
       type: git
       name: Bookstore/pipeline-templates
-      ref: refs/tags/v1.4.0
+      ref: refs/tags/v1.5.0
 
 extends:
   template: pipelines/bookstore-ci.yml@templates

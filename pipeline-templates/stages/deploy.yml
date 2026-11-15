@@ -51,6 +51,8 @@ stages:
 
                 - script: bash scripts/verify-release.sh $(Pipeline.Workspace)/release
                   displayName: Verify release artifact
+                  target:
+                    settableVariables: none
                   env:
                     EXPECTED_COMMIT: $(Build.SourceVersion)
 
@@ -59,6 +61,8 @@ stages:
                     chmod +x $(Pipeline.Workspace)/release/migrations/efbundle
                     $(Pipeline.Workspace)/release/migrations/efbundle
                   displayName: Apply EF Core migrations
+                  target:
+                    settableVariables: none
                   env:
                     ConnectionStrings__BookstoreDb: $(BookstoreDbMigrations)
 
@@ -78,6 +82,8 @@ stages:
 
                 - script: bash scripts/smoke-test.sh $(deployApi.AppServiceApplicationUrl)
                   displayName: Smoke test
+                  target:
+                    settableVariables: none
 
                 - ${{ if eq(parameters.useSlot, true) }}:
                     - task: AzureAppServiceManage@0

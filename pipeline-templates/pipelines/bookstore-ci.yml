@@ -83,6 +83,8 @@ stages:
                 exit 1
               fi
             displayName: Fail on vulnerable packages
+            target:
+              settableVariables: none
 
   # Build once, deploy many: every environment gets the same release artifact, in a fixed order.
   - ${{ if eq(parameters.deploy, true) }}:
