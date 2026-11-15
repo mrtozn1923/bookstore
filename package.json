@@ -5,6 +5,9 @@
   "description": "Bookstore API on Node.js",
   "type": "module",
   "main": "src/server.ts",
+  "bin": {
+    "bookstore-tools": "scripts/bookstore-tools.ts"
+  },
   "imports": {
     "#http/*": "./src/http/*.ts",
     "#middleware/*": "./src/middleware/*.ts",
