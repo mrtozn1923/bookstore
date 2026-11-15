@@ -1,0 +1,29 @@
+# Prompt x model matrix for policy-qa. Prompts and tests are exported from the catalog:
+#   dotnet run --project src/Bookstore.Prompts.Lab -- policy-qa export-promptfoo eval/promptfoo
+description: Bookstore policy-qa regression
+prompts:
+  - id: file://prompts/policy-qa-v1.json
+    label: policy-qa v1
+  - id: file://prompts/policy-qa-v2.json
+    label: policy-qa v2
+providers:
+  - id: ollama:chat:gemma3:4b
+    label: gemma3:4b
+    config:
+      temperature: 0
+      seed: 7
+  - id: ollama:chat:qwen3:4b
+    label: qwen3:4b
+    config:
+      temperature: 0
+      seed: 7
+      think: false
+defaultTest:
+  options:
+    # qwen3:4b writes its reasoning before </think> even with think off
+    transform: "output.includes('</think>') ? output.split('</think>').pop().trim() : output.trim()"
+  assert:
+    - type: javascript
+      value: "output.length <= 400"
+      metric: length
+tests: file://tests.yaml

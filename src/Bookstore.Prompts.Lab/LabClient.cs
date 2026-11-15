@@ -16,6 +16,10 @@ public static class LabClient
             new HttpClient { BaseAddress = new Uri(Endpoint), Timeout = TimeSpan.FromMinutes(10) },
             model ?? Model);
 
+    // Free-text answers from qwen3 need the reasoning removed (see ThinkTagStripper)
+    public static IChatClient CreateForText(string? model = null) =>
+        new ChatClientBuilder(Create(model)).Use(inner => new ThinkTagStripper(inner)).Build();
+
     // Same settings for every run: no sampling noise, no thinking tokens
     public static ChatOptions Options() => new()
     {

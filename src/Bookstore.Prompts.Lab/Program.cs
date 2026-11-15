@@ -4,6 +4,7 @@ using Bookstore.Prompts.Evaluation;
 using Bookstore.Prompts.Lab;
 using Bookstore.Prompts.Tasks.LongDocument;
 using Bookstore.Prompts.Tasks.OrderExtraction;
+using Bookstore.Prompts.Tasks.PolicyQa;
 using Bookstore.Prompts.Tasks.ReturnCheck;
 using Bookstore.Prompts.Tasks.TicketRouting;
 using Microsoft.Extensions.AI;
@@ -141,6 +142,51 @@ switch (task)
                 break;
         }
         break;
+    case "policy-qa":
+    {
+        // policy-qa answer v2 | check v2 | judge <judge-model> | pairwise | meai v2 | export-promptfoo <folder>
+        string model = LabClient.Model;
+        switch (version)
+        {
+            case "answer":
+                await EvalLab.AnswerAsync(LabClient.CreateForText(), LabClient.Options(), model, args[2]);
+                break;
+            case "check":
+                EvalLab.Check(args[2], model);
+                break;
+            case "judge":
+            {
+                string judgeModel = args[2];
+                PolicyJudge judge = new(LabClient.CreateForText(judgeModel), LabClient.Options(), PromptCatalog.Default);
+                await EvalLab.JudgeAsync(judge, judgeModel, [("v1", "gemma3:4b"), ("v2", "gemma3:4b"), ("v2", "qwen3:4b")]);
+                break;
+            }
+            case "pairwise":
+            {
+                string judgeModel = args[2];
+                PolicyJudge judge = new(LabClient.CreateForText(judgeModel), LabClient.Options(), PromptCatalog.Default);
+                await EvalLab.PairwiseAsync(judge, judgeModel, ("v1", "gemma3:4b"), ("v2", "gemma3:4b"));
+                break;
+            }
+            case "meai":
+            {
+                // The evaluators send their own prompts; the judge client still gets the seed and an output cap
+                IChatClient judgeClient = new ChatClientBuilder(LabClient.CreateForText(args[3]))
+                    .ConfigureOptions(o =>
+                    {
+                        o.Seed ??= 7;
+                        o.MaxOutputTokens ??= PolicyJudge.MaxOutputTokens;
+                    })
+                    .Build();
+                await EvalLab.MeaiAsync(judgeClient, args[2], model);
+                break;
+            }
+            case "export-promptfoo":
+                EvalLab.ExportPromptfoo(args[2]);
+                break;
+        }
+        break;
+    }
     default:
         Console.WriteLine($"Unknown task: {task}");
         break;

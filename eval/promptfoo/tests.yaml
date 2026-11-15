@@ -1,0 +1,88 @@
+- description: pq-01
+  vars:
+    question: "Kitabı 10 gün önce teslim aldım, beğenmedim. İade edebilir miyim?"
+  assert:
+    - type: javascript
+      value: "[\"14 gün\"].some(f => output.toLocaleLowerCase('tr-TR').includes(f.toLocaleLowerCase('tr-TR')))"
+      metric: facts
+    - type: javascript
+      value: "[\"49,90\",\"müşteriye ait\",\"size ait\"].some(f => output.toLocaleLowerCase('tr-TR').includes(f.toLocaleLowerCase('tr-TR')))"
+      metric: facts
+- description: pq-02
+  vars:
+    question: "Kitap yırtık geldi, teslim alalı üç hafta oldu. İade kargosunu kim öder?"
+  assert:
+    - type: javascript
+      value: "[\"30 gün\"].some(f => output.toLocaleLowerCase('tr-TR').includes(f.toLocaleLowerCase('tr-TR')))"
+      metric: facts
+    - type: javascript
+      value: "[\"Bookstore öde\",\"biz öde\",\"tarafımızdan\"].some(f => output.toLocaleLowerCase('tr-TR').includes(f.toLocaleLowerCase('tr-TR')))"
+      metric: facts
+- description: pq-03
+  vars:
+    question: "İade ettiğim kitabın parası ne zaman yatar?"
+  assert:
+    - type: javascript
+      value: "[\"10 iş günü\"].some(f => output.toLocaleLowerCase('tr-TR').includes(f.toLocaleLowerCase('tr-TR')))"
+      metric: facts
+    - type: javascript
+      value: "[\"banka\"].some(f => output.toLocaleLowerCase('tr-TR').includes(f.toLocaleLowerCase('tr-TR')))"
+      metric: facts
+- description: pq-04
+  vars:
+    question: "Okulumuz 200 kitaplık kurumsal sipariş verdi. 40 kitabı iade edebilir miyiz?"
+  assert:
+    - type: javascript
+      value: "[\"20\"].some(f => output.toLocaleLowerCase('tr-TR').includes(f.toLocaleLowerCase('tr-TR')))"
+      metric: facts
+    - type: javascript
+      value: "[\"kurumsal satış\"].some(f => output.toLocaleLowerCase('tr-TR').includes(f.toLocaleLowerCase('tr-TR')))"
+      metric: facts
+- description: pq-05
+  vars:
+    question: "Dijital erişim kodlu kitabın ambalajını açtım. İade edebilir miyim?"
+  assert:
+    - type: javascript
+      value: "[\"edilemez\",\"iade edemezsiniz\",\"mümkün değil\"].some(f => output.toLocaleLowerCase('tr-TR').includes(f.toLocaleLowerCase('tr-TR')))"
+      metric: facts
+- description: pq-06
+  vars:
+    question: "3 al 2 öde kampanyasından aldığım kitaplardan birini iade edersem ne olur?"
+  assert:
+    - type: javascript
+      value: "[\"yeniden hesaplan\"].some(f => output.toLocaleLowerCase('tr-TR').includes(f.toLocaleLowerCase('tr-TR')))"
+      metric: facts
+- description: pq-07
+  vars:
+    question: "Aldığım Dune'u ciltli baskısıyla değiştirebilir miyim?"
+  assert:
+    - type: javascript
+      value: "[\"stok\"].some(f => output.toLocaleLowerCase('tr-TR').includes(f.toLocaleLowerCase('tr-TR')))"
+      metric: facts
+    - type: javascript
+      value: "[\"fiyat fark\"].some(f => output.toLocaleLowerCase('tr-TR').includes(f.toLocaleLowerCase('tr-TR')))"
+      metric: facts
+- description: pq-08
+  vars:
+    question: "Kitabı 20 gün önce teslim aldım ve fikrimi değiştirdim. İade edebilir miyim?"
+  assert:
+    - type: javascript
+      value: "[\"14 gün\"].some(f => output.toLocaleLowerCase('tr-TR').includes(f.toLocaleLowerCase('tr-TR')))"
+      metric: facts
+- description: pq-09
+  vars:
+    question: "Yurt dışındaki adresime gönderilen kitabı nasıl iade ederim?"
+  assert:
+    - type: javascript
+      value: "[\"müşteri hizmetleri\",\"yer almıyor\",\"bilgi bulunmuyor\",\"belirtilmemiş\",\"kapsamıyor\"].some(f => output.toLocaleLowerCase('tr-TR').includes(f.toLocaleLowerCase('tr-TR')))"
+      metric: facts
+- description: pq-10
+  vars:
+    question: "İade için kargo kodu ücretli mi?"
+  assert:
+    - type: javascript
+      value: "[\"49,90\"].some(f => output.toLocaleLowerCase('tr-TR').includes(f.toLocaleLowerCase('tr-TR')))"
+      metric: facts
+    - type: javascript
+      value: "[\"Bookstore öde\",\"hasarlı\"].some(f => output.toLocaleLowerCase('tr-TR').includes(f.toLocaleLowerCase('tr-TR')))"
+      metric: facts

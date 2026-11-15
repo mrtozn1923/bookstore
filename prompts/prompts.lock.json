@@ -1,4 +1,8 @@
 {
+  "policy-judge@v1": "20b9549d021b",
+  "policy-pairwise@v1": "c1b92a0dea52",
+  "policy-qa@v1": "fc378c50a1fc",
+  "policy-qa@v2": "13fdf6f8e7c9",
   "report-sql@v1": "4db84a586fde",
   "report-sql@v2": "77e24b6af252",
   "report-sql@v3": "3cc33adecc3b",
