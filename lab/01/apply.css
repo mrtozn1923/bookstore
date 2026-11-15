@@ -1,0 +1,11 @@
+@import "tailwindcss" source(none);
+
+@layer components {
+    /* moving repetition into CSS: two names, the same declarations */
+    .btn-primary {
+        @apply rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500;
+    }
+    .btn-checkout {
+        @apply rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500;
+    }
+}

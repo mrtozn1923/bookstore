@@ -1,0 +1,15 @@
+{
+  "name": "bookstore-tailwind-lab",
+  "version": "1.0.0",
+  "scripts": {
+    "build:01": "tailwindcss -i 01/cms.css -o 01/cms.out.css && tailwindcss -i 01/unlayered.css -o 01/unlayered.out.css",
+    "test:01": "node scripts/01-growth.mjs && node scripts/01-html-size.mjs && node scripts/01-preflight.mjs && node scripts/01-unlayered.mjs"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.5",
+    "playwright": "^1.65.0",
+    "tailwindcss": "^4.3.5"
+  },
+  "private": true
+}
