@@ -18,7 +18,7 @@ public static class ReportPrinter
     }
 
     // Raw model outputs go to a file so every number in the report can be traced back
-    static void SaveRawOutputs(EvalReport report, string model)
+    public static void SaveRawOutputs(EvalReport report, string model)
     {
         string? folder = Environment.GetEnvironmentVariable("BOOKSTORE_RUN_LOG");
         if (folder is null)

@@ -1,9 +1,11 @@
 using System.Globalization;
 using Bookstore.Prompts.Evaluation;
 using Bookstore.Prompts.Lab;
+using Bookstore.Prompts.Tasks.LongDocument;
 using Bookstore.Prompts.Tasks.OrderExtraction;
 using Bookstore.Prompts.Tasks.ReturnCheck;
 using Bookstore.Prompts.Tasks.TicketRouting;
+using Microsoft.Extensions.AI;
 
 CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
@@ -66,6 +68,28 @@ switch (task)
     case "summary":
         await LocalizationLab.SummaryAsync(LabClient.Create(), LabClient.Options());
         break;
+    case "contract":
+    {
+        // contract ask v2 doc-first [context] | contract cache | contract map
+        IChatClient client = LabClient.Create();
+        string mode = version;
+        if (mode == "cache")
+        {
+            await LongDocLab.CacheAsync(client);
+        }
+        else if (mode == "map")
+        {
+            await LongDocLab.MapReduceAsync(client, sectionsPerChunk: 4);
+        }
+        else
+        {
+            bool grounded = args.ElementAtOrDefault(2) != "v1";
+            Placement placement = args.ElementAtOrDefault(3) == "question-first" ? Placement.QuestionFirst : Placement.DocumentFirst;
+            int context = int.TryParse(args.ElementAtOrDefault(4), out int n) ? n : 40960;
+            await LongDocLab.AskAsync(client, grounded, placement, context);
+        }
+        break;
+    }
     default:
         Console.WriteLine($"Unknown task: {task}");
         break;

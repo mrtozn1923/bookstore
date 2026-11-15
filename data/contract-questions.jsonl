@@ -1,0 +1,6 @@
+{"id": "cq-01", "input": "Hasarlı bir kitabı tedarikçiye kaç gün içinde bildirmemiz gerekiyor? Ocak 2027'de teslim alacağımız kitaplar için cevap ver.", "expected": {"keywords": ["10 iş gün|on (10) iş gün|on iş gün"], "clauses": ["Ek-3"], "notFound": false}}
+{"id": "cq-02", "input": "Okul siparişleri için aldığımız kitaplarda satılamayan stokun en fazla yüzde kaçını iade edebiliriz?", "expected": {"keywords": ["%30|yüzde otuz|yüzde 30|30%"], "clauses": ["Ek-3"], "notFound": false}}
+{"id": "cq-03", "input": "Kusurlu kitapları tedarikçiye iade ederken kargo ücretini kim öder?", "expected": {"keywords": ["tedarikçi"], "clauses": ["17.6"], "notFound": false}}
+{"id": "cq-04", "input": "İade ettiğimiz kitaplar için kredi notu ne kadar sürede düzenlenir?", "expected": {"keywords": ["30 gün|otuz (30) gün|otuz gün"], "clauses": ["17.7"], "notFound": false}}
+{"id": "cq-05", "input": "Satılamayan bir kitabı yayın tarihinden en erken kaç ay sonra iade edebiliriz?", "expected": {"keywords": ["6 ay|altı (6) ay|altı ay"], "clauses": ["17.4"], "notFound": false}}
+{"id": "cq-06", "input": "Sözleşmede e-kitapların iadesiyle ilgili bir hüküm var mı?", "expected": {"keywords": [], "clauses": [], "notFound": true}}
