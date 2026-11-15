@@ -1,0 +1,3 @@
+# Files that go to Linux servers always use LF line endings, even on a Windows checkout
+deploy/** text eol=lf
+*.sh text eol=lf
