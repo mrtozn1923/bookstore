@@ -1,0 +1,13 @@
+(* Bookstore filter language, draft grammar (post 01) *)
+filter     = expr , EOF ;
+expr       = or_expr ;
+or_expr    = and_expr , { "or" , and_expr } ;
+and_expr   = not_expr , { "and" , not_expr } ;
+not_expr   = "not" , not_expr | comparison ;
+comparison = primary , [ comp_op , primary ] ;
+primary    = field | literal | "(" , expr , ")" ;
+comp_op    = "=" | "!=" | "<" | "<=" | ">" | ">=" | "contains" ;
+literal    = number | string | "true" | "false" ;
+field      = letter , { letter | digit | "_" } ;
+number     = digit , { digit } , [ "." , digit , { digit } ] ;
+string     = '"' , { string_char | '\"' | '\\' } , '"' ;

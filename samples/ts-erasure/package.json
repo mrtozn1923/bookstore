@@ -1,0 +1,12 @@
+{
+  "name": "bookstore-ts-erasure",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/book.js"
+  },
+  "devDependencies": {
+    "typescript": "7.0.2"
+  }
+}
