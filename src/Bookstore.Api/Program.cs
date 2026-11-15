@@ -3,6 +3,7 @@ using Bookstore.Api;
 using Bookstore.Data;
 using Bookstore.Ordering;
 using Bookstore.Privacy;
+using Bookstore.Privacy.Retention;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,6 +18,10 @@ builder.Services.AddDbContext<BookstoreContext>(o =>
     o.UseSqlite(builder.Configuration.GetConnectionString("Bookstore") ?? "Data Source=bookstore.db"));
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<DataSubjectRequests>();
+builder.Services.AddSingleton<IErasureLedger>(new FileErasureLedger(builder.Configuration["Privacy:ErasureLedgerPath"] ?? "erasure-ledger.txt"));
+builder.Services.AddScoped<ErasureProcessor>();
+builder.Services.AddScoped<PeriodicDestructionJob>();
+builder.Services.AddHostedService<DestructionWorker>();
 builder.Services.AddAuthentication(DemoCustomerAuthHandler.SchemeName)
     .AddScheme<AuthenticationSchemeOptions, DemoCustomerAuthHandler>(DemoCustomerAuthHandler.SchemeName, null);
 builder.Services.AddAuthorization();
@@ -59,7 +64,7 @@ static async Task SeedAsync(IServiceProvider services)
     for (int i = 0; i < FakePeople.All.Length; i++)
     {
         Customer c = FakePeople.ToCustomer(i, created.AddDays(i));
-        c.Orders.Add(new Order { OrderedAtUtc = created.AddDays(i + 10), Total = 412.50m, ShippingAddress = $"Example St. {i + 1}, {c.City}", BillingName = c.FullName });
+        c.Orders.Add(new Order { OrderedAtUtc = created.AddDays(i + 10), RetainUntilUtc = RetentionPolicy.OrderBillingRetainUntil(created.AddDays(i + 10)), Total = 412.50m, ShippingAddress = $"Example St. {i + 1}, {c.City}", BillingName = c.FullName });
         c.Sessions.Add(new CustomerSession
         {
             SignedInAtUtc = created.AddDays(i + 10).AddMinutes(-5),

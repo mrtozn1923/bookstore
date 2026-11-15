@@ -9,8 +9,9 @@ public sealed class Order
     [NoDataClassification]
     public int Id { get; set; }
 
+    // Null once the customer is erased; the order itself stays for the legal retention period.
     [PersonalData(InformationType = "Customer ID")]
-    public int CustomerId { get; set; }
+    public int? CustomerId { get; set; }
 
     public Customer? Customer { get; set; }
 
@@ -19,6 +20,9 @@ public sealed class Order
 
     [NoDataClassification]
     public decimal Total { get; set; }
+
+    [NoDataClassification]
+    public DateTime RetainUntilUtc { get; set; }
 
     [PersonalData(InformationType = "Contact Info")]
     public required string ShippingAddress { get; set; }

@@ -4,3 +4,4 @@ obj/
 *.db-shm
 *.db-wal
 backups/
+erasure-ledger.txt

@@ -2,6 +2,7 @@ using Bookstore.Institutional;
 using Bookstore.Ordering;
 using Bookstore.Payments;
 using Bookstore.Privacy;
+using Bookstore.Privacy.Retention;
 using Microsoft.EntityFrameworkCore;
 
 namespace Bookstore.Data;
@@ -14,6 +15,7 @@ public sealed class BookstoreContext(DbContextOptions<BookstoreContext> options)
     public DbSet<ErasureRequest> ErasureRequests => Set<ErasureRequest>();
     public DbSet<Payment> Payments => Set<Payment>();
     public DbSet<InstitutionUser> InstitutionUsers => Set<InstitutionUser>();
+    public DbSet<DestructionLogEntry> DestructionLog => Set<DestructionLogEntry>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
