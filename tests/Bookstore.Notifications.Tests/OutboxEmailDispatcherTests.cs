@@ -1,4 +1,5 @@
 using Bookstore.Notifications.Outbox;
+using Bookstore.Notifications.Storage;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -125,17 +126,32 @@ public sealed class OutboxEmailDispatcherTests : IAsyncDisposable
         TextBody = "Hello",
     };
 
-    private async Task<OutboxEmailDispatcher<OutboxTestContext>> DispatcherWithOneEmailAsync(IEmailSender sender)
+    private async Task<OutboxEmailDispatcher<OutboxTestContext>> DispatcherWithOneEmailAsync(IEmailSender sender, StoredAttachment? attachment = null)
     {
         await using (AsyncServiceScope scope = _services.CreateAsyncScope())
         {
             OutboxTestContext db = scope.ServiceProvider.GetRequiredService<OutboxTestContext>();
-            await new EmailOutbox(_time, _options).EnqueueAsync(db, "approval-reminder:nevin@example.com:2026-11-15", Message());
+            await new EmailOutbox(_time, _options).EnqueueAsync(db, "approval-reminder:nevin@example.com:2026-11-15", Message(), attachment);
             await db.SaveChangesAsync();
         }
 
-        return new OutboxEmailDispatcher<OutboxTestContext>(_services.GetRequiredService<IServiceScopeFactory>(), sender, _time, _options,
+        LocalFileStore files = new(Options.Create(new LocalFileStoreOptions { RootPath = Path.Combine(Path.GetTempPath(), "bookstore-outbox-" + Guid.NewGuid().ToString("N")) }));
+        return new OutboxEmailDispatcher<OutboxTestContext>(_services.GetRequiredService<IServiceScopeFactory>(), sender, files, _time, _options,
             NullLogger<OutboxEmailDispatcher<OutboxTestContext>>.Instance);
+    }
+
+    [Fact]
+    public async Task Missing_attachment_fails_the_email_for_good()
+    {
+        FakeEmailSender sender = new();
+        OutboxEmailDispatcher<OutboxTestContext> dispatcher = await DispatcherWithOneEmailAsync(sender,
+            new StoredAttachment("invoices/2026/BKS-2026-009999.pdf", "invoice.pdf", "application/pdf"));
+
+        await dispatcher.DispatchDueAsync(TestContext.Current.CancellationToken);
+
+        OutboxEmail email = await SingleAsync();
+        Assert.Equal((OutboxEmailStatus.Failed, 1), (email.Status, email.Attempts));
+        Assert.Empty(sender.Sent);
     }
 
     private async Task<OutboxEmail> SingleAsync()

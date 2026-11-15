@@ -1,52 +1,31 @@
 using System.Diagnostics;
 using System.Text.RegularExpressions;
-using System.Threading.Channels;
+using Hangfire;
 using Bookstore.Notifications;
 using Bookstore.Notifications.Images;
 using Microsoft.Extensions.Options;
 
 namespace Bookstore.Api.Catalog;
 
-public sealed record CoverThumbnailJob(string Isbn, string OriginalPath);
-
-public sealed class CoverThumbnailQueue
+// A Hangfire job since post 09: decoding and resizing is CPU work, done outside the upload request
+public sealed class CoverThumbnailJob(CoverImageProcessor images, IFileStore files, ILogger<CoverThumbnailJob> logger)
 {
-    private readonly Channel<CoverThumbnailJob> _channel = Channel.CreateBounded<CoverThumbnailJob>(100);
-
-    public ValueTask EnqueueAsync(CoverThumbnailJob job, CancellationToken cancellationToken) => _channel.Writer.WriteAsync(job, cancellationToken);
-
-    public IAsyncEnumerable<CoverThumbnailJob> ReadAllAsync(CancellationToken cancellationToken) => _channel.Reader.ReadAllAsync(cancellationToken);
-}
-
-// Decoding and resizing is CPU work: done here, not in the upload request
-public sealed class CoverThumbnailWorker(CoverThumbnailQueue queue, CoverImageProcessor images, IFileStore files, ILogger<CoverThumbnailWorker> logger)
-    : BackgroundService
-{
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    public async Task CreateAsync(string isbn, string originalPath, CancellationToken cancellationToken)
     {
-        await foreach (CoverThumbnailJob job in queue.ReadAllAsync(stoppingToken))
+        Stopwatch watch = Stopwatch.StartNew();
+        using MemoryStream original = new();
+        await using (Stream stored = await files.OpenReadAsync(originalPath, cancellationToken))
         {
-            try
-            {
-                Stopwatch watch = Stopwatch.StartNew();
-                using MemoryStream original = new();
-                await using (Stream stored = await files.OpenReadAsync(job.OriginalPath, stoppingToken))
-                {
-                    await stored.CopyToAsync(original, stoppingToken);
-                }
-
-                foreach (CoverThumbnail thumbnail in images.CreateThumbnails(original.GetBuffer().AsSpan(0, (int)original.Length)))
-                {
-                    await files.SaveAsync(CoverEndpoints.ThumbnailPath(job.Isbn, thumbnail.Width), new MemoryStream(thumbnail.Content), thumbnail.ContentType, stoppingToken);
-                }
-
-                logger.LogInformation("Cover thumbnails for {Isbn} ready in {Elapsed} ms", job.Isbn, watch.ElapsedMilliseconds);
-            }
-            catch (Exception ex) when (ex is not OperationCanceledException)
-            {
-                logger.LogError(ex, "Cover thumbnails for {Isbn} failed", job.Isbn);
-            }
+            await stored.CopyToAsync(original, cancellationToken);
         }
+
+        // Same widths, same paths: running the job twice overwrites the thumbnails with identical files
+        foreach (CoverThumbnail thumbnail in images.CreateThumbnails(original.GetBuffer().AsSpan(0, (int)original.Length)))
+        {
+            await files.SaveAsync(CoverEndpoints.ThumbnailPath(isbn, thumbnail.Width), new MemoryStream(thumbnail.Content), thumbnail.ContentType, cancellationToken);
+        }
+
+        logger.LogInformation("Cover thumbnails for {Isbn} ready in {Elapsed} ms", isbn, watch.ElapsedMilliseconds);
     }
 }
 
@@ -70,7 +49,7 @@ public static partial class CoverEndpoints
     {
         // The raw image is the request body; the HTTP side of uploads (IFormFile, limits) is covered in the Web API series
         app.MapPost("/api/books/{isbn}/cover", async (string isbn, HttpRequest request, CoverImageProcessor images, IFileStore files,
-            CoverThumbnailQueue queue, IOptions<CoverImageOptions> options, CancellationToken ct) =>
+            IBackgroundJobClient jobs, IOptions<CoverImageOptions> options, CancellationToken ct) =>
         {
             if (!Isbn13().IsMatch(isbn))
             {
@@ -98,7 +77,7 @@ public static partial class CoverEndpoints
             // The original stays private: it may carry EXIF data such as the location where the photo was taken
             string originalPath = $"covers/{isbn}/original{extension}";
             await files.SaveAsync(originalPath, new MemoryStream(upload), contentType, ct);
-            await queue.EnqueueAsync(new CoverThumbnailJob(isbn, originalPath), ct);
+            jobs.Enqueue<CoverThumbnailJob>(j => j.CreateAsync(isbn, originalPath, CancellationToken.None));
             return Results.Accepted($"/api/books/{isbn}/cover/320", new { check.Format, check.Width, check.Height, check.Origin });
         });
 

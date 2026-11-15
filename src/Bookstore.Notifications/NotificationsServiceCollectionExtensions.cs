@@ -36,7 +36,12 @@ public static class NotificationsServiceCollectionExtensions
         switch (section["Provider"] ?? "Local")
         {
             case "AzureBlob":
-                services.AddSingleton(_ => new BlobContainerClient(section["Azure:ConnectionString"], section["Azure:ContainerName"] ?? "bookstore"));
+                // The SDK retries on its own; keep that short so a job's own retry (Hangfire) decides about longer outages
+                BlobClientOptions blobOptions = new()
+                {
+                    Retry = { MaxRetries = 2, Delay = TimeSpan.FromSeconds(1), NetworkTimeout = TimeSpan.FromSeconds(10) },
+                };
+                services.AddSingleton(_ => new BlobContainerClient(section["Azure:ConnectionString"], section["Azure:ContainerName"] ?? "bookstore", blobOptions));
                 services.AddSingleton<AzureBlobFileStore>();
                 services.AddSingleton<IFileStore>(sp => sp.GetRequiredService<AzureBlobFileStore>());
                 services.AddSingleton<IDirectUploadStore>(sp => sp.GetRequiredService<AzureBlobFileStore>());

@@ -6,6 +6,9 @@ public sealed class InvoiceArchive(IDocumentRenderer<InvoiceModel> renderer, IFi
     public static string PathFor(InvoiceModel invoice) =>
         $"invoices/{invoice.IssueDate:yyyy}/{invoice.InvoiceNumber}{FileFormat.Pdf.Extension}";
 
+    public Task<bool> ExistsAsync(InvoiceModel invoice, CancellationToken cancellationToken = default) =>
+        files.ExistsAsync(PathFor(invoice), cancellationToken);
+
     public async Task<string> EnsureStoredAsync(InvoiceModel invoice, CancellationToken cancellationToken = default)
     {
         string path = PathFor(invoice);

@@ -9,6 +9,7 @@ namespace Bookstore.Notifications.Outbox;
 public sealed class OutboxEmailDispatcher<TContext>(
     IServiceScopeFactory scopes,
     IEmailSender sender,
+    IFileStore files,
     TimeProvider time,
     IOptions<EmailOutboxOptions> options,
     ILogger<OutboxEmailDispatcher<TContext>> logger) : BackgroundService where TContext : DbContext
@@ -47,7 +48,7 @@ public sealed class OutboxEmailDispatcher<TContext>(
             email.Attempts++;
             try
             {
-                await sender.SendAsync(email.ToMessage(), cancellationToken);
+                await sender.SendAsync(await ToMessageAsync(email, cancellationToken), cancellationToken);
                 email.Status = OutboxEmailStatus.Sent;
                 email.SentAtUtc = time.GetUtcNow().UtcDateTime;
                 email.LastError = null;
@@ -57,12 +58,34 @@ public sealed class OutboxEmailDispatcher<TContext>(
             {
                 Reschedule(email, ex);
             }
+            catch (FileNotFoundException ex)
+            {
+                // The attachment is gone: retrying will not bring it back
+                Reschedule(email, new EmailDeliveryException(ex.Message, isTransient: false, ex));
+            }
 
             // Save after every email: a crash must not resend the ones already sent
             await db.SaveChangesAsync(cancellationToken);
         }
 
         return due.Count;
+    }
+
+    private async Task<EmailMessage> ToMessageAsync(OutboxEmail email, CancellationToken cancellationToken)
+    {
+        EmailMessage message = email.ToMessage();
+        if (email.AttachmentPath is null)
+        {
+            return message;
+        }
+
+        using MemoryStream content = new();
+        await using (Stream stored = await files.OpenReadAsync(email.AttachmentPath, cancellationToken))
+        {
+            await stored.CopyToAsync(content, cancellationToken);
+        }
+
+        return message with { Attachments = [new EmailAttachment(email.AttachmentName!, email.AttachmentContentType!, content.ToArray())] };
     }
 
     private void Reschedule(OutboxEmail email, EmailDeliveryException ex)

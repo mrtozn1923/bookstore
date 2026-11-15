@@ -4,6 +4,9 @@ namespace Bookstore.Notifications.Outbox;
 
 public enum OutboxEmailStatus { Pending, Sent, Failed }
 
+// A file in IFileStore that the dispatcher attaches when it sends the email
+public sealed record StoredAttachment(string Path, string FileName, string ContentType);
+
 public sealed class OutboxEmail
 {
     public Guid Id { get; private set; } = Guid.CreateVersion7();
@@ -24,7 +27,12 @@ public sealed class OutboxEmail
     public DateTime? SentAtUtc { get; set; }
     public string? LastError { get; set; }
 
-    public static OutboxEmail From(string idempotencyKey, EmailMessage message, string senderDomain, DateTime nowUtc) => new()
+    // Large attachments stay in the file store; the row keeps only where to find them
+    public string? AttachmentPath { get; init; }
+    public string? AttachmentName { get; init; }
+    public string? AttachmentContentType { get; init; }
+
+    public static OutboxEmail From(string idempotencyKey, EmailMessage message, string senderDomain, DateTime nowUtc, StoredAttachment? attachment = null) => new()
     {
         IdempotencyKey = idempotencyKey,
         // Same key -> same Message-Id, also on every retry
@@ -36,6 +44,9 @@ public sealed class OutboxEmail
         TextBody = message.TextBody,
         CreatedAtUtc = nowUtc,
         NextAttemptAtUtc = nowUtc,
+        AttachmentPath = attachment?.Path,
+        AttachmentName = attachment?.FileName,
+        AttachmentContentType = attachment?.ContentType,
     };
 
     public EmailMessage ToMessage() => new()

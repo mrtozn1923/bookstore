@@ -20,14 +20,18 @@ public sealed class EmailOutboxOptions
 // Adds the email to the caller's DbContext; it is sent only if the caller's SaveChanges commits
 public sealed class EmailOutbox(TimeProvider time, IOptions<EmailOutboxOptions> options)
 {
-    public async Task<bool> EnqueueAsync(DbContext db, string idempotencyKey, EmailMessage message, CancellationToken cancellationToken = default)
+    public async Task<bool> EnqueueAsync(DbContext db, string idempotencyKey, EmailMessage message, CancellationToken cancellationToken = default) =>
+        await EnqueueAsync(db, idempotencyKey, message, attachment: null, cancellationToken);
+
+    public async Task<bool> EnqueueAsync(DbContext db, string idempotencyKey, EmailMessage message, StoredAttachment? attachment,
+        CancellationToken cancellationToken = default)
     {
         if (await db.Set<OutboxEmail>().AnyAsync(e => e.IdempotencyKey == idempotencyKey, cancellationToken))
         {
             return false;
         }
 
-        db.Set<OutboxEmail>().Add(OutboxEmail.From(idempotencyKey, message, options.Value.SenderDomain, time.GetUtcNow().UtcDateTime));
+        db.Set<OutboxEmail>().Add(OutboxEmail.From(idempotencyKey, message, options.Value.SenderDomain, time.GetUtcNow().UtcDateTime, attachment));
         return true;
     }
 }

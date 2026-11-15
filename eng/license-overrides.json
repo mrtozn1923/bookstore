@@ -8,5 +8,20 @@
     "Id": "Apache.Arrow",
     "Version": "22.1.0",
     "License": "Apache-2.0"
+  },
+  {
+    "Id": "Hangfire.Core",
+    "Version": "1.8.25",
+    "License": "LGPL-3.0-only"
+  },
+  {
+    "Id": "Hangfire.AspNetCore",
+    "Version": "1.8.25",
+    "License": "LGPL-3.0-only"
+  },
+  {
+    "Id": "Hangfire.NetCore",
+    "Version": "1.8.25",
+    "License": "LGPL-3.0-only"
   }
 ]

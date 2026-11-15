@@ -7,6 +7,7 @@ using Bookstore.Notifications.Documents.Pdf;
 using Bookstore.Notifications.Images;
 using Bookstore.Notifications.Samples;
 using Bookstore.Notifications.Storage;
+using Hangfire;
 using Microsoft.Extensions.Options;
 
 namespace Bookstore.Api.FileStorage;
@@ -66,7 +67,7 @@ public static class FileEndpoints
 
         // Step 2: the client says it is done; only now do we look at what arrived
         app.MapPost("/api/books/{isbn}/cover/uploads/{uploadId}/complete", async (string isbn, string uploadId, IFileStore files,
-            CoverImageProcessor images, IOptions<CoverImageOptions> options, CoverThumbnailQueue queue, BookstoreContext db, TimeProvider time,
+            CoverImageProcessor images, IOptions<CoverImageOptions> options, IBackgroundJobClient jobs, BookstoreContext db, TimeProvider time,
             ILoggerFactory loggers, CancellationToken ct) =>
         {
             if (!CoverEndpoints.IsIsbn13(isbn) || !Guid.TryParseExact(uploadId, "N", out _))
@@ -107,7 +108,7 @@ public static class FileEndpoints
             await files.DeleteAsync(staging, ct);
             db.StoredFiles.Add(await DescribeAsync(files, originalPath, "cover-original", contentType, null, time, ct));
             await db.SaveChangesAsync(ct);
-            await queue.EnqueueAsync(new CoverThumbnailJob(isbn, originalPath), ct);
+            jobs.Enqueue<CoverThumbnailJob>(j => j.CreateAsync(isbn, originalPath, CancellationToken.None));
             return Results.Accepted($"/api/books/{isbn}/cover/320", new { check.Format, check.Width, check.Height, upload!.Length });
         });
 

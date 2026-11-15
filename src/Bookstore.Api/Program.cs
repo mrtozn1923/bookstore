@@ -3,15 +3,18 @@ using Bookstore.Api.Catalog;
 using Bookstore.Api.Data;
 using Bookstore.Api.FileStorage;
 using Bookstore.Api.Institutional;
-using Bookstore.Api.Reports;
+using Bookstore.Api.Jobs;
 using Bookstore.Notifications;
 using Bookstore.Notifications.Documents;
 using Bookstore.Notifications.Documents.Excel;
 using Bookstore.Notifications.Documents.Html;
 using Bookstore.Notifications.Documents.Pdf;
+using Bookstore.Notifications.Jobs;
 using Bookstore.Notifications.Outbox;
 using Bookstore.Notifications.Samples;
 using Bookstore.Notifications.Storage;
+using Hangfire;
+using Hangfire.Storage.SQLite;
 using Microsoft.EntityFrameworkCore;
 
 // Bookstore qualifies for the QuestPDF Community License (annual gross revenue under USD 1M); set once at startup
@@ -26,11 +29,20 @@ builder.Services.AddScoped<ApprovalReminderJob>();
 builder.Services.AddSingleton<IDocumentRenderer<InvoiceModel>, InvoicePdfRenderer>();
 builder.Services.AddSingleton<InvoiceArchive>();
 builder.Services.AddSingleton<IDocumentRenderer<MonthlySalesReport>, MonthlySalesExcelRenderer>();
-builder.Services.AddSingleton<ReportJobQueue>();
-builder.Services.AddSingleton<ReportJobStore>();
-builder.Services.AddHostedService<ReportJobWorker>();
-builder.Services.AddSingleton<CoverThumbnailQueue>();
-builder.Services.AddHostedService<CoverThumbnailWorker>();
+builder.Services.AddSingleton<IInvoiceSource, SampleInvoiceSource>();
+builder.Services.AddSingleton<ISalesReportSource, SampleSalesReportSource>();
+builder.Services.AddScoped<OrderDocumentJobs<BookstoreContext>>();
+builder.Services.AddScoped<MonthlySalesReportJob<BookstoreContext>>();
+builder.Services.AddScoped<CoverThumbnailJob>();
+
+// Durable jobs: Hangfire keeps them in its own SQLite file (Hangfire.SqlServer next to BookstoreDb in production)
+builder.Services.AddHangfire(config => config
+    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UseSQLiteStorage(builder.Configuration.GetConnectionString("Jobs"), new SQLiteStorageOptions { QueuePollInterval = TimeSpan.FromSeconds(1) })
+    .UseFilter(new AutomaticRetryAttribute { Attempts = 5, DelaysInSeconds = [5, 30, 120, 600, 3600] }));
+builder.Services.AddHangfireServer(options => options.WorkerCount = 4);
 builder.Services.AddRequestTimeouts();
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
@@ -42,6 +54,15 @@ WebApplication app = builder.Build();
 app.UseRequestTimeouts();
 app.MapCoverEndpoints();
 app.MapFileEndpoints();
+app.MapJobEndpoints();
+
+// Dashboard is reachable from the local machine only (Hangfire's default authorization filter)
+app.MapHangfireDashboard("/hangfire");
+
+// 06:00 Istanbul time on the 1st of every month; AddOrUpdate is idempotent, so it can run on every start
+app.Services.GetRequiredService<IRecurringJobManager>().AddOrUpdate<MonthlySalesReportJob<BookstoreContext>>(
+    JobEndpoints.MonthlyReportId, j => j.RunAsync(null, CancellationToken.None), "0 6 1 * *",
+    new RecurringJobOptions { TimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Istanbul") });
 
 await using (AsyncServiceScope scope = app.Services.CreateAsyncScope())
 {
@@ -78,30 +99,6 @@ app.MapGet("/api/reports/monthly-sales/{month}", async (string month, IDocumentR
     return Results.File(buffer.ToArray(), renderer.Format.ContentType, $"monthly-sales-{month}{renderer.Format.Extension}");
 }).WithRequestTimeout(TimeSpan.FromSeconds(5));
 
-// Asynchronous: accept, queue, answer 202 with a status URL
-app.MapPost("/api/reports/monthly-sales", async (MonthlySalesRequest request, ReportJobQueue queue, ReportJobStore store, CancellationToken ct) =>
-{
-    ReportJob job = new(Guid.CreateVersion7(), DateOnly.ParseExact(request.Month + "-01", "yyyy-MM-dd"), request.NotifyEmail);
-    ReportJobStatus queued = new(job.Id, ReportJobState.Queued);
-    store.Set(queued);
-    await queue.EnqueueAsync(job, ct);
-    return Results.Accepted($"/api/reports/{job.Id}", queued);
-});
-
-app.MapGet("/api/reports/{jobId:guid}", (Guid jobId, ReportJobStore store) =>
-    store.Get(jobId) is { } status ? Results.Ok(status) : Results.NotFound());
-
-app.MapGet("/api/reports/{jobId:guid}/file", async (Guid jobId, ReportJobStore store, IFileStore files, IDocumentRenderer<MonthlySalesReport> renderer, CancellationToken ct) =>
-{
-    if (store.Get(jobId) is not { State: ReportJobState.Completed, FilePath: { } path })
-    {
-        return Results.NotFound();
-    }
-
-    Stream content = await files.OpenReadAsync(path, ct);
-    return Results.Stream(content, renderer.Format.ContentType, Path.GetFileName(path));
-});
-
 // Excel straight into the response: ClosedXML writes synchronously, so render into memory first
 app.MapGet("/api/reports/monthly-sales/{month}/excel", async (string month, IDocumentRenderer<MonthlySalesReport> renderer, CancellationToken ct) =>
 {
@@ -130,4 +127,3 @@ app.MapGet("/api/outbox", async (BookstoreContext db, CancellationToken ct) =>
 
 app.Run();
 
-public sealed record MonthlySalesRequest(string Month, string NotifyEmail);
