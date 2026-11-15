@@ -5,6 +5,7 @@ var demos = new Dictionary<string, Action>(StringComparer.OrdinalIgnoreCase)
 {
     ["runes"] = RuneDemos.Run,
     ["hexfloat"] = HexFloatDemos.Run,
+    ["numbers"] = NumberDemos.Run,
 };
 
 if (args.Length == 0 || !demos.TryGetValue(args[0], out Action? run))
@@ -48,5 +49,27 @@ static class HexFloatDemos
         Console.WriteLine($"X (invariant)  : {hex}");
         Console.WriteLine($"X (tr-TR)      : {price.ToString("X", tr)}");
         Console.WriteLine($"Round-trip equal: {back == price}");
+    }
+}
+
+static class NumberDemos
+{
+    public static void Run()
+    {
+        var invariant = System.Globalization.CultureInfo.InvariantCulture;
+        var seeded = new Random(2026);
+
+        long orderSuffix = seeded.NextInteger<long>(1_000_000L, 10_000_000L);
+        byte shelf = seeded.NextInteger<byte>((byte)10);
+        UInt128 big = seeded.NextInteger<UInt128>();
+        float weight = seeded.NextBinaryFloat<float>();
+        Console.WriteLine($"NextInteger<long>   : {orderSuffix}");
+        Console.WriteLine($"NextInteger<byte>   : {shelf}");
+        Console.WriteLine($"NextInteger<UInt128>: {big}");
+        Console.WriteLine($"NextBinaryFloat<float>: {weight.ToString(invariant)}");
+
+        Console.WriteLine($"(decimal)0.1    = {((decimal)0.1).ToString(invariant)}");
+        Console.WriteLine($"(decimal)349.90 = {((decimal)349.90).ToString(invariant)}");
+        Console.WriteLine($"349.90m         = {349.90m.ToString(invariant)}");
     }
 }

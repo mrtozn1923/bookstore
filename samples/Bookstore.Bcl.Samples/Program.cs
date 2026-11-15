@@ -1,11 +1,12 @@
 using System.Globalization;
 using Bookstore.Bcl.Samples.Formatting;
 using Bookstore.Bcl.Samples.Globalization;
+using Bookstore.Bcl.Samples.Numbers;
 using Bookstore.Bcl.Samples.Strings;
 
 // Usage: dotnet run --project samples/Bookstore.Bcl.Samples -- <demo> [--culture tr-TR|en-US|invariant]
 var demos = new Dictionary<string, Func<Task>>(StringComparer.OrdinalIgnoreCase);
-foreach (var (name, demo) in StringDemos.All.Concat(FormatDemos.All))
+foreach (var (name, demo) in StringDemos.All.Concat(FormatDemos.All).Concat(NumberDemos.All))
     demos[name] = () =>
     {
         demo();
