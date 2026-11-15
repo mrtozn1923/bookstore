@@ -1,0 +1,9 @@
+{
+  "solution": {
+    "path": "Bookstore.slnx",
+    "projects": [
+      "tests\\Bookstore.Api.Tests\\Bookstore.Api.Tests.csproj",
+      "tests\\Bookstore.Contracts.Tests\\Bookstore.Contracts.Tests.csproj"
+    ]
+  }
+}

@@ -1,0 +1,40 @@
+<h1>Your cart</h1>
+
+@if (placedOrder(); as order) {
+  <p class="success" data-testid="order-confirmation">
+    Order #{{ order.id }} placed ({{ order.status }}). Total: {{ order.total | currency: 'TRY' : 'symbol-narrow' }}
+  </p>
+  <a routerLink="/">Continue shopping</a>
+} @else if (store.cart()?.items?.length) {
+  <table class="cart">
+    <thead>
+      <tr><th>Book</th><th>Price</th><th>Quantity</th><th>Total</th><th></th></tr>
+    </thead>
+    <tbody>
+      @for (line of store.cart()!.items; track line.isbn) {
+        <tr>
+          <td><a [routerLink]="['/books', line.isbn]">{{ line.title }}</a></td>
+          <td>{{ line.unitPrice | currency: 'TRY' : 'symbol-narrow' }}</td>
+          <td>
+            <input type="number" min="1" max="99" [value]="line.quantity"
+                   (change)="changeQuantity(line.isbn, $any($event.target).valueAsNumber)" />
+          </td>
+          <td>{{ line.lineTotal | currency: 'TRY' : 'symbol-narrow' }}</td>
+          <td><button type="button" (click)="store.remove(line.isbn)">Remove</button></td>
+        </tr>
+      }
+    </tbody>
+  </table>
+  <p class="total" data-testid="cart-total">Total: {{ store.cart()!.total | currency: 'TRY' : 'symbol-narrow' }}</p>
+
+  <form class="checkout" (submit)="checkout($event, nameBox.value, emailBox.value)">
+    <input #nameBox name="name" placeholder="Full name" required />
+    <input #emailBox name="email" type="email" placeholder="E-mail" required />
+    <button type="submit">Place order</button>
+  </form>
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  }
+} @else {
+  <p class="muted">Your cart is empty. <a routerLink="/">Browse the catalog</a></p>
+}
