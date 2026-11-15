@@ -1,0 +1,2 @@
+# Packaged charts and downloaded dependencies are build output.
+*.tgz
