@@ -7,6 +7,7 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(const BookstoreApp());
+    await tester.pumpAndSettle(); // the first catalog page arrives
     expect(find.text('Books in cart: 0'), findsOneWidget);
     expect(find.text('Dune'), findsOneWidget);
 
@@ -18,6 +19,7 @@ void main() {
 
   testWidgets('tapping a card opens the book details', (tester) async {
     await tester.pumpWidget(const BookstoreApp());
+    await tester.pumpAndSettle();
 
     await tester.tap(find.text('Dune'));
     await tester.pumpAndSettle();

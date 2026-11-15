@@ -3,19 +3,22 @@ import 'dart:async';
 import 'package:flutter/widget_previews.dart';
 import 'package:material_ui/material_ui.dart';
 
-import '../../../data/sample_books.dart';
+import '../../../data/sample_catalog.dart';
 import '../../../domain/models/book.dart';
 import '../../book_details/widgets/book_details_screen.dart';
-import '../../catalog/widgets/book_card.dart';
+import '../../catalog/widgets/catalog_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({super.key, this.catalog});
+
+  final SampleCatalog? catalog;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late final SampleCatalog _catalog = widget.catalog ?? SampleCatalog();
   int _booksInCart = 0;
 
   void _addBook() {
@@ -35,28 +38,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Bookstore'),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: Center(child: Text('Books in cart: $_booksInCart')),
-          ),
-        ],
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(8),
-        children: [
-          for (final book in sampleBooks)
-            BookCard(
-              key: ValueKey(book.isbn),
-              book: book,
-              onAddToCart: _addBook,
-              onTap: () => _openDetails(book),
-            ),
-        ],
-      ),
+    return CatalogScreen(
+      loadPage: _catalog.page,
+      cartCount: _booksInCart,
+      onAddToCart: (_) => _addBook(),
+      onOpenBook: _openDetails,
     );
   }
 }

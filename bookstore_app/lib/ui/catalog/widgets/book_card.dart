@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../../domain/models/book.dart';
+import 'book_thumbnail.dart';
 import 'favorite_button.dart';
 
 class BookCard extends StatelessWidget {
@@ -21,14 +22,23 @@ class BookCard extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
+              BookThumbnail(url: book.coverUrl),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(book.displayTitle, style: textTheme.titleMedium),
+                    Text(
+                      book.displayTitle,
+                      style: textTheme.titleMedium,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                     Text(
                       '${book.author.name} · ${book.publishedYear}',
                       style: textTheme.bodySmall,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     Text(book.price.format(), style: textTheme.titleSmall),
                   ],
