@@ -1,0 +1,71 @@
+@* The designer's markup; data comes from the model, every value is HTML-encoded by Razor *@
+@using System.Globalization
+@using Microsoft.AspNetCore.Components
+@using Bookstore.Notifications.Documents.Html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Quote @Model.QuoteNumber</title>
+    @* Trusted, embedded stylesheet: written raw, because Razor would HTML-encode its quotes *@
+    <style>@((MarkupString)Css)</style>
+</head>
+<body>
+    <header class="quote-header">
+        <h1>Bookstore</h1>
+        <div class="meta">
+            <div><b>Quote @Model.QuoteNumber</b></div>
+            <div>Issued @Model.IssueDate.ToString("d MMMM yyyy", Tr)</div>
+            <div>Valid until @Model.ValidUntil.ToString("d MMMM yyyy", Tr)</div>
+        </div>
+    </header>
+    <div class="parties">
+        <section>
+            <h2>Prepared for</h2>
+            <div>@Model.InstitutionName</div>
+            <div>@Model.UnitName, attn. @Model.ContactName</div>
+        </section>
+        <section>
+            <h2>Prepared by</h2>
+            <div>Bookstore Institutional Sales</div>
+            <div>institutional@example.com</div>
+        </section>
+    </div>
+    <table>
+        <thead>
+            <tr><th>ISBN</th><th>Title</th><th class="num">Qty</th><th class="num">Unit price</th><th class="num">Amount</th></tr>
+        </thead>
+        <tbody>
+            @foreach (QuoteLine line in Model.Lines)
+            {
+                <tr>
+                    <td>@line.Isbn</td>
+                    <td>@line.Title</td>
+                    <td class="num">@line.Quantity.ToString(Tr)</td>
+                    <td class="num">@line.UnitPrice.ToString("C", Tr)</td>
+                    <td class="num">@line.Amount.ToString("C", Tr)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <table class="totals">
+        <tr><td>Subtotal (@Model.TotalQuantity.ToString(Tr) copies)</td><td class="num">@Model.Subtotal.ToString("C", Tr)</td></tr>
+        <tr><td>Institutional discount @InstitutionalQuoteModel.InstitutionalDiscountRate.ToString("P0", Tr)</td><td class="num">-@Model.Discount.ToString("C", Tr)</td></tr>
+        <tr class="grand"><td>Total</td><td class="num">@Model.Total.ToString("C", Tr)</td></tr>
+    </table>
+    @if (!string.IsNullOrWhiteSpace(Model.SalesNote))
+    {
+        <div class="note">@Model.SalesNote</div>
+    }
+</body>
+</html>
+
+@code {
+    private static readonly CultureInfo Tr = CultureInfo.GetCultureInfo("tr-TR");
+
+    [Parameter, EditorRequired]
+    public InstitutionalQuoteModel Model { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public string Css { get; set; } = "";
+}

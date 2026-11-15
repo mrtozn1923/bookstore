@@ -1,0 +1,23 @@
+/* Designer-owned stylesheet for the institutional quote (print layout) */
+@page { size: A4; margin: 22mm 16mm 20mm 16mm; }
+/* Fonts ship with the app; the renderer answers these URLs from memory */
+@font-face { font-family: "Lato"; font-weight: 400; src: url("https://assets.bookstore.invalid/fonts/Lato-Regular.ttf"); }
+@font-face { font-family: "Lato"; font-weight: 700; src: url("https://assets.bookstore.invalid/fonts/Lato-Bold.ttf"); }
+* { box-sizing: border-box; }
+body { font-family: "Lato", sans-serif; font-size: 10.5pt; color: #1f2937; margin: 0; }
+.quote-header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 3px solid #0f766e; padding-bottom: 10px; }
+.quote-header h1 { font-size: 20pt; margin: 0; color: #0f766e; }
+.meta { text-align: right; line-height: 1.5; }
+.parties { display: flex; gap: 24px; margin: 18px 0; }
+.parties section { flex: 1; background: #f0fdfa; border-radius: 6px; padding: 10px 12px; }
+.parties h2 { font-size: 9pt; text-transform: uppercase; letter-spacing: .06em; color: #0f766e; margin: 0 0 4px; }
+table { width: 100%; border-collapse: collapse; }
+thead { display: table-header-group; }
+th { text-align: left; font-size: 9pt; color: #475569; border-bottom: 1px solid #94a3b8; padding: 6px 4px; }
+td { padding: 6px 4px; border-bottom: 1px solid #e2e8f0; }
+tr { break-inside: avoid; }
+.num { text-align: right; white-space: nowrap; }
+.totals { margin-left: auto; width: 45%; margin-top: 14px; break-inside: avoid; }
+.totals td { border: none; padding: 3px 4px; }
+.totals .grand td { border-top: 2px solid #0f766e; font-weight: 700; font-size: 12pt; }
+.note { margin-top: 18px; padding: 10px 12px; border-left: 4px solid #f59e0b; background: #fffbeb; break-inside: avoid; }

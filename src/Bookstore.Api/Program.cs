@@ -5,6 +5,7 @@ using Bookstore.Api.Reports;
 using Bookstore.Notifications;
 using Bookstore.Notifications.Documents;
 using Bookstore.Notifications.Documents.Excel;
+using Bookstore.Notifications.Documents.Html;
 using Bookstore.Notifications.Documents.Pdf;
 using Bookstore.Notifications.Outbox;
 using Bookstore.Notifications.Samples;
@@ -48,6 +49,16 @@ app.MapGet("/api/orders/{orderId:int}/invoice", async (int orderId, InvoiceArchi
     string path = await archive.EnsureStoredAsync(invoice, ct);
     Stream pdf = await files.OpenReadAsync(path, ct);
     return Results.File(pdf, FileFormat.Pdf.ContentType, $"invoice-{invoice.InvoiceNumber}.pdf");
+});
+
+// Designer's HTML/CSS quote printed by headless Chromium; the browser starts with the first quote
+app.MapGet("/api/institutional/quotes/{quoteNumber}/pdf", async (string quoteNumber, IDocumentRenderer<InstitutionalQuoteModel> renderer, CancellationToken ct) =>
+{
+    InstitutionalQuoteModel quote = BookstoreSampleData.InstitutionalQuote() with { QuoteNumber = quoteNumber };
+    MemoryStream pdf = new();
+    await renderer.RenderAsync(quote, pdf, ct);
+    pdf.Position = 0;
+    return Results.File(pdf, renderer.Format.ContentType, $"quote-{quoteNumber}.pdf");
 });
 
 // Synchronous on purpose, to show what a slow document does to a request

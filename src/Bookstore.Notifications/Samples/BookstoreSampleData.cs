@@ -1,4 +1,5 @@
 using Bookstore.Notifications.Documents;
+using Bookstore.Notifications.Documents.Html;
 using Bookstore.Notifications.Templates;
 
 namespace Bookstore.Notifications.Samples;
@@ -85,4 +86,24 @@ public static class BookstoreSampleData
             new InvoiceLine("9780141439587", "Emma", 1, 240.00m, 0.10m),
             new InvoiceLine("GIFT-WRAP", "Gift wrapping", 1, 25.00m, 0.20m),
         ]);
+
+    public static InstitutionalQuoteModel InstitutionalQuote(int lineCount = 4, string? salesNote = null)
+    {
+        List<QuoteLine> lines = [];
+        for (int i = 0; i < lineCount; i++)
+        {
+            (string isbn, string title, decimal price) = Books[i % Books.Count];
+            lines.Add(new QuoteLine(isbn, title, 10 + i % 3 * 5, price));
+        }
+
+        return new InstitutionalQuoteModel(
+            QuoteNumber: "Q-2026-0117",
+            InstitutionName: "Hilltop Primary School",
+            UnitName: "Library",
+            ContactName: "Nevin",
+            IssueDate: new DateOnly(2026, 11, 15),
+            ValidUntil: new DateOnly(2026, 12, 15),
+            Lines: lines,
+            SalesNote: salesNote ?? "Prices are fixed until the end of the quote period. Delivery to the school library in two shipments.");
+    }
 }

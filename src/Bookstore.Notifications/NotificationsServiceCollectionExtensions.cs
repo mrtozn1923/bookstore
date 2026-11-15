@@ -1,3 +1,4 @@
+using Bookstore.Notifications.Documents.Html;
 using Bookstore.Notifications.Email;
 using Bookstore.Notifications.Outbox;
 using Bookstore.Notifications.Storage;
@@ -36,6 +37,14 @@ public static class NotificationsServiceCollectionExtensions
         services.AddLogging();
         services.AddOptions<EmailTemplateOptions>().Bind(configuration.GetSection("Notifications:Templates"));
         services.AddSingleton<EmailTemplates>();
+
+        // HTML to PDF: one Chromium per application, started on the first document
+        services.AddSingleton<RazorHtmlRenderer>();
+        services.AddOptions<ChromiumPdfOptions>()
+            .Bind(configuration.GetSection("Notifications:ChromiumPdf"))
+            .ValidateDataAnnotations();
+        services.AddSingleton<ChromiumPdfRenderer>();
+        services.AddSingleton<IDocumentRenderer<InstitutionalQuoteModel>>(sp => sp.GetRequiredService<ChromiumPdfRenderer>());
 
         // No SMTP host configured (e.g. a fresh clone): fall back to writing e-mails to the log
         IConfigurationSection smtp = configuration.GetSection("Notifications:Smtp");

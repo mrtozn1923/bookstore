@@ -10,12 +10,17 @@
     <PackageReference Include="Microsoft.Extensions.Localization" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
     <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" />
+    <PackageReference Include="Microsoft.Playwright" />
+    <PackageReference Include="PdfPig" />
     <PackageReference Include="PreMailer.Net" />
     <PackageReference Include="QuestPDF" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Documents\Pdf\logo.png" LogicalName="Bookstore.Notifications.logo.png" />
+    <EmbeddedResource Include="Documents\Html\quote.css" LogicalName="Bookstore.Notifications.quote.css" />
+    <!-- Lato (SIL Open Font License 1.1, see fonts/OFL.txt), taken from the QuestPDF package -->
+    <EmbeddedResource Include="Documents\Html\fonts\*.ttf" LogicalName="Bookstore.Notifications.fonts.%(Filename)%(Extension)" />
   </ItemGroup>
 
 </Project>
