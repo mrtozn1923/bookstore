@@ -10,4 +10,8 @@
     <PackageReference Include="Microsoft.ML.LightGbm" Version="6.0.0" />
     <PackageReference Include="Microsoft.ML.TimeSeries" Version="6.0.0" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Bookstore.ML.Model/Bookstore.ML.Model.csproj" />
+    <Using Include="Bookstore.ML.Model" />
+  </ItemGroup>
 </Project>

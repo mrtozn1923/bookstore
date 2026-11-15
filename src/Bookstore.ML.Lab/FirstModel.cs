@@ -5,12 +5,6 @@ using Microsoft.ML.Trainers;
 
 namespace Bookstore.ML.Lab;
 
-public sealed class DeliveryPrediction
-{
-    [ColumnName("Score")]
-    public float PredictedDays { get; set; }
-}
-
 /// <summary>Post 04: the first ML.NET model, step by step.</summary>
 public static class FirstModel
 {

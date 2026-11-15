@@ -1,6 +1,6 @@
 using Microsoft.ML.Data;
 
-namespace Bookstore.ML.Lab;
+namespace Bookstore.ML.Model;
 
 /// <summary>The columns of data/orders_clean.csv that the delivery-time models use.</summary>
 public class DeliveryInput
@@ -26,11 +26,9 @@ public class DeliveryInput
     [LoadColumn(19)] public float TrackingEventCount { get; set; }
 }
 
-/// <summary>Post 03 leakage experiments: columns that are not in the file, filled in code.</summary>
-public sealed class DeliveryExtra : DeliveryInput
+/// <summary>What the delivery-time model returns: the predicted delivery time in days.</summary>
+public sealed class DeliveryPrediction
 {
-    /// <summary>Days since 2024-11-01: the order date as a number.</summary>
-    public float DaySerial { get; set; }
-
-    public float CustomerAvgDays { get; set; }
+    [ColumnName("Score")]
+    public float PredictedDays { get; set; }
 }

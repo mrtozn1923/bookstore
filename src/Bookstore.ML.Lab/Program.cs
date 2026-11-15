@@ -1,3 +1,4 @@
+using System.Globalization;
 using Bookstore.ML.Lab;
 
 // Usage: dotnet run --project src/Bookstore.ML.Lab -- <command>
@@ -70,7 +71,20 @@ switch (command)
     case "fairness":
         ModelSelection.Fairness();
         break;
+    case "train-delivery":
+        Serving.Train(DateOnly.Parse(args[1], CultureInfo.InvariantCulture), args[2]);
+        break;
+    case "deploy":
+        Serving.Deploy(args[1], atomic: args.Contains("--atomic"));
+        break;
+    case "drift":
+        Serving.Drift(args[1]);
+        break;
+    case "load-test":
+        await Serving.LoadTestAsync(args[1], args[2], args[3], int.Parse(args[4], CultureInfo.InvariantCulture),
+            int.Parse(args[5], CultureInfo.InvariantCulture));
+        break;
     default:
-        Console.WriteLine("Commands: rules, explore, quality, clean, split, cv, complexity, first-model, pitfalls, features, inspect, skew, gd, compare, cancel, topics, segments, anomalies, tune, automl, explain, fairness");
+        Console.WriteLine("Commands: rules, explore, quality, clean, split, cv, complexity, first-model, pitfalls, features, inspect, skew, gd, compare, cancel, topics, segments, anomalies, tune, automl, explain, fairness, train-delivery, deploy, drift, load-test");
         break;
 }

@@ -1,6 +1,6 @@
 using Microsoft.ML.Transforms;
 
-namespace Bookstore.ML.Lab;
+namespace Bookstore.ML.Model;
 
 public sealed class OrderTimeInput
 {
