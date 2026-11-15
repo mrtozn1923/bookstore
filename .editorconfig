@@ -1,0 +1,8 @@
+root = true
+
+[*.cs]
+# Encapsulation rules used in the Refactoring Catalog posts
+dotnet_diagnostic.CA1002.severity = warning
+dotnet_diagnostic.CA1051.severity = warning
+dotnet_diagnostic.CA2211.severity = warning
+dotnet_diagnostic.CA2227.severity = warning
